@@ -124,7 +124,7 @@ function AdditionalDetails() {
 
 function MintUSDa() {
   return (
-    <div className="grid md:grid-cols-3 grid-cols-1 border border-solid border-red-200 max-h-full">
+    <div className="grid md:grid-cols-3 grid-cols-1">
       <div className="col-span-2 hidden md:block border border-solid border-grayLight">
         <ChartComponent />
       </div>
@@ -138,7 +138,7 @@ function MintUSDa() {
         <ChartComponent />
       </div>
 
-      <div className="col-span-2 border border-solid border-grayLight">
+      <div className="col-span-2 border border-solid border-grayLight p-8">
         <div className="flex flex-col justify-start">
           <div className="font-plex-grotesk text-textBlack text-3xl font-medium">
             How it works?
@@ -159,7 +159,7 @@ function MintUSDa() {
           </ol>
         </div>
       </div>
-      <div className="col-span-1 border border-solid border-grayLight">
+      <div className="col-span-1 border border-solid border-grayLight p-8">
         <div className="flex flex-col justify-between h-full">
           <Image
             src={farmyourluckLogo}
