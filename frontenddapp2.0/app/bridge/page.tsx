@@ -15,7 +15,7 @@ function BridgeComponent({
 }) {
   return (
     <div
-      className={`flex flex-col p-6 justify-between border border-solid rounded-none ${
+      className={`flex flex-col md:p-6 p-5 justify-between border border-solid rounded-none ${
         heading === "To"
           ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : "bg-white"

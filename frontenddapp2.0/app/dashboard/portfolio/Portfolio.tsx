@@ -12,8 +12,8 @@ function PortolioTable({
       <table className="table-auto w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight font-plex-grotesk">
           <tr>
-            <th className="pl-5 font-normal py-5 w-1/2 lg:w-auto">ID</th>
-            <th className="pl-5 font-normal w-1/2 lg:w-auto">ETH Deposited</th>
+            <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
+            <th className="pl-5 font-normal w-4/5 lg:w-auto">ETH Deposited</th>
             <th className="pl-5 hidden md:table-cell font-normal">
               USDa Minted
             </th>
@@ -26,7 +26,7 @@ function PortolioTable({
             <th className="pl-5 hidden md:table-cell font-normal">
               Liquidation
             </th>
-            <th className="pr-5 hidden md:table-cell text-right">Action</th>
+            <th className="pr-5 font-normal lg:w-auto text-right">Action</th>
           </tr>
         </thead>
         <tbody className="font-normal font-plex-grotesk">
@@ -38,18 +38,18 @@ function PortolioTable({
             <td className="px-5 py-6 hidden md:table-cell">--</td>
             <td className="px-5 py-6 hidden md:table-cell">YES</td>
             <td
-              style={{
-                display: tabPosition === "Borrowed" ? "block" : "none",
-              }}
-              className="px-5 py-6 hidden md:text-right md:block md:space-x-12"
+              className={`px-5 py-6 ${
+                tabPosition === "Borrowed" ? "block" : "hidden"
+              } md:text-right md:table-cell md:space-x-12`}
             >
               <span className="font-bold text-[20px] underline font-plex-grotesk">
                 Repay/Renew
               </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk">
+              <span className="font-bold text-[20px] underline font-plex-grotesk hidden md:inline">
                 View
               </span>
             </td>
+
             <td
               style={{
                 display: tabPosition === "Deposited" ? "block" : "none",
@@ -82,7 +82,7 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border border-solid">
-      <span className="text-textBlack text-[32px] font-medium font-plex-grotesk">
+      <span className="text-textBlack md:text-[32px] text-[24px] font-medium font-plex-grotesk">
         {value}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] font-plex-grotesk">
@@ -119,7 +119,7 @@ function Portfolio() {
             setTabPosition("Borrowed");
           }}
           className={
-            "lg:w-[24%] w-[50%] px-5 py-3 font-plex-grotesk text-[32px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3 font-plex-grotesk md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -134,7 +134,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "lg:w-[24%] w-[50%] px-5 py-3 font-plex-grotesk text-[32px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3 font-plex-grotesk  md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
