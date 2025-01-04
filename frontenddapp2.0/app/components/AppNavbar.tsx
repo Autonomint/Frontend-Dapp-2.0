@@ -46,23 +46,24 @@ function AppNavbar() {
         <Image src={arrowLeft} width={42} height={42} alt="arrow" />
       </Button>
 
-      <div className="hidden md:flex w-full">
+      {/* Full Navbar */}
+      <div className="hidden md:flex w-full border-b border-grayLight">
         {navList.map(({ name, path, isActive }) => (
           <div
             key={name}
-            className="flex-1 px-5 py-3 text-[32px] font-plex-grotesk font-medium border-r border-grayLight hover:cursor-pointer"
+            className={`flex-1 px-5 py-3 text-[32px] font-plex-grotesk font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+              isActive ? "bg-[#ABFFDE]" : ""
+            }`}
             onClick={() => router.push(path)}
-            style={{
-              backgroundColor: isActive ? "#ABFFDE" : "",
-            }}
           >
             {name}
           </div>
         ))}
       </div>
 
+      {/* Mobile Active Tab */}
       <div
-        className="flex md:hidden w-full px-5 py-3 text-[32px] font-plex-grotesk font-medium border-grayLight"
+        className="flex md:hidden w-full px-5 py-3 text-[32px] font-plex-grotesk font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.name || "Select Tab"}

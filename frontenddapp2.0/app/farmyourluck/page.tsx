@@ -5,21 +5,24 @@ function page() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
       <div className="grid col-span-1 lg:col-span-4">
-        <div className="grid grid-cols-3 gap-6 p-8">
+        <div className="grid grid-cols-3 gap-6 md:p-8 p-5">
           {Array.from({ length: 9 }).map(() => {
             return (
-              <div className="bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border border-grayLight"></div>
+              <div
+                className="bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border border-grayLight 
+                  aspect-square lg:aspect-auto lg:h-auto lg:w-auto w-full h-full"
+              ></div>
             );
           })}
         </div>
       </div>
-      <div className="grid col-span-1 lg:col-span-2 p-6 border border-left-grayLight border-t-0 border-b-0 relative">
-        <div className="flex flex-col justify-between max-h-[calc(100%-80px)]">
-          <span className="text-grayLight font-medium font-plex-grotesk text-[32px] text-center ">
+      <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-solid-grayLight relative">
+        <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
+          <span className="text-grayLight font-medium font-plex-grotesk lg:text-[32px] text-[24px] lg:text-center">
             Tap a card to view details
           </span>
-          <div className="flex flex-col text-left">
-            <div className="font-plex-grotesk text-textBlack text-3xl font-medium">
+          <div className="flex flex-col text-left mb-28 lg:mb-0">
+            <div className="font-plex-grotesk text-textBlack lg:text-3xl text-[20px] font-medium">
               How it works?
             </div>
             <ol className="list-decimal list-inside mt-3 text-grayLight">
