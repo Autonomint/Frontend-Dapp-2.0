@@ -16,7 +16,7 @@ function ListItemMetric({
   color?: string;
 }) {
   return (
-    <div className="flex md:flex-col justify-between md:justify-between w-full md:h-full text-left md:text-center items-start md:items-center mt-4 md:mt-0 ">
+    <div className="flex md:flex-col justify-between w-full md:h-full text-left md:text-center items-start md:items-center mt-4 md:mt-0 ">
       <div className="font-plex-grotesk text-grayLight font-normal text-lg w-[150px] md:w-auto">
         {label}
       </div>
@@ -72,7 +72,7 @@ function SingleListItem({
         <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
         <div className="flex flex-grow flex-col md:flex-row w-full max-w-screen-md h-[160px]">
           {metrics.map((metric, index) => (
-            <div key={index} className="flex-1">
+            <div key={index} className="md:flex-1">
               <ListItemMetric label={metric.label} value={metric.value} />
             </div>
           ))}
@@ -88,7 +88,12 @@ function SingleListItem({
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>
-        <Button className="absolute rounded-none bottom-0 w-full left-0 md:hidden bg-textBlack hover:bg-textBlack">
+        <Button
+          onClick={() => {
+            router.push("/mintUSDaWithCollateral");
+          }}
+          className="absolute rounded-none bottom-0 w-full left-0 md:hidden bg-textBlack hover:bg-textBlack h-15 font-bold text-[#FFFFFF] text-[32px] font-plex-grotesk"
+        >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>
       </div>
