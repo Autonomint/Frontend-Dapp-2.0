@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { WithdrawModal } from "../../../customComponents/popups/WithdrawModal";
+import { RebalancePopup } from "@/customComponents/popups/Rebalance";
 
 function PortolioTable({
   tabPosition,
@@ -10,7 +11,7 @@ function PortolioTable({
   return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full border-collapse text-[20px]">
-        <thead className="text-left font-normal text-grayLight font-plex-grotesk">
+        <thead className="text-left font-normal text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
             <th className="pl-5 font-normal w-4/5 lg:w-auto">ETH Deposited</th>
@@ -29,7 +30,7 @@ function PortolioTable({
             <th className="pr-5 font-normal lg:w-auto text-right">Action</th>
           </tr>
         </thead>
-        <tbody className="font-normal font-plex-grotesk">
+        <tbody className="font-normal ">
           <tr className="border border-solid">
             <td className="px-5 py-6">02</td>
             <td className="px-5 py-6">1.789</td>
@@ -45,10 +46,10 @@ function PortolioTable({
                 display: tabPosition === "Borrowed" ? "block" : "none",
               }}
             >
-              <span className="font-bold text-[20px] underline font-plex-grotesk">
+              <span className="font-bold text-[20px] underline ">
                 Repay/Renew
               </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk hidden md:inline">
+              <span className="font-bold text-[20px] underline  hidden md:inline">
                 View
               </span>
             </td>
@@ -61,13 +62,11 @@ function PortolioTable({
                 display: tabPosition === "Deposited" ? "block" : "none",
               }}
             >
-              <span className="font-bold text-[20px] underline font-plex-grotesk">
-                Withdraw
-              </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk ">
+              <span className="font-bold text-[20px] underline ">Withdraw</span>
+              <span className="font-bold text-[20px] underline  ">
                 Rebalance
               </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk hidden md:inline">
+              <span className="font-bold text-[20px] underline  hidden md:inline">
                 View
               </span>
             </td>
@@ -87,10 +86,10 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border border-solid">
-      <span className="text-textBlack md:text-[32px] text-[24px] font-medium font-plex-grotesk">
+      <span className="text-textBlack md:text-[32px] text-[24px] font-medium ">
         {value}
       </span>
-      <span className="text-grayLight md:text-lg text-[14px] font-plex-grotesk">
+      <span className="text-grayLight md:text-lg text-[14px] ">
         {subHeading}
       </span>
     </div>
@@ -124,7 +123,7 @@ function Portfolio() {
             setTabPosition("Borrowed");
           }}
           className={
-            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3 font-plex-grotesk md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -139,7 +138,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3 font-plex-grotesk  md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -149,10 +148,11 @@ function Portfolio() {
         >
           Deposited Position
         </div>
-        <div className="lg:block w-[4%] hidden px-5 py-3 font-plex-grotesk text-[32px] font-medium border border-solid"></div>
-        <div className="lg:block w-[48%] hidden px-5 py-3 font-plex-grotesk text-[32px] font-medium border border-solid"></div>
+        <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
+        <div className="lg:block w-[48%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
       </div>
       <PortolioTable tabPosition={tabPosition} />
+      <RebalancePopup />
     </div>
   );
 }

@@ -17,17 +17,14 @@ const CustomDropdown = () => {
 
   return (
     <div className="flex flex-col space-y-2">
-      <Label
-        htmlFor="network"
-        className="font-plex-grotesk text-grayLight text-lg font-medium"
-      >
+      <Label htmlFor="network" className=" text-grayLight text-lg font-medium">
         Network
       </Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="flex justify-between w-full h-17 px-3 border border-grayLight-1 rounded-md text-textBlack font-plex-grotesk md:text-[32px] text-[24px]"
+            className="flex justify-between w-full h-17 px-3 border border-grayLight-1 rounded-md text-textBlack  md:text-[32px] text-[24px]"
           >
             {selected}
             <ChevronDownIcon className="w-4 h-4 ml-2" />

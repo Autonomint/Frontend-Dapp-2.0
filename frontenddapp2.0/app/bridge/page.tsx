@@ -21,9 +21,7 @@ function BridgeComponent({
           : "bg-white"
       }`}
     >
-      <div className="font-plex-grotesk text-[32px] font-medium mb-4">
-        {heading}
-      </div>
+      <div className=" text-[32px] font-medium mb-4">{heading}</div>
       <div className="flex flex-col gap-7">
         <div className="flex gap-6">
           <div className="flex-1">
@@ -35,17 +33,15 @@ function BridgeComponent({
         </div>
         <div className="border border-solid border-grayLight-1 p-5">
           <div className="flex justify-between">
-            <div className="text-grayLight text-lg font-plex-grotesk">
+            <div className="text-grayLight text-lg ">
               You {heading == "From" ? "Send" : "Receive"}
             </div>
-            <div className="text-grayLight text-lg flex gap-3 font-plex-grotesk">
+            <div className="text-grayLight text-lg flex gap-3 ">
               Available Bal: 7001
               <span className="text-textBlack text-lg">Max</span>
             </div>
           </div>
-          <div className="text-[42px] text-textBlack font-plex-grotesk mt-8">
-            $1,201
-          </div>
+          <div className="text-[42px] text-textBlack  mt-8">$1,201</div>
         </div>
       </div>
     </div>
@@ -61,9 +57,7 @@ function BridgeMetricFields({
 }) {
   return (
     <div className="flex flex-col justify-between mb-3">
-      <div className="font-plex-grotesk text-gray-500 font-medium text-sm">
-        {label}
-      </div>
+      <div className=" text-gray-500 font-medium text-sm">{label}</div>
       <div className="font-medium text-[20px] text-black">{value}</div>
     </div>
   );

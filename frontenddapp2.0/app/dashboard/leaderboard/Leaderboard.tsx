@@ -6,7 +6,7 @@ function PortolioTable() {
   return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full border-collapse text-[20px]">
-        <thead className="text-left font-normal text-grayLight font-plex-grotesk">
+        <thead className="text-left font-normal text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/2 lg:w-auto">Rank</th>
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
@@ -21,7 +21,7 @@ function PortolioTable() {
             </th>
           </tr>
         </thead>
-        <tbody className="font-normal font-plex-grotesk">
+        <tbody className="font-normal ">
           <tr className="border border-solid">
             <td className="px-5 py-6">01</td>
             <td className="px-5 py-6">0x67a...8ujk</td>
@@ -52,10 +52,8 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border border-solid">
-      <span className="text-textBlack text-[32px] font-medium font-plex-grotesk">
-        {value}
-      </span>
-      <span className="text-grayLight md:text-lg text-[14px] font-plex-grotesk">
+      <span className="text-textBlack text-[32px] font-medium ">{value}</span>
+      <span className="text-grayLight md:text-lg text-[14px] ">
         {subHeading}
       </span>
     </div>

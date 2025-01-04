@@ -35,10 +35,10 @@ export default function RootLayout({
         className={`h-screen w-screen bg-gray-50 flex justify-center items-center`}
       >
         <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[95%] md:max-w-full md:h-[95%] md:max-h-[95vh] flex flex-col">
-          <Navbar />
+          {/* <Navbar /> */}
           <AppNavbar />
           <div className="flex-grow overflow-y-auto">{children}</div>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </body>
     </html>

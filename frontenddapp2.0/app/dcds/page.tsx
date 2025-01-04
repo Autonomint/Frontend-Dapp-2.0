@@ -59,10 +59,7 @@ function AdditionalDCDSMetrics() {
 function SelectToken() {
   return (
     <div className="flex flex-col mt-4">
-      <Label
-        htmlFor="network"
-        className="font-plex-grotesk text-grayLight text-lg font-medium"
-      >
+      <Label htmlFor="network" className=" text-grayLight text-lg font-medium">
         Select Token
       </Label>
       <Input
@@ -74,7 +71,7 @@ function SelectToken() {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="flex justify-between w-full h-17 px-3 border border-grayLight-1 rounded-md text-textBlack font-plex-grotesk text-[24px]"
+              className="flex justify-between w-full h-17 px-3 border border-grayLight-1 rounded-md text-textBlack  text-[24px]"
             >
               3 months
               <ChevronDownIcon className="w-4 h-4 ml-2" />
@@ -145,34 +142,34 @@ function page() {
         </div>
         <div className="hidden lg:flex col-span-2  flex-col items-center justify-center border border-solid relative">
           <Image src={dcdsFrame} alt="dcds" />
-          <span className="absolute left-3 bottom-3 underline font-plex-grotesk text-textBlack font-medium">
+          <span className="absolute left-3 bottom-3 underline  text-textBlack font-medium">
             How it works?
           </span>
           <div className="mt-[12px] border border-solid">
-            <span className="font-plex-grotesk text-[12px] bg-[#FFE0E0] text-[#FF0000] px-3 py-2">
+            <span className=" text-[12px] bg-[#FFE0E0] text-[#FF0000] px-3 py-2">
               This fund will be exposed to liquidation risks
             </span>
           </div>
         </div>
         <div className="col-span-1 border border-solid flex flex-col justify-between">
           <div className="p-5">
-            <span className="font-plex-grotesk text-textBlack text-[24px] font-medium">
+            <span className=" text-textBlack text-[24px] font-medium">
               Deposit Funds
             </span>
             <SelectToken />
             <div className="py-4 flex">
-              <span className="text-grayLight font-normal font-plex-grotesk text-[18px]">
+              <span className="text-grayLight font-normal  text-[18px]">
                 Opt for liquidity gains?
               </span>
             </div>
-            <div className="p-3 bg-[#FFF0CA] text-[12px] font-plex-grotesk text-grayLight font-medium">
+            <div className="p-3 bg-[#FFF0CA] text-[12px]  text-grayLight font-medium">
               Note: Your amount will be used to offer protection to borrowers &
               protocol in return for fixed yields
             </div>
           </div>
           <div>
             <AdditionalDCDSMetrics />
-            <Button className="bg-black text-white text-[24px] font-plex-grotesk min-h-20 w-full">
+            <Button className="bg-black text-white text-[24px]  min-h-20 w-full">
               Deposit
             </Button>
           </div>

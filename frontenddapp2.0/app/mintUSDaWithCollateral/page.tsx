@@ -21,9 +21,7 @@ function MetricFields({
 }) {
   return (
     <div className="flex justify-between mb-3">
-      <div className="font-plex-grotesk text-grayLight font-medium text-lg">
-        {label}
-      </div>
+      <div className=" text-grayLight font-medium text-lg">{label}</div>
       <div
         className="font-medium text-lg"
         style={{
@@ -39,7 +37,7 @@ function MetricFields({
 function AdditionalMetics() {
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-textBlack font-plex-grotesk font-medium text-xl">
+      <div className="text-textBlack  font-medium text-xl">
         100% Synthetic LTV
       </div>
       <div className="flex flex-col mt-3">
@@ -57,7 +55,7 @@ function AdditionalMetics() {
           />
         ))}
       </div>
-      {/* <Button className="bg-textBlack w-full absolute left-0 bottom-0  rounded-none h-16 font-bold text-[#FFFFFF] text-[32px] font-plex-grotesk">
+      {/* <Button className="bg-textBlack w-full absolute left-0 bottom-0  rounded-none h-16 font-bold text-[#FFFFFF] text-[32px] ">
         Mint USDa
       </Button> */}
     </div>
@@ -67,7 +65,7 @@ function AdditionalMetics() {
 function AdditionalDetails() {
   return (
     <div className="flex flex-col p-6 gap-[18px] relative">
-      <div className="font-plex-grotesk font-medium text-2xl">Mint USDa</div>
+      <div className=" font-medium text-2xl">Mint USDa</div>
       <div className="flex flex-col gap-[18px] ">
         <div className="flex flex-col">
           <div className="flex">
@@ -82,10 +80,10 @@ function AdditionalDetails() {
           </div>
 
           <div className="flex justify-between">
-            <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+            <span className=" font-medium text-lg text-grayLight">
               Min: 0.05 ETH
             </span>
-            <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+            <span className=" font-medium text-lg text-grayLight">
               Bal: 0.23 ETH
             </span>
           </div>
@@ -109,10 +107,10 @@ function AdditionalDetails() {
           </div>
 
           <div className="flex justify-between">
-            <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+            <span className=" font-medium text-lg text-grayLight">
               Min: 0.05 ETH
             </span>
-            <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+            <span className=" font-medium text-lg text-grayLight">
               Bal: 0.23 ETH
             </span>
           </div>
@@ -142,7 +140,7 @@ function MintUSDa() {
 
       <div className="col-span-2 border border-solid border-grayLight p-8">
         <div className="flex flex-col justify-start">
-          <div className="font-plex-grotesk text-textBlack text-3xl font-medium">
+          <div className=" text-textBlack text-3xl font-medium">
             How it works?
           </div>
           <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
@@ -175,7 +173,7 @@ function MintUSDa() {
             alt="farm-your-luck"
             className="hidden md:block"
           />
-          <div className="font-plex-grotesk text-textBlack text-3xl font-medium">
+          <div className=" text-textBlack text-3xl font-medium">
             Farm Your Luck
           </div>
         </div>

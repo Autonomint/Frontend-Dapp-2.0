@@ -18,11 +18,11 @@ function page() {
       </div>
       <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-solid-grayLight relative">
         <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
-          <span className="text-grayLight font-medium font-plex-grotesk lg:text-[32px] text-[24px] lg:text-center">
+          <span className="text-grayLight font-medium  lg:text-[32px] text-[24px] lg:text-center">
             Tap a card to view details
           </span>
           <div className="flex flex-col text-left mb-28 lg:mb-0">
-            <div className="font-plex-grotesk text-textBlack lg:text-3xl text-[20px] font-medium">
+            <div className=" text-textBlack lg:text-3xl text-[20px] font-medium">
               How it works?
             </div>
             <ol className="list-decimal list-inside mt-3 text-grayLight">

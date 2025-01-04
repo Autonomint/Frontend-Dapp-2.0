@@ -13,19 +13,19 @@ import { useRouter } from "next/navigation";
 // function TransferBetweeHoverElement() {
 //   return (
 //     <div className="flex flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
-//       <div className="font-plex-grotesk text-textBlack text-[38px] font-medium">
+//       <div className=" text-textBlack text-[38px] font-medium">
 //         Transfer Between
 //       </div>
 //       <div className="flex">
 //         <div className="flex flex-col">
 //           <Image src={ModeImage} alt="Price Graph" className="w-full" />
-//           <div className="font-plex-grotesk text-grayLight text-[32px] font-normal">
+//           <div className=" text-grayLight text-[32px] font-normal">
 //             Mode
 //           </div>
 //         </div>
 //         <div className="flex flex-col">
 //           <Image src={OptimismImage} alt="Price Graph" className="w-full" />
-//           <div className="font-plex-grotesk text-grayLight text-[32px] font-normal">
+//           <div className=" text-grayLight text-[32px] font-normal">
 //             Optimism
 //           </div>
 //         </div>
@@ -46,11 +46,11 @@ import { useRouter } from "next/navigation";
 // function DCDSHoverElement() {
 //   return (
 //     <div className="flex flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
-//       <div className="font-plex-grotesk text-textBlack text-[38px] font-medium">
+//       <div className=" text-textBlack text-[38px] font-medium">
 //         $1,000 Invested would have become $3,000
 //       </div>
 //       <Image src={PriceGraph} alt="Price Graph" className="w-full" />
-//       <div className="font-plex-grotesk text-textBlack text-[38px] font-medium">
+//       <div className=" text-textBlack text-[38px] font-medium">
 //         Get up to 200% APY
 //       </div>
 //       <Button
@@ -69,14 +69,14 @@ import { useRouter } from "next/navigation";
 // function MintUSDAHoverElement() {
 //   return (
 //     <div className="flex flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
-//       <div className="font-plex-grotesk tetx-textBlack text-[38px] font-medium">
+//       <div className=" tetx-textBlack text-[38px] font-medium">
 //         100% Synthetic LTV
 //       </div>
 //       <div className="flex justify-between">
-//         <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+//         <span className=" font-medium text-lg text-grayLight">
 //           80% Stablecoin
 //         </span>
-//         <span className="font-plex-grotesk font-medium text-lg text-grayLight">
+//         <span className=" font-medium text-lg text-grayLight">
 //           20% Downside Protection
 //         </span>
 //       </div>
@@ -226,7 +226,7 @@ export default function Home() {
                       })()
                     ) : (
                       <>
-                        <h3 className="font-medium text-[42px] font-plex-grotesk mb-2">
+                        <h3 className="font-medium text-[42px]  mb-2">
                           {item.title}
                         </h3>
                         {item.subtitle && (

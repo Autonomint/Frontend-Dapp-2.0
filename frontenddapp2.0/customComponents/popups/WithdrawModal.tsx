@@ -43,7 +43,7 @@ export function WithdrawModal() {
       <DialogTrigger asChild>
         <Button variant="outline">Edit Profile</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px] bg-white font-plex-grotesk">
+      <DialogContent className="sm:max-w-[700px] bg-white ">
         <div className="text-[30px] font-medium text-textBlack">
           Withdraw Fund
         </div>
@@ -55,11 +55,11 @@ export function WithdrawModal() {
           {dcdsWidthDrawMetrics.map((dcdsWidthDrawMetricsObj) => {
             return (
               <div className="flex justify-between mb-8">
-                <span className="text-[24px] font-medium text-grayLight font-plex-grotesk">
+                <span className="text-[24px] font-medium text-grayLight ">
                   {" "}
                   {dcdsWidthDrawMetricsObj.heading}
                 </span>
-                <span className="text-[24px] font-medium text-textBlack font-plex-grotesk">
+                <span className="text-[24px] font-medium text-textBlack ">
                   {dcdsWidthDrawMetricsObj.value}
                 </span>
               </div>

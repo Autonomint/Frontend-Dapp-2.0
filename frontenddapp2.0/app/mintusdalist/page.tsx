@@ -23,11 +23,11 @@ type ListItem = {
 function ListItemMetric({ label, value, color }: Metric) {
   return (
     <div className="flex md:flex-col justify-between w-full md:h-full text-left md:text-center items-start md:items-center mt-4 md:mt-0">
-      <div className="font-plex-grotesk text-grayLight font-normal text-lg w-[150px] md:w-auto">
+      <div className=" text-grayLight font-normal text-lg w-[150px] md:w-auto">
         {label}
       </div>
       <div
-        className="text-textBlack font-medium md:text-[32px] text-lg font-plex-grotesk"
+        className="text-textBlack font-medium md:text-[32px] text-lg "
         style={{ color }}
       >
         {value}
@@ -46,7 +46,7 @@ function SingleListItemImage({
   return (
     <div className="flex flex-col items-start justify-center gap-14 min-w-[120px]">
       <Image src={src} width={58} height={58} alt={stakedToken} />
-      <div className="text-textBlack font-medium text-[32px] font-plex-grotesk">
+      <div className="text-textBlack font-medium text-[32px] ">
         {stakedToken}
       </div>
     </div>
@@ -94,7 +94,7 @@ function SingleListItem({
         </Button>
         <Button
           onClick={() => router.push("/mintUSDaWithCollateral")}
-          className="absolute rounded-none bottom-0 w-full left-0 md:hidden bg-textBlack hover:bg-textBlack h-15 font-bold text-[#FFFFFF] text-[32px] font-plex-grotesk"
+          className="absolute rounded-none bottom-0 w-full left-0 md:hidden bg-textBlack hover:bg-textBlack h-15 font-bold text-[#FFFFFF] text-[32px] "
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>
@@ -139,7 +139,7 @@ function MintUSDaList() {
         ))}
       </div>
       <div className="absolute right-0 top-0 border border-solid h-full lg:max-w-[10%] hidden lg:flex items-center justify-center">
-        <div className="transform rotate-90 font-plex-grotesk text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center">
+        <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center">
           Farm Your Luck
         </div>
       </div>

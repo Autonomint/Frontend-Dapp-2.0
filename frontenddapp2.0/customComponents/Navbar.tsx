@@ -16,7 +16,7 @@ function Navbar() {
           />
         </div>
 
-        <div className="text-xl font-plex-grotesk   tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
+        <div className="text-xl    tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
           <svg
             width="167"
             height="23"

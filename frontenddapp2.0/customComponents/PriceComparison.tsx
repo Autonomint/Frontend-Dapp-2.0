@@ -36,9 +36,7 @@ function PriceComparison({
       }}
     >
       <div className="flex justify-between items-center">
-        <span className="font-plex-grotesk text-[24px] text-textBlack">
-          {orgName}
-        </span>
+        <span className=" text-[24px] text-textBlack">{orgName}</span>
         <span
           style={{
             backgroundColor: tagColor,
@@ -50,9 +48,7 @@ function PriceComparison({
         </span>
       </div>
       <div className="flex justify-between">
-        <span className={`font-plex-grotesk text-textBlack text-[24px]`}>
-          Fee
-        </span>
+        <span className={` text-textBlack text-[24px]`}>Fee</span>
         <span
           style={{
             color: tagColor || "black",
