@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { WithdrawModal } from "../../components/popups/WithdrawModal";
+import { WithdrawModal } from "../../../customComponents/popups/WithdrawModal";
 
 function PortolioTable({
   tabPosition,

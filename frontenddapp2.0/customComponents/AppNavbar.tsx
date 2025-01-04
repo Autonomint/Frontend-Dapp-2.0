@@ -1,9 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import arrow from "../assets/arrow-right-02.png";
 import Image from "next/image";
-import arrowLeft from "../assets/arrow-right-02 (1).png";
+import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 
 function AppNavbar() {

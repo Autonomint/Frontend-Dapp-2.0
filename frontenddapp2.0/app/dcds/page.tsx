@@ -1,5 +1,5 @@
 import React from "react";
-import { WithdrawModal } from "../components/popups/WithdrawModal";
+import { WithdrawModal } from "../../customComponents/popups/WithdrawModal";
 import Image from "next/image";
 import tokenImage from "../assets/Vector (6).png";
 import { Button } from "@/components/ui/button";

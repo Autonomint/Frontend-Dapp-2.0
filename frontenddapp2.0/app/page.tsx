@@ -7,7 +7,7 @@ import PriceGraph from "./assets/Chart.png";
 import ModeImage from "./assets/mode.png";
 import OptimismImage from "./assets/optimism.png";
 import arrow from "./assets/arrow-right-02.png";
-import PriceComparison from "./components/PriceComparison";
+import PriceComparison from "../customComponents/PriceComparison";
 import { useRouter } from "next/navigation";
 
 // function TransferBetweeHoverElement() {

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
-import CustomDropdown from "../components/CustomDropdown";
+import CustomDropdown from "../../customComponents/CustomDropdown";
 
 function BridgeComponent({
   heading,
