@@ -39,8 +39,11 @@ function PortolioTable({
             <td className="px-5 py-6 hidden md:table-cell">YES</td>
             <td
               className={`px-5 py-6 ${
-                tabPosition === "Borrowed" ? "block" : "hidden"
+                tabPosition === "Borrowed" ? "block" : "none"
               } md:text-right md:table-cell md:space-x-12`}
+              style={{
+                display: tabPosition === "Borrowed" ? "block" : "none",
+              }}
             >
               <span className="font-bold text-[20px] underline font-plex-grotesk">
                 Repay/Renew
@@ -51,18 +54,20 @@ function PortolioTable({
             </td>
 
             <td
+              className={`px-5 py-6 ${
+                tabPosition === "Deposited" ? "block" : "none"
+              } md:text-right md:table-cell md:space-x-12`}
               style={{
                 display: tabPosition === "Deposited" ? "block" : "none",
               }}
-              className="px-5 py-6 hidden md:text-right md:block md:space-x-12"
             >
               <span className="font-bold text-[20px] underline font-plex-grotesk">
                 Withdraw
               </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk">
+              <span className="font-bold text-[20px] underline font-plex-grotesk ">
                 Rebalance
               </span>
-              <span className="font-bold text-[20px] underline font-plex-grotesk">
+              <span className="font-bold text-[20px] underline font-plex-grotesk hidden md:inline">
                 View
               </span>
             </td>
