@@ -37,16 +37,19 @@ function AppNavbar() {
     },
   ];
 
-  // Get the active tab
   const activeTab = navList.find((nav) => nav.isActive);
 
   return (
     <div className="flex">
-      <Button className="bg-black h-full px-8 py-3">
+      <Button
+        onClick={() => {
+          router.back();
+        }}
+        className="bg-black h-full px-8 py-3 hover:bg-black"
+      >
         <Image src={arrowLeft} width={42} height={42} alt="arrow" />
       </Button>
 
-      {/* Full Navbar */}
       <div className="hidden md:flex w-full border-b border-grayLight">
         {navList.map(({ name, path, isActive }) => (
           <div
@@ -61,7 +64,6 @@ function AppNavbar() {
         ))}
       </div>
 
-      {/* Mobile Active Tab */}
       <div
         className="flex md:hidden w-full px-5 py-3 text-[32px] font-plex-grotesk font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}

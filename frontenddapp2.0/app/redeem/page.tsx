@@ -6,7 +6,7 @@ function page() {
   return (
     <div className="flex flex-col">
       <div className="p-8 border-solid border-graylight">
-        <div className="flex gap-8">
+        <div className="flex gap-8 flex-col md:flex-row">
           <div className="flex flex-col flex-1">
             <span className="text-medium text-grayLight text-lg font-plex-grotesk">
               Input Amount
@@ -32,21 +32,21 @@ function page() {
               Redeemable Amount
             </div>
           </div>
-          <div className="text-[42px] text-textBlack font-plex-grotesk mt-8">
+          <div className="md:text-[42px] text-[32px] text-textBlack font-plex-grotesk mt-8 font-medium">
             $1,201
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2">
-        <div className="border border-solid border-grayLight-1 p-12">
+      <div className="grid md:grid-cols-2">
+        <div className="border border-solid border-grayLight-1 md:p-12 p-6">
           <div className="flex justify-between">
-            <div className="text-grayLight text-lg font-plex-grotesk">
-              Note: A withdrawal Fee of 2% will be applied
+            <div className="text-grayLight md:text-lg font-plex-grotesk text-[14px]">
+              Note: A withdrawal Fee of 2% will be applied.
             </div>
           </div>
         </div>
-        <Button className="bg-textBlack text-white h-full text-white text-[32px]">
+        <Button className="bg-textBlack text-white h-full text-white md:text-[32px] text-[24px] font-bold font-plex-grotesk py-4 md:p-0">
           Redeem
         </Button>
       </div>
