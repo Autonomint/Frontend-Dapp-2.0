@@ -11,7 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function WithdrawModal() {
+export function WithdrawModal({
+  isDialogOpen,
+  setIsDialogOpen,
+}: {
+  isDialogOpen: boolean;
+  setIsDialogOpen: (open: boolean) => void;
+}) {
   const dcdsWidthDrawMetrics = [
     {
       heading: "Fee Gained",
@@ -39,32 +45,60 @@ export function WithdrawModal() {
     },
   ];
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DialogTrigger>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="sm:max-w-[700px] bg-white ">
-        <div className="text-[30px] font-medium text-textBlack">
+        <div
+          style={{
+            fontSize: "28px",
+            fontWeight: "500",
+          }}
+        >
           Withdraw Fund
         </div>
         <div className="flex justify-between mt-8 mb-6 text-textBlack">
-          <span className="text-[30px] font-medium ">USDa Deposited</span>
-          <span className="text-[30px] font-medium">$1,290</span>
+          <span
+            style={{
+              fontSize: "28px",
+              fontWeight: "500",
+            }}
+          >
+            USDa Deposited
+          </span>
+          <span
+            style={{
+              fontSize: "28px",
+              fontWeight: "500",
+            }}
+          >
+            $1,290
+          </span>
         </div>
         <div>
           {dcdsWidthDrawMetrics.map((dcdsWidthDrawMetricsObj) => {
             return (
-              <div className="flex justify-between mb-8">
-                <span className="text-[24px] font-medium text-grayLight ">
+              <div className="flex justify-between mb-6">
+                <span className="text-[18px] font-medium text-grayLight">
                   {" "}
                   {dcdsWidthDrawMetricsObj.heading}
                 </span>
-                <span className="text-[24px] font-medium text-textBlack ">
+                <span className="text-[18px] font-medium text-textBlack">
                   {dcdsWidthDrawMetricsObj.value}
                 </span>
               </div>
             );
           })}
+        </div>
+        <div className="flex w-full">
+          <div className="flex-1 w-full items-center gap-4 border border-solid border-grayLight p-3 font-medium">
+            <Label htmlFor="r2" className="text-[18px]">
+              45%
+            </Label>
+          </div>
+          <div className="flex-1 items-center gap-4 border border-solid border-grayLight p-3">
+            <Label htmlFor="r3" className="text-[18px]">
+              +$100
+            </Label>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

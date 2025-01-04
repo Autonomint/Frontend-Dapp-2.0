@@ -101,6 +101,9 @@ function Portfolio() {
     "Borrowed"
   );
 
+  // will handle all this through redux later
+  const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
+
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -152,7 +155,14 @@ function Portfolio() {
         <div className="lg:block w-[48%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
       </div>
       <PortolioTable tabPosition={tabPosition} />
-      <RebalancePopup />
+      <RebalancePopup
+        isDialogOpen={isRebalanceDialogOpen}
+        setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
+      />
+      <WithdrawModal
+        isDialogOpen={true}
+        setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
+      />
     </div>
   );
 }
