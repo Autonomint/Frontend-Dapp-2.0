@@ -49,11 +49,11 @@ function AppNavbar() {
         <Image src={arrowLeft} width={42} height={42} alt="arrow" />
       </Button>
 
-      <div className="flex w-full border-b border-grayLight">
+      <div className="hidden md:flex w-full border-b border-grayLight">
         {navList.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
-            className={`flex-1 px-5 py-3 text-[32px]  font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+            className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
               isActive ? "bg-[#ABFFDE]" : ""
             }`}
             onClick={() => router.push(path)}
@@ -63,12 +63,12 @@ function AppNavbar() {
         ))}
       </div>
 
-      {/* <div
-        className="flex  w-full px-5 py-3 text-[32px]  font-medium border-b border-grayLight"
+      <div
+        className="flex md:hidden  w-full px-5 py-3 text-[32px]  font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.nameA || "Select Tab"}
-      </div> */}
+      </div>
     </div>
   );
 }

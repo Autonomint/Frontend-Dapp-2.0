@@ -155,14 +155,14 @@ function Portfolio() {
         <div className="lg:block w-[48%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
       </div>
       <PortolioTable tabPosition={tabPosition} />
-      <RebalancePopup
+      {/* <RebalancePopup
         isDialogOpen={isRebalanceDialogOpen}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       />
       <WithdrawModal
         isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
-      />
+      /> */}
     </div>
   );
 }
