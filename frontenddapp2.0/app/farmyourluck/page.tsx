@@ -31,7 +31,7 @@ function Page() {
                   isFlipped[index] ? "flipped" : ""
                 }`}
               >
-                <div className="card-front">Front</div>
+                <div className="card-front"></div>
                 <div
                   className={`card-back ${
                     selectedIndex === index && selectedIndexForReward === index
