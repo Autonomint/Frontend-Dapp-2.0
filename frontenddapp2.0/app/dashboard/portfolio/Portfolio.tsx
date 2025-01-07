@@ -120,7 +120,7 @@ function Portfolio() {
           <PortfolioMetrics subHeading="Points" value="89,027" />
         </div>
       </div>
-      <div className="flex">
+      <div className="flex mt-[24px]">
         <div
           onClick={() => {
             setTabPosition("Borrowed");
