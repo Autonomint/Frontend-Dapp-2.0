@@ -42,7 +42,7 @@ function AppNavbar() {
     <div className="flex">
       <Button
         onClick={() => {
-          router.back();
+          router.push("/");
         }}
         className="bg-black h-full px-8 py-3 hover:bg-black"
       >
