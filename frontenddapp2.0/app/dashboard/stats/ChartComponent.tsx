@@ -27,12 +27,20 @@ ChartJS.register(
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
-  legend: {
-    display: false,
+  layout: {
+    padding: 0,
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
   },
   scales: {
     x: {
       grid: {
+        display: false,
+      },
+      border: {
         display: false,
       },
     },
@@ -40,19 +48,34 @@ export const options = {
       grid: {
         display: false,
       },
+      border: {
+        display: false,
+      },
     },
   },
 };
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
+const labels = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+];
 
 export const data = {
   labels,
   datasets: [
     {
       fill: true,
-      data: labels.map(() => Math.random() * 100),
-      borderColor: "transparent",
+      data: [10, 20, 25, 45, 55, 65, 75, 85, 95],
+      borderColor: "#00679F",
+      pointRadius: 0,
+      borderWidth: 2,
       backgroundColor: function (context: any) {
         const chart = context.chart;
         const { ctx, chartArea } = chart;
@@ -78,11 +101,11 @@ export const data = {
 function TimeFrame({ timeFrame }: { timeFrame?: string }) {
   const timeFrames = ["All Time", "1Y", "6M", "1M", "10M"];
   return (
-    <div className="border border-grayLight flex text-center">
+    <div className="border border-grayLight flex text-center w-full">
       {timeFrames?.map((item) => (
         <span
           key={item}
-          className={`p-3 text-[16px] font-medium ${
+          className={`p-3 w-full text-[16px] font-medium ${
             item === timeFrame
               ? "bg-[#ABFFDE] border border-grayLight"
               : "border border-grayLight"
@@ -95,6 +118,23 @@ function TimeFrame({ timeFrame }: { timeFrame?: string }) {
   );
 }
 
+function StatsMetrics({
+  value,
+  metricVal,
+}: {
+  value: string;
+  metricVal: string;
+}) {
+  return (
+    <div className="flex flex-col flex-1">
+      <span className="text-[24px] font-medium text-textBlack">{value}</span>
+      <span className="text-[14px] font-normal text-grayLight">
+        {metricVal}
+      </span>
+    </div>
+  );
+}
+
 export function ChartComponent({
   title,
   timeFrame,
@@ -103,13 +143,26 @@ export function ChartComponent({
   timeFrame?: string;
 }) {
   return (
-    <div className="p-5 border-r-0  border-l-0 mb-4">
+    <div
+      className="p-5 border border-solid border-[#7A7A7A]"
+      style={{
+        borderLeft: "none",
+        borderTop: "none",
+      }}
+    >
       <div className="flex justify-between">
-        <span className="font-medium text-[24px] text-grayLight">{title}</span>
-        <div className="hidden lg:block">
+        <span className="flex-1 font-medium text-[24px] text-grayLight">
+          {title}
+        </span>
+        <div className="hidden flex-1 lg:block">
           <TimeFrame timeFrame={timeFrame} />
         </div>
       </div>
+      <div className="flex py-3 my-3">
+        <StatsMetrics value={"489,829,928"} metricVal={"USDa Minted"} />
+        <StatsMetrics value={"$1"} metricVal={"USDa Price"} />
+      </div>
+
       <Line options={options} data={data} className="w-1/2 max-h-[400px]" />
     </div>
   );
