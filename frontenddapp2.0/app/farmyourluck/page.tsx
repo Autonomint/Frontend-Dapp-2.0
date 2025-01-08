@@ -1,11 +1,30 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/farmyourluckstyles.css";
 
 function Page() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [selectedIndexForReward, setSelectedIndexForReward] = useState(-1);
   const [isFlipped, setIsFlipped] = useState(Array.from({ length: 9 }).fill(0));
+  const [supportingText, setSupportingText] = useState(
+    "Tap a card to view details"
+  );
+  const [buttonText, setButtonText] = useState("Pay $5");
+
+  useEffect(() => {
+    if (selectedIndexForReward !== -1) {
+      setSupportingText("Congratulations! You have won");
+      setButtonText("Claim Reward");
+      return;
+    }
+    if (isFlipped.some((flipped) => flipped)) {
+      setButtonText("Reveal Reward");
+      setSupportingText("Revealed upon confirmation.");
+    } else {
+      setButtonText("Pay $5");
+    }
+  }, [isFlipped, selectedIndexForReward]);
 
   const handleClick = (index: number) => {
     setIsFlipped((prev) => {
@@ -14,6 +33,24 @@ function Page() {
       return newFlipped;
     });
     setSelectedIndex(index);
+  };
+
+  const textVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: -50, transition: { duration: 0.3 } },
+  };
+
+  const textVariantsButtonCliked = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: +50, transition: { duration: 0.3 } },
+  };
+
+  const supportingTextVariants = {
+    hidden: { opacity: 0, x: 0, y: 0 },
+    visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: -20, y: 0, transition: { duration: 0.3 } },
   };
 
   return (
@@ -61,8 +98,19 @@ function Page() {
       </div>
       <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-solid-grayLight relative">
         <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
-          <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-center">
-            Tap a card to view details
+          <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-left">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={buttonText}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={supportingTextVariants}
+                className="block"
+              >
+                {supportingText}
+              </motion.span>
+            </AnimatePresence>
           </span>
           <div className="flex flex-col text-left mb-28 lg:mb-0">
             <div className="text-textBlack lg:text-3xl text-[20px] font-medium">
@@ -84,12 +132,25 @@ function Page() {
             </ol>
           </div>
           <button
-            onClick={() => {
-              setSelectedIndexForReward(selectedIndex);
-            }}
+            onClick={() => setSelectedIndexForReward(selectedIndex)}
             className="absolute bg-black w-full left-0 bottom-0 text-white h-[90px] font-bold text-[32px]"
           >
-            Pay $5
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={buttonText}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={
+                  selectedIndexForReward !== -1
+                    ? textVariantsButtonCliked
+                    : textVariants
+                }
+                className="block"
+              >
+                {buttonText}
+              </motion.span>
+            </AnimatePresence>
           </button>
         </div>
       </div>
