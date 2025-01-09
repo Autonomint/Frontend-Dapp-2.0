@@ -8,6 +8,7 @@ import NotificationPopup from "./popups/NotificationPopUp";
 import ReferPopup from "./popups/ReferPopUp";
 import WalletPopup from "./popups/WalletPopUp";
 function Navbar() {
+  
   return (
     <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A]">
       <div className="flex items-center ml-4 gap-4">

@@ -1,9 +1,15 @@
+// "use client";
+import QueryProvider from "@/providers/QueryProvider";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../customComponents/Footer";
 import Navbar from "../customComponents/Navbar";
 import "./globals.css";
 
+const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
+  // ssr: false,
+});
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -21,8 +27,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  cookies,
 }: Readonly<{
   children: React.ReactNode;
+  cookies: string | null;
 }>) {
   return (
     <html lang="en">
@@ -37,12 +45,16 @@ export default function RootLayout({
         className={`h-screen w-screen bg-gray-50 flex justify-center items-center`}
       >
         <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[95%] md:max-w-full md:h-[90vh] md:max-h-[90vh] flex flex-col ">
-          <Navbar />
-          {/* <AppNavbar /> */}
-          <div className="flex-grow overflow-y-auto no-scrollbar">
-            {children}
-          </div>
-          <Footer />
+          <WalletProvider cookies={cookies}>
+            <QueryProvider>
+              <Navbar />
+              {/* <AppNavbar /> */}
+              <div className="flex-grow overflow-y-auto no-scrollbar">
+                {children}
+              </div>
+              <Footer />
+            </QueryProvider>
+          </WalletProvider>
         </div>
       </body>
     </html>

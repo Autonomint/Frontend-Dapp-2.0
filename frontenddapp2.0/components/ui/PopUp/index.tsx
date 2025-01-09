@@ -1,6 +1,6 @@
-import React, { useState, useCallback } from "react";
-import { Typography } from "../Typography";
 import { X } from "lucide-react";
+import React, { useCallback, useState } from "react";
+import { Typography } from "../Typography";
 
 interface PopupProps {
   children?: React.ReactNode;
@@ -8,6 +8,7 @@ interface PopupProps {
   contentClass?: string;
   title?: string;
   popUpWidth?: string;
+  clickActive?: boolean;
 }
 
 const Popup = ({
@@ -16,6 +17,7 @@ const Popup = ({
   contentClass,
   title,
   popUpWidth = "550px",
+  clickActive = true,
 }: PopupProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
