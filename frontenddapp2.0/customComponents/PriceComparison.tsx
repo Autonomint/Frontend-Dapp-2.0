@@ -23,9 +23,8 @@ function PriceComparison({
 
   return (
     <div
-      className="flex flex-col p-6 flex-1 transition-all duration-300 ease-in-out"
+      className="flex flex-col px-6 py-7  flex-1 transition-all duration-300 ease-in-out"
       style={{
-        paddingLeft: orgName === "Autonomint" ? "0" : "20px",
         transition: "background 0.3s ease-in-out",
       }}
       onMouseEnter={(e) => {

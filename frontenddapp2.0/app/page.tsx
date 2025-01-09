@@ -9,30 +9,68 @@ import OptimismImage from "./assets/optimism.png";
 import arrow from "./assets/arrow-right-02.png";
 import PriceComparison from "../customComponents/PriceComparison";
 import { useRouter } from "next/navigation";
-
+import LTV from "./assets/LTV-range-image.svg";
+import {
+  DotIcon,
+  LeftArrowIcon,
+  RightArrowIcon,
+} from "@/components/ui/SvgIcons";
+import { Typography } from "@/components/ui/Typography";
+import infinityImage from "./assets/infinity.svg";
 function TransferBetweeHoverElement() {
+  const router = useRouter();
   return (
-    <div className="flex  border-[1px] border-top border-grayLight flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
       <div className=" text-textBlack text-[38px] font-medium">
         Transfer Between
       </div>
-      <div className="flex">
-        <div className="flex flex-col">
-          <Image src={ModeImage} alt="Price Graph" className="w-full" />
-          <div className=" text-grayLight text-[32px] font-normal">Mode</div>
-        </div>
-        <div className="flex flex-col">
-          <Image src={OptimismImage} alt="Price Graph" className="w-full" />
-          <div className=" text-grayLight text-[32px] font-normal">
-            Optimism
+      <div className="flex justify-between items-end">
+        <div className="flex gap-3">
+          <div className="flex flex-col">
+            <Image
+              width={130}
+              height={130}
+              src={ModeImage}
+              alt="Price Graph"
+              className=""
+            />
+            <div className=" text-grayLight text-center text-[32px] font-light">
+              Mode
+            </div>
           </div>
+          <div className="flex items-center pb-9  justify-center gap-3">
+            <RightArrowIcon />
+            <DotIcon />
+            <LeftArrowIcon />
+          </div>
+          <div className="flex flex-col">
+            <Image
+              width={130}
+              height={130}
+              src={OptimismImage}
+              alt="Price Graph"
+            />
+            <div className=" text-center text-grayLight text-[32px] font-light">
+              Optimism
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2 items-center">
+          <Image className="mb-3" src={infinityImage} alt="alt" />
+          <Typography
+            variant="regular"
+            size="subtitle"
+            className="text-center mb-3  text-grayLight  font-light "
+          >
+            Layer Zero Integration
+          </Typography>
         </div>
       </div>
       <Button
         onClick={() => {
-          //router.push("/mintusdalist");
+          router.push("/mintusdalist");
         }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[70px] hover:bg-textBlack"
+        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack"
       >
         Bridge
         <Image src={arrow} width={42} height={42} alt="arrow" />
@@ -42,8 +80,9 @@ function TransferBetweeHoverElement() {
 }
 
 function DCDSHoverElement() {
+  const router = useRouter();
   return (
-    <div className="flex flex-col border-x border-y border-[1px]  border-grayLight animateDCDS justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div className="flex flex-col border-x border-y border-[1px]  border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
       <div className=" text-textBlack text-[38px] font-medium">
         $1,000 Invested would have become $3,000
       </div>
@@ -53,9 +92,9 @@ function DCDSHoverElement() {
       </div>
       <Button
         onClick={() => {
-          //router.push("/mintusdalist");
+          router.push("/mintusdalist");
         }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[70px] hover:bg-textBlack"
+        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack"
       >
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
@@ -65,10 +104,14 @@ function DCDSHoverElement() {
 }
 
 function MintUSDAHoverElement() {
+  const router = useRouter();
   return (
-    <div className="flex flex-col animateMint border-x border-y border-[1px]  border-grayLight justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-6 relative">
       <div className=" tetx-textBlack text-[38px] font-medium">
         100% Synthetic LTV
+      </div>
+      <div>
+        <Image src={LTV} alt="tvl" style={{ width: "100%" }} />
       </div>
       <div className="flex justify-between">
         <span className=" font-medium text-lg text-grayLight">
@@ -78,7 +121,7 @@ function MintUSDAHoverElement() {
           20% Downside Protection
         </span>
       </div>
-      <div className="text-[32px] text-textBlack font-medium mb-10">
+      <div className="text-[32px] text-textBlack font-medium ">
         Fee Comparison
       </div>
       <div className="flex mb-20">
@@ -118,9 +161,9 @@ function MintUSDAHoverElement() {
       </div>
       <Button
         onClick={() => {
-          //router.push("/mintusdalist");
+          router.push("/mintusdalist");
         }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[70px] hover:bg-textBlack"
+        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack"
       >
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
@@ -185,10 +228,15 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <div className="w-full md:block">
-        <Image src={boat} alt="crypto-eth" className="w-full object-cover" />
+      <div className="w-full h-[300px] md:block border-[1px] border-x border-grayLight">
+        <Image
+          src={boat}
+          alt="crypto-eth"
+          className="w-full h-full object-cover"
+        />
       </div>
       <div className="border-[1px] overflow-hidden  border-t-grayLight">
+        {/* 1st row */}
         <div className={`flex closeAnimateTop  `}>
           <div
             className={`relative  closeAnimateMint bg-white cursor-pointer  ${
@@ -197,7 +245,7 @@ export default function Home() {
                 : hoveredIndex === 1
                 ? "w-[40%] !h-[550px]"
                 : "w-[50%]"
-            } h-[300px] ${
+            } h-[400px] ${
               hoveredIndex === null || hoveredIndex === 2
                 ? " border-x border-y-0 border-[1px]  border-grayLight"
                 : " border-b-0 border-r-0 border-[1px]  border-grayLight border-y-0"
@@ -223,7 +271,9 @@ export default function Home() {
                     {items[0].title}
                   </h3>
                   {items[0].subtitle && (
-                    <p className="text-gray-600">{items[0].subtitle}</p>
+                    <p className="text-[32px] text-gray-600">
+                      {items[0].subtitle}
+                    </p>
                   )}
                 </div>
               )}
@@ -236,9 +286,9 @@ export default function Home() {
                 : hoveredIndex === 0
                 ? "w-[30%] !h-[550px]"
                 : "w-[50%]"
-            } h-[300px] ${
+            } h-[400px] ${
               hoveredIndex === null
-                ? "border-x border-y-0 border-[1px]  border-grayLight"
+                ? "border-x border-y-0  border-[1px]  border-grayLight"
                 : ""
             }`}
             onMouseEnter={() => {
@@ -264,7 +314,9 @@ export default function Home() {
                     {items[1].title}
                   </h3>
                   {items[1].subtitle && (
-                    <p className="text-gray-600">{items[1].subtitle}</p>
+                    <p className="text-gray-600 text-[32px]">
+                      {items[1].subtitle}
+                    </p>
                   )}
                 </div>
               )}
@@ -272,16 +324,17 @@ export default function Home() {
           </div>{" "}
         </div>
 
+        {/* 2nd row */}
         <div
           className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight  border-t-grayLight border-[1px] `}
         >
           <div
             className={`relative bg-white cursor-pointer  ${
               hoveredIndex === 2 ? " !h-[450px]" : ""
-            } h-[300px] w-[80%] ${
+            } h-[400px] w-[80%] ${
               hoveredIndex === null
                 ? "border-x border-y border-[1px]  border-grayLight"
-                : " border-b-[1px] border-l-0 border-[1px]  border-grayLight"
+                : " border-b-[1px] border-l  border-[1px]  border-grayLight"
             }`}
             onMouseEnter={() => {
               setHoveredIndex(2);
@@ -309,7 +362,9 @@ export default function Home() {
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
-                    <p className="text-gray-600">{items[2].subtitle}</p>
+                    <p className="text-gray-600 text-[32px]">
+                      {items[2].subtitle}
+                    </p>
                   )}
                 </div>
               )}
@@ -318,7 +373,7 @@ export default function Home() {
           <div
             className={`relative bg-white cursor-pointer  ${
               hoveredIndex === 2 ? " !h-[450px]" : hoveredIndex === 1 ? "" : ""
-            } h-[300px] w-[20%] ${
+            } h-[400px] w-[20%] ${
               hoveredIndex === null
                 ? "border-x border-y border-[1px]  border-grayLight"
                 : ""
@@ -333,11 +388,47 @@ export default function Home() {
                   {items[3].title}
                 </h3>
                 {items[3].subtitle && (
-                  <p className="text-gray-600">{items[3].subtitle}</p>
+                  <p className="text-gray-600 text-[32px]">
+                    {items[3].subtitle}
+                  </p>
                 )}
               </>
             </div>
           </div>{" "}
+        </div>
+
+        {/* 3rd row */}
+        <div>
+          <div
+            className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
+          >
+            <div
+              className={`relative bg-white cursor-pointer   h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight `}
+              style={{
+                transition: "width 0.3s ease-in, height 0.3s ease-in",
+              }}
+            >
+              <div className={"p-4 h-full flex flex-col justify-center"}>
+                <h3 className="font-medium text-[42px]  mb-2">
+                  {items[4].title}
+                </h3>
+              </div>
+            </div>{" "}
+            <div
+              className={`relative bg-white cursor-pointer   h-[118px] w-[50%] 
+                 border-t border-l-0 border-x border-y border-[1px]  border-grayLight
+                `}
+              style={{
+                transition: "width 0.3s ease-in, height 0.3s ease-in",
+              }}
+            >
+              <div className={"p-4 h-full flex flex-col justify-center"}>
+                <h3 className="font-medium text-[42px]  mb-2">
+                  {items[5].title}
+                </h3>
+              </div>
+            </div>{" "}
+          </div>
         </div>
       </div>
     </div>

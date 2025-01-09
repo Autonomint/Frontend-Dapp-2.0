@@ -6,6 +6,7 @@ import cryptoEth from "../assets/eth.png";
 import { Button } from "@/components/ui/button";
 import arrow from "../assets/arrow-right-02.png";
 import { useRouter } from "next/navigation";
+import AppNavbar from "@/customComponents/AppNavbar";
 
 type Metric = {
   label: string;
@@ -132,15 +133,18 @@ function MintUSDaList() {
   ];
 
   return (
-    <div className="md:relative">
-      <div className="flex flex-col gap-0 lg:max-w-[90%]">
-        {list.map((item, index) => (
-          <SingleListItem key={index} item={item} indexVal={index} />
-        ))}
-      </div>
-      <div className="absolute right-0 top-0 border border-solid h-full lg:max-w-[10%] hidden lg:flex items-center justify-center">
-        <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center">
-          Farm Your Luck
+    <div>
+      <AppNavbar />
+      <div className="md:relative">
+        <div className="flex flex-col gap-0 lg:max-w-[90%]">
+          {list.map((item, index) => (
+            <SingleListItem key={index} item={item} indexVal={index} />
+          ))}
+        </div>
+        <div className="absolute right-0 top-0 border border-solid h-full lg:max-w-[10%] hidden lg:flex items-center justify-center">
+          <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center">
+            Farm Your Luck
+          </div>
         </div>
       </div>
     </div>

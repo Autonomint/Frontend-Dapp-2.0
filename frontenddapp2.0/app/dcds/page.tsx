@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
+import AppNavbar from "@/customComponents/AppNavbar";
 
 function TokenTvlDetails() {
   return (
@@ -129,6 +130,7 @@ function page() {
   ];
   return (
     <div>
+      <AppNavbar />
       <div className="grid lg:grid-cols-4 grid-cols-1">
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-solid">
           {tokenList.map((token) => {
