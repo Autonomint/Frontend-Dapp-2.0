@@ -133,9 +133,10 @@ function page() {
       <AppNavbar />
       <div className="grid lg:grid-cols-4 grid-cols-1">
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-solid">
-          {tokenList.map((token) => {
+          {tokenList.map((token , key) => {
             return (
               <AddToken
+                key={key}
                 tokenImage={token.tokenImage}
                 tokenName={token.tokenName}
               />

@@ -147,9 +147,10 @@ function MintUSDAHoverElement() {
             tagColor: "#FEE2E2",
             textColor: "#AA0001",
           },
-        ].map((feeCom) => {
+        ].map((feeCom, idx) => {
           return (
             <PriceComparison
+              key={idx}
               orgName={feeCom.orgName}
               tag={feeCom.tag}
               amount={feeCom.amount}
