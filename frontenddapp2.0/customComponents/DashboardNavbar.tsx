@@ -5,34 +5,25 @@ import Image from "next/image";
 import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 
-function AppNavbar() {
+function DashboardNavbar() {
   const pathname = usePathname();
   const router = useRouter();
-
+  console.log(pathname, "pathname");
   const navList = [
     {
-      nameA: "Mint USDa",
-      path: "/mintusdalist",
-      isActive:
-        pathname === "/mintusdalist" || pathname === "/mintUSDaWithCollateral",
-    },
-    {
-      nameA: "dCDS",
-      path: "/dcds",
-      isActive: pathname === "/dcds",
-    },
-    {
-      nameA: "Bridge",
-      path: "/bridge",
-      isActive: pathname === "/bridge",
-    },
-    {
-      nameA: "Dashboard",
+      nameA: "Portfolio",
       path: "/dashboard/portfolio",
-      isActive:
-        pathname === "/dashboard/leaderboard" ||
-        pathname === "/dashboard/portfolio" ||
-        pathname === "/dashboard/stats",
+      isActive: pathname === "/dashboard/portfolio",
+    },
+    {
+      nameA: "Leaderboard",
+      path: "/dashboard/leaderboard",
+      isActive: pathname === "/dashboard/leaderboard",
+    },
+    {
+      nameA: "Stats",
+      path: "/dashboard/stats",
+      isActive: pathname === "/dashboard/stats",
     },
   ];
 
@@ -40,21 +31,12 @@ function AppNavbar() {
 
   return (
     <div className="flex">
-      <Button
-        onClick={() => {
-          router.push("/");
-        }}
-        className="bg-black h-full px-8 py-3 hover:bg-black"
-      >
-        <Image src={arrowLeft} width={42} height={42} alt="arrow" />
-      </Button>
-
-      <div className="hidden md:flex w-full border-b border-grayLight">
+      <div className="hidden md:flex w-full border border-grayLight border-r-0 border-l-0 my-6">
         {navList.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
             className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
-              isActive ? "bg-[#ABFFDE]" : ""
+              isActive ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]" : ""
             }`}
             onClick={() => router.push(path)}
           >
@@ -73,4 +55,4 @@ function AppNavbar() {
   );
 }
 
-export default AppNavbar;
+export default DashboardNavbar;

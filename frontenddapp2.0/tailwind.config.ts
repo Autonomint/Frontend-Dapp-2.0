@@ -10,6 +10,16 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        spring: {
+          "0%": { transform: "scale(0.9)" },
+          "50%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1)" },
+        },
+      },
+      animation: {
+        spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+      },
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],
         "plex-grotesk": ["Space Grotesk", "sans-serif"],
