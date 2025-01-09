@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 import CustomDropdown from "../../customComponents/CustomDropdown";
+import AppNavbar from "@/customComponents/AppNavbar";
 
 function BridgeComponent({
   heading,
@@ -65,31 +66,34 @@ function BridgeMetricFields({
 
 function page() {
   return (
-    <div className="grid md:grid-cols-2 md:grid-rows-[90%_10%] h-full">
-      <BridgeComponent
-        heading={"From"}
-        network={"Sepolia"}
-        token={"USDa"}
-        totalAmount={"$1,202"}
-      />
-      <BridgeComponent
-        heading={"To"}
-        network={"Base"}
-        token={"USDC"}
-        totalAmount={"$1,200"}
-      />
-      <div className="col-span-1 flex flex-wrap justify-between py-5 px-8 border border-solid rounded-md h-full">
-        <BridgeMetricFields
-          label={"Amount to receive"}
-          value={"160 Hug × 23 Hug"}
+    <div>
+      <AppNavbar />
+      <div className="grid md:grid-cols-2 md:grid-rows-[90%_10%] h-full">
+        <BridgeComponent
+          heading={"From"}
+          network={"Sepolia"}
+          token={"USDa"}
+          totalAmount={"$1,202"}
         />
-        <BridgeMetricFields label={"Gas"} value={"$1.80 (0.001 ETH)"} />
-        <BridgeMetricFields label={"Time"} value={"~2min"} />
-      </div>
-      <div className="col-span-1">
-        <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md">
-          Bridge
-        </Button>
+        <BridgeComponent
+          heading={"To"}
+          network={"Base"}
+          token={"USDC"}
+          totalAmount={"$1,200"}
+        />
+        <div className="col-span-1 flex flex-wrap justify-between py-5 px-8 border border-solid rounded-md h-full">
+          <BridgeMetricFields
+            label={"Amount to receive"}
+            value={"160 Hug × 23 Hug"}
+          />
+          <BridgeMetricFields label={"Gas"} value={"$1.80 (0.001 ETH)"} />
+          <BridgeMetricFields label={"Time"} value={"~2min"} />
+        </div>
+        <div className="col-span-1">
+          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md">
+            Bridge
+          </Button>
+        </div>
       </div>
     </div>
   );
