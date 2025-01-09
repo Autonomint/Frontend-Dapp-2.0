@@ -13,7 +13,7 @@ export default function Footer() {
   const [openFaq, setOpenFaq] = React.useState(false);
   const [openGetstart, setOpenGetstart] = React.useState(false);
   return (
-    <div className=" h-[180px] py-7 mt-[-2px] flex items-center border-[1] border-x border-y border-grayLight border-solid">
+    <div className=" h-[180px] py-7 mt-[1px] flex items-center border-[1] border-x border-y border-grayLight border-solid">
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">
         <div className="flex w-full justify-center  text-sm rounded-md">
           <div className="flex w-full justify-between  ">
