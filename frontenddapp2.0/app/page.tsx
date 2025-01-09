@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 function TransferBetweeHoverElement() {
   return (
-    <div className="flex animateTransfer flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div className="flex  border-[1px] border-top border-grayLight flex-col justify-between h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
       <div className=" text-textBlack text-[38px] font-medium">
         Transfer Between
       </div>
@@ -48,7 +48,7 @@ function DCDSHoverElement() {
         $1,000 Invested would have become $3,000
       </div>
       <Image src={PriceGraph} alt="Price Graph" className="w-full" />
-      <div className=" text-textBlack text-[38px] font-medium">
+      <div className=" text-textBlack text-[38px] pb-12 font-medium">
         Get up to 200% APY
       </div>
       <Button
@@ -188,19 +188,19 @@ export default function Home() {
       <div className="w-full md:block">
         <Image src={boat} alt="crypto-eth" className="w-full object-cover" />
       </div>
-      <div className="border-[1px]  border-t-grayLight">
+      <div className="border-[1px] overflow-hidden  border-t-grayLight">
         <div className={`flex closeAnimateTop  `}>
           <div
             className={`relative  closeAnimateMint bg-white cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-[80%] !h-[450px]"
+                ? "w-[80%] !h-[550px]"
                 : hoveredIndex === 1
-                ? "w-[40%] !h-[450px]"
+                ? "w-[40%] !h-[550px]"
                 : "w-[50%]"
             } h-[300px] ${
               hoveredIndex === null || hoveredIndex === 2
-                ? " border-x border-y border-[1px]  border-grayLight"
-                : " border-b-[1px] border-r-0 border-[1px]  border-grayLight"
+                ? " border-x border-y-0 border-[1px]  border-grayLight"
+                : " border-b-0 border-r-0 border-[1px]  border-grayLight border-y-0"
             }`}
             onMouseEnter={() => {
               setHoveredIndex(0);
@@ -216,12 +216,10 @@ export default function Home() {
           >
             <div className={" h-full flex flex-col justify-between"}>
               {hoveredIndex === 0 ? (
-                //{renderHoverElementBasedonIndex(index)}
-
                 <MintUSDAHoverElement />
               ) : (
-                <div className="p-4">
-                  <h3 className="font-medium text-[42px]  mb-2">
+                <div className="h-full flex flex-col justify-between items-start  p-4">
+                  <h3 className="font-medium  text-[42px]  mb-2">
                     {items[0].title}
                   </h3>
                   {items[0].subtitle && (
@@ -234,13 +232,13 @@ export default function Home() {
           <div
             className={`relative closeAnimateDCDS  bg-white cursor-pointer  ${
               hoveredIndex === 1
-                ? "w-[60%]  !h-[450px]"
+                ? "w-[60%]  !h-[550px]"
                 : hoveredIndex === 0
-                ? "w-[30%] !h-[450px]"
+                ? "w-[30%] !h-[550px]"
                 : "w-[50%]"
             } h-[300px] ${
               hoveredIndex === null
-                ? "border-x border-y border-[1px]  border-grayLight"
+                ? "border-x border-y-0 border-[1px]  border-grayLight"
                 : ""
             }`}
             onMouseEnter={() => {
@@ -275,7 +273,7 @@ export default function Home() {
         </div>
 
         <div
-          className={`flex closeAnimateButtom w-full border-b-grayLight  border-t-grayLight border-[1px] `}
+          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight  border-t-grayLight border-[1px] `}
         >
           <div
             className={`relative bg-white cursor-pointer  ${
@@ -325,14 +323,6 @@ export default function Home() {
                 ? "border-x border-y border-[1px]  border-grayLight"
                 : ""
             }`}
-            // onMouseEnter={() => {
-            //   setHoveredIndex(3);
-            //   setCurrentIndex(2);
-            // }}
-            // onMouseLeave={() => {
-            //   setHoveredIndex(null);
-            //   setCurrentIndex(null);
-            // }}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",
             }}
