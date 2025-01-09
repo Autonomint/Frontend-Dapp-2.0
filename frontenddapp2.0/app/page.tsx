@@ -124,28 +124,34 @@ function MintUSDAHoverElement() {
       <div className="text-[32px] text-textBlack font-medium ">
         Fee Comparison
       </div>
-      <div className="flex mb-20">
+      <div className="flex gap-8 ml-6 mb-20">
         {[
           {
             orgName: "Autonomint",
             amount: "$0.02",
             tag: "Lowest Fee",
-            tagColor: "#06C160",
+            tagColor: "#05A552",
+            tagBg: "#05A552",
             textColor: "white",
+            borderColor: "borderGreen",
           },
           {
             orgName: "Athermint",
             amount: "$0.02",
             tag: "Lowest Fee",
-            tagColor: "#FFF7E0",
+            tagColor: "#D6A100",
+            tagBg: "#FFF7E0",
             textColor: "#D6A100",
+            borderColor: "borderYellow",
           },
           {
             orgName: "AthermintXYZ",
             amount: "$0.02",
             tag: "Lowest Fee",
-            tagColor: "#FEE2E2",
+            tagColor: "#AA0001",
+            tagBg: "#FEE2E2",
             textColor: "#AA0001",
+            borderColor: "borderRed",
           },
         ].map((feeCom) => {
           return (
@@ -155,6 +161,8 @@ function MintUSDAHoverElement() {
               amount={feeCom.amount}
               tagColor={feeCom.tagColor}
               textColor={feeCom.textColor}
+              tagBg={feeCom.tagBg}
+              borderColor={feeCom.borderColor}
             />
           );
         })}

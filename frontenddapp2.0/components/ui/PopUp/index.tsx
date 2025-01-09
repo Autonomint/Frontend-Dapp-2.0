@@ -31,7 +31,10 @@ const Popup = ({
         </div>
         {isOpen && (
           <>
-            <div className="fixed inset-0 bg-black/50" onClick={togglePopup} />
+            <div
+              className="fixed z-10 inset-0 bg-black/50"
+              onClick={togglePopup}
+            />
             <div
               style={{ width: popUpWidth }}
               className={` absolute z-20 top-[44px] right-[-12px] p-8 bg-white border-[1px] border-solid border-[#7A7A7A] rounded-md shadow-md ${contentClass}`}
@@ -40,7 +43,7 @@ const Popup = ({
                 <Typography size="subtitle" variant="regular">
                   {title || "Popup Title"}
                 </Typography>
-                <span onClick={togglePopup}>
+                <span className="cursor-pointer" onClick={togglePopup}>
                   <X />
                 </span>
               </div>

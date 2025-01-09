@@ -161,3 +161,26 @@ body {
 .animatingButtonOpen {
   animation: bounceButtonOpen 1s;
 }
+
+.priceCardBorderLeft::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -25px;
+  width: 10px;
+  height: 144px;
+  margin-left: 10px;
+  border-radius: 10px;
+
+  z-index: 0;
+}
+
+.borderGreen::before {
+  background: #05a552;
+}
+.borderYellow::before {
+  background: #d6a100;
+}
+.borderRed::before {
+  background: #fee2e2;
+}

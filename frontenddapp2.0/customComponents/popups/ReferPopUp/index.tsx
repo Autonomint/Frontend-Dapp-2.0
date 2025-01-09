@@ -19,9 +19,12 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
       content={
         <Button
           variant={"shadowOutline"}
-          className="border-[#041A50] h-fit p-[10px]"
+          className="border-[#041A50] cursor-pointer  h-fit p-[10px] flex gap-2 bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
         >
-          <Gift style={{ width: "24px", height: "24px" }} />
+          <Gift style={{ width: "24px", height: "24px" }} />{" "}
+          <Typography size="body" className="">
+            Referral
+          </Typography>
         </Button>
       }
       contentClass="!left-[unset] right-[0px] top-[50px]"
