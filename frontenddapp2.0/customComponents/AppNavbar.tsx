@@ -44,7 +44,7 @@ function AppNavbar() {
         onClick={() => {
           router.push("/");
         }}
-        className="bg-black h-full px-8 py-3 hover:bg-black"
+        className="bg-black h-full px-8 py-[18px] hover:bg-black"
       >
         <Image src={arrowLeft} width={42} height={42} alt="arrow" />
       </Button>
