@@ -290,7 +290,7 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>{" "}
+          </div>
           <div
             className={`relative closeAnimateDCDS  bg-white cursor-pointer  ${
               hoveredIndex === 1
@@ -301,6 +301,8 @@ export default function Home() {
             } h-[400px] ${
               hoveredIndex === null
                 ? "border-x border-y-0  border-[1px]  border-grayLight"
+                : hoveredIndex === 3
+                ? " border-x border-y-0 border-[1px]  border-grayLight"
                 : ""
             }`}
             onMouseEnter={() => {
@@ -401,7 +403,7 @@ export default function Home() {
             }}
             onMouseEnter={() => {
               setHoveredIndex(3);
-              setCurrentIndex(3);
+              setCurrentIndex(2);
             }}
             onMouseLeave={() => {
               setHoveredIndex(null);
