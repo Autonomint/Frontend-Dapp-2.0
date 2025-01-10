@@ -4,39 +4,52 @@ import React from "react";
 import Image from "next/image";
 import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
+interface AppNavbarProps {
+  tabOptions?: TabOption[];
+}
 
-function AppNavbar() {
+interface TabOption {
+  nameA: string;
+  path: string;
+  isActive: boolean;
+}
+const AppNavbar: React.FC<AppNavbarProps> = ({ tabOptions = [] }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const navList = [
-    {
-      nameA: "Mint USDa",
-      path: "/mintusdalist",
-      isActive:
-        pathname === "/mintusdalist" || pathname === "/mintUSDaWithCollateral",
-    },
-    {
-      nameA: "dCDS",
-      path: "/dcds",
-      isActive: pathname === "/dcds",
-    },
-    {
-      nameA: "Bridge",
-      path: "/bridge",
-      isActive: pathname === "/bridge",
-    },
-    {
-      nameA: "Dashboard",
-      path: "/dashboard/portfolio",
-      isActive:
-        pathname === "/dashboard/leaderboard" ||
-        pathname === "/dashboard/portfolio" ||
-        pathname === "/dashboard/stats",
-    },
-  ];
+  const navList =
+    tabOptions?.length === 0
+      ? [
+          {
+            nameA: "Mint USDa",
+            path: "/mintusdalist",
+            isActive:
+              pathname === "/mintusdalist" ||
+              pathname === "/mintUSDaWithCollateral",
+          },
+          {
+            nameA: "dCDS",
+            path: "/dcds",
+            isActive: pathname === "/dcds",
+          },
+          {
+            nameA: "Bridge",
+            path: "/bridge",
+            isActive: pathname === "/bridge",
+          },
+          {
+            nameA: "Dashboard",
+            path: "/dashboard/portfolio",
+            isActive:
+              pathname === "/dashboard/leaderboard" ||
+              pathname === "/dashboard/portfolio" ||
+              pathname === "/dashboard/stats",
+          },
+        ]
+      : tabOptions;
 
-  const activeTab = navList.find((nav) => nav.isActive);
+  const activeTab = navList?.find((nav) => nav.isActive);
+  console.log(navList, "navList");
 
   return (
     <div className="flex">
@@ -50,7 +63,7 @@ function AppNavbar() {
       </Button>
 
       <div className="hidden md:flex w-full border-b border-grayLight">
-        {navList.map(({ nameA, path, isActive }) => (
+        {navList?.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
             className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
@@ -71,6 +84,6 @@ function AppNavbar() {
       </div>
     </div>
   );
-}
+};
 
 export default AppNavbar;

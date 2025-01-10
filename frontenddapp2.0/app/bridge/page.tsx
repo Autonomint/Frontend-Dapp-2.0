@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import CustomDropdown from "../../customComponents/CustomDropdown";
 import AppNavbar from "@/customComponents/AppNavbar";
+import { usePathname } from "next/navigation";
 
 function BridgeComponent({
   heading,
@@ -65,9 +66,12 @@ function BridgeMetricFields({
 }
 
 function page() {
+
+ 
+
   return (
     <div className="h-[85%]">
-      <AppNavbar />
+      <AppNavbar  />
       <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%] h-fit">
         <BridgeComponent
           heading={"From"}

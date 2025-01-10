@@ -22,7 +22,7 @@ function TransferBetweeHoverElement() {
   return (
     <div
       onClick={() => {
-        router.push("/mintusdalist");
+        router.push("/bridge");
       }}
       className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
     >
@@ -84,7 +84,7 @@ function DCDSHoverElement() {
   return (
     <div
       onClick={() => {
-        router.push("/mintusdalist");
+        router.push("/dcds");
       }}
       className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
     >
@@ -387,6 +387,9 @@ export default function Home() {
             </div>
           </div>
           <div
+            onClick={() => {
+              router.push("/farmyourluck");
+            }}
             className={`relative bg-white cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
               hoveredIndex === 2
                 ? " !h-[450px]"
