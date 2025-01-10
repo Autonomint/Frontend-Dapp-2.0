@@ -20,7 +20,12 @@ import infinityImage from "./assets/infinity.svg";
 function TransferBetweeHoverElement() {
   const router = useRouter();
   return (
-    <div className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div
+      onClick={() => {
+        router.push("/mintusdalist");
+      }}
+      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+    >
       <div className=" text-textBlack text-[38px] font-medium">
         Transfer Between
       </div>
@@ -66,12 +71,7 @@ function TransferBetweeHoverElement() {
           </Typography>
         </div>
       </div>
-      <Button
-        onClick={() => {
-          router.push("/mintusdalist");
-        }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack"
-      >
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack">
         Bridge
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -82,7 +82,12 @@ function TransferBetweeHoverElement() {
 function DCDSHoverElement() {
   const router = useRouter();
   return (
-    <div className="flex flex-col border-x border-y border-[1px]  border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative">
+    <div
+      onClick={() => {
+        router.push("/mintusdalist");
+      }}
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+    >
       <div className=" text-textBlack text-[38px] font-medium">
         $1,000 Invested would have become $3,000
       </div>
@@ -90,12 +95,7 @@ function DCDSHoverElement() {
       <div className=" text-textBlack text-[38px] pb-12 font-medium">
         Get up to 200% APY
       </div>
-      <Button
-        onClick={() => {
-          router.push("/mintusdalist");
-        }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack"
-      >
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -106,7 +106,12 @@ function DCDSHoverElement() {
 function MintUSDAHoverElement() {
   const router = useRouter();
   return (
-    <div className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-6 relative">
+    <div
+      onClick={() => {
+        router.push("/mintusdalist");
+      }}
+      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-6 relative"
+    >
       <div className=" tetx-textBlack text-[38px] font-medium">
         100% Synthetic LTV
       </div>
@@ -167,12 +172,7 @@ function MintUSDAHoverElement() {
           );
         })}
       </div>
-      <Button
-        onClick={() => {
-          router.push("/mintusdalist");
-        }}
-        className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack"
-      >
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack">
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -421,6 +421,12 @@ export default function Home() {
                   </p>
                 )}
               </>
+              {hoveredIndex === 3 && (
+                <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack">
+                  Reward
+                  <Image src={arrow} width={42} height={42} alt="arrow" />
+                </Button>
+              )}
             </div>
           </div>{" "}
         </div>

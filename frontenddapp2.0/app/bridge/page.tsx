@@ -66,9 +66,9 @@ function BridgeMetricFields({
 
 function page() {
   return (
-    <div>
+    <div className="h-[85%]">
       <AppNavbar />
-      <div className="grid md:grid-cols-2 md:grid-rows-[90%_10%] h-full">
+      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%] h-fit">
         <BridgeComponent
           heading={"From"}
           network={"Sepolia"}

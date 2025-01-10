@@ -1,3 +1,4 @@
+import AppNavbar from "@/customComponents/AppNavbar";
 import DashboardNavbar from "@/customComponents/DashboardNavbar";
 
 export default function DashboardLayout({
@@ -7,6 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <section>
+      <AppNavbar />
       <DashboardNavbar />
       {children}
     </section>

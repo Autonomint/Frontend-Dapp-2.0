@@ -31,46 +31,54 @@ function PortolioTable({
           </tr>
         </thead>
         <tbody className="font-normal ">
-          <tr className="border border-solid">
-            <td className="px-5 py-6">02</td>
-            <td className="px-5 py-6">1.789</td>
-            <td className="px-5 py-6 hidden md:table-cell">$5,093</td>
-            <td className="px-5 py-6 hidden md:table-cell">$3,000</td>
-            <td className="px-5 py-6 hidden md:table-cell">--</td>
-            <td className="px-5 py-6 hidden md:table-cell">YES</td>
-            <td
-              className={`px-5 py-6 ${
-                tabPosition === "Borrowed" ? "block" : "none"
-              } md:text-right md:table-cell md:space-x-12`}
-              style={{
-                display: tabPosition === "Borrowed" ? "block" : "none",
-              }}
-            >
-              <span className="font-bold text-[20px] underline ">
-                Repay/Renew
-              </span>
-              <span className="font-bold text-[20px] underline  hidden md:inline">
-                View
-              </span>
-            </td>
+          {Array(2)
+            .fill(0)
+            .map(() => {
+              return (
+                <tr className="border border-solid">
+                  <td className="px-5 py-6">02</td>
+                  <td className="px-5 py-6">1.789</td>
+                  <td className="px-5 py-6 hidden md:table-cell">$5,093</td>
+                  <td className="px-5 py-6 hidden md:table-cell">$3,000</td>
+                  <td className="px-5 py-6 hidden md:table-cell">--</td>
+                  <td className="px-5 py-6 hidden md:table-cell">YES</td>
+                  <td
+                    className={`px-5 py-6 ${
+                      tabPosition === "Borrowed" ? "block" : "none"
+                    } md:text-right md:table-cell md:space-x-12`}
+                    style={{
+                      display: tabPosition === "Borrowed" ? "block" : "none",
+                    }}
+                  >
+                    <span className="font-bold text-[20px] underline ">
+                      Repay/Renew
+                    </span>
+                    <span className="font-bold text-[20px] underline  hidden md:inline">
+                      View
+                    </span>
+                  </td>
 
-            <td
-              className={`px-5 py-6 ${
-                tabPosition === "Deposited" ? "block" : "none"
-              } md:text-right md:table-cell md:space-x-12`}
-              style={{
-                display: tabPosition === "Deposited" ? "block" : "none",
-              }}
-            >
-              <span className="font-bold text-[20px] underline ">Withdraw</span>
-              <span className="font-bold text-[20px] underline  ">
-                Rebalance
-              </span>
-              <span className="font-bold text-[20px] underline  hidden md:inline">
-                View
-              </span>
-            </td>
-          </tr>
+                  <td
+                    className={`px-5 py-6 ${
+                      tabPosition === "Deposited" ? "block" : "none"
+                    } md:text-right md:table-cell md:space-x-12`}
+                    style={{
+                      display: tabPosition === "Deposited" ? "block" : "none",
+                    }}
+                  >
+                    <span className="font-bold text-[20px] underline ">
+                      Withdraw
+                    </span>
+                    <span className="font-bold text-[20px] underline  ">
+                      Rebalance
+                    </span>
+                    <span className="font-bold text-[20px] underline  hidden md:inline">
+                      View
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </div>
