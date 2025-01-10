@@ -232,6 +232,10 @@ export default function Home() {
       animateTransfer?.classList.add("animatingButtonOpen");
       closeAnimateTop?.classList.add("animatingTopClose");
     }
+    if (hoveredIndex === 3) {
+      animateTransfer?.classList.add("animatingButtonOpen");
+      closeAnimateTop?.classList.add("animatingTopClose");
+    }
   }, [hoveredIndex]);
 
   return (
@@ -313,8 +317,6 @@ export default function Home() {
           >
             <div className={" h-full flex flex-col justify-between"}>
               {hoveredIndex === 1 ? (
-                //{renderHoverElementBasedonIndex(index)}
-
                 <DCDSHoverElement />
               ) : (
                 <div className={"p-4 h-full flex flex-col justify-between"}>
@@ -334,11 +336,15 @@ export default function Home() {
 
         {/* 2nd row */}
         <div
-          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight  border-t-grayLight border-[1px] `}
+          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight   border-t-grayLight border-[1px] `}
         >
           <div
             className={`relative bg-white cursor-pointer  ${
-              hoveredIndex === 2 ? " !h-[450px]" : ""
+              hoveredIndex === 2
+                ? " !h-[450px]"
+                : hoveredIndex === 3
+                ? "!h-[450px]"
+                : ""
             } h-[400px] w-[80%] ${
               hoveredIndex === null
                 ? "border-x border-y border-[1px]  border-grayLight"
@@ -377,10 +383,14 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>{" "}
+          </div>
           <div
-            className={`relative bg-white cursor-pointer  ${
-              hoveredIndex === 2 ? " !h-[450px]" : hoveredIndex === 1 ? "" : ""
+            className={`relative bg-white cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
+              hoveredIndex === 2
+                ? " !h-[450px]"
+                : hoveredIndex === 3
+                ? "!h-[450px]"
+                : ""
             } h-[400px] w-[20%] ${
               hoveredIndex === null
                 ? "border-x border-y border-[1px]  border-grayLight"
@@ -388,6 +398,14 @@ export default function Home() {
             }`}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",
+            }}
+            onMouseEnter={() => {
+              setHoveredIndex(3);
+              setCurrentIndex(3);
+            }}
+            onMouseLeave={() => {
+              setHoveredIndex(null);
+              setCurrentIndex(null);
             }}
           >
             <div className={"p-4 h-full flex flex-col justify-between"}>
