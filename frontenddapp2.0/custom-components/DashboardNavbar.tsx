@@ -8,7 +8,6 @@ import { usePathname, useRouter } from "next/navigation";
 function DashboardNavbar() {
   const pathname = usePathname();
   const router = useRouter();
-  console.log(pathname, "pathname");
   const navList = [
     {
       nameA: "Portfolio",

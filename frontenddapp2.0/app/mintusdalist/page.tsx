@@ -6,7 +6,7 @@ import cryptoEth from "../assets/eth.png";
 import { Button } from "@/components/ui/button";
 import arrow from "../assets/arrow-right-02.png";
 import { useRouter } from "next/navigation";
-import AppNavbar from "@/customComponents/AppNavbar";
+import AppNavbar from "@/custom-components/AppNavbar";
 import { motion } from "framer-motion";
 
 const listItemVariants = {

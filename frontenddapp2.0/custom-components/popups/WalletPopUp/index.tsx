@@ -9,8 +9,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { NetworkId } from "@/lib/constants";
-import { sortWalletAddress } from "@/lib/utils";
+import { NetworkId } from "@/utils/constants";
+import { sortWalletAddress } from "@/utils/helpers";
 import {
   useAppKit,
   useAppKitAccount,
@@ -42,7 +42,6 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
     if (!isConnected) open();
   };
 
-  console.log("data", data);
   return (
     <div>
       {!isConnected ? (
@@ -161,8 +160,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 </Typography>
               </a>
               <Typography
-                  size="lg"
-
+                size="lg"
                 className="text-[#7A7A7A] underline-offset-2 underline"
                 variant="regular"
               >

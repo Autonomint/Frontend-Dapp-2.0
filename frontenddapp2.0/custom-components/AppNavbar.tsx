@@ -49,7 +49,6 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ tabOptions = [] }) => {
       : tabOptions;
 
   const activeTab = navList?.find((nav) => nav.isActive);
-  console.log(navList, "navList");
 
   return (
     <div className="flex">

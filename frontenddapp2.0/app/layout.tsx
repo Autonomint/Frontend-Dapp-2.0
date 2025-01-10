@@ -3,8 +3,8 @@ import QueryProvider from "@/providers/QueryProvider";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "../customComponents/Footer";
-import Navbar from "../customComponents/Navbar";
+import Footer from "../custom-components/Footer";
+import Navbar from "../custom-components/Navbar";
 import "./globals.css";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {

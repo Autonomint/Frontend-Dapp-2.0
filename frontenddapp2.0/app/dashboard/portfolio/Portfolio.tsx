@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { WithdrawModal } from "../../../customComponents/popups/WithdrawModal";
-import { RebalancePopup } from "@/customComponents/popups/Rebalance";
+import { WithdrawModal } from "../../../custom-components/popups/WithdrawModal";
+import { RebalancePopup } from "@/custom-components/popups/Rebalance";
 
 function PortolioTable({
   tabPosition,

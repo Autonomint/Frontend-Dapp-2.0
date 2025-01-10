@@ -1,5 +1,5 @@
 "use client";
-import AppNavbar from "@/customComponents/AppNavbar";
+import AppNavbar from "@/custom-components/AppNavbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";

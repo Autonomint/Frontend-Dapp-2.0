@@ -1,5 +1,5 @@
 import React from "react";
-import { WithdrawModal } from "../../customComponents/popups/WithdrawModal";
+import { WithdrawModal } from "../../custom-components/popups/WithdrawModal";
 import Image from "next/image";
 import tokenImage from "../assets/Vector (6).png";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
-import AppNavbar from "@/customComponents/AppNavbar";
+import AppNavbar from "@/custom-components/AppNavbar";
 
 function TokenTvlDetails() {
   return (
