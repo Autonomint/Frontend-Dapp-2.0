@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <section>
-      <AppNavbar />
+      <AppNavbar activeBack={false} />
       <DashboardNavbar />
       {children}
     </section>

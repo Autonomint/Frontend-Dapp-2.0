@@ -104,12 +104,6 @@ function SingleListItem({
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>
-        <Button
-          onClick={() => router.push("/mintUSDaWithCollateral")}
-          className="absolute rounded-none bottom-0 w-full left-0 md:hidden bg-textBlack hover:bg-textBlack h-15 font-bold text-[#FFFFFF] text-[32px]"
-        >
-          <Image src={arrow} width={42} height={42} alt="arrow" />
-        </Button>
       </div>
     </motion.div>
   );
@@ -146,16 +140,16 @@ function MintUSDaList() {
 
   return (
     <div>
-      <AppNavbar />
+      <AppNavbar activeBack={false} />
       <div className="md:relative">
-        <motion.div className="flex flex-col gap-0 lg:max-w-[90%]">
+        <motion.div className="flex flex-col gap-0 lg:max-w-[93%]">
           {list.map((item, index) => (
             <SingleListItem key={index} item={item} indexVal={index} />
           ))}
         </motion.div>
 
         <motion.div
-          className="absolute right-0 top-0  h-full lg:max-w-[10%] hidden lg:flex items-center justify-center"
+          className="absolute right-0 top-0  h-full lg:max-w-[6%] hidden lg:flex items-center justify-center"
           initial="hidden"
           animate="visible"
           variants={farmTextVariants}

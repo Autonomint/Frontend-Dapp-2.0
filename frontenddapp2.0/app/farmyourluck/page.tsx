@@ -65,7 +65,7 @@ function Page() {
   ];
   return (
     <div className="h-full w-full flex flex-col">
-      <AppNavbar tabOptions={tabs} />
+      <AppNavbar tabOptions={tabs}  />
       <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
         <div className="grid col-span-1 lg:col-span-4">
           <div className="grid grid-cols-3 gap-6 md:p-8 p-5">

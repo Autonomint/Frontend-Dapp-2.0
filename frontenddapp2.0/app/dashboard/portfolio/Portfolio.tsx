@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
-import { WithdrawModal } from "../../../custom-components/popups/WithdrawModal";
-import { RebalancePopup } from "@/custom-components/popups/Rebalance";
+import { SearchIcon } from "@/components/ui/SvgIcons";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 function PortolioTable({
   tabPosition,
@@ -35,7 +35,7 @@ function PortolioTable({
             .fill(0)
             .map(() => {
               return (
-                <tr className="border border-solid">
+                <tr className="border border-solid border-grayLight">
                   <td className="px-5 py-6">02</td>
                   <td className="px-5 py-6">1.789</td>
                   <td className="px-5 py-6 hidden md:table-cell">$5,093</td>
@@ -93,7 +93,7 @@ function PortfolioMetrics({
   value: string;
 }) {
   return (
-    <div className="flex-1 flex flex-col p-5 gap-4 border border-solid">
+    <div className="flex-1 flex flex-col p-5 gap-4 border-grayLight border-r-0 border border-solid">
       <span className="text-textBlack md:text-[32px] text-[24px] font-medium ">
         {value}
       </span>
@@ -134,7 +134,7 @@ function Portfolio() {
             setTabPosition("Borrowed");
           }}
           className={
-            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -149,7 +149,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -159,8 +159,14 @@ function Portfolio() {
         >
           Deposited Position
         </div>
-        <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
-        <div className="lg:block w-[48%] hidden px-5 py-3  text-[32px] font-medium border border-solid"></div>
+        <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border-grayLight border  border-r-0 border-solid"></div>
+        <div className="flex w-[48%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
+          <SearchIcon width={24} height={24} fontSize={24} />
+          <Input
+            className="border-0 md:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
+            placeholder="Search Transactions"
+          />
+        </div>
       </div>
       <PortolioTable tabPosition={tabPosition} />
       {/* <RebalancePopup

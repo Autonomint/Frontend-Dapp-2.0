@@ -64,7 +64,7 @@ function SelectToken() {
         Select Token
       </Label>
       <Input
-        className="rounded-none border border-GrayLight font-medium"
+        className="rounded-none border border-grayLight font-medium"
         placeholder="Amount"
       />{" "}
       <div className="mt-5">
@@ -72,7 +72,7 @@ function SelectToken() {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="flex justify-between w-full h-17 px-3 border border-grayLight-1 rounded-md text-textBlack  text-[24px]"
+              className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  text-[24px]"
             >
               3 months
               <ChevronDownIcon className="w-4 h-4 ml-2" />
@@ -130,9 +130,9 @@ function page() {
   ];
   return (
     <div>
-      <AppNavbar />
+      <AppNavbar activeBack={false} />
       <div className="grid lg:grid-cols-4 grid-cols-1">
-        <div className="col-span-1 flex flex-col p-5 gap-8 border border-solid">
+        <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
           {tokenList.map((token) => {
             return (
               <AddToken
@@ -142,7 +142,7 @@ function page() {
             );
           })}
         </div>
-        <div className="hidden lg:flex col-span-2  flex-col items-center justify-center border border-solid relative">
+        <div className="hidden lg:flex col-span-2  flex-col items-center justify-center relative">
           <Image src={dcdsFrame} alt="dcds" />
           <span className="absolute left-3 bottom-3 underline  text-textBlack font-medium">
             How it works?
@@ -153,7 +153,7 @@ function page() {
             </span>
           </div>
         </div>
-        <div className="col-span-1 border border-solid flex flex-col justify-between">
+        <div className="col-span-1 border border-solid border-grayLight  border-t-0 flex flex-col justify-between">
           <div className="p-5">
             <span className=" text-textBlack text-[24px] font-medium">
               Deposit Funds

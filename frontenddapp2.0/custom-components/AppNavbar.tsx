@@ -6,6 +6,7 @@ import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 interface AppNavbarProps {
   tabOptions?: TabOption[];
+  activeBack?: boolean;
 }
 
 interface TabOption {
@@ -13,7 +14,10 @@ interface TabOption {
   path: string;
   isActive: boolean;
 }
-const AppNavbar: React.FC<AppNavbarProps> = ({ tabOptions = [] }) => {
+const AppNavbar: React.FC<AppNavbarProps> = ({
+  tabOptions = [],
+  activeBack = true,
+}) => {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -52,14 +56,16 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ tabOptions = [] }) => {
 
   return (
     <div className="flex">
-      <Button
-        onClick={() => {
-          router.push("/");
-        }}
-        className="bg-black h-full px-8 py-[18px] hover:bg-black"
-      >
-        <Image src={arrowLeft} width={42} height={42} alt="arrow" />
-      </Button>
+      {activeBack && (
+        <Button
+          onClick={() => {
+            router.push("/");
+          }}
+          className="bg-black h-full px-8 py-[18px] hover:bg-black"
+        >
+          <Image src={arrowLeft} width={42} height={42} alt="arrow" />
+        </Button>
+      )}
 
       <div className="hidden md:flex w-full border-b border-grayLight">
         {navList?.map(({ nameA, path, isActive }) => (

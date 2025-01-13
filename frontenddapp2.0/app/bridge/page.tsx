@@ -17,7 +17,7 @@ function BridgeComponent({
 }) {
   return (
     <div
-      className={`flex flex-col md:p-6 p-5 justify-between border border-solid rounded-none ${
+      className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
         heading === "To"
           ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : "bg-white"
@@ -33,7 +33,7 @@ function BridgeComponent({
             <CustomDropdown />
           </div>
         </div>
-        <div className="border border-solid border-grayLight-1 p-5">
+        <div className="border border-solid border-grayLight p-5">
           <div className="flex justify-between">
             <div className="text-grayLight text-lg ">
               You {heading == "From" ? "Send" : "Receive"}
@@ -68,7 +68,7 @@ function BridgeMetricFields({
 function page() {
   return (
     <div className="h-[85%]">
-      <AppNavbar />
+      <AppNavbar activeBack={false} />
       <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%] h-fit">
         <BridgeComponent
           heading={"From"}
@@ -82,7 +82,7 @@ function page() {
           token={"USDC"}
           totalAmount={"$1,200"}
         />
-        <div className="col-span-1 flex flex-wrap justify-between py-5 px-8 border border-solid rounded-md h-full">
+        <div className="col-span-1 flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields
             label={"Amount to receive"}
             value={"160 Hug × 23 Hug"}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import boat from "./assets/boat.png";
+import boat from "./assets/home-banner.svg";
 import { Button } from "@/components/ui/button";
 import PriceGraph from "./assets/Chart.png";
 import ModeImage from "./assets/mode.png";
@@ -440,29 +440,43 @@ export default function Home() {
             className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
             <div
-              className={`relative bg-white cursor-pointer   h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight `}
+              className={`relative bg-white cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight `}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",
               }}
             >
-              <div className={"p-4 h-full flex flex-col justify-center"}>
+              <div
+                className={
+                  "p-4 h-full flex flex-row  justify-between items-center"
+                }
+              >
                 <h3 className="font-medium text-[42px]  mb-2">
                   {items[4].title}
                 </h3>
+                <div className="hidden group-hover:flex items-center">
+                  <LeftArrowIcon width={42} height={42} />
+                </div>
               </div>
             </div>{" "}
             <div
-              className={`relative bg-white cursor-pointer   h-[118px] w-[50%] 
+              className={`relative bg-white cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[118px] w-[50%] 
                  border-t border-l-0 border-x border-y border-[1px]  border-grayLight
                 `}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",
               }}
             >
-              <div className={"p-4 h-full flex flex-col justify-center"}>
+              <div
+                className={
+                  "p-4 h-full flex flex-row  justify-between items-center"
+                }
+              >
                 <h3 className="font-medium text-[42px]  mb-2">
                   {items[5].title}
                 </h3>
+                <div className="hidden group-hover:flex items-center">
+                  <LeftArrowIcon width={42} height={42} />
+                </div>
               </div>
             </div>{" "}
           </div>
