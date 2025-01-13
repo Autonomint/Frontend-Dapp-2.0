@@ -7,8 +7,9 @@ import Image from "next/image";
 import NotificationPopup from "./popups/NotificationPopUp";
 import ReferPopup from "./popups/ReferPopUp";
 import WalletPopup from "./popups/WalletPopUp";
+import useDarkMode from "@/hookes/useDarkMode";
 function Navbar() {
-  
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   return (
     <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A]">
       <div className="flex items-center ml-4 gap-4">
@@ -33,6 +34,7 @@ function Navbar() {
         <Button
           variant={"shadowOutline"}
           className="border-[#041A50] h-fit p-[10px]"
+          onClick={toggleDarkMode}
         >
           <Moon style={{ width: "24px", height: "24px" }} />
         </Button>

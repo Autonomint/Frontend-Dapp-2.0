@@ -1,3 +1,4 @@
+import useDarkMode from "@/hookes/useDarkMode";
 import React, { useState } from "react";
 
 const gradientMap: { [key: string]: string } = {
@@ -23,7 +24,10 @@ function PriceComparison({
   tagBg: string;
   borderColor: string;
 }) {
-  const gradientBackground = gradientMap[orgName] || "transparent";
+  const { isDarkMode } = useDarkMode();
+  const gradientBackground = isDarkMode
+    ? "linear-gradient(135deg, #0F2027, #203A43, #2C5364)"
+    : gradientMap[orgName] || "transparent";
   const [isHover, setIsHover] = useState(false);
   return (
     <div
@@ -32,6 +36,7 @@ function PriceComparison({
       } group flex-col px-6 py-7 gap-4 flex-1 transition-all duration-300 ease-in-out`}
       style={{
         transition: "background 0.3s ease-in-out",
+        backgroundColor: isDarkMode ? "unset !important" : "",
       }}
       onMouseEnter={(e) => {
         setIsHover(true);
@@ -39,11 +44,13 @@ function PriceComparison({
       }}
       onMouseLeave={(e) => {
         setIsHover(false);
-        (e.currentTarget as HTMLElement).style.background = "none";
+        (e.currentTarget as HTMLElement).style.background = isDarkMode
+          ? gradientBackground
+          : "none";
       }}
     >
-      <div className="flex justify-between items-center">
-        <span className=" text-[24px] group-hover:font-semibold text-textBlack">
+      <div className="flex justify-between items-center bg-none">
+        <span className=" text-[24px] group-hover:font-semibold text-textBlack dark:text-white bg-none">
           {orgName}
         </span>
         <span
@@ -52,25 +59,27 @@ function PriceComparison({
             color: isHover ? "white" : textColor,
             padding: "4px",
           }}
+          className="bg-none"
         >
           {tag}
         </span>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between bg-none">
         <span
           style={{
-            color: isHover ? tagColor : "black",
+            color: isHover ? tagColor : isDarkMode ? "white" : "black",
             fontSize: "24px",
           }}
-          className={` text-textBlack text-[24px]`}
+          className={` text-textBlack text-[24px] dark:text-white bg-none`}
         >
           Fee
         </span>
         <span
           style={{
-            color: isHover ? tagColor : "black",
+            color: isHover ? tagColor : isDarkMode ? "white" : "black",
             fontSize: "24px",
           }}
+          className="bg-none"
         >
           {amount}
         </span>

@@ -8,6 +8,14 @@ body {
   @apply font-plex-grotesk;
 }
 
+.dark * {
+  background-color: black !important;
+}
+
+.dark .bg-none {
+  background-color: transparent !important;
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -171,7 +179,6 @@ body {
   height: 144px;
   margin-left: 10px;
   border-radius: 10px;
-
   z-index: 0;
 }
 

@@ -110,26 +110,26 @@ function MintUSDAHoverElement() {
       onClick={() => {
         router.push("/mintusdalist");
       }}
-      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-6 relative"
+      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient p-6 relative"
     >
-      <div className=" tetx-textBlack text-[38px] font-medium">
+      <div className="text-textBlack text-[38px] font-medium dark:text-white bg-none">
         100% Synthetic LTV
       </div>
       <div>
         <Image src={LTV} alt="tvl" style={{ width: "100%" }} />
       </div>
-      <div className="flex justify-between">
-        <span className=" font-medium text-lg text-grayLight">
+      <div className="flex justify-between bg-none">
+        <span className=" font-medium text-lg text-grayLight bg-none">
           80% Stablecoin
         </span>
-        <span className=" font-medium text-lg text-grayLight">
+        <span className=" font-medium text-lg text-grayLight bg-none">
           20% Downside Protection
         </span>
       </div>
-      <div className="text-[32px] text-textBlack font-medium ">
+      <div className="text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee Comparison
       </div>
-      <div className="flex gap-8 ml-6 mb-20">
+      <div className="flex gap-8 ml-6 mb-20 bg-none">
         {[
           {
             orgName: "Autonomint",
@@ -280,11 +280,11 @@ export default function Home() {
                 <MintUSDAHoverElement />
               ) : (
                 <div className="h-full flex flex-col justify-between items-start  p-4">
-                  <h3 className="font-medium  text-[42px]  mb-2">
+                  <h3 className="font-medium  text-[42px]  mb-2 dark:text-white">
                     {items[0].title}
                   </h3>
                   {items[0].subtitle && (
-                    <p className="text-[32px] text-gray-600">
+                    <p className="text-[32px] text-gray-600 dark:text-[#7A7A7A]">
                       {items[0].subtitle}
                     </p>
                   )}
@@ -323,11 +323,11 @@ export default function Home() {
                 <DCDSHoverElement />
               ) : (
                 <div className={"p-4 h-full flex flex-col justify-between"}>
-                  <h3 className="font-medium text-[42px]  mb-2">
+                  <h3 className="font-medium text-[42px]  mb-2 dark:text-white">
                     {items[1].title}
                   </h3>
                   {items[1].subtitle && (
-                    <p className="text-gray-600 text-[32px]">
+                    <p className="text-gray-600 text-[32px] dark:text-grayLight">
                       {items[1].subtitle}
                     </p>
                   )}
@@ -375,11 +375,11 @@ export default function Home() {
                     " h-full flex flex-col justify-between"
                   }
                 >
-                  <h3 className="font-medium text-[42px]  mb-2">
+                  <h3 className="font-medium text-[42px]  mb-2 dark:text-white">
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
-                    <p className="text-gray-600 text-[32px]">
+                    <p className="text-gray-600 text-[32px] dark:text-grayLight">
                       {items[2].subtitle}
                     </p>
                   )}
@@ -416,11 +416,11 @@ export default function Home() {
           >
             <div className={"p-4 h-full flex flex-col justify-between"}>
               <>
-                <h3 className="font-medium text-[42px]  mb-2">
+                <h3 className="font-medium text-[42px]  mb-2 dark:text-white">
                   {items[3].title}
                 </h3>
                 {items[3].subtitle && (
-                  <p className="text-gray-600 text-[32px]">
+                  <p className="text-gray-600 text-[32px] dark:text-grayLight">
                     {items[3].subtitle}
                   </p>
                 )}
@@ -451,7 +451,7 @@ export default function Home() {
                   "p-4 h-full flex flex-row  justify-between items-center"
                 }
               >
-                <h3 className="font-medium text-[42px]  mb-2">
+                <h3 className="font-medium text-[42px]  mb-2 dark:text-white">
                   {items[4].title}
                 </h3>
                 <div className="hidden group-hover:flex items-center">
@@ -472,7 +472,7 @@ export default function Home() {
                   "p-4 h-full flex flex-row  justify-between items-center"
                 }
               >
-                <h3 className="font-medium text-[42px]  mb-2">
+                <h3 className="font-medium text-[42px]  mb-2 dark:text-white">
                   {items[5].title}
                 </h3>
                 <div className="hidden group-hover:flex items-center">

@@ -21,6 +21,9 @@ export default {
       animation: {
         spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
       },
+      backgroundImage: {
+        "custom-gradient": "linear-gradient(135deg, #0F2027, #203A43, #2C5364)",
+      },
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],
         "plex-grotesk": ["Space Grotesk", "sans-serif"],
