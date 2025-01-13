@@ -17,16 +17,16 @@ import AppNavbar from "@/custom-components/AppNavbar";
 
 function TokenTvlDetails() {
   return (
-    <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0">
+    <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
       <div className="flex flex-col gap-8">
         <Image src={tokenImage} alt="token" width={32} height={32} />
-        <span className="text-[24px] text-textBlack">USDc</span>
+        <span className="text-[24px] text-textBlack dark:text-white">USDc</span>
       </div>
       <div className="flex flex-col gap-8">
-        <span className="text-[18px] font-normal text-right text-grayLight">
+        <span className="text-[18px] font-normal text-right text-grayLight dark:text-white">
           TVL
         </span>
-        <span className="text-[24px] font-medium text-textBlack">
+        <span className="text-[24px] font-medium text-textBlack dark:text-white">
           $100,000,000
         </span>
       </div>
@@ -72,7 +72,7 @@ function SelectToken() {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  text-[24px]"
+              className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  text-[24px] dark:text-white"
             >
               3 months
               <ChevronDownIcon className="w-4 h-4 ml-2" />
@@ -101,9 +101,11 @@ function AddToken({
     <div className="border border-solid border-grayLight p-5 relative">
       <div className="flex flex-col gap-4">
         <Image src={tokenImage} alt="token" />
-        <span className="text-[24px] text-textBlack">{tokenName}</span>
+        <span className="text-[24px] text-textBlack dark:text-white">
+          {tokenName}
+        </span>
       </div>
-      <Button className="bg-black absolute right-0 top-0 h-full">
+      <Button className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient">
         <Image src={add} alt="add" />
       </Button>
     </div>
@@ -145,7 +147,7 @@ function page() {
         </div>
         <div className="hidden lg:flex col-span-2  flex-col items-center justify-center relative">
           <Image src={dcdsFrame} alt="dcds" />
-          <span className="absolute left-3 bottom-3 underline  text-textBlack font-medium">
+          <span className="absolute left-3 bottom-3 underline  text-textBlack font-medium dark:text-white">
             How it works?
           </span>
           <div className="mt-[12px] border border-solid">
@@ -156,7 +158,7 @@ function page() {
         </div>
         <div className="col-span-1 border border-solid border-grayLight  border-t-0 flex flex-col justify-between">
           <div className="p-5">
-            <span className=" text-textBlack text-[24px] font-medium">
+            <span className=" text-textBlack text-[24px] font-medium text-white">
               Deposit Funds
             </span>
             <SelectToken />
@@ -165,14 +167,14 @@ function page() {
                 Opt for liquidity gains?
               </span>
             </div>
-            <div className="p-3 bg-[#FFF0CA] text-[12px]  text-grayLight font-medium">
+            <div className="p-3 bg-[#FFF0CA] text-[12px]  text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800]">
               Note: Your amount will be used to offer protection to borrowers &
               protocol in return for fixed yields
             </div>
           </div>
           <div>
             <AdditionalDCDSMetrics />
-            <Button className="bg-black text-white text-[24px]  min-h-20 w-full">
+            <Button className="bg-black text-white text-[24px]  min-h-20 w-full dark:bg-custom-gradient">
               Deposit
             </Button>
           </div>

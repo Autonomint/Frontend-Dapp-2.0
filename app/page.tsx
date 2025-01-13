@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import boat from "./assets/home-banner.svg";
+import darkboat from "./assets/home-banner-dark.svg";
+
 import { Button } from "@/components/ui/button";
 import PriceGraph from "./assets/Chart.png";
 import ModeImage from "./assets/mode.png";
@@ -17,63 +19,91 @@ import {
 } from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import infinityImage from "./assets/infinity.svg";
+import { useTheme } from "next-themes";
 function TransferBetweeHoverElement() {
+  const { theme } = useTheme();
   const router = useRouter();
   return (
     <div
       onClick={() => {
         router.push("/bridge");
       }}
-      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none dark:bg-custom-gradient"
     >
-      <div className=" text-textBlack text-[38px] font-medium">
+      <div className=" text-textBlack text-[38px] font-medium dark:text-white bg-none">
         Transfer Between
       </div>
-      <div className="flex justify-between items-end">
-        <div className="flex gap-3">
-          <div className="flex flex-col">
+      <div className="flex justify-between items-end bg-none">
+        <div className="flex gap-3 bg-none">
+          <div className="flex flex-col bg-none">
             <Image
               width={130}
               height={130}
               src={ModeImage}
               alt="Price Graph"
-              className=""
+              style={{
+                backgroundColor: theme == "dark" ? "unset !important" : "",
+              }}
             />
-            <div className=" text-grayLight text-center text-[32px] font-light">
+            <div className=" text-grayLight text-center text-[32px] font-light bg-none dark:text-white">
               Mode
             </div>
           </div>
-          <div className="flex items-center pb-9  justify-center gap-3">
-            <RightArrowIcon />
+          <div className="flex items-center pb-9  justify-center gap-3 bg-none">
+            <RightArrowIcon
+              style={{
+                backgroundColor: theme == "dark" ? "unset !important" : "",
+              }}
+            />
             <DotIcon />
-            <LeftArrowIcon />
+            <LeftArrowIcon
+              style={{
+                backgroundColor: theme == "dark" ? "unset !important" : "",
+              }}
+            />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col bg-none">
             <Image
               width={130}
               height={130}
               src={OptimismImage}
               alt="Price Graph"
+              style={{
+                backgroundColor: theme == "dark" ? "unset !important" : "",
+              }}
             />
-            <div className=" text-center text-grayLight text-[32px] font-light">
+            <div className=" text-center text-grayLight text-[32px] font-light bg-none dark:text-white">
               Optimism
             </div>
           </div>
         </div>
-        <div className="flex gap-2 items-center">
-          <Image className="mb-3" src={infinityImage} alt="alt" />
+        <div className="flex gap-2 items-center bg-none">
+          <Image
+            className="mb-3"
+            src={infinityImage}
+            alt="alt"
+            style={{
+              backgroundColor: theme == "dark" ? "unset !important" : "",
+            }}
+          />
           <Typography
             variant="regular"
             size="subtitle"
-            className="text-center mb-3  text-grayLight  font-light "
+            className="text-center mb-3  text-grayLight  font-light bg-none"
           >
             Layer Zero Integration
           </Typography>
         </div>
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient">
         Bridge
-        <Image src={arrow} width={42} height={42} alt="arrow" />
+        <Image
+          src={arrow}
+          width={42}
+          height={42}
+          alt="arrow"
+          className="bg-none"
+        />
       </Button>
     </div>
   );
@@ -86,16 +116,16 @@ function DCDSHoverElement() {
       onClick={() => {
         router.push("/dcds");
       }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient"
     >
-      <div className=" text-textBlack text-[38px] font-medium">
+      <div className=" text-textBlack text-[38px] font-medium dark:text-white">
         $1,000 Invested would have become $3,000
       </div>
       <Image src={PriceGraph} alt="Price Graph" className="w-full" />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium">
+      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
         Get up to 200% APY
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -110,26 +140,26 @@ function MintUSDAHoverElement() {
       onClick={() => {
         router.push("/mintusdalist");
       }}
-      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-6 relative"
+      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient p-6 relative"
     >
-      <div className=" tetx-textBlack text-[38px] font-medium">
+      <div className="text-textBlack text-[38px] font-medium dark:text-white bg-none">
         100% Synthetic LTV
       </div>
       <div>
         <Image src={LTV} alt="tvl" style={{ width: "100%" }} />
       </div>
-      <div className="flex justify-between">
-        <span className=" font-medium text-lg text-grayLight">
+      <div className="flex justify-between bg-none">
+        <span className=" font-medium text-lg text-grayLight bg-none">
           80% Stablecoin
         </span>
-        <span className=" font-medium text-lg text-grayLight">
+        <span className=" font-medium text-lg text-grayLight bg-none">
           20% Downside Protection
         </span>
       </div>
-      <div className="text-[32px] text-textBlack font-medium ">
+      <div className="text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee Comparison
       </div>
-      <div className="flex gap-8 ml-6 mb-20">
+      <div className="flex gap-8 ml-6 mb-20 bg-none">
         {[
           {
             orgName: "Autonomint",
@@ -173,14 +203,13 @@ function MintUSDAHoverElement() {
           );
         })}
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient">
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
     </div>
   );
 }
-
 export default function Home() {
   const items = [
     { title: "Mint USDA", subtitle: "TVL - $100,000" },
@@ -192,6 +221,7 @@ export default function Home() {
   ];
 
   const router = useRouter();
+  const { theme } = useTheme();
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
@@ -243,7 +273,7 @@ export default function Home() {
     <div className="w-full">
       <div className="w-full h-[300px] md:block border-[1px] border-x border-grayLight">
         <Image
-          src={boat}
+          src={theme === "dark" ? darkboat : boat}
           alt="crypto-eth"
           className="w-full h-full object-cover"
         />
@@ -252,7 +282,7 @@ export default function Home() {
         {/* 1st row */}
         <div className={`flex closeAnimateTop  `}>
           <div
-            className={`relative  closeAnimateMint bg-white cursor-pointer  ${
+            className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
                 ? "w-[80%] !h-[550px]"
                 : hoveredIndex === 1
@@ -293,7 +323,7 @@ export default function Home() {
             </div>
           </div>
           <div
-            className={`relative closeAnimateDCDS  bg-white cursor-pointer  ${
+            className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? "w-[60%]  !h-[550px]"
                 : hoveredIndex === 0
@@ -342,7 +372,7 @@ export default function Home() {
           className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight   border-t-grayLight border-[1px] `}
         >
           <div
-            className={`relative bg-white cursor-pointer  ${
+            className={`relative cursor-pointer  ${
               hoveredIndex === 2
                 ? " !h-[450px]"
                 : hoveredIndex === 3
@@ -391,7 +421,7 @@ export default function Home() {
             onClick={() => {
               router.push("/farmyourluck");
             }}
-            className={`relative bg-white cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
+            className={`relative  cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient  ${
               hoveredIndex === 2
                 ? " !h-[450px]"
                 : hoveredIndex === 3
@@ -414,9 +444,9 @@ export default function Home() {
               setCurrentIndex(null);
             }}
           >
-            <div className={"p-4 h-full flex flex-col justify-between"}>
+            <div className={"p-4 h-full flex flex-col justify-between "}>
               <>
-                <h3 className="font-medium text-[42px]  mb-2">
+                <h3 className="font-medium text-[42px]  mb-2 ">
                   {items[3].title}
                 </h3>
                 {items[3].subtitle && (
@@ -426,7 +456,7 @@ export default function Home() {
                 )}
               </>
               {hoveredIndex === 3 && (
-                <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack">
+                <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient">
                   Reward
                   <Image src={arrow} width={42} height={42} alt="arrow" />
                 </Button>
@@ -441,7 +471,7 @@ export default function Home() {
             className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
             <div
-              className={`relative bg-white cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight `}
+              className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient`}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",
               }}
@@ -460,8 +490,8 @@ export default function Home() {
               </div>
             </div>{" "}
             <div
-              className={`relative bg-white cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[118px] w-[50%] 
-                 border-t border-l-0 border-x border-y border-[1px]  border-grayLight
+              className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[118px] w-[50%] 
+                 border-t border-l-0 border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient
                 `}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",

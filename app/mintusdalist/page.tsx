@@ -33,7 +33,7 @@ function ListItemMetric({ label, value, color }: Metric) {
         {label}
       </div>
       <div
-        className="text-textBlack font-medium md:text-[32px] text-lg"
+        className="text-textBlack font-medium md:text-[32px] text-lg dark:text-white"
         style={{ color }}
       >
         {value}
@@ -52,7 +52,7 @@ function SingleListItemImage({
   return (
     <div className="flex flex-col items-start justify-center gap-14 min-w-[120px]">
       <Image src={src} width={58} height={58} alt={stakedToken} />
-      <div className="text-textBlack font-medium text-[32px]">
+      <div className="text-textBlack font-medium text-[32px] dark:text-white">
         {stakedToken}
       </div>
     </div>
@@ -100,7 +100,7 @@ function SingleListItem({
       <div>
         <Button
           onClick={() => router.push("/mintUSDaWithCollateral")}
-          className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack"
+          className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient"
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>
@@ -154,7 +154,7 @@ function MintUSDaList() {
           animate="visible"
           variants={farmTextVariants}
         >
-          <div className="transform rotate-90 text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center">
+          <div className="transform rotate-90 text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
             Farm Your Luck
           </div>
         </motion.div>

@@ -35,7 +35,9 @@ function DashboardNavbar() {
           <div
             key={nameA}
             className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
-              isActive ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]" : ""
+              isActive
+                ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient"
+                : ""
             }`}
             onClick={() => router.push(path)}
           >

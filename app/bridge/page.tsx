@@ -19,8 +19,8 @@ function BridgeComponent({
     <div
       className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
         heading === "To"
-          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-          : "bg-white"
+          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient"
+          : "bg-none dark:bg-none"
       }`}
     >
       <div className=" text-[32px] font-medium mb-4">{heading}</div>
@@ -67,9 +67,9 @@ function BridgeMetricFields({
 
 function page() {
   return (
-    <div className="h-[85%]">
+    <div>
       <AppNavbar activeBack={false} />
-      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%] h-fit">
+      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%]">
         <BridgeComponent
           heading={"From"}
           network={"Sepolia"}
@@ -91,7 +91,7 @@ function page() {
           <BridgeMetricFields label={"Time"} value={"~2min"} />
         </div>
         <div className="col-span-1">
-          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md">
+          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient">
             Bridge
           </Button>
         </div>
