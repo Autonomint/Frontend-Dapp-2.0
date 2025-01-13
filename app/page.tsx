@@ -17,63 +17,91 @@ import {
 } from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import infinityImage from "./assets/infinity.svg";
+import useDarkMode from "@/hookes/useDarkMode";
 function TransferBetweeHoverElement() {
+  const { isDarkMode } = useDarkMode();
   const router = useRouter();
   return (
     <div
       onClick={() => {
         router.push("/bridge");
       }}
-      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none dark:bg-custom-gradient"
     >
-      <div className=" text-textBlack text-[38px] font-medium">
+      <div className=" text-textBlack text-[38px] font-medium dark:text-white bg-none">
         Transfer Between
       </div>
-      <div className="flex justify-between items-end">
-        <div className="flex gap-3">
-          <div className="flex flex-col">
+      <div className="flex justify-between items-end bg-none">
+        <div className="flex gap-3 bg-none">
+          <div className="flex flex-col bg-none">
             <Image
               width={130}
               height={130}
               src={ModeImage}
               alt="Price Graph"
-              className=""
+              style={{
+                backgroundColor: isDarkMode ? "unset !important" : "",
+              }}
             />
-            <div className=" text-grayLight text-center text-[32px] font-light">
+            <div className=" text-grayLight text-center text-[32px] font-light bg-none dark:text-white">
               Mode
             </div>
           </div>
-          <div className="flex items-center pb-9  justify-center gap-3">
-            <RightArrowIcon />
+          <div className="flex items-center pb-9  justify-center gap-3 bg-none">
+            <RightArrowIcon
+              style={{
+                backgroundColor: isDarkMode ? "unset !important" : "",
+              }}
+            />
             <DotIcon />
-            <LeftArrowIcon />
+            <LeftArrowIcon
+              style={{
+                backgroundColor: isDarkMode ? "unset !important" : "",
+              }}
+            />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col bg-none">
             <Image
               width={130}
               height={130}
               src={OptimismImage}
               alt="Price Graph"
+              style={{
+                backgroundColor: isDarkMode ? "unset !important" : "",
+              }}
             />
-            <div className=" text-center text-grayLight text-[32px] font-light">
+            <div className=" text-center text-grayLight text-[32px] font-light bg-none dark:text-white">
               Optimism
             </div>
           </div>
         </div>
-        <div className="flex gap-2 items-center">
-          <Image className="mb-3" src={infinityImage} alt="alt" />
+        <div className="flex gap-2 items-center bg-none">
+          <Image
+            className="mb-3"
+            src={infinityImage}
+            alt="alt"
+            style={{
+              backgroundColor: isDarkMode ? "unset !important" : "",
+            }}
+          />
           <Typography
             variant="regular"
             size="subtitle"
-            className="text-center mb-3  text-grayLight  font-light "
+            className="text-center mb-3  text-grayLight  font-light bg-none"
           >
             Layer Zero Integration
           </Typography>
         </div>
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient">
         Bridge
-        <Image src={arrow} width={42} height={42} alt="arrow" />
+        <Image
+          src={arrow}
+          width={42}
+          height={42}
+          alt="arrow"
+          className="bg-none"
+        />
       </Button>
     </div>
   );
@@ -86,13 +114,13 @@ function DCDSHoverElement() {
       onClick={() => {
         router.push("/dcds");
       }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative"
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none"
     >
-      <div className=" text-textBlack text-[38px] font-medium">
+      <div className=" text-textBlack text-[38px] font-medium dark:text-white">
         $1,000 Invested would have become $3,000
       </div>
       <Image src={PriceGraph} alt="Price Graph" className="w-full" />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium">
+      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
         Get up to 200% APY
       </div>
       <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack">
