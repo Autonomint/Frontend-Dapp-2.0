@@ -33,9 +33,9 @@ function PortolioTable({
         <tbody className="font-normal ">
           {Array(2)
             .fill(0)
-            .map(() => {
+            .map((item, key) => {
               return (
-                <tr className="border border-solid border-grayLight">
+                <tr key={key} className="border border-solid border-grayLight">
                   <td className="px-5 py-6">02</td>
                   <td className="px-5 py-6">1.789</td>
                   <td className="px-5 py-6 hidden md:table-cell">$5,093</td>
