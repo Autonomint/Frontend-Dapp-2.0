@@ -28,7 +28,7 @@ function TransferBetweeHoverElement() {
       onClick={() => {
         router.push("/bridge");
       }}
-      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none dark:bg-custom-gradient"
+      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none dark:bg-custom-gradient-to-top"
     >
       <div className=" text-textBlack text-[38px] font-medium dark:text-white bg-none">
         Transfer Between
@@ -95,7 +95,7 @@ function TransferBetweeHoverElement() {
           </Typography>
         </div>
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
         Bridge
         <Image
           src={arrow}
@@ -116,7 +116,7 @@ function DCDSHoverElement() {
       onClick={() => {
         router.push("/dcds");
       }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient"
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
     >
       <div className=" text-textBlack text-[38px] font-medium dark:text-white">
         $1,000 Invested would have become $3,000
@@ -125,7 +125,7 @@ function DCDSHoverElement() {
       <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
         Get up to 200% APY
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -140,7 +140,7 @@ function MintUSDAHoverElement() {
       onClick={() => {
         router.push("/mintusdalist");
       }}
-      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient p-6 relative"
+      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top p-6 relative"
     >
       <div className="text-textBlack text-[38px] font-medium dark:text-white bg-none">
         100% Synthetic LTV
@@ -203,7 +203,7 @@ function MintUSDAHoverElement() {
           );
         })}
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient">
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -421,7 +421,7 @@ export default function Home() {
             onClick={() => {
               router.push("/farmyourluck");
             }}
-            className={`relative  cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient  ${
+            className={`relative  cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient-to-top  ${
               hoveredIndex === 2
                 ? " !h-[450px]"
                 : hoveredIndex === 3
@@ -456,7 +456,7 @@ export default function Home() {
                 )}
               </>
               {hoveredIndex === 3 && (
-                <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient">
+                <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
                   Reward
                   <Image src={arrow} width={42} height={42} alt="arrow" />
                 </Button>
@@ -471,7 +471,7 @@ export default function Home() {
             className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
             <div
-              className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient`}
+              className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",
               }}
@@ -491,7 +491,7 @@ export default function Home() {
             </div>{" "}
             <div
               className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[118px] w-[50%] 
-                 border-t border-l-0 border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient
+                 border-t border-l-0 border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top
                 `}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",

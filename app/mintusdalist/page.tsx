@@ -100,7 +100,7 @@ function SingleListItem({
       <div>
         <Button
           onClick={() => router.push("/mintUSDaWithCollateral")}
-          className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient"
+          className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />
         </Button>

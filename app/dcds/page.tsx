@@ -108,7 +108,7 @@ function AddToken({
           {tokenName}
         </span>
       </div>
-      <Button className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient">
+      <Button className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient-to-bottom">
         <Image src={add} alt="add" />
       </Button>
     </div>
@@ -178,7 +178,7 @@ function page() {
           </div>
           <div>
             <AdditionalDCDSMetrics />
-            <Button className="bg-black text-white text-[24px]  min-h-20 w-full dark:bg-custom-gradient">
+            <Button className="bg-black text-white text-[24px]  min-h-20 w-full dark:bg-custom-gradient-to-bottom">
               Deposit
             </Button>
           </div>

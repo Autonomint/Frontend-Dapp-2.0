@@ -19,7 +19,7 @@ function BridgeComponent({
     <div
       className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
         heading === "To"
-          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient"
+          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
           : "bg-none dark:bg-none"
       }`}
     >
@@ -102,7 +102,7 @@ function page() {
           <BridgeMetricFields label={"Time"} value={"~2min"} />
         </div>
         <div className="col-span-1">
-          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient">
+          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom">
             Bridge
           </Button>
         </div>

@@ -22,7 +22,10 @@ export default {
         spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
       },
       backgroundImage: {
-        "custom-gradient": "linear-gradient(45deg, #2C5364, #203A43, #0F2027);",
+        "custom-gradient-to-top":
+          "linear-gradient(to top, #2C5364, #203A43, #0F2027);",
+        "custom-gradient-to-bottom":
+          "linear-gradient(to bottom, #2C5364, #203A43, #0F2027);",
         "custom-gradient-blue": "linear-gradient(90deg, #002A4E, #002A4E00);",
       },
       fontFamily: {

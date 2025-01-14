@@ -137,7 +137,7 @@ function Portfolio() {
             "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient"
+                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
                 : ""
             }`
           }
@@ -152,7 +152,7 @@ function Portfolio() {
             "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Deposited"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient"
+                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
                 : ""
             }`
           }
