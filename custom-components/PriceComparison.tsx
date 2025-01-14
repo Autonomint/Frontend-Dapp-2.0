@@ -1,3 +1,4 @@
+import { useTheme } from "next-themes";
 import React, { useState } from "react";
 
 const gradientMap: { [key: string]: string } = {
@@ -25,6 +26,7 @@ function PriceComparison({
 }) {
   const gradientBackground = gradientMap[orgName] || "transparent";
   const [isHover, setIsHover] = useState(false);
+  const { theme } = useTheme();
   return (
     <div
       className={`flex relative ${isHover ? borderColor : ""} ${
@@ -35,7 +37,10 @@ function PriceComparison({
       }}
       onMouseEnter={(e) => {
         setIsHover(true);
-        (e.currentTarget as HTMLElement).style.background = gradientBackground;
+        (e.currentTarget as HTMLElement).style.backgroundImage =
+          theme == "dark"
+            ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
+            : gradientBackground;
       }}
       onMouseLeave={(e) => {
         setIsHover(false);
@@ -43,7 +48,7 @@ function PriceComparison({
       }}
     >
       <div className="flex justify-between items-center">
-        <span className=" text-[24px] group-hover:font-semibold text-textBlack">
+        <span className=" text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
           {orgName}
         </span>
         <span
@@ -59,7 +64,7 @@ function PriceComparison({
       <div className="flex justify-between">
         <span
           style={{
-            color: isHover ? tagColor : "black",
+            color: isHover ? tagColor : theme == "dark" ? "white" : "black",
             fontSize: "24px",
           }}
           className={` text-textBlack text-[24px]`}
@@ -68,7 +73,7 @@ function PriceComparison({
         </span>
         <span
           style={{
-            color: isHover ? tagColor : "black",
+            color: isHover ? tagColor : theme == "dark" ? "white" : "black",
             fontSize: "24px",
           }}
         >

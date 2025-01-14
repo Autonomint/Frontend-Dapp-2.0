@@ -19,8 +19,8 @@ function BridgeComponent({
     <div
       className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
         heading === "To"
-          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-          : "bg-white"
+          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
+          : "bg-none dark:bg-none"
       }`}
     >
       <div className=" text-[32px] font-medium mb-4">{heading}</div>
@@ -35,15 +35,24 @@ function BridgeComponent({
         </div>
         <div className="border border-solid border-grayLight p-5">
           <div className="flex justify-between">
-            <div className="text-grayLight text-lg ">
+            <div
+              className={
+                `${heading == "From" ? "" : "dark:text-white"}` +
+                "text-grayLight text-lg "
+              }
+            >
               You {heading == "From" ? "Send" : "Receive"}
             </div>
             <div className="text-grayLight text-lg flex gap-3 ">
               Available Bal: 7001
-              <span className="text-textBlack text-lg">Max</span>
+              <span className="text-textBlack text-lg dark:text-white">
+                Max
+              </span>
             </div>
           </div>
-          <div className="text-[42px] text-textBlack  mt-8">$1,201</div>
+          <div className="text-[42px] text-textBlack  mt-8 dark:text-white">
+            $1,201
+          </div>
         </div>
       </div>
     </div>
@@ -59,17 +68,19 @@ function BridgeMetricFields({
 }) {
   return (
     <div className="flex flex-col justify-between mb-3">
-      <div className=" text-gray-500 font-medium text-sm">{label}</div>
-      <div className="font-medium text-[20px] text-black">{value}</div>
+      <div className=" text-gray-500 font-medium text-[18px]">{label}</div>
+      <div className="font-medium text-[20px] text-black dark:text-white">
+        {value}
+      </div>
     </div>
   );
 }
 
 function page() {
   return (
-    <div className="h-[85%]">
+    <div>
       <AppNavbar activeBack={false} />
-      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%] h-fit">
+      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%]">
         <BridgeComponent
           heading={"From"}
           network={"Sepolia"}
@@ -91,7 +102,7 @@ function page() {
           <BridgeMetricFields label={"Time"} value={"~2min"} />
         </div>
         <div className="col-span-1">
-          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md">
+          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom">
             Bridge
           </Button>
         </div>

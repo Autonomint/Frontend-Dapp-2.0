@@ -38,7 +38,7 @@ function MetricFields({
 function AdditionalMetics() {
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-textBlack  font-medium text-xl">
+      <div className="text-textBlack  font-medium text-xl dark:text-white">
         100% Synthetic LTV
       </div>
       <div className="flex flex-col mt-3">
@@ -99,7 +99,7 @@ function AdditionalDetails() {
                   value={0.7}
                 />
                 <Button
-                  className="absolute top-1/2 right-0 transform -translate-y-1/2 text-lg font-medium px-4 text-textBlack"
+                  className="absolute top-1/2 right-0 transform -translate-y-1/2 text-lg font-medium px-4 text-textBlack dark:text-white"
                   variant={"ghost"}
                   size={"sm"}
                 >
@@ -121,7 +121,7 @@ function AdditionalDetails() {
         <AdditionalMetics />
       </div>
       <div className="col-span-1">
-        <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md">
+        <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient">
           Mint
         </Button>
       </div>
@@ -150,7 +150,7 @@ function MintUSDa() {
 
         <div className="col-span-2 border border-solid border-grayLight p-8">
           <div className="flex flex-col justify-start">
-            <div className=" text-textBlack text-3xl font-medium">
+            <div className=" text-textBlack text-3xl font-medium dark:text-white">
               How it works?
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
@@ -183,7 +183,7 @@ function MintUSDa() {
               alt="farm-your-luck"
               className="hidden md:block"
             />
-            <div className=" text-textBlack text-3xl font-medium">
+            <div className=" text-textBlack text-3xl font-medium dark:text-white">
               Farm Your Luck
             </div>
           </div>

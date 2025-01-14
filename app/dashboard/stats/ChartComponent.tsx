@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { useTheme } from "next-themes";
 
 ChartJS.register(
   CategoryScale,
@@ -84,15 +85,27 @@ export const data = {
           return null;
         }
 
+        // if (theme === "dark") {
         const gradient = ctx.createLinearGradient(
           0,
           chartArea.top,
           0,
           chartArea.bottom
         );
-        gradient.addColorStop(0, "#E5F3FF");
-        gradient.addColorStop(1, "#FFFDE4");
+        gradient.addColorStop(0, "#002A4E");
+        gradient.addColorStop(1, "#002A4E00");
         return gradient;
+        // }
+
+        // const gradient = ctx.createLinearGradient(
+        //   0,
+        //   chartArea.top,
+        //   0,
+        //   chartArea.bottom
+        // );
+        // gradient.addColorStop(0, "#E5F3FF");
+        // gradient.addColorStop(1, "#FFFDE4");
+        // return gradient;
       },
     },
   ],
@@ -107,7 +120,7 @@ function TimeFrame({ timeFrame }: { timeFrame?: string }) {
           key={item}
           className={`p-3 w-full text-[16px] font-medium ${
             item === timeFrame
-              ? "bg-[#ABFFDE] border border-grayLight"
+              ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack"
               : "border border-grayLight"
           }`}
         >
@@ -127,7 +140,9 @@ function StatsMetrics({
 }) {
   return (
     <div className="flex flex-col flex-1">
-      <span className="text-[24px] font-medium text-textBlack">{value}</span>
+      <span className="text-[24px] font-medium text-textBlack dark:text-white">
+        {value}
+      </span>
       <span className="text-[14px] font-normal text-grayLight">
         {metricVal}
       </span>

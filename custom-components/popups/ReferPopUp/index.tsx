@@ -19,7 +19,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
       content={
         <Button
           variant={"shadowOutline"}
-          className="border-[#041A50] cursor-pointer  h-fit p-[10px] flex gap-2 hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          className="border-[#041A50] cursor-pointer  h-fit p-[10px] flex gap-2 hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient-to-top"
         >
           <Gift style={{ width: "24px", height: "24px" }} />{" "}
           <Typography size="body" className="">
@@ -27,7 +27,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
           </Typography>
         </Button>
       }
-      contentClass="!left-[unset] right-[0px] top-[50px]"
+      contentClass="!left-[unset] right-[0px] top-[50px] dark:bg-black"
     >
       <div className="mt-4">
         <Typography size="lg" className="text-grayLight">
@@ -50,7 +50,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
 
       <Button
         variant={"default"}
-        className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"
+        className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
       >
         <Image alt="twitter" src={twitter} /> Share on twitter
       </Button>

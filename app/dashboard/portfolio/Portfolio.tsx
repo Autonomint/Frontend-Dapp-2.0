@@ -94,7 +94,7 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border-grayLight border-r-0 border border-solid">
-      <span className="text-textBlack md:text-[32px] text-[24px] font-medium ">
+      <span className="text-textBlack md:text-[32px] text-[24px] font-medium dark:text-white">
         {value}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] ">
@@ -137,8 +137,8 @@ function Portfolio() {
             "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-                : "white"
+                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+                : ""
             }`
           }
         >
@@ -152,8 +152,8 @@ function Portfolio() {
             "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Deposited"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-                : "white"
+                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+                : ""
             }`
           }
         >
