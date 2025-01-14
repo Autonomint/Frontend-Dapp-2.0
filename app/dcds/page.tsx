@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { WithdrawModal } from "../../custom-components/popups/WithdrawModal";
 import Image from "next/image";
@@ -5,6 +6,7 @@ import tokenImage from "../assets/Vector (6).png";
 import { Button } from "@/components/ui/button";
 import add from "../assets/add-01.png";
 import dcdsFrame from "../assets/Frame 350.png";
+import dcdsDarkFrame from "../assets/Frame 350.svg";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { ChevronDownIcon } from "lucide-react";
 import AppNavbar from "@/custom-components/AppNavbar";
+import { useTheme } from "next-themes";
 
 function TokenTvlDetails() {
   return (
@@ -112,6 +115,7 @@ function AddToken({
   );
 }
 function page() {
+  const { theme } = useTheme();
   const tokenList = [
     {
       tokenImage: tokenImage,

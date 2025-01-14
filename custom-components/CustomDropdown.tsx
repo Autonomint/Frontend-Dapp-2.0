@@ -24,7 +24,7 @@ const CustomDropdown = () => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  md:text-[32px] text-[24px]"
+            className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  md:text-[32px] text-[24px] dark:text-white"
           >
             {selected}
             <ChevronDownIcon className="w-4 h-4 ml-2" />

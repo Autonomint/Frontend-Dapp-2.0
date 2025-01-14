@@ -94,7 +94,7 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border-grayLight border-r-0 border border-solid">
-      <span className="text-textBlack md:text-[32px] text-[24px] font-medium ">
+      <span className="text-textBlack md:text-[32px] text-[24px] font-medium dark:text-white">
         {value}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] ">

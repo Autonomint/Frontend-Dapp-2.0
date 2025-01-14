@@ -23,6 +23,7 @@ export default {
       },
       backgroundImage: {
         "custom-gradient": "linear-gradient(45deg, #2C5364, #203A43, #0F2027);",
+        "custom-gradient-blue": "linear-gradient(90deg, #002A4E, #002A4E00);",
       },
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],

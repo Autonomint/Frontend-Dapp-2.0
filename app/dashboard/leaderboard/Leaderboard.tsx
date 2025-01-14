@@ -20,14 +20,14 @@ function PortolioTable() {
           </tr>
         </thead>
         <tbody className="font-normal ">
-          <tr className="border border-solid">
+          <tr className="border border-grayLight">
             <td className="px-5 py-6">01</td>
             <td className="px-5 py-6">0x67a...8ujk</td>
             <td className="px-5 py-6 hidden md:table-cell">$800</td>
             <td className="px-5 py-6 hidden md:table-cell">--</td>
             <td className="px-5 py-6 hidden md:table-cell">0.4</td>
             <td className="px-5 py-6 hidden md:table-cell font-normal">
-              <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2">
+              <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
                 Borrower
               </span>
             </td>
@@ -49,8 +49,10 @@ function PortfolioMetrics({
   value: string;
 }) {
   return (
-    <div className="flex-1 flex flex-col p-5 gap-4 border border-solid">
-      <span className="text-textBlack text-[32px] font-medium ">{value}</span>
+    <div className="flex-1 flex flex-col p-5 gap-4 border border-grayLight">
+      <span className="text-textBlack text-[32px] font-medium dark:text-white">
+        {value}
+      </span>
       <span className="text-grayLight md:text-lg text-[14px] ">
         {subHeading}
       </span>
