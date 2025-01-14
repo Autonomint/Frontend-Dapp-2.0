@@ -6,6 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../custom-components/Footer";
 import Navbar from "../custom-components/Navbar";
 import "./globals.css";
+import Provider from "../contexts";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
   // ssr: false,
@@ -47,12 +48,14 @@ export default function RootLayout({
         <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col">
           <WalletProvider cookies={cookies}>
             <QueryProvider>
-              <Navbar />
-              {/* <AppNavbar /> */}
-              <div className="flex-grow overflow-y-auto no-scrollbar">
-                {children}
-                <Footer />
-              </div>
+              <Provider>
+                <Navbar />
+                {/* <AppNavbar /> */}
+                <div className="flex-grow overflow-y-auto no-scrollbar">
+                  {children}
+                  <Footer />
+                </div>
+              </Provider>
             </QueryProvider>
           </WalletProvider>
         </div>

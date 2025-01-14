@@ -10,18 +10,14 @@ enum StrikePrice {
 }
 
 interface FunctionInputs {
-  _strikePercent: StrikePrice; // uint8 can be mapped to the enum
-  _strikePrice: bigint; // uint64 can be represented by bigint
-  _volatility: bigint; // uint256 can be represented by bigint
-  _depositingAmount: bigint; // uint256 can be represented by bigint
+  strikePercent: StrikePrice; // uint8 can be mapped to the enum
+  strikePrice: bigint; // uint64 can be represented by bigint
+  volatility: bigint; // uint256 can be represented by bigint
+  depositingAmount: bigint; // uint256 can be represented by bigint
+  value: bigint; // uint256 can be represented by bigint
 }
 
-const useWriteBorrowingContractDepositTokens = ({
-  _strikePercent,
-  _strikePrice,
-  _volatility,
-  _depositingAmount,
-}: FunctionInputs) => {
+const useDepositTokens = () => {
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const {
     isPending: isDepositsLoading,
@@ -37,13 +33,20 @@ const useWriteBorrowingContractDepositTokens = ({
     },
   });
 
-  const mintUSDa = async () => {
+  const mintUSDa = async ({
+    strikePercent,
+    strikePrice,
+    volatility,
+    depositingAmount,
+    value,
+  }: FunctionInputs) => {
     // Call the `writeContract` function to deposit tokens
     writeContract?.({
       abi: borrowingContractAbi,
-      address: borrowingContractAddress[84532],
+      address: borrowingContractAddress[11155111],
       functionName: "depositTokens",
-      args: [_strikePercent, _strikePrice, _volatility, _depositingAmount],
+      args: [strikePercent, strikePrice, volatility, depositingAmount],
+      value,
     });
   };
 
@@ -54,3 +57,5 @@ const useWriteBorrowingContractDepositTokens = ({
     reset,
   };
 };
+
+export default useDepositTokens;

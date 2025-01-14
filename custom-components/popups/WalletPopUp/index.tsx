@@ -51,23 +51,27 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           className=" p-0 gap-0  h-fit "
         >
           <div className="py-[10px] px-4 bg-[#ABFFDE] ">
+            <div className="relative flex items-center gap-0">
+              <Image
+                src={ethereumIcon}
+                alt="ethereum icon"
+                width={24}
+                height={24}
+              />
+              <ChevronDownIcon className="w-4 h-4 " />
+            </div>
             <Popover>
-              <PopoverTrigger asChild>
-                <div className="relative flex items-center gap-0">
+              <PopoverTrigger asChild></PopoverTrigger>
+              <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
+                <div className="flex flex-row gap-2">
                   <Image
                     src={ethereumIcon}
                     alt="ethereum icon"
                     width={24}
                     height={24}
-                  />
-                  <ChevronDownIcon className="w-4 h-4 " />
+                  />{" "}
+                  <Typography className="">Ethereum</Typography>
                 </div>
-              </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                className="w-full border  border-gray-200 rounded-md shadow-md"
-              >
-                <div className="flex flex-col"></div>
               </PopoverContent>
             </Popover>
           </div>
@@ -98,9 +102,28 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="w-full border border-gray-200 rounded-md shadow-md"
+                className="w-full border bg-white border-gray-200 rounded-md shadow-md"
               >
-                <div className="flex flex-col"></div>
+                <div className="p-3 flex flex-col gap-4">
+                  <div className="flex flex-row gap-2">
+                    <Image
+                      src={ethereumIcon}
+                      alt="ethereum icon"
+                      width={24}
+                      height={24}
+                    />{" "}
+                    <Typography className="">Ethereum Sepolia</Typography>
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <Image
+                      src={ethereumIcon}
+                      alt="ethereum icon"
+                      width={24}
+                      height={24}
+                    />{" "}
+                    <Typography className="">Base Sepolia</Typography>
+                  </div>
+                </div>
               </PopoverContent>
             </Popover>
           </div>
