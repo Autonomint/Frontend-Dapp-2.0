@@ -72,7 +72,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
           <div
             key={nameA}
             className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
-              isActive ? "bg-[#ABFFDE]" : ""
+              isActive ? "bg-[#ABFFDE] dark:text-black" : ""
             }`}
             onClick={() => router.push(path)}
           >
