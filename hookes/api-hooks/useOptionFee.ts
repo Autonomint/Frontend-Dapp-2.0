@@ -1,5 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+"use client";
 import { OptionFeesRequest, OptionFeesResponse } from "./interface";
+import { useAccount } from "wagmi";
+import { BACKEND_API_URL } from "@/utils/urls";
+import { useQuery } from "wagmi/query";
+import { parseUnits } from "viem";
 
 // Define a function to fetch option fees with typed parameters
 const fetchOptionFees = async ({
@@ -7,10 +11,12 @@ const fetchOptionFees = async ({
   collateralAmount,
   ethPrice,
   strikePercent,
-  BACKEND_API_URL,
 }: OptionFeesRequest): Promise<OptionFeesResponse> => {
   const response = await fetch(
-    `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${collateralAmount}/${ethPrice}/${strikePercent}`
+    `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${parseUnits(
+      collateralAmount.toString(),
+      18
+    )}/${ethPrice}/${strikePercent}`
   );
 
   if (!response.ok) {
@@ -22,32 +28,40 @@ const fetchOptionFees = async ({
 
 // Create a typed hook to fetch option fees
 const useFetchOptionFees = (
-  chainId: number,
   collateralAmount: number,
   ethPrice: number,
-  strikePercent: number,
-  BACKEND_API_URL: string
+  strikePercent: number
 ) => {
-  return useQuery<OptionFeesResponse, Error>({
-    queryKey: [
-      "optionFees",
-      chainId,
-      collateralAmount,
-      ethPrice,
-      strikePercent,
-    ], // Query key
+  const { chainId } = useAccount();
+  console.log(chainId, collateralAmount, ethPrice, strikePercent, "enabled");
+
+  const {
+    data,
+    isPending: isOptionFeePending,
+    isError: isOptionFeeError,
+    refetch: refetchOptionFee,
+  } = useQuery({
+    queryKey: ["optionFee", chainId, collateralAmount, ethPrice, strikePercent], // Query key
     queryFn: () =>
       fetchOptionFees({
-        chainId,
+        chainId: chainId as number,
         collateralAmount,
         ethPrice,
         strikePercent,
         BACKEND_API_URL,
       }), // Query function
     // Optional configurations
-    enabled: !!chainId && !!collateralAmount && !!ethPrice && !!strikePercent, // Only run when values are provided
+    enabled: !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided
     refetchOnWindowFocus: false,
   });
+
+  const optionFees = (data as number[])?.[1]
+    ? (data as number[])?.[1] / 10 ** 6
+    : 0;
+
+  return {
+    optionFees,
+  };
 };
 
 export default useFetchOptionFees;

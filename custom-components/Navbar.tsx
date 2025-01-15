@@ -8,28 +8,31 @@ import NotificationPopup from "./popups/NotificationPopUp";
 import ReferPopup from "./popups/ReferPopUp";
 import WalletPopup from "./popups/WalletPopUp";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const currentTheme = theme === "system" ? systemTheme : theme;
   return (
     <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A]">
-      <div className="flex items-center ml-4 gap-4">
-        <div className="w-[3rem] h-[3rem]">
-          <Image
-            src={logo}
-            alt="autonomint-dapp"
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
+      <Link href="/">
+        <div className="flex items-center ml-4 gap-4">
+          <div className="w-[3rem] h-[3rem]">
+            <Image
+              src={logo}
+              alt="autonomint-dapp"
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
 
-        <div className="text-xl    tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
-          <Image
-            src={autonomintTxtImage}
-            alt="autonomint-dapp"
-            style={{ width: "100%", height: "100%" }}
-          />
+          <div className="text-xl    tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
+            <Image
+              src={autonomintTxtImage}
+              alt="autonomint-dapp"
+              style={{ width: "100%", height: "100%" }}
+            />
+          </div>
         </div>
-      </div>
+      </Link>
       <div className="flex md:gap-6 sm:gap-2 mr-4">
         <WalletPopup />
         <Button

@@ -47,8 +47,8 @@ export default function RootLayout({
         className={`h-screen w-screen bg-gray-50 flex justify-center items-center`}
       >
         <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
-          <WalletProvider cookies={cookies}>
-            <QueryProvider>
+          <QueryProvider>
+            <WalletProvider cookies={cookies}>
               <Provider>
                 <ThemeProvider attribute="class">
                   <Navbar />
@@ -59,8 +59,8 @@ export default function RootLayout({
                   </div>
                 </ThemeProvider>
               </Provider>
-            </QueryProvider>
-          </WalletProvider>
+            </WalletProvider>
+          </QueryProvider>
         </div>
       </body>
     </html>

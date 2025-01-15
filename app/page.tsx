@@ -20,6 +20,8 @@ import {
 import { Typography } from "@/components/ui/Typography";
 import infinityImage from "./assets/infinity.svg";
 import { useTheme } from "next-themes";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 function TransferBetweeHoverElement() {
   const { theme } = useTheme();
   const router = useRouter();
@@ -28,7 +30,7 @@ function TransferBetweeHoverElement() {
       onClick={() => {
         router.push("/bridge");
       }}
-      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative bg-none dark:bg-custom-gradient-to-top"
+      className="flex  border-[1px] border-top border-grayLight flex-col gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
     >
       <div className=" text-textBlack text-[38px] font-medium dark:text-white bg-none">
         Transfer Between
@@ -132,8 +134,16 @@ function DCDSHoverElement() {
     </div>
   );
 }
-
-function MintUSDAHoverElement() {
+interface FeeDetail {
+  orgName: string;
+  amount: string;
+  tag: string;
+  tagColor: string;
+  tagBg: string;
+  textColor: string;
+  borderColor: string;
+}
+function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
   const router = useRouter();
   return (
     <div
@@ -160,35 +170,7 @@ function MintUSDAHoverElement() {
         Fee Comparison
       </div>
       <div className="flex gap-8 ml-6 mb-20 bg-none">
-        {[
-          {
-            orgName: "Autonomint",
-            amount: "$0.02",
-            tag: "Lowest Fee",
-            tagColor: "#05A552",
-            tagBg: "#05A552",
-            textColor: "white",
-            borderColor: "borderGreen",
-          },
-          {
-            orgName: "Athermint",
-            amount: "$0.02",
-            tag: "Lowest Fee",
-            tagColor: "#D6A100",
-            tagBg: "#FFF7E0",
-            textColor: "#D6A100",
-            borderColor: "borderYellow",
-          },
-          {
-            orgName: "AthermintXYZ",
-            amount: "$0.02",
-            tag: "Lowest Fee",
-            tagColor: "#AA0001",
-            tagBg: "#FEE2E2",
-            textColor: "#AA0001",
-            borderColor: "borderRed",
-          },
-        ].map((feeCom, idx) => {
+        {feesList.map((feeCom, idx) => {
           return (
             <PriceComparison
               key={idx}
@@ -225,6 +207,45 @@ export default function Home() {
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+  const { usdValue: ethPrice } = useGetUsdValue();
+
+  const { optionFees: oneEthOptionFees } = useFetchOptionFees(
+    1,
+    (ethPrice || 0) as number,
+    0
+  );
+
+  const feesList = [
+    {
+      orgName: "Autonomint",
+      amount: `$${oneEthOptionFees.toFixed(2)}`,
+      tag: "Lowest Fee",
+      tagColor: "#05A552",
+      tagBg: "#05A552",
+      textColor: "white",
+      borderColor: "borderGreen",
+    },
+    {
+      orgName: "Athermint",
+      amount: "$0.02",
+      tag: "Lowest Fee",
+      tagColor: "#D6A100",
+      tagBg: "#FFF7E0",
+      textColor: "#D6A100",
+      borderColor: "borderYellow",
+    },
+    {
+      orgName: "AthermintXYZ",
+      amount: "$0.02",
+      tag: "Lowest Fee",
+      tagColor: "#AA0001",
+      tagBg: "#FEE2E2",
+      textColor: "#AA0001",
+      borderColor: "borderRed",
+    },
+  ];
+
+  console.log(oneEthOptionFees, "oneEthOptionFees");
 
   const pairs = [];
   for (let i = 0; i < items.length; i += 2) {
@@ -307,7 +328,7 @@ export default function Home() {
           >
             <div className={" h-full flex flex-col justify-between"}>
               {hoveredIndex === 0 ? (
-                <MintUSDAHoverElement />
+                <MintUSDAHoverElement feesList={feesList} />
               ) : (
                 <div className="h-full flex flex-col justify-between items-start  p-4">
                   <h3 className="font-medium  text-[42px]  mb-2">
