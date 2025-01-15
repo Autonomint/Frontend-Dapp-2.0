@@ -1,10 +1,10 @@
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import farmyourluckLogo from "../assets/cryptocurrency-color_eth.png";
+import farmyourluckLogo from "@/app/assets/cryptocurrency-color_eth.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import AppNavbar from "@/custom-components/AppNavbar";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -105,7 +105,7 @@ const formSchema = Yup.object({
     .required("Strike price is required"),
 });
 
-function AdditionalDetails() {
+function AdditionalDetails({ currency }: { currency: string }) {
   const chainId = useChainId();
   const { isUsdValuePending, usdValue: ethPrice } = useGetUsdValue();
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
@@ -117,13 +117,17 @@ function AdditionalDetails() {
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const formik = useFormik({
     initialValues: {
-      collateral: "eth",
+      collateral: currency || "eth",
       collateralAmount: 0,
       strikePrice: 5,
     },
     validationSchema: formSchema,
     onSubmit: handleMint,
   });
+
+  useEffect(() => {
+    formik.setFieldValue("collateral", currency);
+  }, [currency]);
 
   // Create the options for the contract
   const options = Options.newOptions()
@@ -213,8 +217,6 @@ function AdditionalDetails() {
       // Calculate the amint to be minted
       const optionf = await getOptionFees();
       setOptionFees(optionf);
-      debugger;
-
       const amintToMint =
         (Number(formik.values.collateralAmount) * Number(ethPrice) * 80) /
         10000;
@@ -246,7 +248,6 @@ function AdditionalDetails() {
    * Handles the calculation and setting of the eth volatility.
    */
   useEffect(() => {
-    debugger;
     if (formik.values.collateral == undefined) {
       formik.setErrors({
         collateralAmount: "select collateral type",
@@ -363,15 +364,17 @@ function AdditionalDetails() {
           type="submit"
           className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient"
         >
-          Mint
+          {isDepositsLoading ? "Loading..." : "Mint"}
         </Button>
       </div>
     </form>
   );
 }
 
-function MintUSDa() {
+async function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
   const router = useRouter();
+  const currency = (await params)?.currency;
+
   return (
     <>
       <AppNavbar />
@@ -380,10 +383,10 @@ function MintUSDa() {
           <ChartComponent />
         </div>
         <div className="col-span-1 hidden md:block border border-solid border-grayLight">
-          <AdditionalDetails />
+          <AdditionalDetails currency={currency} />
         </div>
         <div className="col-span-1 block md:hidden border border-solid border-grayLight">
-          <AdditionalDetails />
+          <AdditionalDetails currency={currency} />
         </div>
         <div className="col-span-2 block md:hidden border border-solid border-grayLight">
           <ChartComponent />

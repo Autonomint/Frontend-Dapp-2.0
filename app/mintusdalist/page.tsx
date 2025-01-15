@@ -5,7 +5,7 @@ import React from "react";
 import cryptoEth from "../assets/eth.png";
 import { Button } from "@/components/ui/button";
 import arrow from "../assets/arrow-right-02.png";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AppNavbar from "@/custom-components/AppNavbar";
 import { motion } from "framer-motion";
 
@@ -99,7 +99,9 @@ function SingleListItem({
 
       <div>
         <Button
-          onClick={() => router.push("/mintUSDaWithCollateral")}
+          onClick={() => {
+            router.push(`/mintUSDaWithCollateral/${item.token}`);
+          }}
           className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
         >
           <Image src={arrow} width={42} height={42} alt="arrow" />

@@ -1,6 +1,6 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { useWriteContract } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:
@@ -18,6 +18,7 @@ interface FunctionInputs {
 }
 
 const useDepositTokens = () => {
+  const { chainId } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const {
     isPending: isDepositsLoading,
@@ -43,7 +44,10 @@ const useDepositTokens = () => {
     // Call the `writeContract` function to deposit tokens
     writeContract?.({
       abi: borrowingContractAbi,
-      address: borrowingContractAddress[11155111],
+      address:
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
       functionName: "depositTokens",
       args: [strikePercent, strikePrice, volatility, depositingAmount],
       value,

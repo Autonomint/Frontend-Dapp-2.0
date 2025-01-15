@@ -3,10 +3,13 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
 const useGetLtv = () => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { isPending: isTvlPending, data: tvlValue } = useReadContract({
     abi: borrowingContractAbi,
-    address: borrowingContractAddress[11155111],
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
     functionName: "getLTV",
     query: { enabled: !!address },
   });

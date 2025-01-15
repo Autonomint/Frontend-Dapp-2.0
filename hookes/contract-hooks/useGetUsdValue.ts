@@ -1,12 +1,16 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
 const useGetUsdValue = () => {
+  const { address, chainId } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const { isPending: isUsdValuePending, data: usdValue } = useReadContract({
     abi: borrowingContractAbi,
-    address: borrowingContractAddress[11155111],
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
     functionName: "getUSDValue",
   });
 

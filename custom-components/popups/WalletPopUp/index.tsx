@@ -17,10 +17,10 @@ import {
   useAppKitNetwork,
   useDisconnect,
 } from "@reown/appkit/react";
-import { ChevronDownIcon } from "lucide-react";
+import { Check, ChevronDownIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { useBalance } from "wagmi";
+import { useBalance, useSwitchChain } from "wagmi";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -32,6 +32,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const { disconnect } = useDisconnect();
   const { caipNetwork, caipNetworkId, chainId, switchNetwork } =
     useAppKitNetwork();
+  const { switchChain } = useSwitchChain();
+
   const { data, isError, isLoading } = useBalance({
     address: usDaAddress ? (address as `0x${string}`) : undefined,
     token: usDaAddress
@@ -41,6 +43,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleBtnClick = () => {
     if (!isConnected) open();
   };
+  console.log(chainId == NetworkId.EthereumSepolia, "chainId");
 
   return (
     <div>
@@ -101,20 +104,37 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 </div>
               </PopoverTrigger>
               <PopoverContent
-                align="start"
-                className="w-full border bg-white border-gray-200 rounded-md shadow-md"
+                align="center"
+                className="w-full border  mt-3 bg-white border-gray-200 rounded-md shadow-md"
               >
-                <div className="p-3 flex flex-col gap-4">
-                  <div className="flex flex-row gap-2">
+                <div className=" flex flex-col gap-4">
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155111,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
                     <Image
                       src={ethereumIcon}
                       alt="ethereum icon"
                       width={24}
                       height={24}
                     />{" "}
-                    <Typography className="">Ethereum Sepolia</Typography>
+                    <Typography className="">Ethereum Sepolia</Typography>{" "}
+                    {chainId == NetworkId.EthereumSepolia ? (
+                      <Check width={18} height={18} />
+                    ) : null}
                   </div>
-                  <div className="flex flex-row gap-2">
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 84532,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
                     <Image
                       src={ethereumIcon}
                       alt="ethereum icon"
@@ -122,6 +142,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       height={24}
                     />{" "}
                     <Typography className="">Base Sepolia</Typography>
+                    {chainId == NetworkId.BaseSepolia && (
+                      <Check width={18} height={18} />
+                    )}
                   </div>
                 </div>
               </PopoverContent>
