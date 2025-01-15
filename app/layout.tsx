@@ -55,8 +55,8 @@ export default function RootLayout({
                   {/* <AppNavbar /> */}
                   <div className="flex-grow overflow-y-auto no-scrollbar">
                     {children}
-                    <Footer />
                   </div>
+                  <Footer />
                 </ThemeProvider>
               </Provider>
             </WalletProvider>

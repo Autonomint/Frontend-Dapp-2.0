@@ -52,11 +52,8 @@ function TransferBetweeHoverElement() {
             </div>
           </div>
           <div className="flex items-center pb-9  justify-center gap-3 bg-none">
-            <RightArrowIcon
-              style={{
-                backgroundColor: theme == "dark" ? "unset !important" : "",
-              }}
-            />
+            <RightArrowIcon />
+
             <DotIcon />
             <LeftArrowIcon
               style={{
@@ -123,7 +120,11 @@ function DCDSHoverElement() {
       <div className=" text-textBlack text-[38px] font-medium dark:text-white">
         $1,000 Invested would have become $3,000
       </div>
-      <Image src={PriceGraph} alt="Price Graph" className="w-full" />
+      <Image
+        src={PriceGraph}
+        alt="Price Graph"
+        className="w-[900px] object-fit"
+      />
       <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
         Get up to 200% APY
       </div>
@@ -292,14 +293,17 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <div className="w-full h-[300px] md:block border-[1px] border-x border-grayLight">
-        <Image
-          src={theme === "dark" ? darkboat : boat}
-          alt="crypto-eth"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="border-[1px] overflow-hidden  border-t-grayLight">
+      <Image
+        className="hidden dark:block w-full"
+        src={darkboat}
+        alt="dark-mode-image"
+      />
+      <Image
+        className="block dark:hidden w-full"
+        src={boat}
+        alt="light-mode-image"
+      />
+      <div className="border-[1px] overflow-hidden  border-t-grayLight ">
         {/* 1st row */}
         <div className={`flex closeAnimateTop  `}>
           <div
@@ -493,6 +497,9 @@ export default function Home() {
           >
             <div
               className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]    h-[118px] w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
+              onClick={() => {
+                router.push("/redeem");
+              }}
               style={{
                 transition: "width 0.3s ease-in, height 0.3s ease-in",
               }}

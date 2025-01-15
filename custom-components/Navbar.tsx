@@ -1,5 +1,6 @@
 "use client";
 import autonomintTxtImage from "@/app/assets/autonomint.svg";
+import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Moon } from "lucide-react";
@@ -11,7 +12,6 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
-  const currentTheme = theme === "system" ? systemTheme : theme;
   return (
     <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A]">
       <Link href="/">
@@ -24,11 +24,16 @@ function Navbar() {
             />
           </div>
 
-          <div className="text-xl    tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
+          <div className="text-xl    tracking-tighter text-[#020202] ">
             <Image
+              className="hidden dark:block w-full flex shrink-0"
+              src={autonomintTxtImageDark}
+              alt="dark-mode-image"
+            />
+            <Image
+              className="block dark:hidden w-full flex shrink-0"
               src={autonomintTxtImage}
-              alt="autonomint-dapp"
-              style={{ width: "100%", height: "100%" }}
+              alt="light-mode-image"
             />
           </div>
         </div>
@@ -44,6 +49,7 @@ function Navbar() {
         >
           <Moon style={{ width: "24px", height: "24px" }} />
         </Button>
+
         <NotificationPopup />
         <ReferPopup />
       </div>

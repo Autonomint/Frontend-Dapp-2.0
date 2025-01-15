@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 interface AppNavbarProps {
   tabOptions?: TabOption[];
   activeBack?: boolean;
@@ -20,6 +21,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme } = useTheme();
 
   const navList =
     tabOptions?.length === 0
@@ -61,7 +63,9 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
           onClick={() => {
             router.push("/");
           }}
-          className="bg-black h-full px-8 py-[18px] hover:bg-black"
+          className={
+            "bg-black h-full px-8 py-[18px] hover:bg-black dark:bg-custom-gradient-to-top"
+          }
         >
           <Image src={arrowLeft} width={42} height={42} alt="arrow" />
         </Button>

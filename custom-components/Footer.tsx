@@ -1,5 +1,6 @@
 "use client";
 import autonomintTxtImage from "@/app/assets/autonomint.svg";
+import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import discord from "@/app/assets/discord_symbol.svg";
 import logo from "@/app/assets/logo.svg";
 import twitter from "@/app/assets/twitter-white-icon.svg";
@@ -8,12 +9,14 @@ import telegram from "@/app/assets/telegram-icon.svg";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
+import { useTheme } from "next-themes";
 
 export default function Footer() {
   const [openFaq, setOpenFaq] = React.useState(false);
   const [openGetstart, setOpenGetstart] = React.useState(false);
+  const { theme } = useTheme();
   return (
-    <div className="py-7  flex items-center border-[1] border-x border-y border-grayLight border-solid">
+    <div className="py-7  flex items-center border-[1] border-x border-y border-grayLight">
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">
         <div className="flex w-full justify-center  text-sm rounded-md">
           <div className="flex w-full justify-between  ">
@@ -26,11 +29,16 @@ export default function Footer() {
                 />
               </div>
 
-              <div className="text-xl    tracking-tighter text-[#020202] dark:text-[#EEEEEE]">
+              <div className="text-xl    tracking-tighter text-[#020202]">
                 <Image
+                  className="hidden dark:block w-full"
+                  src={autonomintTxtImageDark}
+                  alt="dark-mode-image"
+                />
+                <Image
+                  className="block dark:hidden w-full"
                   src={autonomintTxtImage}
-                  alt="autonomint-dapp"
-                  style={{ width: "100%", height: "100%" }}
+                  alt="light-mode-image"
                 />
               </div>
             </div>
@@ -43,8 +51,10 @@ export default function Footer() {
                   <div className="w-[1.5rem]">
                     <Image
                       src={paperIcon}
-                      alt="autonomint-dapp"
-                      className="rounded-md "
+                      alt="paperIcon"
+                      className={`rounded-md ${
+                        theme === "dark" ? "filter invert" : ""
+                      }`}
                       style={{ width: "100%", height: "100%" }}
                     />
                   </div>
@@ -58,8 +68,10 @@ export default function Footer() {
                   <div className="w-[1.5rem]">
                     <Image
                       src={discord}
-                      alt="autonomint-dapp"
-                      className="rounded-md "
+                      alt="discord"
+                      className={`rounded-md ${
+                        theme === "dark" ? "filter invert" : ""
+                      }`}
                       style={{ width: "100%", height: "100%" }}
                     />
                   </div>
@@ -73,7 +85,10 @@ export default function Footer() {
                   <div className="w-[1.5rem] ">
                     <Image
                       src={twitter}
-                      alt="autonomint-dapp"
+                      className={`rounded-md ${
+                        theme === "dark" ? "filter invert" : ""
+                      }`}
+                      alt="twitter"
                       style={{ width: "100%", height: "100%" }}
                     />
                   </div>
@@ -87,8 +102,10 @@ export default function Footer() {
                   <div className="w-[1.5rem]">
                     <Image
                       src={telegram}
-                      alt="autonomint-dapp"
-                      className="rounded-md "
+                      alt="telegram"
+                      className={`rounded-md ${
+                        theme === "dark" ? "filter invert" : ""
+                      }`}
                       style={{ width: "100%", height: "100%" }}
                     />
                   </div>
