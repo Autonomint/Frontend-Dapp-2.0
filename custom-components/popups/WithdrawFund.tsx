@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent,DialogTrigger } from "@/components/ui/dialog";
 import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
@@ -17,6 +17,7 @@ import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import PopupDropdown from "../PopupDropdown";
+import CustomDropdown from "../CustomDropdown";
 
 export function WithdrawFund({
   position,

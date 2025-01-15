@@ -20,11 +20,15 @@ function Navbar() {
             <Image
               src={logo}
               alt="autonomint-dapp"
-              style={{ width: "100%", height: "100%" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexShrink: 0,
+              }}
             />
           </div>
-
-          <div className="text-xl    tracking-tighter text-[#020202] ">
+          <div className="text-xl tracking-tighter text-[#020202]">
             <Image
               className="hidden dark:block w-full flex shrink-0"
               src={autonomintTxtImageDark}

@@ -387,13 +387,35 @@ function AdditionalDetails({ currency }: { currency: string }) {
           usdaBorrowed={amintToBeMinted == "0" ? "0.00" : amintToBeMinted}
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
+        <div className="w-full h-2 bg-gray-200 rounded-none mt-3 flex overflow-hidden">
+          {[
+            { label: "Deposit", value: 2, color: "#42DD9F" },
+            { label: "Option Fee", value: 0.7, color: "#FF6B84" },
+            { label: "USDa borrowed", value: 0.2, color: "#7890ED" },
+            { label: "Downside Protection", value: 0.7, color: "#06BE5F" },
+          ].map((metric, index, arr) => {
+            const total = arr.reduce((acc, item) => acc + item.value, 0);
+            const percentage = (metric.value / total) * 100;
+
+            return (
+              <div
+                key={index}
+                style={{
+                  width: `${percentage}%`,
+                  backgroundColor: metric.color,
+                }}
+                title={`${metric.label}: ${percentage.toFixed(2)}%`}
+              />
+            );
+          })}
+        </div>
       </div>
       <div className="col-span-1">
         <Button
           type="submit"
-          className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient"
+          className="bg-textBlack text-white py-6 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-top"
         >
-          {isDepositsLoading ? "Loading..." : "Mint"}
+          {isDepositsLoading ? "Loading..." : "Mint USDa"}
         </Button>
       </div>
     </form>

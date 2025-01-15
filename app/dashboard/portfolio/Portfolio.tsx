@@ -11,6 +11,7 @@ import useGetPositionList, {
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import displayNumberWithPrecision from "@/utils/helpers";
 import { useEffect, useState } from "react";
+ 
 
 const PositionTableRow = ({
   position,
