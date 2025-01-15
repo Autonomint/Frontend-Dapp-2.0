@@ -13,13 +13,14 @@ function Page() {
   const [supportingText, setSupportingText] = useState(
     "Tap a card to view details"
   );
+  const [rewardAmount, setRewardAmount] = useState("");
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
   const { theme } = useTheme();
 
   useEffect(() => {
     if (selectedIndexForReward !== -1) {
-      setSupportingText("Congratulations! You have won");
+      setSupportingText("Congratulations! You have earned");
       setButtonText("Claim Reward");
       return;
     }
@@ -30,6 +31,12 @@ function Page() {
       setButtonText("Pay $5");
     }
   }, [isFlipped, selectedIndexForReward]);
+
+  useEffect(() => {
+    if (buttonText === "Claim Reward") {
+      setRewardAmount("+0.001 ETH");
+    }
+  }, [buttonText]);
 
   const handleClick = (index: number) => {
     setIsFlipped((prev) => {
@@ -55,7 +62,13 @@ function Page() {
   const supportingTextVariants = {
     hidden: { opacity: 0, x: 0, y: 0 },
     visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.5 } },
-    exit: { opacity: 0, x: -20, y: 0, transition: { duration: 0.3 } },
+    exit: { opacity: 0, x: 0, y: 0, transition: { duration: 0.3 } },
+  };
+
+  const rewardAmountVariants = {
+    hidden: { opacity: 0, x: 0, y: +50 },
+    visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: 0, y: -100, transition: { duration: 0.3 } },
   };
 
   const tabs = [
@@ -103,7 +116,7 @@ function Page() {
                           : "selected-for-reward-amount-hidden"
                       }`}
                     >
-                      0.001 ETH
+                      + 0.001 ETH
                     </div>
                   </div>
                 </div>
@@ -126,9 +139,21 @@ function Page() {
                   {supportingText}
                 </motion.span>
               </AnimatePresence>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={rewardAmount}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={rewardAmountVariants}
+                  className="block dark:text-white text-[42px] lg:text-left"
+                >
+                  {rewardAmount}
+                </motion.span>
+              </AnimatePresence>
             </span>
             <div className="flex flex-col text-left mb-28 lg:mb-0">
-              <div className="text-textBlack lg:text-3xl text-[20px] font-medium">
+              <div className="text-textBlack lg:text-3xl text-[20px] font-medium dark:text-white">
                 How it works?
               </div>
               <ol className="list-decimal list-inside mt-3 text-grayLight">
@@ -148,7 +173,7 @@ function Page() {
             </div>
             <button
               onClick={() => setSelectedIndexForReward(selectedIndex)}
-              className="absolute bg-black w-full left-0 bottom-0 text-white h-[90px] font-bold text-[32px]"
+              className="absolute bg-black w-full left-0 bottom-0 text-white h-[90px] font-bold text-[32px] dark:bg-custom-gradient-to-top"
             >
               <AnimatePresence mode="wait">
                 <motion.span
@@ -161,7 +186,7 @@ function Page() {
                       ? textVariantsButtonCliked
                       : textVariants
                   }
-                  className="block"
+                  className="block h-full flex items-center justify-center"
                 >
                   {buttonText}
                 </motion.span>

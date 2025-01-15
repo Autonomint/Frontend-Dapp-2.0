@@ -1,6 +1,7 @@
 "use client";
 import { SearchIcon } from "@/components/ui/SvgIcons";
 import { Input } from "@/components/ui/input";
+import { WithdrawFund } from "@/custom-components/popups/WithdrawFund";
 import { useState } from "react";
 
 function PortolioTable({
@@ -111,6 +112,7 @@ function Portfolio() {
 
   // will handle all this through redux later
   const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
+  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
 
   return (
     <div className="flex flex-col">
@@ -177,6 +179,10 @@ function Portfolio() {
         isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
+      <WithdrawFund
+        isDialogOpen={false}
+        setIsDialogOpen={setIsWithdrawDialogOpen}
+      />
     </div>
   );
 }
