@@ -78,9 +78,9 @@ function BridgeMetricFields({
 
 function page() {
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <AppNavbar activeBack={false} />
-      <div className="grid md:grid-cols-2 md:grid-rows-[84%_20%]">
+      <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
         <BridgeComponent
           heading={"From"}
           network={"Sepolia"}
@@ -93,7 +93,7 @@ function page() {
           token={"USDC"}
           totalAmount={"$1,200"}
         />
-        <div className="col-span-1 flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
+        <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields
             label={"Amount to receive"}
             value={"160 Hug × 23 Hug"}
@@ -101,11 +101,10 @@ function page() {
           <BridgeMetricFields label={"Gas"} value={"$1.80 (0.001 ETH)"} />
           <BridgeMetricFields label={"Time"} value={"~2min"} />
         </div>
-        <div className="col-span-1">
-          <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom">
-            Bridge
-          </Button>
-        </div>
+
+        <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight">
+          Bridge
+        </Button>
       </div>
     </div>
   );

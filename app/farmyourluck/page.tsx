@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import "../../styles/farmyourluckstyles.css";
+import { useTheme } from "next-themes";
 
 function Page() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -14,6 +15,7 @@ function Page() {
   );
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (selectedIndexForReward !== -1) {
@@ -65,7 +67,7 @@ function Page() {
   ];
   return (
     <div className="h-full w-full flex flex-col">
-      <AppNavbar tabOptions={tabs}  />
+      <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
         <div className="grid col-span-1 lg:col-span-4">
           <div className="grid grid-cols-3 gap-6 md:p-8 p-5">

@@ -1,7 +1,8 @@
 import ethereumIcon from "@/app/assets/ethereum-icon.svg";
-import WalletIcon from "@/app/assets/wallet-01.svg";
+
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/components/ui/PopUp";
+import { WalletIcon } from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +61,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     width={24}
                     height={24}
                   />
-                  <ChevronDownIcon className="w-4 h-4 " />
+                  <ChevronDownIcon className="w-4 h-4 dark:text-black" />
                 </div>
               </PopoverTrigger>
               <PopoverContent
@@ -72,7 +73,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             </Popover>
           </div>
           <div className="relative flex p-[10px] px-5  border-solid border-l-2 border-black  flex-row items-center gap-3 ">
-            <Image alt="wallet" width={24} height={24} src={WalletIcon} />
+            <WalletIcon />
             <Typography size="body" className="">
               {"Connect Wallet"}
             </Typography>
@@ -108,7 +109,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             title="Wallet Info"
             content={
               <div className="relative flex p-[10px] px-5  border-solid border-l-2 border-black flex-row items-center gap-3 ">
-                <Image alt="wallet" width={24} height={24} src={WalletIcon} />
+                <WalletIcon />
                 <Typography size="body" className="">
                   {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
                 </Typography>
