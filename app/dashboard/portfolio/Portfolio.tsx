@@ -1,13 +1,228 @@
 "use client";
 import { SearchIcon } from "@/components/ui/SvgIcons";
 import { Input } from "@/components/ui/input";
+import { RebalancePopup } from "@/custom-components/popups/Rebalance";
 import { WithdrawFund } from "@/custom-components/popups/WithdrawFund";
-import { useState } from "react";
+import { WithdrawModal } from "@/custom-components/popups/WithdrawModal";
+import useGetPositionList, {
+  PositionData,
+} from "@/hookes/api-hooks/useGetPositionList";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import displayNumberWithPrecision from "@/utils/helpers";
+import { useEffect, useState } from "react";
+
+const PositionTableRow = ({
+  position,
+  tabPosition,
+  idx,
+  setSelectedPosition,
+  setIsRebalanceDialogOpen,
+  setIsWithdrawDialogOpen,
+  isViewPositionOpen,
+  setViewPosition,
+  isRenewRepayOpen,
+  setRenewRepay,
+}: {
+  isViewPositionOpen: boolean;
+  setViewPosition: (isOpen: boolean) => void;
+  isRenewRepayOpen: boolean;
+  setRenewRepay: (isOpen: boolean) => void;
+  setIsRebalanceDialogOpen: (isOpen: boolean) => void;
+  setIsWithdrawDialogOpen: (isOpen: boolean) => void;
+  position: PositionData;
+  tabPosition: "Borrowed" | "Deposited";
+  idx: number;
+  setSelectedPosition: (position: PositionData) => void;
+}) => {
+  const depositDetails = [
+    {
+      headline: "Eth Deposited",
+      value: "0.00123",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "ETH Price at Deposit",
+      value: "$1645.121",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Amint Amount minted",
+      value: "1.234",
+      tooltip: true,
+      tooltipText: "80% of the total deposited amount",
+    },
+    {
+      headline: "Total Amount (Amint minted + Interest Amount returned)",
+      value: "-",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "APR at Deposit",
+      value: "5%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Downside percentage at Deposit",
+      value: "20%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Liquidated?",
+      value: "No",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Interest rate gained",
+      value: "3%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Abond Minted",
+      value: "-",
+      tooltip: false,
+      tooltipText: "",
+    },
+  ];
+  const [depositData, setDepositData] = useState(depositDetails);
+  const [amountProtected, setAmountProtected] = useState(0);
+  const { usdValue: ethPrice } = useGetUsdValue();
+  const [openChart, setOpenChart] = useState(false);
+
+  const amountProtectedFunction = () => {
+    if (ethPrice === undefined) return;
+    if (parseFloat(ethPrice.toString()) > position.ethPrice) {
+      setAmountProtected(0);
+    } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
+      const amountProt =
+        parseFloat(position.depositedAmount) *
+        (position.ethPrice - parseFloat(ethPrice.toString()));
+      const amountProtPrecision = parseFloat(
+        displayNumberWithPrecision((amountProt / 100).toFixed(2))
+      );
+      setAmountProtected(amountProtPrecision);
+    } else if (parseFloat(ethPrice.toString()) <= 0.8 * position.ethPrice) {
+      const amountProt =
+        0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
+      const amountProtPrecision = parseFloat(
+        displayNumberWithPrecision((amountProt / 100).toFixed(2))
+      );
+      setAmountProtected(amountProtPrecision);
+    }
+  };
+
+  useEffect(() => {
+    amountProtectedFunction();
+  }, [position]);
+
+  const handleRowClick = () => {
+    setSelectedPosition(position);
+  };
+  return (
+    <tr className="border border-solid border-grayLight">
+      <td className="px-5 py-6">{idx}</td>
+      <td className="px-5 py-6">{position.depositedAmount}</td>
+      <td className="px-5 py-6">
+        ${Number(position.noOfAmintMinted).toFixed(2)}
+      </td>
+      <td className="px-5 py-6 hidden md:table-cell">
+        ${position.status == "DEPOSITED" ? amountProtected : "-"}
+      </td>
+      <td className="px-5 py-6 hidden md:table-cell">
+        {" "}
+        {position.noOfAbondMinted === null
+          ? "-"
+          : `$${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
+      </td>
+
+      <td className="px-5 py-6 hidden md:table-cell">
+        {position.status === "LIQUIDATED" ? "Yes" : "No"}
+      </td>
+      <td
+        className={`px-5 py-6 ${
+          tabPosition === "Borrowed" ? "block" : "none"
+        } md:text-right md:table-cell md:space-x-12`}
+        style={{
+          display: tabPosition === "Borrowed" ? "block" : "none",
+        }}
+      >
+        <span
+          onClick={() => {
+            setRenewRepay(true);
+            handleRowClick();
+          }}
+          className="font-bold cursor-pointer text-[20px] underline "
+        >
+          Repay/Renew
+        </span>
+        <span
+          onClick={() => {
+            setViewPosition(true);
+            handleRowClick();
+          }}
+          className="font-bold cursor-pointer text-[20px] underline  hidden md:inline"
+        >
+          View
+        </span>
+      </td>
+
+      <td
+        className={`px-5 py-6 ${
+          tabPosition === "Deposited" ? "block" : "none"
+        } md:text-right md:table-cell md:space-x-12`}
+        style={{
+          display: tabPosition === "Deposited" ? "block" : "none",
+        }}
+      >
+        <span
+          onClick={handleRowClick}
+          className="font-bold cursor-pointer text-[20px] underline "
+        >
+          Withdraw
+        </span>
+        <span
+          onClick={handleRowClick}
+          className="font-bold cursor-pointer text-[20px] underline  "
+        >
+          Rebalance
+        </span>
+        <span
+          onClick={handleRowClick}
+          className="font-bold cursor-pointer text-[20px] underline  hidden md:inline"
+        >
+          View
+        </span>
+      </td>
+    </tr>
+  );
+};
 
 function PortolioTable({
   tabPosition,
+  positionList,
+  setSelectedPosition,
+  setIsRebalanceDialogOpen,
+  setIsWithdrawDialogOpen,
+  isViewPositionOpen,
+  setViewPosition,
+  isRenewRepayOpen,
+  setRenewRepay,
 }: {
+  isViewPositionOpen: boolean;
+  setViewPosition: (isOpen: boolean) => void;
+  isRenewRepayOpen: boolean;
+  setRenewRepay: (isOpen: boolean) => void;
+  setIsRebalanceDialogOpen: (isOpen: boolean) => void;
+  setIsWithdrawDialogOpen: (isOpen: boolean) => void;
   tabPosition: "Borrowed" | "Deposited";
+  positionList: PositionData[];
+  setSelectedPosition: (position: PositionData) => void;
 }) {
   return (
     <div className="overflow-x-auto">
@@ -32,54 +247,22 @@ function PortolioTable({
           </tr>
         </thead>
         <tbody className="font-normal ">
-          {Array(2)
-            .fill(0)
-            .map((item, key) => {
-              return (
-                <tr key={key} className="border border-solid border-grayLight">
-                  <td className="px-5 py-6">02</td>
-                  <td className="px-5 py-6">1.789</td>
-                  <td className="px-5 py-6 hidden md:table-cell">$5,093</td>
-                  <td className="px-5 py-6 hidden md:table-cell">$3,000</td>
-                  <td className="px-5 py-6 hidden md:table-cell">--</td>
-                  <td className="px-5 py-6 hidden md:table-cell">YES</td>
-                  <td
-                    className={`px-5 py-6 ${
-                      tabPosition === "Borrowed" ? "block" : "none"
-                    } md:text-right md:table-cell md:space-x-12`}
-                    style={{
-                      display: tabPosition === "Borrowed" ? "block" : "none",
-                    }}
-                  >
-                    <span className="font-bold text-[20px] underline ">
-                      Repay/Renew
-                    </span>
-                    <span className="font-bold text-[20px] underline  hidden md:inline">
-                      View
-                    </span>
-                  </td>
-
-                  <td
-                    className={`px-5 py-6 ${
-                      tabPosition === "Deposited" ? "block" : "none"
-                    } md:text-right md:table-cell md:space-x-12`}
-                    style={{
-                      display: tabPosition === "Deposited" ? "block" : "none",
-                    }}
-                  >
-                    <span className="font-bold text-[20px] underline ">
-                      Withdraw
-                    </span>
-                    <span className="font-bold text-[20px] underline  ">
-                      Rebalance
-                    </span>
-                    <span className="font-bold text-[20px] underline  hidden md:inline">
-                      View
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
+          {positionList.map((position: PositionData, key: number) => {
+            return (
+              <PositionTableRow
+                idx={key + 1}
+                position={position}
+                tabPosition={tabPosition}
+                setSelectedPosition={setSelectedPosition}
+                setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+                setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+                isViewPositionOpen={isViewPositionOpen}
+                setViewPosition={setViewPosition}
+                isRenewRepayOpen={isRenewRepayOpen}
+                setRenewRepay={setRenewRepay}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -109,10 +292,18 @@ function Portfolio() {
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"
   );
+  const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
+    null
+  );
 
+  const [isViewPositionOpen, setViewPosition] = useState(false);
+  const [isRenewRepayOpen, setRenewRepay] = useState(false);
   // will handle all this through redux later
   const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
+  const { positionList, positionListError, positionListRefetech } =
+    useGetPositionList();
+  console.log(positionList, "positionList");
 
   return (
     <div className="flex flex-col">
@@ -170,18 +361,30 @@ function Portfolio() {
           />
         </div>
       </div>
-      <PortolioTable tabPosition={tabPosition} />
-      {/* <RebalancePopup
-        isDialogOpen={isRebalanceDialogOpen}
-        setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
+      <PortolioTable
+        setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+        setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+        setSelectedPosition={setSelectedPosition}
+        positionList={positionList}
+        tabPosition={tabPosition}
+        isViewPositionOpen={isViewPositionOpen}
+        setViewPosition={setViewPosition}
+        isRenewRepayOpen={isRenewRepayOpen}
+        setRenewRepay={setRenewRepay}
       />
-      <WithdrawModal
-        isDialogOpen={true}
+      {/* <RebalancePopup
+        isDialogOpen={false}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
+      <WithdrawModal
+        position={(selectedPosition || []) as PositionData}
+        isDialogOpen={isViewPositionOpen}
+        setIsDialogOpen={() => setViewPosition(false)}
+      />
       <WithdrawFund
-        isDialogOpen={false}
-        setIsDialogOpen={setIsWithdrawDialogOpen}
+        position={(selectedPosition || []) as PositionData}
+        isDialogOpen={isRenewRepayOpen}
+        setIsDialogOpen={() => setRenewRepay(false)}
       />
     </div>
   );

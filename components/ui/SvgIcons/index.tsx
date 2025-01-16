@@ -50,8 +50,8 @@ export const WalletIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M9 5H15C17.8284 5 19.2426 5 20.1213 5.87868C21 6.75736 21 8.1716 21 11V13C21 15.8284 21 17.2426 20.1213 18.1213C19.2426 19 17.8284 19 15 19H9C5.22876 19 3.34315 19 2.17157 17.8284C1 16.6569 1 14.7712 1 11V9C1 5.22876 1 3.34315 2.17157 2.17157C3.34315 1 5.22876 1 9 1H13C13.93 1 14.395 1 14.7765 1.10222C15.8117 1.37962 16.6204 2.18827 16.8978 3.22354C17 3.60504 17 4.07003 17 5"
         stroke={strokeColor}
-        stroke-width="1.5"
-        stroke-linecap="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -72,16 +72,16 @@ export const LeftArrowIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M42.3477 25H9.01437"
         stroke={strokeColor}
-        stroke-width="3.125"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="3.125"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M31.9311 35.4154C31.9311 35.4154 42.3476 27.7437 42.3477 24.9987C42.3477 22.2537 31.931 14.582 31.931 14.582"
         stroke={strokeColor}
-        stroke-width="3.125"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="3.125"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -118,15 +118,15 @@ export const SearchIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M23.3359 23.8359L29.3359 29.8359"
         stroke="#7A7A7A"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M26.6641 15.168C26.6641 8.54056 21.2915 3.16797 14.6641 3.16797C8.03665 3.16797 2.66406 8.54056 2.66406 15.168C2.66406 21.7954 8.03665 27.168 14.6641 27.168C21.2915 27.168 26.6641 21.7954 26.6641 15.168Z"
         stroke="#7A7A7A"
-        stroke-width="2"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinejoin="round"
       />
     </svg>
   );

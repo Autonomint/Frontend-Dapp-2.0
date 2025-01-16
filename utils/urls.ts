@@ -1,1 +1,1 @@
-export const BACKEND_API_URL = "https://43.204.73.16";
+export const BACKEND_API_URL = process.env.BACKEND_API_URL;
