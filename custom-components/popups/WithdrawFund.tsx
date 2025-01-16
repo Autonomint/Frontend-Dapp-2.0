@@ -1,26 +1,25 @@
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import CustomDropdown from "../CustomDropdown";
-import PopupDropdown from "../PopupDropdown";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
+import useInterestGain from "@/hookes/api-hooks/useInterateGain";
+import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
+import useCalculateInterest from "@/hookes/contract-hooks/useCalculateInterest";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
+import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision, {
   daysFromTimestamp,
   formatTimestamp,
 } from "@/utils/helpers";
-import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
-import useInterestGain from "@/hookes/api-hooks/useInterateGain";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useCalculateInterest from "@/hookes/contract-hooks/useCalculateInterest";
-import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
-import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import { useEffect, useRef, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
+import PopupDropdown from "../PopupDropdown";
 
 export function WithdrawFund({
   position,
-
   isDialogOpen,
   setIsDialogOpen,
 }: {
@@ -251,8 +250,12 @@ export function WithdrawFund({
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
 
-  const { calculateCumulativeRate, cumulativeRate, cumulativeReset } =
-    useCalculateInterest();
+  const {
+    calculateCumulativeRate,
+    cumulativeRate,
+    cumulativeReset,
+    cumulativeRateLoading,
+  } = useCalculateInterest();
   const {
     isLoading: ispendingCumulative,
     isSuccess: cumulativeRateSuccess,
@@ -262,7 +265,8 @@ export function WithdrawFund({
     confirmations: 1, // Number of confirmations required
   });
 
-  const { approveUsda, approveReset, amintApproveHash } = useApproveUsda();
+  const { approveUsda, approveReset, amintApproveHash, amintApproveLoading } =
+    useApproveUsda();
 
   const {
     data: usdaHashData,
@@ -273,7 +277,8 @@ export function WithdrawFund({
     hash: amintApproveHash,
   });
 
-  const { withdrawUsda, borrowReset } = useWithdrawUsda();
+  const { withdrawUsda, borrowReset, isPendingBorrowWithdraw } =
+    useWithdrawUsda();
 
   const handleRepay = async () => {
     debugger;
@@ -298,6 +303,23 @@ export function WithdrawFund({
       withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
     }
   }, [usdaHashData]);
+
+  const repayLoading =
+    usdaHashLoading ||
+    cumulativeRateLoading ||
+    amintApproveLoading ||
+    usdaHashLoading ||
+    isPendingBorrowWithdraw;
+
+  console.log(
+    cumulativeRate,
+    usdaHashLoading,
+    cumulativeRateLoading,
+    amintApproveLoading,
+    usdaHashLoading,
+    isPendingBorrowWithdraw,
+    "repayLoading"
+  );
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -383,13 +405,13 @@ export function WithdrawFund({
               <span>${Number(position.noOfAmintMinted).toFixed(2)}</span>
             </div>
             <div className="space-y-4">
-              {borrowedMetrics.map((item) => (
+              {depositDetails.map((item) => (
                 <div
-                  key={item.heading}
+                  key={item.headline}
                   className="flex justify-between text-sm text-gray-700"
                 >
                   <span className="text-grayLight text-[24px]">
-                    {item.heading}
+                    {item.headline}
                   </span>
                   <span className="text-textBlack text-[24px]">
                     {item.value}
@@ -398,10 +420,15 @@ export function WithdrawFund({
               ))}
             </div>
             <Button
+              disabled={position.status == BorrowStatus.WITHDREW}
               onClick={handleRepay}
               className="w-full mt-6 p-8 bg-black text-white text-[32px]"
             >
-              Repay
+              {repayLoading
+                ? "Loading..."
+                : position.status == BorrowStatus.DEPOSITED
+                ? "Repay"
+                : "Withdraw"}
             </Button>
           </>
         )}

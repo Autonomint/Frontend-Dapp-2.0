@@ -10,7 +10,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { parseEther, parseUnits } from "viem";
 import { BACKEND_API_URL } from "@/utils/urls";
-import { useAccount, useBalance, useChainId } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useChainId,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
@@ -107,6 +112,7 @@ const formSchema = Yup.object({
 
 function AdditionalDetails({ currency }: { currency: string }) {
   const chainId = useChainId();
+  const router = useRouter();
   const { isUsdValuePending, usdValue: ethPrice } = useGetUsdValue();
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
@@ -141,6 +147,29 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
   const { depositDatahash, isDepositsLoading, mintUSDa, reset } =
     useDepositTokens();
+
+  // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
+  const {
+    data: Depositdata,
+    isError: depositError,
+    error: depositErrorDetails,
+    isLoading: isDepositdataLoading,
+    isSuccess: isDepositSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: depositDatahash,
+    confirmations: 2,
+  });
+  useEffect(() => {
+    if (isDepositSuccess) {
+      handleResetPage();
+      router.push("/dashboard/portfolio");
+    }
+  }, [Depositdata]);
+
+  const handleResetPage = () => {
+    formik.resetForm();
+    reset();
+  };
 
   async function handleMint(values: any) {
     const strikePrice = values.strikePrice;

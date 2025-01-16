@@ -39,6 +39,7 @@ const useInterestGain = (index: number) => {
           chainId as number,
           index
         ),
+      enabled: !!address && !!chainId && !!index,
     }
   );
 

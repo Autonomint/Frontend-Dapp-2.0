@@ -9,3 +9,9 @@ export const globalAddress = {
   84532: "0x86C632E8D1fc82eef3801EFB37cbE0ad93D9755b",
   11155111: "0xA687412e7De672a5F945B15Db24c50F91512A19C",
 } as const;
+
+export const BorrowStatus = {
+  DEPOSITED: "DEPOSITED",
+  WITHDREW: "WITHDREW",
+  LIQUIDATED: "LIQUIDATED",
+} as const;

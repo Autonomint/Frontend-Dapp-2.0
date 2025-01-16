@@ -1,5 +1,6 @@
 "use client";
 import { SearchIcon } from "@/components/ui/SvgIcons";
+import { Typography } from "@/components/ui/Typography";
 import { Input } from "@/components/ui/input";
 import { RebalancePopup } from "@/custom-components/popups/Rebalance";
 import { WithdrawFund } from "@/custom-components/popups/WithdrawFund";
@@ -132,7 +133,7 @@ const PositionTableRow = ({
         ${Number(position.noOfAmintMinted).toFixed(2)}
       </td>
       <td className="px-5 py-6 hidden md:table-cell">
-        ${position.status == "DEPOSITED" ? amountProtected : "-"}
+        {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
       </td>
       <td className="px-5 py-6 hidden md:table-cell">
         {" "}
@@ -161,7 +162,7 @@ const PositionTableRow = ({
         >
           Repay/Renew
         </span>
-        <span
+        {/* <span
           onClick={() => {
             setViewPosition(true);
             handleRowClick();
@@ -169,7 +170,7 @@ const PositionTableRow = ({
           className="font-bold cursor-pointer text-[20px] underline  hidden md:inline"
         >
           View
-        </span>
+        </span> */}
       </td>
 
       <td
@@ -192,12 +193,6 @@ const PositionTableRow = ({
         >
           Rebalance
         </span>
-        <span
-          onClick={handleRowClick}
-          className="font-bold cursor-pointer text-[20px] underline  hidden md:inline"
-        >
-          View
-        </span>
       </td>
     </tr>
   );
@@ -213,7 +208,9 @@ function PortolioTable({
   setViewPosition,
   isRenewRepayOpen,
   setRenewRepay,
+  positionListLoading,
 }: {
+  positionListLoading: boolean;
   isViewPositionOpen: boolean;
   setViewPosition: (isOpen: boolean) => void;
   isRenewRepayOpen: boolean;
@@ -265,6 +262,20 @@ function PortolioTable({
           })}
         </tbody>
       </table>
+      {!positionListLoading && positionList.length === 0 ? (
+        <div className="border-t flex justify-center  border-x-0 border-b-0 border border-grayLight">
+          <Typography size="lg" variant="regular" className="mt-3">
+            No Data Available
+          </Typography>
+        </div>
+      ) : null}
+      {positionListLoading ? (
+        <div className="border-t flex justify-center  border-x-0 border-b-0 border border-grayLight">
+          <Typography size="lg" variant="regular" className="mt-3">
+            Loading...
+          </Typography>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -301,8 +312,12 @@ function Portfolio() {
   // will handle all this through redux later
   const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
-  const { positionList, positionListError, positionListRefetech } =
-    useGetPositionList();
+  const {
+    positionList,
+    positionListError,
+    positionListRefetech,
+    positionListLoading,
+  } = useGetPositionList();
   console.log(positionList, "positionList");
 
   return (
@@ -362,6 +377,7 @@ function Portfolio() {
         </div>
       </div>
       <PortolioTable
+        positionListLoading={positionListLoading}
         setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
         setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
         setSelectedPosition={setSelectedPosition}

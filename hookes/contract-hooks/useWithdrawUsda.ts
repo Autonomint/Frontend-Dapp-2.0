@@ -4,7 +4,7 @@ import { useAccount, useWriteContract } from "wagmi";
 
 const useWithdrawUsda = () => {
   const {
-    isPending: borrowWithdrawisLoadingone,
+    isPending: isPendingBorrowWithdraw,
     writeContractAsync: borrowWithdrawAsync, // Function for borrowing withdrawal
     reset: borrowReset, // Function for resetting borrowing
     data: borrowWithdrawData, // Data for borrowing withdrawal
@@ -29,7 +29,7 @@ const useWithdrawUsda = () => {
   };
 
   return {
-    borrowWithdrawisLoadingone,
+    isPendingBorrowWithdraw,
     borrowWithdrawData,
     withdrawUsda,
     borrowReset,

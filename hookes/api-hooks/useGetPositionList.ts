@@ -47,6 +47,7 @@ const useGetPositionList = () => {
     data: positionList,
     error: positionListError,
     refetch: positionListRefetech,
+    isLoading: positionListLoading,
   } = useQuery({
     queryKey: ["deposits", chainId, address],
     queryFn: (): Promise<any> =>
@@ -58,6 +59,7 @@ const useGetPositionList = () => {
     positionList: (positionList || []) as PositionData[],
     positionListError,
     positionListRefetech,
+    positionListLoading,
   };
 };
 
