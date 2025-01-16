@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent,DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
@@ -23,10 +23,14 @@ export function WithdrawFund({
   position,
   isDialogOpen,
   setIsDialogOpen,
+  positionListRefetech,
+  setSelectedPosition,
 }: {
+  positionListRefetech: () => void;
   position: PositionData;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
+  setSelectedPosition: (position: PositionData) => void;
 }) {
   const [toggleView, setToggleView] = useState("repay");
 
@@ -105,6 +109,7 @@ export function WithdrawFund({
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
+  const [repayLoading, setRepayLoading] = useState<boolean>(false);
 
   /**
    * Updates the deposit data based on the provided details.
@@ -120,8 +125,8 @@ export function WithdrawFund({
           ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
           : BigInt(
               BigInt(
-                position.normalizedAmount
-                  ? Number(position.normalizedAmount) * 10 ** 6
+                parseInt(position.normalizedAmount)
+                  ? Number(parseInt(position.normalizedAmount)) * 10 ** 6
                   : 0
               ) * lastCumulativeRate
             ) / BigInt(10 ** 27);
@@ -278,11 +283,32 @@ export function WithdrawFund({
     hash: amintApproveHash,
   });
 
-  const { withdrawUsda, borrowReset, isPendingBorrowWithdraw } =
-    useWithdrawUsda();
+  const {
+    withdrawUsda,
+    borrowReset,
+    isPendingBorrowWithdraw,
+    borrowWithdrawData,
+  } = useWithdrawUsda();
+
+  const {
+    isLoading: isLoadingWithdrawReceipt,
+    isSuccess: isSuccessWithdrawReceipt,
+    data: withdrawReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: (borrowWithdrawData || "0x") as `0x${string}`, // Transaction hash to wait for
+    confirmations: 1, // Number of confirmations required
+  });
+
+  useEffect(() => {
+    if (isSuccessWithdrawReceipt) {
+      setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
+      positionListRefetech();
+      setRepayLoading(false);
+    }
+  }, [isSuccessWithdrawReceipt, withdrawReceipt]);
 
   const handleRepay = async () => {
-    debugger;
+    setRepayLoading(true);
     setOpenConfirmNotice(false);
     cumulativeReset?.();
     approveReset?.();
@@ -304,23 +330,6 @@ export function WithdrawFund({
       withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
     }
   }, [usdaHashData]);
-
-  const repayLoading =
-    usdaHashLoading ||
-    cumulativeRateLoading ||
-    amintApproveLoading ||
-    usdaHashLoading ||
-    isPendingBorrowWithdraw;
-
-  console.log(
-    cumulativeRate,
-    usdaHashLoading,
-    cumulativeRateLoading,
-    amintApproveLoading,
-    usdaHashLoading,
-    isPendingBorrowWithdraw,
-    "repayLoading"
-  );
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -368,9 +377,9 @@ export function WithdrawFund({
           <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
             <input
               id="bordered-radio-1"
-              onClick={() => setToggleView("repay")}
               type="radio"
               checked={toggleView === "repay"}
+              onChange={() => setToggleView("repay")}
               name="bordered-radio"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
             />
@@ -385,7 +394,7 @@ export function WithdrawFund({
             <input
               id="bordered-radio-2"
               type="radio"
-              onClick={() => setToggleView("renew")}
+              onChange={() => setToggleView("renew")}
               checked={toggleView === "renew"}
               name="bordered-radio"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"

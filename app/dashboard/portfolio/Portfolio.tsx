@@ -11,7 +11,6 @@ import useGetPositionList, {
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import displayNumberWithPrecision from "@/utils/helpers";
 import { useEffect, useState } from "react";
- 
 
 const PositionTableRow = ({
   position,
@@ -248,6 +247,7 @@ function PortolioTable({
           {positionList.map((position: PositionData, key: number) => {
             return (
               <PositionTableRow
+                key={key}
                 idx={key + 1}
                 position={position}
                 tabPosition={tabPosition}
@@ -399,6 +399,8 @@ function Portfolio() {
         setIsDialogOpen={() => setViewPosition(false)}
       />
       <WithdrawFund
+      setSelectedPosition={setSelectedPosition}
+        positionListRefetech={positionListRefetech}
         position={(selectedPosition || []) as PositionData}
         isDialogOpen={isRenewRepayOpen}
         setIsDialogOpen={() => setRenewRepay(false)}

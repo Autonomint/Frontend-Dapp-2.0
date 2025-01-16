@@ -9,5 +9,4 @@ export interface OptionFeesRequest {
   collateralAmount: number;
   ethPrice: number;
   strikePercent: number;
-  BACKEND_API_URL: string;
 }

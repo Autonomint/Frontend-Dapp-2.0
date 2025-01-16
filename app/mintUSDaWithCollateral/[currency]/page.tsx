@@ -113,6 +113,7 @@ const formSchema = Yup.object({
 function AdditionalDetails({ currency }: { currency: string }) {
   const chainId = useChainId();
   const router = useRouter();
+  const [mintLoading, setMintLoading] = useState<boolean>(false);
   const { isUsdValuePending, usdValue: ethPrice } = useGetUsdValue();
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
@@ -160,11 +161,12 @@ function AdditionalDetails({ currency }: { currency: string }) {
     confirmations: 2,
   });
   useEffect(() => {
-    if (isDepositSuccess) {
+    if (isDepositSuccess && Depositdata) {
+      setMintLoading(false);
       handleResetPage();
       router.push("/dashboard/portfolio");
     }
-  }, [Depositdata]);
+  }, [Depositdata, isDepositSuccess]);
 
   const handleResetPage = () => {
     formik.resetForm();
@@ -172,6 +174,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
   };
 
   async function handleMint(values: any) {
+    setMintLoading(true);
     const strikePrice = values.strikePrice;
     let colateralamount = parseUnits(
       formik.values.collateralAmount.toString(),
@@ -387,15 +390,32 @@ function AdditionalDetails({ currency }: { currency: string }) {
           usdaBorrowed={amintToBeMinted == "0" ? "0.00" : amintToBeMinted}
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
-        <div className="w-full h-2 bg-gray-200 rounded-none mt-3 flex overflow-hidden">
+        {/* <div className="w-full h-2 bg-gray-200 rounded-none mt-3 flex overflow-hidden">
           {[
-            { label: "Deposit", value: 2, color: "#42DD9F" },
-            { label: "Option Fee", value: 0.7, color: "#FF6B84" },
-            { label: "USDa borrowed", value: 0.2, color: "#7890ED" },
-            { label: "Downside Protection", value: 0.7, color: "#06BE5F" },
+            {
+              label: "Deposit",
+              value:
+                (Number(ethPrice || 0) / 100) *
+                Number(formik.values.collateralAmount),
+              color: "#42DD9F",
+            },
+            { label: "Option Fee", value: optionFees, color: "#FF6B84" },
+            {
+              label: "USDa borrowed",
+              value: amintToBeMinted == "0" ? "0.00" : amintToBeMinted,
+              color: "#7890ED",
+            },
+            {
+              label: "Downside Protection",
+              value: Number(downsideProtectionAmnt),
+              color: "#06BE5F",
+            },
           ].map((metric, index, arr) => {
-            const total = arr.reduce((acc, item) => acc + item.value, 0);
-            const percentage = (metric.value / total) * 100;
+            const total = arr.reduce(
+              (acc, item) => acc + Number(item.value),
+              0
+            );
+            const percentage = (Number(metric.value) / total) * 100;
 
             return (
               <div
@@ -408,23 +428,23 @@ function AdditionalDetails({ currency }: { currency: string }) {
               />
             );
           })}
-        </div>
+        </div> */}
       </div>
       <div className="col-span-1">
         <Button
           type="submit"
           className="bg-textBlack text-white py-6 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-top"
         >
-          {isDepositsLoading ? "Loading..." : "Mint USDa"}
+          {mintLoading ? "Loading..." : "Mint USDa"}
         </Button>
       </div>
     </form>
   );
 }
 
-async function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
+function MintUSDa({ params }: { params: { currency: string } }) {
   const router = useRouter();
-  const currency = (await params)?.currency;
+  const currency = params?.currency;
 
   return (
     <>

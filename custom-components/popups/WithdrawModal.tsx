@@ -119,8 +119,8 @@ export function WithdrawModal({
           ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
           : BigInt(
               BigInt(
-                position.normalizedAmount
-                  ? Number(position.normalizedAmount) * 10 ** 6
+                parseInt(position.normalizedAmount)
+                  ? Number(parseInt(position.normalizedAmount)) * 10 ** 6
                   : 0
               ) * lastCumulativeRate
             ) / BigInt(10 ** 27);
@@ -272,9 +272,9 @@ export function WithdrawModal({
           </span>
         </div>
         <div>
-          {dcdsWidthDrawMetrics.map((dcdsWidthDrawMetricsObj) => {
+          {dcdsWidthDrawMetrics.map((dcdsWidthDrawMetricsObj, idx) => {
             return (
-              <div className="flex justify-between mb-6">
+              <div key={idx} className="flex justify-between mb-6">
                 <span className="text-[18px] font-medium text-grayLight">
                   {" "}
                   {dcdsWidthDrawMetricsObj.heading}

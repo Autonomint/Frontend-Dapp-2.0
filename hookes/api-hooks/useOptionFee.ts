@@ -48,7 +48,6 @@ const useFetchOptionFees = (
         collateralAmount,
         ethPrice,
         strikePercent,
-        BACKEND_API_URL,
       }), // Query function
     // Optional configurations
     enabled: !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided

@@ -23,3 +23,4 @@ const useLastCumulativeRate = () => {
 };
 
 export default useLastCumulativeRate;
+
