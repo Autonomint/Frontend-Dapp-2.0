@@ -5,12 +5,15 @@ import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../custom-components/Footer";
 import Navbar from "../custom-components/Navbar";
+import { Toaster } from "sonner";
+
 import "./globals.css";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
   // ssr: false,
 });
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -53,8 +56,8 @@ export default function RootLayout({
                 {/* <AppNavbar /> */}
                 <div className="flex-grow overflow-y-auto no-scrollbar">
                   {children}
+                  <Footer />
                 </div>
-                <Footer />
               </ThemeProvider>
             </QueryProvider>
           </WalletProvider>
