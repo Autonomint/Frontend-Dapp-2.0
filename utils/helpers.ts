@@ -47,3 +47,53 @@ export function formatTimestamp(timestamp: number): string {
 
   return formattedDate.replace(/,/g, " • "); // Replace comma with bullet point
 }
+
+type PriceData = [number, number]; // [timestamp, price]
+
+interface MonthlyPrice {
+  month: string; // Format: 'MMM-YYYY'
+  averagePrice: number;
+}
+
+export function extractMonthlyPrices(data: PriceData[]): MonthlyPrice[] {
+  // Helper function to format timestamp to 'MMM-YYYY'
+  const formatMonth = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    const options: Intl.DateTimeFormatOptions = {
+      year: "2-digit",
+      month: "short",
+    };
+    return date.toLocaleDateString("en-US", options).toUpperCase();
+  };
+
+  // Get the current date and the date 12 months ago
+  const currentDate = new Date();
+  const twelveMonthsAgo = new Date();
+  twelveMonthsAgo.setMonth(currentDate.getMonth() - 12);
+
+  // Filter data to include only entries within the last 12 months
+  const filteredData = data.filter(([timestamp]) => {
+    const date = new Date(timestamp);
+    return date >= twelveMonthsAgo && date <= currentDate;
+  });
+
+  // Group prices by month
+  const monthlyPrices: Record<string, number[]> = filteredData.reduce(
+    (acc, [timestamp, price]) => {
+      const month = formatMonth(timestamp);
+      if (!acc[month]) {
+        acc[month] = [];
+      }
+      acc[month].push(price);
+      return acc;
+    },
+    {} as Record<string, number[]>
+  );
+
+  // Calculate average price for each month
+  return Object.entries(monthlyPrices).map(([month, prices]) => {
+    const averagePrice =
+      prices.reduce((sum, price) => sum + price, 0) / prices.length;
+    return { month, averagePrice };
+  });
+}

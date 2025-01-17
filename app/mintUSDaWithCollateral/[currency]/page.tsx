@@ -23,9 +23,120 @@ import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision from "@/utils/helpers";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import { Typography } from "@/components/ui/Typography";
+import useMarketChart from "@/hookes/api-hooks/useGetChartData";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import EthImage from "@/app/assets/eth-icon.svg";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+export const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: {
+    padding: 0,
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      border: {
+        display: false,
+      },
+    },
+    y: {
+      grid: {
+        display: false,
+      },
+      border: {
+        display: false,
+      },
+    },
+  },
+};
 
 function ChartComponent() {
-  return <>HI</>;
+  const [isLoaded, setIsLoaded] = useState(false);
+  const { formattedData, isGraphLoading } = useMarketChart(
+    "ethereum",
+    "usd",
+    365
+  );
+
+  const labels = formattedData.map((item) => item.month);
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        fill: true,
+        data: formattedData.map((item) => item.averagePrice) || [],
+        borderColor: "#00679F",
+        pointRadius: 2,
+        borderWidth: 2,
+        backgroundColor: function (context: any) {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) {
+            return null;
+          }
+
+          // if (theme === "dark") {
+          const gradient = ctx.createLinearGradient(
+            0,
+            chartArea.top,
+            0,
+            chartArea.bottom
+          );
+          gradient.addColorStop(0, "#002A4E");
+          gradient.addColorStop(1, "#002A4E00");
+          return gradient;
+        },
+      },
+    ],
+  };
+  useEffect(() => {
+    setIsLoaded(true);
+  }, [data]);
+  return (
+    <div className="p-6">
+      <div className="flex justify-start gap-2 mb-2 items-center">
+        <Image src={EthImage} width={40} height={40} alt="eth" />
+        <Typography className="text-[32px] font-medium text-black ">
+          ETH
+        </Typography>
+      </div>
+      <div className="w-full h-[480px]">
+        {labels.length > 0 && isLoaded && !isGraphLoading ? (
+          <Line options={options} data={data} className="w-full h-full " />
+        ) : (
+          "loading..."
+        )}
+      </div>
+    </div>
+  );
 }
 
 function MetricFields({
@@ -310,6 +421,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
       Number(ethBalance.data?.formatted || 0)
     );
   };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -444,7 +556,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
 function MintUSDa({ params }: { params: { currency: string } }) {
   const router = useRouter();
-  const currency = params?.currency;
+  const currency = "eth";
 
   return (
     <>
