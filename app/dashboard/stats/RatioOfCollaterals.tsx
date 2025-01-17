@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { TimeFrame } from "./ChartComponent";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +13,6 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { useTheme } from "next-themes";
 
 ChartJS.register(
   CategoryScale,
@@ -56,24 +56,14 @@ export const options = {
   },
 };
 
-const labels = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-];
+export const labels = ["January", "February", "March", "April", "May"];
 
 export const data = {
   labels,
   datasets: [
     {
       fill: true,
-      data: [10, 20, 25, 45, 55, 65, 75, 85, 95],
+      data: [10, 20, 25, 45, 55],
       borderColor: "#00679F",
       pointRadius: 0,
       borderWidth: 2,
@@ -111,26 +101,6 @@ export const data = {
   ],
 };
 
-export function TimeFrame({ timeFrame }: { timeFrame?: string }) {
-  const timeFrames = ["All Time", "1Y", "6M", "1M", "10M"];
-  return (
-    <div className="border border-grayLight flex text-center w-full">
-      {timeFrames?.map((item) => (
-        <span
-          key={item}
-          className={`p-3 w-full text-[16px] font-medium ${
-            item === timeFrame
-              ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack"
-              : "border border-grayLight"
-          }`}
-        >
-          {item}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 export function StatsMetrics({
   value,
   metricVal,
@@ -139,7 +109,7 @@ export function StatsMetrics({
   metricVal: string;
 }) {
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col items-start justify-center flex-1 text-left">
       <span className="text-[24px] font-medium text-textBlack dark:text-white">
         {value}
       </span>
@@ -150,54 +120,43 @@ export function StatsMetrics({
   );
 }
 
-export function ChartComponent({
-  title,
-  timeFrame,
-  maxH = "max-h-[400px]",
-  hideElements = false,
-}: {
-  title?: string;
-  timeFrame?: string;
-  maxH?: string;
-  hideElements: boolean;
-}) {
+function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
   return (
-    <div
-      className="p-5 border border-solid border-[#7A7A7A]"
-      style={{
-        borderLeft: "none",
-        borderTop: "none",
-      }}
-    >
-      <div className="flex justify-between">
-        <span
-          style={{
-            display: hideElements ? "none" : "block",
-          }}
-          className="flex-1 font-medium text-[24px] text-grayLight"
-        >
-          {title}
-        </span>
-        <div
-          style={{
-            display: hideElements ? "none" : "block",
-          }}
-          className="hidden flex-1 lg:block"
-        >
-          <TimeFrame timeFrame={timeFrame} />
+    <div className="flex col-span-2 items-center h-full">
+      <div
+        className="p-5 flex flex-1 flex-col justify-between col-span-2 h-full"
+        style={{
+          borderLeft: "none",
+          borderTop: "none",
+        }}
+      >
+        <div className="flex justify-between">
+          <span className="flex-1 font-medium text-[24px] text-grayLight">
+            {"Ratio of Collaterals"}
+          </span>
+          <div className="hidden flex-1 lg:block mr-4">
+            <TimeFrame timeFrame={timeFrame} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-7 w-full mt-8">
+          <StatsMetrics value={"1.15"} metricVal={"Current Ratio"} />
+          <StatsMetrics
+            value={"$489,992,092"}
+            metricVal={"Total dCDS Pool value"}
+          />
+          <StatsMetrics
+            value={"$788,917,981"}
+            metricVal={"Net dCDS Pool Value"}
+          />
+          <StatsMetrics value={"+$788,917"} metricVal={"dCDS Profit/Loss"} />
         </div>
       </div>
-      <div
-        style={{
-          display: hideElements ? "none" : "flex",
-        }}
-        className="flex py-3 my-3"
-      >
-        <StatsMetrics value={"489,829,928"} metricVal={"USDa Minted"} />
-        <StatsMetrics value={"$1"} metricVal={"USDa Price"} />
+      <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div>
+      <div className="flex flex-1">
+        <Line options={options} data={data} className={`w-1/2 max-h-[250px]`} />
       </div>
-
-      <Line options={options} data={data} className={`w-1/2 ${maxH}`} />
     </div>
   );
 }
+
+export default RatioOfCollaterals;

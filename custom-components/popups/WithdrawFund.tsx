@@ -56,34 +56,34 @@ export function WithdrawFund({
           </label>
         </div> */}
         <div className="flex">
-          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
             <input
-              id="bordered-radio-1"
-              onClick={() => setToggleView("repay")}
+              id="bordered-radio-2"
               type="radio"
+              onClick={() => setToggleView("repay")}
               checked={toggleView === "repay"}
               name="bordered-radio"
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:bg-black"
             />
             <label
               htmlFor="bordered-radio-1"
-              className="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              className="w-full py-4 ms-2 text-[32px] font-medium text-grayLight dark:text-textBlack"
             >
               Repay
             </label>
           </div>
-          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded dark:border-gray-700">
+          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
             <input
               id="bordered-radio-2"
               type="radio"
               onClick={() => setToggleView("renew")}
               checked={toggleView === "renew"}
               name="bordered-radio"
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:border-black"
             />
             <label
               htmlFor="bordered-radio-2"
-              className="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              className="w-full py-4 ms-2 text-[32px] font-medium text-grayLight dark:text-textBlack"
             >
               Renew
             </label>
@@ -98,12 +98,21 @@ export function WithdrawFund({
             </div>
             <div className="space-y-4">
               {[
-                { heading: "Fee Gained", value: "$12" },
-                { heading: "Deposited time", value: "12 DEC 2024 • 10:45 PM" },
-                { heading: "ETH price at deposit", value: "$3,890" },
-                { heading: "Lock In Period", value: "3 Months" },
-                { heading: "Deposit-time APR & Current APR", value: "34%/67%" },
-                { heading: "Days passed since Deposit", value: "35 Days" },
+                { heading: "ETH Deposited", value: "0.05 (171.32 $)" },
+                { heading: "ETH Price at Deposit", value: "3426.33" },
+                { heading: "USDa Amount Minted", value: "137.05" },
+                {
+                  heading: "Total Amount (USDa minted + Interest)",
+                  value: "141.95",
+                },
+                { heading: "Deposit Time APR", value: "5%" },
+                { heading: "Deposited Time", value: "28/06/2024, 14:44:24" },
+                { heading: "Downside Percentage At Deposit", value: "20%" },
+                { heading: "Liquidated?", value: "No" },
+                { heading: "Interest Rate Gained", value: "0.00" },
+                { heading: "Abond Minted", value: "-" },
+                { heading: "Amount Protected", value: "4.5" },
+                { heading: "Amount to be returned back", value: "141.95 USDa" },
               ].map((item) => (
                 <div
                   key={item.heading}

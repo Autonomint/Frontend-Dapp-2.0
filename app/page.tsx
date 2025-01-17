@@ -12,6 +12,8 @@ import arrow from "./assets/arrow-right-02.png";
 import PriceComparison from "../custom-components/PriceComparison";
 import { useRouter } from "next/navigation";
 import LTV from "./assets/LTV-range-image.svg";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+
 import {
   DotIcon,
   LeftArrowIcon,
@@ -106,6 +108,23 @@ function TransferBetweeHoverElement() {
   );
 }
 
+function FarmYourLuckHoverElement() {
+  return (
+    <div className="flex flex-col border-x border-y border-[1px] border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative dark:bg-custom-gradient-to-top">
+      <div className="text-textBlack text-[38px] font-medium dark:text-white bg-none">
+        Explore incentives from our partners
+      </div>
+      <div className="text-[24px] text-grayLight font-medium bg-none">
+        Claim back 100% of your Option fees
+      </div>
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+        Reward
+        <Image src={arrow} width={42} height={42} alt="arrow" />
+      </Button>
+    </div>
+  );
+}
+
 function DCDSHoverElement() {
   const router = useRouter();
   return (
@@ -123,8 +142,9 @@ function DCDSHoverElement() {
         alt="Price Graph"
         className="w-[900px] object-fit"
       />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
+      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white flex items-center gap-4">
         Get up to 200% APY
+        <IoMdInformationCircleOutline height={32} width={32} />
       </div>
       <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
         Earn
@@ -184,7 +204,7 @@ function MintUSDAHoverElement() {
             orgName: "AthermintXYZ",
             amount: "$0.02",
             tag: "Lowest Fee",
-            tagColor: "#AA0001",
+            tagColor: "#990102",
             tagBg: "#FEE2E2",
             textColor: "#AA0001",
             borderColor: "borderRed",
@@ -373,19 +393,18 @@ export default function Home() {
 
         {/* 2nd row */}
         <div
-          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight   border-t-grayLight border-[1px] `}
+          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight border-t-grayLight border-[1px]`}
         >
+          {/* Bridge Section */}
           <div
-            className={`relative cursor-pointer  ${
-              hoveredIndex === 2
-                ? " !h-[450px]"
-                : hoveredIndex === 3
-                ? "!h-[450px]"
-                : ""
-            } h-[400px] w-[80%] ${
+            className={`relative cursor-pointer ${
+              hoveredIndex === 3 ? "w-[40%]" : "w-[80%]"
+            } ${
               hoveredIndex === null
-                ? "border-x border-y border-[1px]  border-grayLight"
-                : " border-b-[1px] border-l  border-[1px]  border-grayLight"
+                ? "border-x border-y border-[1px] border-grayLight"
+                : "border-b-[1px] border-l border-[1px] border-grayLight"
+            } h-[400px] ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "!h-[450px]" : ""
             }`}
             onMouseEnter={() => {
               setHoveredIndex(2);
@@ -399,17 +418,12 @@ export default function Home() {
               transition: "width 0.3s ease-in, height 0.3s ease-in",
             }}
           >
-            <div className={" h-full flex flex-col justify-between"}>
+            <div className={"h-full flex flex-col justify-between"}>
               {hoveredIndex === 2 ? (
                 <TransferBetweeHoverElement />
               ) : (
-                <div
-                  className={
-                    `${hoveredIndex === 0 ? "p-0" : "p-4"}` +
-                    " h-full flex flex-col justify-between"
-                  }
-                >
-                  <h3 className="font-medium text-[42px]  mb-2">
+                <div className={"p-4 h-full flex flex-col justify-between"}>
+                  <h3 className="font-medium text-[42px] mb-2">
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
@@ -421,24 +435,17 @@ export default function Home() {
               )}
             </div>
           </div>
+
           <div
-            onClick={() => {
-              router.push("/farmyourluck");
-            }}
-            className={`relative  cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient-to-top  ${
-              hoveredIndex === 2
-                ? " !h-[450px]"
-                : hoveredIndex === 3
-                ? "!h-[450px]"
-                : ""
-            } h-[400px] w-[20%] ${
+            className={`relative cursor-pointer ${
+              hoveredIndex === 3 ? "w-[60%]" : "w-[40%]"
+            } ${
               hoveredIndex === null
-                ? "border-x border-y border-[1px]  border-grayLight"
+                ? "border-x border-y border-[1px] border-grayLight"
                 : ""
+            } h-[400px] ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "!h-[450px]" : ""
             }`}
-            style={{
-              transition: "width 0.3s ease-in, height 0.3s ease-in",
-            }}
             onMouseEnter={() => {
               setHoveredIndex(3);
               setCurrentIndex(2);
@@ -447,29 +454,37 @@ export default function Home() {
               setHoveredIndex(null);
               setCurrentIndex(null);
             }}
+            onClick={() => {
+              router.push("/farmyourluck");
+            }}
+            style={{
+              transition: "width 0.3s ease-in, height 0.3s ease-in",
+            }}
           >
-            <div className={"p-4 h-full flex flex-col justify-between "}>
-              <>
-                <h3 className="font-medium text-[42px]  mb-2 ">
-                  {items[3].title}
-                </h3>
-                {items[3].subtitle && (
-                  <p className="text-gray-600 text-[32px]">
-                    {items[3].subtitle}
-                  </p>
-                )}
-              </>
-              {hoveredIndex === 3 && (
+            <div className={"p-0 h-full flex flex-col justify-between"}>
+              {hoveredIndex === 3 ? (
+                <FarmYourLuckHoverElement />
+              ) : (
+                <div className={"p-4 h-full flex flex-col justify-between"}>
+                  <h3 className="font-medium text-[42px] mb-2">
+                    {items[3].title}
+                  </h3>
+                  {items[3].subtitle && (
+                    <p className="text text-[32px]">{items[3].subtitle}</p>
+                  )}
+                </div>
+              )}
+
+              {/* {hoveredIndex === 3 && (
                 <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
                   Reward
                   <Image src={arrow} width={42} height={42} alt="arrow" />
                 </Button>
-              )}
+              )} */}
             </div>
-          </div>{" "}
+          </div>
         </div>
 
-        {/* 3rd row */}
         <div>
           <div
             className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
