@@ -14,7 +14,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({}) => {
       content={
         <Button
           variant={"shadowOutline"}
-          className="border-[#041A50] h-fit p-[10px]"
+          className="border-[#041A50] h-fit p-[10px] dark:hover:bg-custom-gradient-to-top"
         >
           <Bell style={{ width: "24px", height: "24px" }} />
         </Button>

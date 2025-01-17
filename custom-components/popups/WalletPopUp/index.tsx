@@ -61,7 +61,12 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     width={24}
                     height={24}
                   />
-                  <ChevronDownIcon className="w-4 h-4 dark:text-black" />
+                  <ChevronDownIcon
+                    style={{
+                      color: "black !important",
+                    }}
+                    className="w-4 h-4"
+                  />
                 </div>
               </PopoverTrigger>
               <PopoverContent
@@ -94,7 +99,12 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     width={24}
                     height={24}
                   />
-                  <ChevronDownIcon className="w-4 h-4 " />
+                  <ChevronDownIcon
+                    style={{
+                      color: "black !important",
+                    }}
+                    className="w-4 h-4 "
+                  />
                 </div>
               </PopoverTrigger>
               <PopoverContent

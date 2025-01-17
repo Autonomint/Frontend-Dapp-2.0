@@ -24,6 +24,18 @@ import centerImage1 from "../assets/Vector (1).svg";
 import centerImage2 from "../assets/cryptocurrency-color_usdt.svg";
 import { toast, Toaster } from "sonner";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
 
 function TokenTvlDetails() {
   return (
@@ -145,42 +157,36 @@ function AddToken({
 
 function page() {
   const { theme } = useTheme();
-  const showToastViewOnEtherscan = () => {
-    toast.custom(
-      (t) => (
-        <ToastNotification
-          title="Transaction successful"
-          message="New Deposit has been created"
-          linkText="View on Etherscan"
-          linkUrl="https://etherscan.io"
-          onClose={() => toast.dismiss(t)}
-        />
-      ),
-      {
-        position: "top-right",
-        duration: 3000,
-      }
-    );
-  };
+  const [selectedTokens, setSelectedTokens] = React.useState<
+    { tokenImage: any; tokenName: string }[]
+  >([]);
 
-  const showToastError = () => {
-    toast.custom(
-      (t) => (
-        <ToastNotification
-          title="Transaction failed"
-          message="Please try again"
-          linkText=""
-          linkUrl=""
-          onClose={() => toast.dismiss(t)}
-          className="bg-[#AA0001]"
-        />
-      ),
-      {
-        position: "top-right",
-        duration: 3000,
-      }
-    );
-  };
+  const dropdownItems = [
+    {
+      label: "3 Months",
+      onClick: () => alert("Profile clicked"),
+    },
+    {
+      label: "6 Months",
+      onClick: () => alert("Billing clicked"),
+    },
+    {
+      label: "1 Year",
+      onClick: () => alert("Settings clicked"),
+    },
+    {
+      label: "2 Years",
+      onClick: () => alert("Log out clicked"),
+      disabled: false,
+    },
+  ];
+
+  const tokenList = [
+    { tokenImage: centerImage1, tokenName: "USDc" },
+    { tokenImage: centerImage2, tokenName: "USDa" },
+    { tokenImage: centerImage1, tokenName: "USDT" },
+    { tokenImage: centerImage2, tokenName: "USDe" },
+  ];
 
   const showNormal = () => {
     const customLoaderId = toast.loading(
@@ -188,13 +194,10 @@ function page() {
         <span style={{ marginLeft: "8px" }}>Transaction #1</span>
         <Image src={Spinner} alt="token" width={30} height={30} />
       </div>,
-      {
-        position: "top-right",
-        duration: Infinity,
-      }
+      { position: "top-right", duration: Infinity }
     );
 
-    const promise = new Promise((resolve, reject) =>
+    const promise = new Promise((resolve) =>
       setTimeout(() => resolve({ name: "Transaction #1" }), 2000)
     );
 
@@ -208,34 +211,9 @@ function page() {
       })
       .catch(() => {
         toast.dismiss(customLoaderId);
-        toast.error("An error occurred!", {
-          position: "top-right",
-        });
+        toast.error("An error occurred!", { position: "top-right" });
       });
   };
-
-  const [selectedTokens, setSelectedTokens] = React.useState<
-    { tokenImage: any; tokenName: string }[]
-  >([]);
-
-  const tokenList = [
-    {
-      tokenImage: centerImage1,
-      tokenName: "USDc",
-    },
-    {
-      tokenImage: centerImage2,
-      tokenName: "USDa",
-    },
-    {
-      tokenImage: centerImage1,
-      tokenName: "USDT",
-    },
-    {
-      tokenImage: centerImage2,
-      tokenName: "USDe",
-    },
-  ];
 
   return (
     <div>
@@ -252,6 +230,7 @@ function page() {
             />
           ))}
         </div>
+
         <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative">
             <Image
@@ -302,29 +281,64 @@ function page() {
             )}
           </div>
         </div>
+
         <div className="col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
           <div className="p-5">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <SelectToken />
-            <div className="py-4 flex">
+            <div className="max-h-[200px] overflow-y-auto">
+              {selectedTokens.map((token, key) => (
+                <div key={key} className="mt-4">
+                  <Label
+                    htmlFor={`token-${key}`}
+                    className="text-grayLight text-lg font-medium"
+                  >
+                    {token.tokenName}
+                  </Label>
+                  <Input
+                    id={`token-${key}`}
+                    value={"$3000"}
+                    className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
+                    placeholder="$300"
+                  />
+                  <div className="flex justify-between">
+                    <span className="text-[18px] font-medium text-grayLight">
+                      Min $100
+                    </span>
+                    <span className="text-[18px] font-medium text-grayLight">
+                      Bal $3000
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Toaster richColors />
+            <div className="px-5">
+              <GenericDropdownMenu
+                buttonText="3 Months"
+                items={dropdownItems}
+                className="w-full text-[24px] border border-grayLight"
+              />
+            </div>
+            <div className="py-4 flex p-5 flex items-center justify-between w-full">
               <span className="text-grayLight font-normal text-[18px]">
                 Opt for liquidity gains?
               </span>
+              <Checkbox className="h-6 w-6  cursor-pointer data-[state=checked]:bg-black data-[state=checked]:text-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black" />
             </div>
-            <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800]">
-              Note: Your amount will be used to offer protection to borrowers &
-              protocol in return for fixed yields.
+            <div className="px-5">
+              <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800] max-w-full">
+                Note: Your amount will be used to offer protection to borrowers
+                & protocol in return for fixed yields.
+              </div>
             </div>
-          </div>
-          <div>
-            <Toaster richColors />
             <AdditionalDCDSMetrics />
             <Button
               onClick={() => {
-                //showToastViewOnEtherscan();
-                //showToastError();
                 showNormal();
               }}
               className="bg-black text-white text-[24px] min-h-20 w-full dark:bg-custom-gradient-to-bottom cursor-pointer"

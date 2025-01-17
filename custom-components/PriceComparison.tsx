@@ -79,7 +79,16 @@ function PriceComparison({
         </span>
         <span
           style={{
-            color: isHover ? tagColor : theme == "dark" ? "white" : "black",
+            color:
+              theme == "dark" && orgName == "AthermintXYZ"
+                ? isHover
+                  ? "#f57171"
+                  : ""
+                : isHover
+                ? tagColor
+                : theme == "dark"
+                ? "white"
+                : "black",
             fontSize: "24px",
           }}
         >

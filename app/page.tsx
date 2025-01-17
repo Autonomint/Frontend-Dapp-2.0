@@ -12,7 +12,11 @@ import arrow from "./assets/arrow-right-02.png";
 import PriceComparison from "../custom-components/PriceComparison";
 import { useRouter } from "next/navigation";
 import LTV from "./assets/LTV-range-image.svg";
+import LTVDark from "./assets/LTV Details.svg";
+import DCDSHover from "./assets/Chart.svg";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import centerImage1 from "../assets/Vector (1).svg";
+import centerImage2 from "../assets/cryptocurrency-color_usdt.svg";
 
 import {
   DotIcon,
@@ -22,6 +26,12 @@ import {
 import { Typography } from "@/components/ui/Typography";
 import infinityImage from "./assets/infinity.svg";
 import { useTheme } from "next-themes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 function TransferBetweeHoverElement() {
   const { theme } = useTheme();
   const router = useRouter();
@@ -48,7 +58,7 @@ function TransferBetweeHoverElement() {
               }}
             />
             <div className=" text-grayLight text-center text-[32px] font-light bg-none dark:text-white">
-              Mode
+              From
             </div>
           </div>
           <div className="flex items-center pb-9  justify-center gap-3 bg-none">
@@ -72,7 +82,7 @@ function TransferBetweeHoverElement() {
               }}
             />
             <div className=" text-center text-grayLight text-[32px] font-light bg-none dark:text-white">
-              Optimism
+              To
             </div>
           </div>
         </div>
@@ -118,7 +128,7 @@ function FarmYourLuckHoverElement() {
         Claim back 100% of your Option fees
       </div>
       <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
-        Reward
+        Farm your luck
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
     </div>
@@ -140,11 +150,29 @@ function DCDSHoverElement() {
       <Image
         src={PriceGraph}
         alt="Price Graph"
-        className="w-[900px] object-fit"
+        className="w-[900px] object-fit block dark:hidden"
+      />
+      <Image
+        src={DCDSHover}
+        alt="Price Graph"
+        className="w-[900px] object-fit hidden dark:block"
       />
       <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white flex items-center gap-4">
         Get up to 200% APY
-        <IoMdInformationCircleOutline height={32} width={32} />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <IoMdInformationCircleOutline
+                height={32}
+                width={32}
+                className="cursor-pointer"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Exposed to volatility risk</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
         Earn
@@ -167,7 +195,16 @@ function MintUSDAHoverElement() {
         100% Synthetic LTV
       </div>
       <div>
-        <Image src={LTV} alt="tvl" style={{ width: "100%" }} />
+        <Image
+          className="hidden dark:block w-full"
+          src={LTVDark}
+          alt="dark-mode-image"
+        />
+        <Image
+          className="block dark:hidden w-full"
+          src={LTV}
+          alt="light-mode-image"
+        />
       </div>
       <div className="flex justify-between bg-none">
         <span className=" font-medium text-lg text-grayLight bg-none">
