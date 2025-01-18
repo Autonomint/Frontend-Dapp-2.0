@@ -13,6 +13,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { cn } from "@/utils/helpers";
 
 ChartJS.register(
   CategoryScale,
@@ -104,16 +105,30 @@ export const data = {
 export function StatsMetrics({
   value,
   metricVal,
+  classNameValue,
+  classNameMetricVal,
 }: {
   value: string;
   metricVal: string;
+  classNameValue?: string;
+  classNameMetricVal?: string;
 }) {
   return (
-    <div className="flex flex-col items-start justify-center flex-1 text-left">
-      <span className="text-[24px] font-medium text-textBlack dark:text-white">
+    <div className="flex flex-col items-start justify-center flex-1 text-left gap-3">
+      <span
+        className={cn(
+          "text-[24px] font-medium text-textBlack dark:text-white",
+          classNameValue
+        )}
+      >
         {value}
       </span>
-      <span className="text-[14px] font-normal text-grayLight">
+      <span
+        className={cn(
+          "text-[14px] font-normal text-grayLight",
+          classNameMetricVal
+        )}
+      >
         {metricVal}
       </span>
     </div>
@@ -122,9 +137,9 @@ export function StatsMetrics({
 
 function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
   return (
-    <div className="flex col-span-2 items-center h-full">
+    <div className="flex items-start h-full">
       <div
-        className="p-5 flex flex-1 flex-col justify-between col-span-2 h-full"
+        className="p-5 flex flex-1 flex-col justify-between  h-full"
         style={{
           borderLeft: "none",
           borderTop: "none",
@@ -150,10 +165,52 @@ function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
           />
           <StatsMetrics value={"+$788,917"} metricVal={"dCDS Profit/Loss"} />
         </div>
+        <div className="flex w-full h-6 bg-gray-200 rounded-none overflow-hidden my-[12px]">
+          {[
+            {
+              label: "Deposit",
+              value: 2,
+              gradient: "#05A552",
+            },
+            {
+              label: "Option Fee",
+              value: 0.7,
+              gradient: "#478BFF",
+            },
+          ].map((metric, index, arr) => {
+            const total = arr.reduce((acc, item) => acc + item.value, 0);
+            const percentage = (metric.value / total) * 100;
+
+            return (
+              <div
+                key={index}
+                style={{
+                  width: `${percentage}%`,
+                  background: metric.gradient,
+                }}
+                title={`${metric.label}: ${percentage.toFixed(2)}%`}
+              />
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-2 gap-7 w-full">
+          <StatsMetrics
+            value={"1.15"}
+            metricVal={"Current Ratio"}
+            classNameValue="dark:text-[#05A552]"
+            classNameMetricVal="dark:text-[#05A552]"
+          />
+          <StatsMetrics
+            value={"$489,992,092"}
+            metricVal={"Total dCDS Pool value"}
+            classNameValue="dark:text-[#478BFF]"
+            classNameMetricVal="dark:text-[#478BFF]"
+          />
+        </div>
       </div>
-      <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div>
-      <div className="flex flex-1">
-        <Line options={options} data={data} className={`w-1/2 max-h-[250px]`} />
+      {/* <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div> */}
+      <div className="flex flex-1 h-full">
+        <Line options={options} data={data} className={`w-full h-full p-5`} />
       </div>
     </div>
   );
