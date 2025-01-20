@@ -2,7 +2,12 @@ import ethereumIcon from "@/app/assets/ethereum-icon.svg";
 
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/components/ui/PopUp";
-import { WalletIcon } from "@/components/ui/SvgIcons";
+import {
+  BaseIcon,
+  EthereumIcon,
+  OptimismIcon,
+  WalletIcon,
+} from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,12 +73,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <PopoverTrigger asChild></PopoverTrigger>
               <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
                 <div className="flex flex-row gap-2">
-                  <Image
-                    src={ethereumIcon}
-                    alt="ethereum icon"
-                    width={24}
-                    height={24}
-                  />{" "}
+                  <EthereumIcon className="w-4 h-4 dark:text-black" />
                   <Typography className="">Ethereum</Typography>
                   <ChevronDownIcon className="w-4 h-4 dark:text-black" />
                 </div>
@@ -107,7 +107,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               </PopoverTrigger>
               <PopoverContent
                 align="center"
-                className="w-full border  mt-3 bg-white border-gray-200 rounded-md shadow-md"
+                className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
               >
                 <div className=" flex flex-col gap-4">
                   <div
@@ -118,13 +118,16 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     }
                     className="flex cursor-pointer flex-row gap-2 justify-start items-center"
                   >
-                    <Image
-                      src={ethereumIcon}
-                      alt="ethereum icon"
-                      width={24}
-                      height={24}
-                    />{" "}
-                    <Typography className="">Ethereum Sepolia</Typography>{" "}
+                    <EthereumIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:fill-white"
+                    />
+                    <Typography className="text-[24px] dark:text-white font-medium">
+                      Ethereum{" "}
+                    </Typography>{" "}
                     {chainId == NetworkId.EthereumSepolia ? (
                       <Check width={18} height={18} />
                     ) : null}
@@ -137,14 +140,39 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     }
                     className="flex cursor-pointer flex-row gap-2 justify-start items-center"
                   >
-                    <Image
-                      src={ethereumIcon}
-                      alt="ethereum icon"
-                      width={24}
-                      height={24}
-                    />{" "}
-                    <Typography className="">Base Sepolia</Typography>
+                    <BaseIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:text-black"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Base{" "}
+                    </Typography>
                     {chainId == NetworkId.BaseSepolia && (
+                      <Check width={18} height={18} />
+                    )}
+                  </div>
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155420,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <OptimismIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:text-black"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Optimism{" "}
+                    </Typography>
+                    {chainId == NetworkId.OptimismSepolia && (
                       <Check width={18} height={18} />
                     )}
                   </div>

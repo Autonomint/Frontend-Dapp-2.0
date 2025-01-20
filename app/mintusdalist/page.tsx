@@ -117,25 +117,19 @@ function MintUSDaList() {
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: "22.36%",
+      BorrowRate: "5%",
       DownsideProtectionGiven: "32.67%",
     },
     {
       token: "wrETH",
       tokenImage: cryptoEth,
-      BorrowRate: "22.36%",
+      BorrowRate: "5%",
       DownsideProtectionGiven: "32.67%",
     },
     {
       token: "eETH",
       tokenImage: cryptoEth,
-      BorrowRate: "22.36%",
-      DownsideProtectionGiven: "32.67%",
-    },
-    {
-      token: "eETH",
-      tokenImage: cryptoEth,
-      BorrowRate: "22.36%",
+      BorrowRate: "5%",
       DownsideProtectionGiven: "32.67%",
     },
   ];

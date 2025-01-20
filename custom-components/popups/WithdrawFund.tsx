@@ -136,12 +136,7 @@ export function WithdrawFund({
 
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
-      updatedData[0].value =
-        position.depositedAmount +
-        ` (${(
-          (Number(position.depositedAmount) * Number(position.ethPrice)) /
-          100
-        ).toFixed(2)} $) `;
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(2)}`;
       updatedData[1].value = `${Number(position.ethPrice) / 100}`;
       updatedData[2].value = Number(position.noOfAmintMinted).toFixed(2);
       updatedData[3].value = (
@@ -218,35 +213,6 @@ export function WithdrawFund({
     setOpenConfirmNotice(true);
     setSpinner(false);
   }, [position, lastCumulativeRate, interestGained]);
-
-  const borrowedMetrics = [
-    {
-      heading: "Fee Gained",
-      value: "-",
-    },
-    {
-      heading: "Deposited Time",
-      value: position.depositedTime
-        ? formatTimestamp(position.depositedTime)
-        : "-",
-    },
-    {
-      heading: "ETH price at deposit",
-      value: `$${depositData[1].value}`,
-    },
-    {
-      heading: "Lock In Period",
-      value: "-",
-    },
-    {
-      heading: "Deposit-time APR & Current APR",
-      value: `${depositData[4].value}/-`,
-    },
-    {
-      heading: "Days passed since Deposit",
-      value: `${daysFromTimestamp(position.depositedTime)} Days`,
-    },
-  ];
 
   // Create the options for the contract
   const options = Options.newOptions()
@@ -418,7 +384,7 @@ export function WithdrawFund({
                 <span>${Number(position.noOfAmintMinted).toFixed(2)}</span>
               </div>
               <div className="space-y-2">
-                {depositDetails.map((item) => (
+                {depositData.map((item) => (
                   <div
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"

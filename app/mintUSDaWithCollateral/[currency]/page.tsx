@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import farmyourluckLogo from "@/app/assets/cryptocurrency-color_eth.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import EthImage from "@/app/assets/eth-icon.svg";
+import Spinner from "@/components/ui/Spinner";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -75,6 +76,52 @@ export const options = {
     },
   },
 };
+
+// TradingViewWidget.jsx
+
+function TradingViewWidget() {
+  const container = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.type = "text/javascript";
+    script.async = true;
+    script.innerHTML = `
+        {
+          "autosize": true,
+          "symbol": "UNISWAP3BASE:WEETHWETH_B1419A.USD",
+          "interval": "D",
+          "timezone": "Etc/UTC",
+          "theme": "light",
+          "style": "3",
+          "locale": "en",
+          "backgroundColor": "rgba(255, 255, 255, 1)",
+          "gridColor": "rgba(240, 243, 250, 0.03)",
+          "hide_legend": true,
+          "allow_symbol_change": false,
+          "save_image": false,
+          "calendar": false,
+          "hide_volume": true,
+          "support_host": "https://www.tradingview.com"
+        }`;
+    container?.current?.appendChild(script);
+  }, []);
+
+  return (
+    <div
+      className="tradingview-widget-container"
+      ref={container}
+      style={{ height: "100%", width: "100%" }}
+    >
+      <div
+        className="tradingview-widget-container__widget"
+        style={{ height: "calc(100% - 32px)", width: "100%" }}
+      ></div>
+    </div>
+  );
+}
 
 function ChartComponent() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -128,12 +175,8 @@ function ChartComponent() {
           ETH
         </Typography>
       </div>
-      <div className="w-full h-[480px]">
-        {labels.length > 0 && isLoaded && !isGraphLoading ? (
-          <Line options={options} data={data} className="w-full h-full " />
-        ) : (
-          "loading..."
-        )}
+      <div className="w-full h-[480px] flex items-center justify-center">
+        {/* <TradingViewWidget /> */}
       </div>
     </div>
   );
@@ -255,7 +298,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
-  console.log("quoteError", nativeFee, quoteError, options);
+  console.log("quoteError", ltv, quoteError, options);
 
   const { depositDatahash, isDepositsLoading, mintUSDa, reset } =
     useDepositTokens();

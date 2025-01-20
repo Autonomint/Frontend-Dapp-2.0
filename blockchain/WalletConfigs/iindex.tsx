@@ -1,7 +1,12 @@
 import { cookieStorage, createStorage } from "wagmi";
 
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { baseSepolia, mainnet, sepolia } from "@reown/appkit/networks";
+import {
+  baseSepolia,
+  mainnet,
+  sepolia,
+  optimismSepolia,
+} from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { projectId } from "@/utils/constants";
 
@@ -15,7 +20,7 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [sepolia, baseSepolia],
+  networks: [sepolia, baseSepolia, optimismSepolia],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -29,7 +34,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [sepolia, baseSepolia],
+  networks: [sepolia, baseSepolia, optimismSepolia],
   defaultNetwork: mainnet,
   metadata: metadata,
   features: {
