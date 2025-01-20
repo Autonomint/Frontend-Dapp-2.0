@@ -162,7 +162,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       <Check width={18} height={18} />
                     )}
                   </div>
-                  <div
+                  {/* <div
                     onClick={() =>
                       switchChain({
                         chainId: 11155420,
@@ -183,7 +183,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     {chainId == NetworkId.OptimismSepolia && (
                       <Check width={18} height={18} />
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </PopoverContent>
             </Popover>
