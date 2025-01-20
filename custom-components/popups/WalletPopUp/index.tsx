@@ -59,35 +59,22 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className=" p-0 gap-0  h-fit "
         >
-          <div className="py-[10px] px-4 bg-[#ABFFDE] ">
-            <div className="relative flex items-center gap-0">
-              <Image
-                src={ethereumIcon}
-                alt="ethereum icon"
-                width={24}
-                height={24}
-              />
-              <ChevronDownIcon className="w-4 h-4 " />
-            </div>
+          <div className="py-[14px] px-4 bg-[#ABFFDE] ">
             <Popover>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center gap-0">
-                  <Image
-                    src={ethereumIcon}
-                    alt="ethereum icon"
-                    width={24}
-                    height={24}
-                  />
-                  <ChevronDownIcon
-                    style={{
-                      color: "black !important",
-                    }}
-                    className="w-4 h-4"
-                  ></ChevronDownIcon>
+                <div className="relative flex items-center gap-1">
+                  {chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon />
+                  ) : (
+                    <OptimismIcon />
+                  )}
+                  <ChevronDownIcon className="w-4 h-4 " />
                 </div>
               </PopoverTrigger>
               <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-1">
                   <EthereumIcon className="w-4 h-4 dark:text-black" />
                   <Typography className="">Ethereum</Typography>
                   <ChevronDownIcon className="w-4 h-4 dark:text-black" />
@@ -107,16 +94,17 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className="border-[#041A50] p-0 gap-0  h-fit "
         >
-          <div className="py-[10px] px-4 bg-[#ABFFDE] ">
+          <div className="py-[14px] px-4 bg-[#ABFFDE] ">
             <Popover>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center gap-0">
-                  <Image
-                    src={ethereumIcon}
-                    alt="ethereum icon"
-                    width={24}
-                    height={24}
-                  />
+                <div className="relative flex items-center gap-2">
+                  {chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon />
+                  ) : (
+                    <OptimismIcon />
+                  )}
                   <ChevronDownIcon
                     style={{
                       color: "black !important",

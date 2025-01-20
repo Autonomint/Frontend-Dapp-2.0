@@ -17,7 +17,7 @@ interface FunctionInputs {
   value: bigint; // uint256 can be represented by bigint
 }
 
-const useDepositTokens = () => {
+const useDepositTokens = (mutation: any) => {
   const { chainId } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const {
@@ -27,10 +27,7 @@ const useDepositTokens = () => {
     reset, // Function to reset the state of the hook
   } = useWriteContract({
     mutation: {
-      onSuccess: (data) => {
-        // Show custom toast
-      },
-      onError: (error: any) => {},
+      ...mutation,
     },
   });
 

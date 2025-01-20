@@ -1,43 +1,44 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import framyourlogodark from "@/app/assets/cryptocurrency-color_eth (2).svg";
 import farmyourluckLogo from "@/app/assets/cryptocurrency-color_eth.png";
-import { Input } from "@/components/ui/input";
+import EthImage from "@/app/assets/eth-icon.svg";
 import { Button } from "@/components/ui/button";
-import { useParams, useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Typography } from "@/components/ui/Typography";
 import AppNavbar from "@/custom-components/AppNavbar";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import { parseEther, parseUnits } from "viem";
+import useMarketChart from "@/hookes/api-hooks/useGetChartData";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
+import displayNumberWithPrecision from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+} from "chart.js";
+import { useFormik } from "formik";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { toast, Toaster } from "sonner";
+import { parseEther, parseUnits } from "viem";
 import {
   useAccount,
   useBalance,
   useChainId,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
-import displayNumberWithPrecision from "@/utils/helpers";
-import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
-import { Typography } from "@/components/ui/Typography";
-import useMarketChart from "@/hookes/api-hooks/useGetChartData";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import EthImage from "@/app/assets/eth-icon.svg";
-import Spinner from "@/components/ui/Spinner";
-import framyourlogodark from "@/app/assets/cryptocurrency-color_eth (2).svg";
+import * as Yup from "yup";
+import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -242,110 +243,111 @@ function AdditionalMetics({
             color={metric.color}
           />
         ))}
-      </div>
-      <div className="w-full mt-6">
-        <div className="flex flex-col gap-1 w-full">
-          <div className="flex w-full h-[60px] mb-2">
-            {[
-              {
-                label: "Deposit",
-                value: 2,
-                gradient: "linear-gradient(to right, #627EEA4D,#627EEA00)",
-                gradientText: "#627EEA",
-              },
-              {
-                label: "Option Fee",
-                value: 0.7,
-                gradient: "linear-gradient(to right, #FF52704D,#FF527000)",
-                gradientText: "#FF5270",
-              },
+        <div className="w-full">
+          <div className="flex flex-col gap-1 w-full">
+            <div className="flex w-full h-[60px] mb-2">
+              {[
+                {
+                  label: "Deposit",
+                  value: Number(deposit || 0),
+                  gradient: "linear-gradient(to right, #627EEA4D,#627EEA00)",
+                  gradientText: "#627EEA",
+                },
+                {
+                  label: "Option Fee",
+                  value: Number(optionFees || 0),
+                  gradient: "linear-gradient(to right, #FF52704D,#FF527000)",
+                  gradientText: "#FF5270",
+                },
 
-              {
-                label: "Downside Protection",
-                value: 0.7,
-                gradient: "linear-gradient(to right, #05A5524D, #05A55200)",
-                gradientText: "#05A552",
-              },
-            ].map((metric, index, arr) => {
-              const total = arr.reduce((acc, item) => acc + item.value, 0);
-              const percentage = (metric.value / total) * 100;
+                {
+                  label: "Downside Protection",
+                  value: Number(Dp || 0),
+                  gradient: "linear-gradient(to right, #05A5524D, #05A55200)",
+                  gradientText: "#05A552",
+                },
+              ].map((metric, index, arr) => {
+                const total = arr.reduce((acc, item) => acc + item.value, 0);
+                const percentage = (metric.value / total) * 100 || 0;
 
-              return (
-                <div
-                  key={index}
-                  style={{
-                    width: `${percentage}%`,
-                  }}
-                  className="relative h-full flex flex-col justify-end"
-                >
+                return (
                   <div
-                    className="w-full"
+                    key={index}
                     style={{
-                      position: "absolute",
-                      backgroundColor: "transparent",
-                      color: metric.gradientText,
-                      left: "8px",
+                      width: `${percentage}%`,
                     }}
+                    className="relative h-full flex flex-col justify-end"
                   >
-                    {percentage.toFixed(2)}%
+                    <div
+                      className="w-full"
+                      style={{
+                        position: "absolute",
+                        backgroundColor: "transparent",
+                        color: metric.gradientText,
+                        left: "8px",
+                      }}
+                    >
+                      {percentage.toFixed(2)}%
+                    </div>
+
+                    <div
+                      style={{
+                        position: "absolute",
+                        height: "48px",
+                        width: "2px",
+                        backgroundColor: metric.gradientText,
+                        left: 0,
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        height: "80%",
+                        background: metric.gradient,
+                      }}
+                    />
                   </div>
+                );
+              })}
+            </div>
 
-                  <div
-                    style={{
-                      position: "absolute",
-                      height: "48px",
-                      width: "2px",
-                      backgroundColor: metric.gradientText,
-                      left: 0,
-                    }}
-                  />
+            <div className="flex w-full h-2 bg-gray-200 rounded-none overflow-hidden">
+              {[
+                {
+                  label: "Deposit",
+                  value: Number(deposit),
+                  gradient: "#627EEA",
+                },
+                {
+                  label: "Option Fee",
+                  value: Number(optionFees),
+                  gradient: "#FF5270",
+                },
+                {
+                  label: "Downside Protection",
+                  value: Number(Dp),
+                  gradient: "#05A552",
+                },
+              ].map((metric, index, arr) => {
+                const total = arr.reduce((acc, item) => acc + item.value, 0);
+                const percentage = (metric.value / total) * 100;
 
+                return (
                   <div
+                    key={index}
                     style={{
-                      height: "80%",
+                      width: `${percentage}%`,
                       background: metric.gradient,
                     }}
+                    title={`${metric.label}: ${percentage.toFixed(2)}%`}
                   />
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="flex w-full h-2 bg-gray-200 rounded-none overflow-hidden">
-            {[
-              {
-                label: "Deposit",
-                value: 2,
-                gradient: "#627EEA",
-              },
-              {
-                label: "Option Fee",
-                value: 0.7,
-                gradient: "#FF5270",
-              },
-              {
-                label: "Downside Protection",
-                value: 0.7,
-                gradient: "#05A552",
-              },
-            ].map((metric, index, arr) => {
-              const total = arr.reduce((acc, item) => acc + item.value, 0);
-              const percentage = (metric.value / total) * 100;
-
-              return (
-                <div
-                  key={index}
-                  style={{
-                    width: `${percentage}%`,
-                    background: metric.gradient,
-                  }}
-                  title={`${metric.label}: ${percentage.toFixed(2)}%`}
-                />
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
+
       {/* <Button className="bg-textBlack w-full absolute left-0 bottom-0  rounded-none h-16 font-bold text-[#FFFFFF] text-[32px] ">
         Mint USDa
       </Button> */}
@@ -405,7 +407,11 @@ function AdditionalDetails({ currency }: { currency: string }) {
   console.log("quoteError", ltv, quoteError, options);
 
   const { depositDatahash, isDepositsLoading, mintUSDa, reset } =
-    useDepositTokens();
+    useDepositTokens({
+      onError: () => {
+        setMintLoading(false);
+      },
+    });
 
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
@@ -418,8 +424,13 @@ function AdditionalDetails({ currency }: { currency: string }) {
     hash: depositDatahash,
     confirmations: 2,
   });
+
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
+      toast.success(`${"Mint Successful"}`, {
+        position: "top-right",
+        className: "dark:bg-custom-gradient-to-top",
+      });
       setMintLoading(false);
       handleResetPage();
       router.push("/dashboard/portfolio");
@@ -697,6 +708,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
           {mintLoading ? "Loading..." : "Mint USDa"}
         </Button>
       </div>
+      <Toaster richColors />
     </form>
   );
 }
