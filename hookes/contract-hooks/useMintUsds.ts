@@ -10,7 +10,7 @@ enum StrikePrice {
 }
 
 interface FunctionInputs {
-  strikePercent: StrikePrice; // uint8 can be mapped to the enum
+  strikePercent: number; // uint8 can be mapped to the enum
   strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint

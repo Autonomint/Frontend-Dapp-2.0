@@ -33,10 +33,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
   cookies,
-}: Readonly<{
+}: {
   children: React.ReactNode;
   cookies: string | null;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>

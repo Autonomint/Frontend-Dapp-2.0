@@ -38,6 +38,7 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
+import { GetServerSideProps } from "next";
 
 ChartJS.register(
   CategoryScale,
@@ -48,7 +49,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-export const options = {
+const options = {
   responsive: true,
   maintainAspectRatio: false,
   layout: {
@@ -445,11 +446,11 @@ function AdditionalDetails({ currency }: { currency: string }) {
   async function handleMint(values: any) {
     setMintLoading(true);
     const strikePrice = values.strikePrice;
-    let colateralamount = parseUnits(
+    const colateralamount = parseUnits(
       formik.values.collateralAmount.toString(),
       18
     );
-    let strikePercent =
+    const strikePercent =
       strikePrice == 5
         ? 0
         : strikePrice == 10
@@ -713,7 +714,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
   );
 }
 
-function MintUSDa({ params }: { params: { currency: string } }) {
+function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
   const router = useRouter();
   const currency = "eth";
 
