@@ -45,16 +45,14 @@ export default function RootLayout({
         />
       </head>
 
-      <body
-        className={`h-screen w-screen bg-gray-50 flex justify-center items-center`}
-      >
-        <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
+      <body className={`h-screen w-screen flex justify-center items-center`}>
+        <div className="bg-white rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
           <WalletProvider cookies={cookies}>
             <QueryProvider>
               <ThemeProvider attribute="class">
                 <Navbar />
                 {/* <AppNavbar /> */}
-                <div className="flex-grow overflow-y-auto no-scrollbar">
+                <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
                   {children}
                   <Footer />
                 </div>

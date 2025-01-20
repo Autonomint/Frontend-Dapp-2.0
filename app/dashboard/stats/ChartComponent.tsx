@@ -134,12 +134,14 @@ export function TimeFrame({ timeFrame }: { timeFrame?: string }) {
 export function StatsMetrics({
   value,
   metricVal,
+  className,
 }: {
   value: string;
   metricVal: string;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 gap-3">
       <span className="text-[24px] font-medium text-textBlack dark:text-white">
         {value}
       </span>

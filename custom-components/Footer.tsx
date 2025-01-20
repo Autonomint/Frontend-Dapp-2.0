@@ -14,6 +14,7 @@ import { IoNewspaperOutline } from "react-icons/io5";
 import { AiOutlineDiscord } from "react-icons/ai";
 import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
+import { StickyNote } from "lucide-react";
 
 export default function Footer() {
   const [openFaq, setOpenFaq] = React.useState(false);
@@ -49,35 +50,27 @@ export default function Footer() {
             <div className="w-[20%] flex gap-6 justify-end mr-4">
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://t.co/Ck6x2jhVOj" target="_blank">
-                  <IoNewspaperOutline width={24} height={24} />
-                </a>
+                <StickyNote style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://t.co/Ck6x2jhVOj" target="_blank">
-                  <AiOutlineDiscord width={24} height={24} />
-                </a>
+                <AiOutlineDiscord style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://twitter.com/autonomint" target="_blank">
-                  <BsTwitterX width={24} height={24} />
-                </a>
+                <BsTwitterX style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="" target="_blank">
-                  <PiTelegramLogo width={24} height={24} />
-                </a>
+                <PiTelegramLogo style={{ width: "24px", height: "24px" }} />
               </Button>
             </div>
           </div>
