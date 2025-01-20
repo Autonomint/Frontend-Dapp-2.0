@@ -2,7 +2,12 @@ import ethereumIcon from "@/app/assets/ethereum-icon.svg";
 
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/components/ui/PopUp";
-import { WalletIcon } from "@/components/ui/SvgIcons";
+import {
+  BaseIcon,
+  EthereumIcon,
+  OptimismIcon,
+  WalletIcon,
+} from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,10 +23,10 @@ import {
   useAppKitNetwork,
   useDisconnect,
 } from "@reown/appkit/react";
-import { ChevronDownIcon } from "lucide-react";
+import { Check, ChevronDownIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { useBalance } from "wagmi";
+import { useBalance, useSwitchChain } from "wagmi";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -33,6 +38,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const { disconnect } = useDisconnect();
   const { caipNetwork, caipNetworkId, chainId, switchNetwork } =
     useAppKitNetwork();
+  const { switchChain } = useSwitchChain();
+
   const { data, isError, isLoading } = useBalance({
     address: usDaAddress ? (address as `0x${string}`) : undefined,
     token: usDaAddress
@@ -42,6 +49,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleBtnClick = () => {
     if (!isConnected) open();
   };
+  console.log(chainId == NetworkId.EthereumSepolia, "chainId");
 
   return (
     <div>
@@ -51,29 +59,26 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className=" p-0 gap-0  h-fit "
         >
-          <div className="py-[10px] px-4 bg-[#ABFFDE] ">
+          <div className="py-[14px] px-4 bg-[#ABFFDE] ">
             <Popover>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center gap-0">
-                  <Image
-                    src={ethereumIcon}
-                    alt="ethereum icon"
-                    width={24}
-                    height={24}
-                  />
-                  <ChevronDownIcon
-                    style={{
-                      color: "black !important",
-                    }}
-                    className="w-4 h-4"
-                  />
+                <div className="relative flex items-center gap-1">
+                  {chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon />
+                  ) : (
+                    <OptimismIcon />
+                  )}
+                  <ChevronDownIcon className="w-4 h-4 " />
                 </div>
               </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                className="w-full border  border-gray-200 rounded-md shadow-md"
-              >
-                <div className="flex flex-col"></div>
+              <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
+                <div className="flex flex-row gap-1">
+                  <EthereumIcon className="w-4 h-4 dark:text-black" />
+                  <Typography className="">Ethereum</Typography>
+                  <ChevronDownIcon className="w-4 h-4 dark:text-black" />
+                </div>
               </PopoverContent>
             </Popover>
           </div>
@@ -89,16 +94,17 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className="border-[#041A50] p-0 gap-0  h-fit "
         >
-          <div className="py-[10px] px-4 bg-[#ABFFDE] ">
+          <div className="py-[14px] px-4 bg-[#ABFFDE] ">
             <Popover>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center gap-0">
-                  <Image
-                    src={ethereumIcon}
-                    alt="ethereum icon"
-                    width={24}
-                    height={24}
-                  />
+                <div className="relative flex items-center gap-2">
+                  {chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon />
+                  ) : (
+                    <OptimismIcon />
+                  )}
                   <ChevronDownIcon
                     style={{
                       color: "black !important",
@@ -108,10 +114,77 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 </div>
               </PopoverTrigger>
               <PopoverContent
-                align="start"
-                className="w-full border border-gray-200 rounded-md shadow-md"
+                align="center"
+                className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
               >
-                <div className="flex flex-col"></div>
+                <div className=" flex flex-col gap-4">
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155111,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <EthereumIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:fill-white"
+                    />
+                    <Typography className="text-[24px] dark:text-white font-medium">
+                      Ethereum{" "}
+                    </Typography>{" "}
+                    {chainId == NetworkId.EthereumSepolia ? (
+                      <Check width={18} height={18} />
+                    ) : null}
+                  </div>
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 84532,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <BaseIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:text-black"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Base{" "}
+                    </Typography>
+                    {chainId == NetworkId.BaseSepolia && (
+                      <Check width={18} height={18} />
+                    )}
+                  </div>
+                  {/* <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155420,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <OptimismIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className=" dark:text-black"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Optimism{" "}
+                    </Typography>
+                    {chainId == NetworkId.OptimismSepolia && (
+                      <Check width={18} height={18} />
+                    )}
+                  </div> */}
+                </div>
               </PopoverContent>
             </Popover>
           </div>

@@ -4,11 +4,12 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../custom-components/Footer";
-import Navbar from "../custom-components/Navbar";
 import { Toaster } from "sonner";
 
 import "./globals.css";
+import Provider from "../contexts";
 import { ThemeProvider, useTheme } from "next-themes";
+import Navbar from "@/custom-components/Navbar";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
   // ssr: false,
@@ -47,18 +48,20 @@ export default function RootLayout({
 
       <body className={`h-screen w-screen flex justify-center items-center`}>
         <div className="bg-white rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
-          <WalletProvider cookies={cookies}>
-            <QueryProvider>
-              <ThemeProvider attribute="class">
-                <Navbar />
-                {/* <AppNavbar /> */}
-                <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
-                  {children}
+          <QueryProvider>
+            <WalletProvider cookies={cookies}>
+              <Provider>
+                <ThemeProvider attribute="class">
+                  <Navbar />
+                  {/* <AppNavbar /> */}
+                  <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
+                    {children}
+                  </div>
                   <Footer />
-                </div>
-              </ThemeProvider>
-            </QueryProvider>
-          </WalletProvider>
+                </ThemeProvider>
+              </Provider>
+            </WalletProvider>
+          </QueryProvider>
         </div>
       </body>
     </html>
