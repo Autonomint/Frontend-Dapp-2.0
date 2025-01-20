@@ -13,7 +13,7 @@ import Link from "next/link";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   return (
-    <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A]">
+    <div className="flex justify-between items-center h-[108px] py-8   bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
       <Link href="/">
         <div className="flex items-center ml-4 gap-4">
           <div className="w-[3rem] h-[3rem]">
@@ -46,7 +46,7 @@ function Navbar() {
         <WalletPopup />
         <Button
           variant={"shadowOutline"}
-          className="border-[#041A50] h-fit p-[10px]"
+          className="border-[#041A50] h-fit p-[10px] dark:hover:bg-custom-gradient-to-top"
           onClick={() =>
             theme == "dark" ? setTheme("light") : setTheme("dark")
           }

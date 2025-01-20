@@ -70,7 +70,22 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <ChevronDownIcon className="w-4 h-4 " />
             </div>
             <Popover>
-              <PopoverTrigger asChild></PopoverTrigger>
+              <PopoverTrigger asChild>
+                <div className="relative flex items-center gap-0">
+                  <Image
+                    src={ethereumIcon}
+                    alt="ethereum icon"
+                    width={24}
+                    height={24}
+                  />
+                  <ChevronDownIcon
+                    style={{
+                      color: "black !important",
+                    }}
+                    className="w-4 h-4"
+                  ></ChevronDownIcon>
+                </div>
+              </PopoverTrigger>
               <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
                 <div className="flex flex-row gap-2">
                   <EthereumIcon className="w-4 h-4 dark:text-black" />
@@ -102,7 +117,12 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     width={24}
                     height={24}
                   />
-                  <ChevronDownIcon className="w-4 h-4 " />
+                  <ChevronDownIcon
+                    style={{
+                      color: "black !important",
+                    }}
+                    className="w-4 h-4 "
+                  />
                 </div>
               </PopoverTrigger>
               <PopoverContent

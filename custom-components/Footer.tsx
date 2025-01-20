@@ -10,6 +10,11 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React from "react";
 import { useTheme } from "next-themes";
+import { IoNewspaperOutline } from "react-icons/io5";
+import { AiOutlineDiscord } from "react-icons/ai";
+import { BsTwitterX } from "react-icons/bs";
+import { PiTelegramLogo } from "react-icons/pi";
+import { StickyNote } from "lucide-react";
 
 export default function Footer() {
   const [openFaq, setOpenFaq] = React.useState(false);
@@ -45,71 +50,27 @@ export default function Footer() {
             <div className="w-[20%] flex gap-6 justify-end mr-4">
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://t.co/Ck6x2jhVOj" target="_blank">
-                  <div className="w-[1.5rem]">
-                    <Image
-                      src={paperIcon}
-                      alt="paperIcon"
-                      className={`rounded-md ${
-                        theme === "dark" ? "filter invert" : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </a>
+                <StickyNote style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://t.co/Ck6x2jhVOj" target="_blank">
-                  <div className="w-[1.5rem]">
-                    <Image
-                      src={discord}
-                      alt="discord"
-                      className={`rounded-md ${
-                        theme === "dark" ? "filter invert" : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </a>
+                <AiOutlineDiscord style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="https://twitter.com/autonomint" target="_blank">
-                  <div className="w-[1.5rem] ">
-                    <Image
-                      src={twitter}
-                      className={`rounded-md ${
-                        theme === "dark" ? "filter invert" : ""
-                      }`}
-                      alt="twitter"
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </a>
+                <BsTwitterX style={{ width: "24px", height: "24px" }} />
               </Button>
               <Button
                 variant={"shadowOutline"}
-                className="border-[#041A50] h-fit p-[10px]"
+                className="border-[#041A50] p-[10px]"
               >
-                <a href="" target="_blank">
-                  <div className="w-[1.5rem]">
-                    <Image
-                      src={telegram}
-                      alt="telegram"
-                      className={`rounded-md ${
-                        theme === "dark" ? "filter invert" : ""
-                      }`}
-                      style={{ width: "100%", height: "100%" }}
-                    />
-                  </div>
-                </a>
+                <PiTelegramLogo style={{ width: "24px", height: "24px" }} />
               </Button>
             </div>
           </div>

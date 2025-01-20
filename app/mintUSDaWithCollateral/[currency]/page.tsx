@@ -37,6 +37,7 @@ import {
 import { Line } from "react-chartjs-2";
 import EthImage from "@/app/assets/eth-icon.svg";
 import Spinner from "@/components/ui/Spinner";
+import framyourlogodark from "@/app/assets/cryptocurrency-color_eth (2).svg";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -241,6 +242,109 @@ function AdditionalMetics({
             color={metric.color}
           />
         ))}
+      </div>
+      <div className="w-full mt-6">
+        <div className="flex flex-col gap-1 w-full">
+          <div className="flex w-full h-[60px] mb-2">
+            {[
+              {
+                label: "Deposit",
+                value: 2,
+                gradient: "linear-gradient(to right, #627EEA4D,#627EEA00)",
+                gradientText: "#627EEA",
+              },
+              {
+                label: "Option Fee",
+                value: 0.7,
+                gradient: "linear-gradient(to right, #FF52704D,#FF527000)",
+                gradientText: "#FF5270",
+              },
+
+              {
+                label: "Downside Protection",
+                value: 0.7,
+                gradient: "linear-gradient(to right, #05A5524D, #05A55200)",
+                gradientText: "#05A552",
+              },
+            ].map((metric, index, arr) => {
+              const total = arr.reduce((acc, item) => acc + item.value, 0);
+              const percentage = (metric.value / total) * 100;
+
+              return (
+                <div
+                  key={index}
+                  style={{
+                    width: `${percentage}%`,
+                  }}
+                  className="relative h-full flex flex-col justify-end"
+                >
+                  <div
+                    className="w-full"
+                    style={{
+                      position: "absolute",
+                      backgroundColor: "transparent",
+                      color: metric.gradientText,
+                      left: "8px",
+                    }}
+                  >
+                    {percentage.toFixed(2)}%
+                  </div>
+
+                  <div
+                    style={{
+                      position: "absolute",
+                      height: "48px",
+                      width: "2px",
+                      backgroundColor: metric.gradientText,
+                      left: 0,
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      height: "80%",
+                      background: metric.gradient,
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex w-full h-2 bg-gray-200 rounded-none overflow-hidden">
+            {[
+              {
+                label: "Deposit",
+                value: 2,
+                gradient: "#627EEA",
+              },
+              {
+                label: "Option Fee",
+                value: 0.7,
+                gradient: "#FF5270",
+              },
+              {
+                label: "Downside Protection",
+                value: 0.7,
+                gradient: "#05A552",
+              },
+            ].map((metric, index, arr) => {
+              const total = arr.reduce((acc, item) => acc + item.value, 0);
+              const percentage = (metric.value / total) * 100;
+
+              return (
+                <div
+                  key={index}
+                  style={{
+                    width: `${percentage}%`,
+                    background: metric.gradient,
+                  }}
+                  title={`${metric.label}: ${percentage.toFixed(2)}%`}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
       {/* <Button className="bg-textBlack w-full absolute left-0 bottom-0  rounded-none h-16 font-bold text-[#FFFFFF] text-[32px] ">
         Mint USDa
@@ -651,7 +755,14 @@ function MintUSDa({ params }: { params: { currency: string } }) {
               width={50}
               height={50}
               alt="farm-your-luck"
-              className="hidden md:block"
+              className="hidden md:block cursor-pointer dark:hidden"
+            />
+            <Image
+              src={framyourlogodark}
+              width={50}
+              height={50}
+              alt="farm-your-luck"
+              className="hidden md:block cursor-pointer light:hidden"
             />
             <div className=" text-textBlack text-3xl font-medium dark:text-white">
               Farm Your Luck

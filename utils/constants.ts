@@ -16,3 +16,4 @@ export const BorrowStatus = {
   WITHDREW: "WITHDREW",
   LIQUIDATED: "LIQUIDATED",
 } as const;
+export const DEFAULT_TOAST_POSITION = "top-right";

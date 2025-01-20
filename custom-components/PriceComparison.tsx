@@ -64,7 +64,13 @@ function PriceComparison({
       <div className="flex justify-between">
         <span
           style={{
-            color: isHover ? tagColor : theme == "dark" ? "white" : "black",
+            color: isHover
+              ? theme == "dark"
+                ? "white"
+                : tagColor
+              : theme == "dark"
+              ? "white"
+              : "black",
             fontSize: "24px",
           }}
           className={` text-textBlack text-[24px]`}
@@ -73,7 +79,16 @@ function PriceComparison({
         </span>
         <span
           style={{
-            color: isHover ? tagColor : theme == "dark" ? "white" : "black",
+            color:
+              theme == "dark" && orgName == "AthermintXYZ"
+                ? isHover
+                  ? "#f57171"
+                  : ""
+                : isHover
+                ? tagColor
+                : theme == "dark"
+                ? "white"
+                : "black",
             fontSize: "24px",
           }}
         >

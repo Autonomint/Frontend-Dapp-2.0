@@ -341,19 +341,20 @@ export function WithdrawFund({
             <span className="text-lg font-medium">Repay</span>
           </label>
         </div> */}
-          <div className="flex">
-            <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+           <div className="flex">
+          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
               <input
                 id="bordered-radio-2"
                 type="radio"
                 checked={toggleView === "repay"}
                 onChange={() => setToggleView("repay")}
                 name="bordered-radio"
-                className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:bg-black"
+                  className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:bg-black"
               />
               <label
                 htmlFor="bordered-radio-1"
                 className="w-full py-4 ms-2 text-[32px] font-medium text-grayLight dark:text-textBlack"
+
               >
                 Repay
               </label>

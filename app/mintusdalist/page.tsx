@@ -138,7 +138,7 @@ function MintUSDaList() {
     <div>
       <AppNavbar activeBack={false} />
       <div className="md:relative">
-        <motion.div className="flex flex-col gap-0 lg:max-w-[93%]">
+        <motion.div className="flex flex-col lg:max-w-[93%]">
           {list.map((item, index) => (
             <SingleListItem key={index} item={item} indexVal={index} />
           ))}

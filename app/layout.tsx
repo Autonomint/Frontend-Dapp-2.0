@@ -4,14 +4,17 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "../custom-components/Footer";
-import Navbar from "../custom-components/Navbar";
+import { Toaster } from "sonner";
+
 import "./globals.css";
 import Provider from "../contexts";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
+import Navbar from "@/custom-components/Navbar";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
   // ssr: false,
 });
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -43,17 +46,15 @@ export default function RootLayout({
         />
       </head>
 
-      <body
-        className={`h-screen w-screen bg-gray-50 flex justify-center items-center`}
-      >
-        <div className="bg-white border border-solid border-gray-200 rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
+      <body className={`h-screen w-screen flex justify-center items-center`}>
+        <div className="bg-white rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
           <QueryProvider>
             <WalletProvider cookies={cookies}>
               <Provider>
                 <ThemeProvider attribute="class">
                   <Navbar />
                   {/* <AppNavbar /> */}
-                  <div className="flex-grow overflow-y-auto no-scrollbar">
+                  <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
                     {children}
                   </div>
                   <Footer />

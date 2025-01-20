@@ -1,0 +1,219 @@
+"use client";
+import React from "react";
+import { TimeFrame } from "./ChartComponent";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+import { cn } from "@/utils/helpers";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+);
+
+export const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: {
+    padding: 0,
+  },
+  plugins: {
+    legend: {
+      display: false,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      border: {
+        display: false,
+      },
+    },
+    y: {
+      grid: {
+        display: false,
+      },
+      border: {
+        display: false,
+      },
+    },
+  },
+};
+
+export const labels = ["January", "February", "March", "April", "May"];
+
+export const data = {
+  labels,
+  datasets: [
+    {
+      fill: true,
+      data: [10, 20, 25, 45, 55],
+      borderColor: "#00679F",
+      pointRadius: 0,
+      borderWidth: 2,
+      backgroundColor: function (context: any) {
+        const chart = context.chart;
+        const { ctx, chartArea } = chart;
+
+        if (!chartArea) {
+          return null;
+        }
+
+        // if (theme === "dark") {
+        const gradient = ctx.createLinearGradient(
+          0,
+          chartArea.top,
+          0,
+          chartArea.bottom
+        );
+        gradient.addColorStop(0, "#002A4E");
+        gradient.addColorStop(1, "#002A4E00");
+        return gradient;
+        // }
+
+        // const gradient = ctx.createLinearGradient(
+        //   0,
+        //   chartArea.top,
+        //   0,
+        //   chartArea.bottom
+        // );
+        // gradient.addColorStop(0, "#E5F3FF");
+        // gradient.addColorStop(1, "#FFFDE4");
+        // return gradient;
+      },
+    },
+  ],
+};
+
+export function StatsMetrics({
+  value,
+  metricVal,
+  classNameValue,
+  classNameMetricVal,
+}: {
+  value: string;
+  metricVal: string;
+  classNameValue?: string;
+  classNameMetricVal?: string;
+}) {
+  return (
+    <div className="flex flex-col items-start justify-center flex-1 text-left gap-3">
+      <span
+        className={cn(
+          "text-[24px] font-medium text-textBlack dark:text-white",
+          classNameValue
+        )}
+      >
+        {value}
+      </span>
+      <span
+        className={cn(
+          "text-[14px] font-normal text-grayLight",
+          classNameMetricVal
+        )}
+      >
+        {metricVal}
+      </span>
+    </div>
+  );
+}
+
+function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
+  return (
+    <div className="flex items-start h-full">
+      <div
+        className="p-5 flex flex-1 flex-col justify-between  h-full"
+        style={{
+          borderLeft: "none",
+          borderTop: "none",
+        }}
+      >
+        <div className="flex justify-between">
+          <span className="flex-1 font-medium text-[24px] text-grayLight">
+            {"Ratio of Collaterals"}
+          </span>
+          <div className="hidden flex-1 lg:block mr-4">
+            <TimeFrame timeFrame={timeFrame} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-7 w-full mt-8">
+          <StatsMetrics value={"1.15"} metricVal={"Current Ratio"} />
+          <StatsMetrics
+            value={"$489,992,092"}
+            metricVal={"Total dCDS Pool value"}
+          />
+          <StatsMetrics
+            value={"$788,917,981"}
+            metricVal={"Net dCDS Pool Value"}
+          />
+          <StatsMetrics value={"+$788,917"} metricVal={"dCDS Profit/Loss"} />
+        </div>
+        <div className="flex w-full h-6 bg-gray-200 rounded-none overflow-hidden my-[12px]">
+          {[
+            {
+              label: "Deposit",
+              value: 2,
+              gradient: "#05A552",
+            },
+            {
+              label: "Option Fee",
+              value: 0.7,
+              gradient: "#478BFF",
+            },
+          ].map((metric, index, arr) => {
+            const total = arr.reduce((acc, item) => acc + item.value, 0);
+            const percentage = (metric.value / total) * 100;
+
+            return (
+              <div
+                key={index}
+                style={{
+                  width: `${percentage}%`,
+                  background: metric.gradient,
+                }}
+                title={`${metric.label}: ${percentage.toFixed(2)}%`}
+              />
+            );
+          })}
+        </div>
+        <div className="grid grid-cols-2 gap-7 w-full">
+          <StatsMetrics
+            value={"1.15"}
+            metricVal={"Current Ratio"}
+            classNameValue="dark:text-[#05A552]"
+            classNameMetricVal="dark:text-[#05A552]"
+          />
+          <StatsMetrics
+            value={"$489,992,092"}
+            metricVal={"Total dCDS Pool value"}
+            classNameValue="dark:text-[#478BFF]"
+            classNameMetricVal="dark:text-[#478BFF]"
+          />
+        </div>
+      </div>
+      {/* <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div> */}
+      <div className="flex flex-1 h-full">
+        <Line options={options} data={data} className={`w-full h-full p-5`} />
+      </div>
+    </div>
+  );
+}
+
+export default RatioOfCollaterals;

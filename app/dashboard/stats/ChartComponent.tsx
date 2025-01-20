@@ -111,7 +111,7 @@ export const data = {
   ],
 };
 
-function TimeFrame({ timeFrame }: { timeFrame?: string }) {
+export function TimeFrame({ timeFrame }: { timeFrame?: string }) {
   const timeFrames = ["All Time", "1Y", "6M", "1M", "10M"];
   return (
     <div className="border border-grayLight flex text-center w-full">
@@ -131,15 +131,17 @@ function TimeFrame({ timeFrame }: { timeFrame?: string }) {
   );
 }
 
-function StatsMetrics({
+export function StatsMetrics({
   value,
   metricVal,
+  className,
 }: {
   value: string;
   metricVal: string;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col flex-1 gap-3">
       <span className="text-[24px] font-medium text-textBlack dark:text-white">
         {value}
       </span>
@@ -153,9 +155,13 @@ function StatsMetrics({
 export function ChartComponent({
   title,
   timeFrame,
+  maxH = "max-h-[400px]",
+  hideElements = false,
 }: {
   title?: string;
   timeFrame?: string;
+  maxH?: string;
+  hideElements: boolean;
 }) {
   return (
     <div
@@ -166,19 +172,34 @@ export function ChartComponent({
       }}
     >
       <div className="flex justify-between">
-        <span className="flex-1 font-medium text-[24px] text-grayLight">
+        <span
+          style={{
+            display: hideElements ? "none" : "block",
+          }}
+          className="flex-1 font-medium text-[24px] text-grayLight"
+        >
           {title}
         </span>
-        <div className="hidden flex-1 lg:block">
+        <div
+          style={{
+            display: hideElements ? "none" : "block",
+          }}
+          className="hidden flex-1 lg:block"
+        >
           <TimeFrame timeFrame={timeFrame} />
         </div>
       </div>
-      <div className="flex py-3 my-3">
+      <div
+        style={{
+          display: hideElements ? "none" : "flex",
+        }}
+        className="flex py-3 my-3"
+      >
         <StatsMetrics value={"489,829,928"} metricVal={"USDa Minted"} />
         <StatsMetrics value={"$1"} metricVal={"USDa Price"} />
       </div>
 
-      <Line options={options} data={data} className="w-1/2 max-h-[400px]" />
+      <Line options={options} data={data} className={`w-1/2 ${maxH}`} />
     </div>
   );
 }

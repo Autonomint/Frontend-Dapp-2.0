@@ -1,27 +1,37 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import boat from "./assets/home-banner.svg";
+import { useEffect, useState } from "react";
 import darkboat from "./assets/home-banner-dark.svg";
+import boat from "./assets/home-banner.svg";
 
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import PriceComparison from "../custom-components/PriceComparison";
 import PriceGraph from "./assets/Chart.png";
+import DCDSHover from "./assets/Chart.svg";
+import LTVDark from "./assets/LTV Details.svg";
+import LTV from "./assets/LTV-range-image.svg";
+import arrow from "./assets/arrow-right-02.png";
 import ModeImage from "./assets/mode.png";
 import OptimismImage from "./assets/optimism.png";
-import arrow from "./assets/arrow-right-02.png";
-import PriceComparison from "../custom-components/PriceComparison";
-import { useRouter } from "next/navigation";
-import LTV from "./assets/LTV-range-image.svg";
+
 import {
   DotIcon,
   LeftArrowIcon,
   RightArrowIcon,
 } from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
-import infinityImage from "./assets/infinity.svg";
-import { useTheme } from "next-themes";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { useTheme } from "next-themes";
+import infinityImage from "./assets/infinity.svg";
 function TransferBetweeHoverElement() {
   const { theme } = useTheme();
   const router = useRouter();
@@ -48,7 +58,7 @@ function TransferBetweeHoverElement() {
               }}
             />
             <div className=" text-grayLight text-center text-[32px] font-light bg-none dark:text-white">
-              Mode
+              From
             </div>
           </div>
           <div className="flex items-center pb-9  justify-center gap-3 bg-none">
@@ -72,7 +82,7 @@ function TransferBetweeHoverElement() {
               }}
             />
             <div className=" text-center text-grayLight text-[32px] font-light bg-none dark:text-white">
-              Optimism
+              To
             </div>
           </div>
         </div>
@@ -108,6 +118,23 @@ function TransferBetweeHoverElement() {
   );
 }
 
+function FarmYourLuckHoverElement() {
+  return (
+    <div className="flex flex-col border-x border-y border-[1px] border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative dark:bg-custom-gradient-to-top">
+      <div className="text-textBlack text-[38px] font-medium dark:text-white bg-none">
+        Explore incentives from our partners
+      </div>
+      <div className="text-[24px] text-grayLight font-medium bg-none">
+        Claim back 100% of your Option fees
+      </div>
+      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+        Farm your luck
+        <Image src={arrow} width={42} height={42} alt="arrow" />
+      </Button>
+    </div>
+  );
+}
+
 function DCDSHoverElement() {
   const router = useRouter();
   return (
@@ -123,10 +150,29 @@ function DCDSHoverElement() {
       <Image
         src={PriceGraph}
         alt="Price Graph"
-        className="w-[900px] object-fit"
+        className="w-[900px] object-fit block dark:hidden"
       />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white">
+      <Image
+        src={DCDSHover}
+        alt="Price Graph"
+        className="w-[900px] object-fit hidden dark:block"
+      />
+      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white flex items-center gap-4">
         Get up to 200% APY
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <IoMdInformationCircleOutline
+                height={32}
+                width={32}
+                className="cursor-pointer"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Exposed to volatility risk</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
         Earn
@@ -157,7 +203,16 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
         100% Synthetic LTV
       </div>
       <div>
-        <Image src={LTV} alt="tvl" style={{ width: "100%" }} />
+        <Image
+          className="hidden dark:block w-full"
+          src={LTVDark}
+          alt="dark-mode-image"
+        />
+        <Image
+          className="block dark:hidden w-full"
+          src={LTV}
+          alt="light-mode-image"
+        />
       </div>
       <div className="flex justify-between bg-none">
         <span className=" font-medium text-lg text-grayLight bg-none">
@@ -394,19 +449,18 @@ export default function Home() {
 
         {/* 2nd row */}
         <div
-          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight   border-t-grayLight border-[1px] `}
+          className={`flex animateTransfer closeAnimateButtom w-full border-b-grayLight border-t-grayLight border-[1px]`}
         >
+          {/* Bridge Section */}
           <div
-            className={`relative cursor-pointer  ${
-              hoveredIndex === 2
-                ? " !h-[450px]"
-                : hoveredIndex === 3
-                ? "!h-[450px]"
-                : ""
-            } h-[400px] w-[80%] ${
+            className={`relative cursor-pointer ${
+              hoveredIndex === 3 ? "w-[40%]" : "w-[80%]"
+            } ${
               hoveredIndex === null
-                ? "border-x border-y border-[1px]  border-grayLight"
-                : " border-b-[1px] border-l  border-[1px]  border-grayLight"
+                ? "border-x border-y border-[1px] border-grayLight"
+                : "border-b-[1px] border-l border-[1px] border-grayLight"
+            } h-[400px] ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "!h-[450px]" : ""
             }`}
             onMouseEnter={() => {
               setHoveredIndex(2);
@@ -420,17 +474,12 @@ export default function Home() {
               transition: "width 0.3s ease-in, height 0.3s ease-in",
             }}
           >
-            <div className={" h-full flex flex-col justify-between"}>
+            <div className={"h-full flex flex-col justify-between"}>
               {hoveredIndex === 2 ? (
                 <TransferBetweeHoverElement />
               ) : (
-                <div
-                  className={
-                    `${hoveredIndex === 0 ? "p-0" : "p-4"}` +
-                    " h-full flex flex-col justify-between"
-                  }
-                >
-                  <h3 className="font-medium text-[42px]  mb-2">
+                <div className={"p-4 h-full flex flex-col justify-between"}>
+                  <h3 className="font-medium text-[42px] mb-2">
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
@@ -442,24 +491,17 @@ export default function Home() {
               )}
             </div>
           </div>
+
           <div
-            onClick={() => {
-              router.push("/farmyourluck");
-            }}
-            className={`relative  cursor-pointer hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient-to-top  ${
-              hoveredIndex === 2
-                ? " !h-[450px]"
-                : hoveredIndex === 3
-                ? "!h-[450px]"
-                : ""
-            } h-[400px] w-[20%] ${
+            className={`relative cursor-pointer ${
+              hoveredIndex === 3 ? "w-[60%]" : "w-[40%]"
+            } ${
               hoveredIndex === null
-                ? "border-x border-y border-[1px]  border-grayLight"
+                ? "border-x border-y border-[1px] border-grayLight"
                 : ""
+            } h-[400px] ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "!h-[450px]" : ""
             }`}
-            style={{
-              transition: "width 0.3s ease-in, height 0.3s ease-in",
-            }}
             onMouseEnter={() => {
               setHoveredIndex(3);
               setCurrentIndex(2);
@@ -468,29 +510,37 @@ export default function Home() {
               setHoveredIndex(null);
               setCurrentIndex(null);
             }}
+            onClick={() => {
+              router.push("/farmyourluck");
+            }}
+            style={{
+              transition: "width 0.3s ease-in, height 0.3s ease-in",
+            }}
           >
-            <div className={"p-4 h-full flex flex-col justify-between "}>
-              <>
-                <h3 className="font-medium text-[42px]  mb-2 ">
-                  {items[3].title}
-                </h3>
-                {items[3].subtitle && (
-                  <p className="text-gray-600 text-[32px]">
-                    {items[3].subtitle}
-                  </p>
-                )}
-              </>
-              {hoveredIndex === 3 && (
+            <div className={"p-0 h-full flex flex-col justify-between"}>
+              {hoveredIndex === 3 ? (
+                <FarmYourLuckHoverElement />
+              ) : (
+                <div className={"p-4 h-full flex flex-col justify-between"}>
+                  <h3 className="font-medium text-[42px] mb-2">
+                    {items[3].title}
+                  </h3>
+                  {items[3].subtitle && (
+                    <p className="text text-[32px]">{items[3].subtitle}</p>
+                  )}
+                </div>
+              )}
+
+              {/* {hoveredIndex === 3 && (
                 <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
                   Reward
                   <Image src={arrow} width={42} height={42} alt="arrow" />
                 </Button>
-              )}
+              )} */}
             </div>
-          </div>{" "}
+          </div>
         </div>
 
-        {/* 3rd row */}
         <div>
           <div
             className={`flex mt-[-2px] animateTransfer closeAnimateButtom w-full  `}

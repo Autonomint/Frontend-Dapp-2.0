@@ -1,8 +1,10 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import CustomDropdown from "../../custom-components/CustomDropdown";
 import AppNavbar from "@/custom-components/AppNavbar";
-import { usePathname } from "next/navigation";
+
+import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
 
 function BridgeComponent({
   heading,
@@ -26,11 +28,25 @@ function BridgeComponent({
       <div className=" text-[32px] font-medium mb-4">{heading}</div>
       <div className="flex flex-col gap-7">
         <div className="flex gap-6">
-          <div className="flex-1">
-            <CustomDropdown />
+          <div className="flex flex-col gap-3 flex-1">
+            <span className="text-[18px] font-medium text-grayLight">
+              Network
+            </span>
+            <GenericDropdownMenu
+              buttonText="Sepolia"
+              items={[]}
+              className="w-full text-[24px] border border-grayLight h-[65px]"
+            />
           </div>
-          <div className="flex-1">
-            <CustomDropdown />
+          <div className="flex flex-col gap-3 flex-1">
+            <span className="text-[18px] font-medium text-grayLight">
+              Network
+            </span>
+            <GenericDropdownMenu
+              buttonText="USDa"
+              items={[]}
+              className="w-full text-[24px] border border-grayLight h-[65px]"
+            />
           </div>
         </div>
         <div className="border border-solid border-grayLight p-5">
