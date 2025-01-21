@@ -10,13 +10,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-black h-full px-8 py-3 hover:bg-black  text-white hover:text-white",
+          "bg-black h-full px-8 py-3 hover:bg-black  text-white hover:text-white dark:bg-custom-gradient-to-bottom",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground ",
         shadowOutline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-outlined dark:shadow-white",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-outlined dark:border-white dark:shadow-white  dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

@@ -222,7 +222,7 @@ function PortolioTable({
   setSelectedPosition: (position: PositionData) => void;
 }) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar">
       <table className="table-auto w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>
@@ -289,7 +289,7 @@ function PortfolioMetrics({
   value: string;
 }) {
   return (
-    <div className="flex-1 flex flex-col p-5 gap-4 border-grayLight border-r-0 border border-solid">
+    <div className="flex-1 flex flex-col px-4  py-4 gap-2 border-grayLight border-r-0 border border-solid">
       <span className="text-textBlack md:text-[32px] text-[24px] font-medium dark:text-white">
         {value}
       </span>
@@ -337,7 +337,7 @@ function Portfolio() {
           <PortfolioMetrics subHeading="Points" value="89,027" />
         </div>
       </div>
-      <div className="flex mt-[24px]">
+      <div className="flex mt-5">
         <div
           onClick={() => {
             setTabPosition("Borrowed");
@@ -399,7 +399,7 @@ function Portfolio() {
         setIsDialogOpen={() => setViewPosition(false)}
       />
       <WithdrawFund
-      setSelectedPosition={setSelectedPosition}
+        setSelectedPosition={setSelectedPosition}
         positionListRefetech={positionListRefetech}
         position={(selectedPosition || []) as PositionData}
         isDialogOpen={isRenewRepayOpen}

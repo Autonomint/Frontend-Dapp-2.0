@@ -126,24 +126,30 @@ export function WithdrawFund({
           ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
           : BigInt(
               BigInt(
-                parseInt(position.normalizedAmount)
-                  ? Number(parseInt(position.normalizedAmount)) * 10 ** 6
-                  : 0
+                Math.round(
+                  position.normalizedAmount
+                    ? Number(position.normalizedAmount) * 10 ** 6
+                    : 0
+                )
               ) * lastCumulativeRate
             ) / BigInt(10 ** 27);
       console.log(lastCumulativeRate, totalAmintAmnt);
-
+      debugger;
       totalAmintAmount.current = Number(totalAmintAmnt);
 
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(2)}`;
-      updatedData[1].value = `${Number(position.ethPrice) / 100}`;
-      updatedData[2].value = Number(position.noOfAmintMinted).toFixed(2);
-      updatedData[3].value = (
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(
+        2
+      )} ETH`;
+      updatedData[1].value = `${Number(position.ethPrice) / 100} ETH`;
+      updatedData[2].value = `${Number(position.noOfAmintMinted).toFixed(
+        2
+      )} USDa`;
+      updatedData[3].value = `$${(
         parseFloat(totalAmintAmnt.toString()) /
         10 ** 6
-      ).toFixed(2);
+      ).toFixed(2)}`;
       updatedData[4].value = `${position.aprAtDeposit}%`;
       updatedData[5].value = new Date(
         position.depositedTime * 1000
@@ -151,9 +157,11 @@ export function WithdrawFund({
       updatedData[6].value = `${position.downsideProtectionPercentage}%`;
       updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       updatedData[8].value =
-        interestGained != undefined ? Number(interestGained).toFixed(2) : "-";
+        interestGained != undefined
+          ? `$${Number(interestGained).toFixed(2)}`
+          : "-";
       updatedData[9].value = position.noOfAbondMinted
-        ? position.noOfAbondMinted
+        ? `$${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
     } else {
@@ -269,9 +277,12 @@ export function WithdrawFund({
   useEffect(() => {
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
-      positionListRefetech();
       setRepayLoading(false);
-      toast.success("Withdraw Successful");
+      toast.success("Withdraw Successful", {
+        position: "top-right",
+        className: "dark:bg-custom-gradient-to-top",
+      });
+      positionListRefetech();
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt]);
 
@@ -302,47 +313,8 @@ export function WithdrawFund({
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[660px] bg-white p-6 gap-0">
+        <DialogContent className="sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
-
-          {/* 
-        <div className="flex mb-6">
-          <label
-            className={`w-full flex items-center justify-center py-2 border rounded-l-md cursor-pointer ${
-              toggleView === "renew"
-                ? "bg-gray-200 border-black"
-                : "bg-gray-100 border-gray-300"
-            }`}
-          >
-            <input
-              type="radio"
-              name="toggle"
-              value="renew"
-              checked={toggleView === "renew"}
-              onChange={() => setToggleView("renew")}
-              className="hidden"
-            />
-            <span className="text-lg font-medium">Renew</span>
-          </label>
-
-          <label
-            className={`w-full flex items-center justify-center py-2 border rounded-r-md cursor-pointer ${
-              toggleView === "repay"
-                ? "bg-gray-200 border-black"
-                : "bg-gray-100 border-gray-300"
-            }`}
-          >
-            <input
-              type="radio"
-              name="toggle"
-              value="repay"
-              checked={toggleView === "repay"}
-              onChange={() => setToggleView("repay")}
-              className="hidden"
-            />
-            <span className="text-lg font-medium">Repay</span>
-          </label>
-        </div> */}
           <div className="flex">
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
               <input
@@ -351,11 +323,12 @@ export function WithdrawFund({
                 checked={toggleView === "repay"}
                 onChange={() => setToggleView("repay")}
                 name="bordered-radio"
-                className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:bg-black"
+                className="w-6 h-6 text-white bg-gray-100 border-gray-300 focus:ring-white ring-white dark:focus:ring-white dark:ring-white dark:ring-offset-white dark:bg-white dark:border-white"
               />
+
               <label
                 htmlFor="bordered-radio-1"
-                className="w-full py-4 ms-2 text-[32px] font-medium text-grayLight dark:text-textBlack"
+                className="w-full py-2 ms-2 text-[32px] font-medium text-grayLight dark:text-white"
               >
                 Repay
               </label>
@@ -368,11 +341,11 @@ export function WithdrawFund({
                 onChange={() => setToggleView("renew")}
                 checked={toggleView === "renew"}
                 name="bordered-radio"
-                className="w-6 h-6 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 appearance-none rounded-full checked:bg-black checked:border-black"
+                className="w-6 h-6 text-white bg-white border-3  border-gray-300 focus:ring-white dark:focus:ring-white dark:ring-offset-white dark:bg-white dark:border-white"
               />
               <label
                 htmlFor="bordered-radio-2"
-                className="w-full py-4 ms-2 text-[32px] font-medium text-grayLight dark:text-textBlack"
+                className="w-full py-2 ms-2 text-[32px] font-medium text-grayLight dark:text-white"
               >
                 Renew
               </label>
@@ -381,20 +354,16 @@ export function WithdrawFund({
 
           {toggleView === "repay" && (
             <>
-              <div className="flex justify-between text-[32px] font-medium mb-3">
-                <span>USDa Borrowed</span>
-                <span>${Number(position.noOfAmintMinted).toFixed(2)}</span>
-              </div>
-              <div className="space-y-2">
+              <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
                 {depositData.map((item) => (
                   <div
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight text-[24px]">
+                    <span className="text-grayLight text-[20px] font-medium">
                       {item.headline}
                     </span>
-                    <span className="text-textBlack text-[24px]">
+                    <span className="text-textBlack  dark:text-white text-[20px]">
                       {item.value}
                     </span>
                   </div>
@@ -403,23 +372,23 @@ export function WithdrawFund({
               <Button
                 disabled={position.status == BorrowStatus.WITHDREW}
                 onClick={handleRepay}
-                className="w-full mt-6 p-8 bg-black text-white text-[32px]"
+                className="w-full mt-6 p-8 bg-black text-white text-[24px]"
               >
                 {repayLoading
                   ? "Loading..."
                   : position.status == BorrowStatus.DEPOSITED
-                  ? "Repay"
-                  : "Withdrawn"}
+                  ? `Repay amount ${position.noOfAmintMinted} USDa`
+                  : `Withdrawn ${position.depositedAmount} ETH`}
               </Button>
             </>
           )}
 
           {toggleView === "renew" && (
             <>
-              <div className="mb-4">
+              <div className="mb-4 mt-4">
                 <PopupDropdown />
               </div>
-              <div className="w-full h-2 bg-gray-200 rounded-none mt-3 flex overflow-hidden">
+              <div className="w-full h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
                 {[
                   {
                     label: "Deposit",
@@ -446,55 +415,57 @@ export function WithdrawFund({
                   );
                 })}
               </div>
-              <div className="flex items-center gap-2 text-[24px] text-grayLight font-medium">
+              <div className="flex mt-2 items-center gap-2 text-[24px] text-grayLight font-medium">
                 <span className="block w-3 h-3 bg-[#05A552]"></span>
                 20 Days remaining till maturity
               </div>
-              <div className="space-y-4">
-                {[
-                  { heading: "ETH price at deposit", value: "$3,890" },
-                  { heading: "Current ETH price", value: "$3,000" },
-                  {
-                    heading: "Downside Protection till now",
-                    value: "$90 (10%)",
-                  },
-                  { heading: "Option Fees paid", value: "$19" },
-                ].map((item) => (
-                  <div
-                    key={item.heading}
-                    className="flex justify-between font-medium"
-                  >
-                    <span className="text-grayLight text-[24px]">
-                      {item.heading}
-                    </span>
-                    <span className="text-textBlack text-[24px]">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 space-y-4">
-                <div className="font-semibold text-textBlack text-[32px]">
-                  For Renewed
+              <div className="max-h-[250px] overflow-auto no-scrollbar">
+                <div className="space-y-2 mt-4">
+                  {[
+                    { heading: "ETH price at deposit", value: "$3,890" },
+                    { heading: "Current ETH price", value: "$3,000" },
+                    {
+                      heading: "Downside Protection till now",
+                      value: "$90 (10%)",
+                    },
+                    { heading: "Option Fees paid", value: "$19" },
+                  ].map((item) => (
+                    <div
+                      key={item.heading}
+                      className="flex justify-between font-medium"
+                    >
+                      <span className="text-grayLight text-[20px]">
+                        {item.heading}
+                      </span>
+                      <span className="text-textBlack dark:text-white text-[20px]">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-
-                {[
-                  { label: "Time Period", value: "30 days" },
-                  { label: "Option Fees", value: "$19" },
-                  { label: "Downside Protection", value: "Up to $180 (20%)" },
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between font-medium "
-                  >
-                    <span className="text-[24px] text-grayLight">
-                      {item.label}
-                    </span>
-                    <span className="text-textBlack text-[24px]">
-                      {item.value}
-                    </span>
+                <div className="mt-4 space-y-2">
+                  <div className="font-semibold dark:text-white text-textBlack text-[28px]">
+                    For Renewed
                   </div>
-                ))}
+
+                  {[
+                    { label: "Time Period", value: "30 days" },
+                    { label: "Option Fees", value: "$19" },
+                    { label: "Downside Protection", value: "Up to $180 (20%)" },
+                  ].map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between font-medium "
+                    >
+                      <span className="text-[20px] text-grayLight">
+                        {item.label}
+                      </span>
+                      <span className="text-textBlack dark:text-white text-[20px]">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <Button className="w-full mt-6 p-8 bg-black text-white text-[32px]">
@@ -502,7 +473,6 @@ export function WithdrawFund({
               </Button>
             </>
           )}
-          <Toaster richColors />
         </DialogContent>
       </Dialog>
     </>

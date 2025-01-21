@@ -34,12 +34,12 @@ const Popup = ({
         {isOpen && (
           <>
             <div
-              className="fixed z-10 inset-0 bg-black/50"
+              className="fixed z-10 inset-0 bg-black/50 "
               onClick={togglePopup}
             />
             <div
               style={{ width: popUpWidth }}
-              className={` absolute z-20 top-[44px] right-[-12px] p-8 bg-white border-[1px] border-solid border-[#7A7A7A] rounded-md shadow-md ${contentClass}`}
+              className={` absolute z-20 top-[44px] right-[-12px] p-8 bg-white  border-[1px] border-solid border-[#7A7A7A] rounded-md shadow-md ${contentClass}`}
             >
               <div className="flex flex-row justify-between items-center">
                 <Typography size="subtitle" variant="regular">

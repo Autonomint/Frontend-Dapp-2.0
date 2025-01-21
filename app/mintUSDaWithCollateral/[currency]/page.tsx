@@ -39,6 +39,8 @@ import {
 import * as Yup from "yup";
 import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
 import { GetServerSideProps } from "next";
+import { FormYourLuckIcon } from "@/components/ui/SvgIcons";
+import { useTheme } from "next-themes";
 
 ChartJS.register(
   CategoryScale,
@@ -82,46 +84,72 @@ const options = {
 
 // TradingViewWidget.jsx
 
+// TradingViewWidget.jsx
+
 function TradingViewWidget() {
   const container = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src =
-      "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+      "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
     script.innerHTML = `
         {
-          "autosize": true,
-          "symbol": "UNISWAP3BASE:WEETHWETH_B1419A.USD",
-          "interval": "D",
-          "timezone": "Etc/UTC",
-          "theme": "light",
-          "style": "3",
+          "symbols": [
+            [
+              "BINANCE:ETHUSD|1D"
+            ]
+          ],
+          "chartOnly": true,
+          "width": "100%",
+          "height": "100%",
           "locale": "en",
-          "backgroundColor": "rgba(255, 255, 255, 1)",
-          "gridColor": "rgba(240, 243, 250, 0.03)",
-          "hide_legend": true,
-          "allow_symbol_change": false,
-          "save_image": false,
-          "calendar": false,
-          "hide_volume": true,
-          "support_host": "https://www.tradingview.com"
+          "colorTheme": "light",
+          "autosize": true,
+          "showVolume": false,
+          "showMA": false,
+          "hideDateRanges": false,
+          "hideMarketStatus": false,
+          "hideSymbolLogo": false,
+          "scalePosition": "right",
+          "scaleMode": "Normal",
+          "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+          "fontSize": "10",
+          "noTimeScale": false,
+          "valuesTracking": "1",
+          "changeMode": "price-and-percent",
+          "chartType": "area",
+          "maLineColor": "#2962FF",
+          "maLineWidth": 1,
+          "maLength": 9,
+          "headerFontSize": "medium",
+          "gridLineColor": "rgba(255, 255, 255, 1)",
+          "lineWidth": 2,
+          "lineType": 0,
+          "dateRanges": [
+            "1d|1",
+            "1m|30",
+            "3m|60",
+            "12m|1D",
+            "60m|1W",
+            "all|1M"
+          ],
+          "lineColor": "rgba(0, 103, 159, 1)",
+          "topColor": "rgba(229, 243, 255, 1)",
+          "bottomColor": "rgba(255, 253, 228, 1)"
         }`;
     container?.current?.appendChild(script);
-  }, []);
+  }, [theme]);
 
   return (
     <div
-      className="tradingview-widget-container"
+      className="tradingview-widget-container overflow-hidden"
       ref={container}
-      style={{ height: "100%", width: "100%" }}
     >
-      <div
-        className="tradingview-widget-container__widget"
-        style={{ height: "calc(100% - 32px)", width: "100%" }}
-      ></div>
+      <div className="tradingview-widget-container__widget"></div>
     </div>
   );
 }
@@ -171,15 +199,15 @@ function ChartComponent() {
     setIsLoaded(true);
   }, [data]);
   return (
-    <div className="p-6">
+    <div className="p-6 h-full">
       <div className="flex justify-start gap-2 mb-2 items-center">
         <Image src={EthImage} width={40} height={40} alt="eth" />
-        <Typography className="text-[32px] font-medium text-black ">
+        <Typography className="text-[32px] dark:text-white font-medium text-black ">
           ETH
         </Typography>
       </div>
-      <div className="w-full h-[480px] flex items-center justify-center">
-        {/* <TradingViewWidget /> */}
+      <div className="w-full h-[560px] flex items-center justify-center">
+        <TradingViewWidget />
       </div>
     </div>
   );
@@ -358,13 +386,7 @@ function AdditionalMetics({
 
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
-  collateralAmount: Yup.mixed()
-    .test(
-      "is-positive-number",
-      "Value must be positive and >= 0.05",
-      (value) => Number(value) >= 0.05
-    )
-    .required("Collateral amount is required"),
+  collateralAmount: Yup.mixed().required("Collateral amount is required"),
   strikePrice: Yup.number()
     .min(5, "Minimum is 5")
     .max(25, "Maximum is 25")
@@ -709,7 +731,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
           {mintLoading ? "Loading..." : "Mint USDa"}
         </Button>
       </div>
-      <Toaster richColors />
     </form>
   );
 }
@@ -763,20 +784,20 @@ function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
             }}
             className="flex flex-col justify-between h-full"
           >
-            <Image
-              src={farmyourluckLogo}
-              width={50}
-              height={50}
-              alt="farm-your-luck"
-              className="hidden md:block cursor-pointer dark:hidden"
-            />
-            <Image
-              src={framyourlogodark}
-              width={50}
-              height={50}
-              alt="farm-your-luck"
-              className="hidden md:block cursor-pointer light:hidden"
-            />
+            <Button
+              variant={"shadowOutline"}
+              className="w-[50px]  !h-[50px] !py-4 !shadow-none"
+            >
+              <FormYourLuckIcon
+                style={{
+                  width: "26px",
+                  height: "26px",
+                }}
+                width={24}
+                height={24}
+                className="dark:stroke-white stroke-black"
+              />
+            </Button>
             <div className=" text-textBlack text-3xl font-medium dark:text-white">
               Farm Your Luck
             </div>

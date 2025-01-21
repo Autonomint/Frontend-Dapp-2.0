@@ -2,7 +2,7 @@
 
 function PortolioTable() {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto min-h-[500px]">
       <table className="table-auto w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>

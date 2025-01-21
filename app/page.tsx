@@ -104,7 +104,7 @@ function TransferBetweeHoverElement() {
           </Typography>
         </div>
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute bottom-0 px-6 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
         Bridge
         <Image
           src={arrow}
@@ -127,7 +127,7 @@ function FarmYourLuckHoverElement() {
       <div className="text-[24px] text-grayLight font-medium bg-none">
         Claim back 100% of your Option fees
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
         Farm your luck
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -174,7 +174,7 @@ function DCDSHoverElement() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -241,7 +241,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
           );
         })}
       </div>
-      <Button className="absolute bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -294,7 +294,7 @@ export default function Home() {
       orgName: "AthermintXYZ",
       amount: "$0.02",
       tag: "Lowest Fee",
-      tagColor: "#AA0001",
+      tagColor: "#b42e2e",
       tagBg: "#FEE2E2",
       textColor: "#AA0001",
       borderColor: "borderRed",
@@ -444,7 +444,7 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>  {" "}
+          </div>{" "}
         </div>
 
         {/* 2nd row */}

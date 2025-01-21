@@ -30,11 +30,11 @@ function DashboardNavbar() {
 
   return (
     <div className="flex">
-      <div className="hidden md:flex w-full border border-grayLight border-r-0 border-l-0 my-6">
+      <div className="hidden md:flex w-full border border-grayLight border-r-0 border-l-0 my-5">
         {navList.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
-            className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+            className={`flex-1 px-5 py-2 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
               isActive
                 ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
                 : ""
@@ -47,7 +47,7 @@ function DashboardNavbar() {
       </div>
 
       <div
-        className="flex md:hidden  w-full px-5 py-3 text-[32px]  font-medium border-b border-grayLight"
+        className="flex md:hidden  w-full px-5 py-2 text-[32px]  font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.nameA || "Select Tab"}

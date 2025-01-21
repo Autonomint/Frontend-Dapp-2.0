@@ -56,14 +56,15 @@ export default function RootLayout({
                   {/* <AppNavbar /> */}
                   <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
                     {children}
+                    <Footer />
                   </div>
-                  <Footer />
                 </ThemeProvider>
               </Provider>
             </WalletProvider>
           </QueryProvider>
         </div>
       </body>
+      <Toaster richColors />
     </html>
   );
 }
