@@ -222,7 +222,7 @@ function PortolioTable({
   setSelectedPosition: (position: PositionData) => void;
 }) {
   return (
-    <div className="overflow-x-auto min-h-[500px] max-h-[600px]">
+    <div className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar">
       <table className="table-auto w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>

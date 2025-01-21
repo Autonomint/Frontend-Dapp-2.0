@@ -184,7 +184,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           <Popup
             title="Wallet Info"
             content={
-              <div className="relative flex p-[10px] px-5  border-solid border-l-2 border-black flex-row items-center gap-3 ">
+              <div className="relative flex p-[13px] px-5  border-solid border-l-2 border-black flex-row items-center gap-3 ">
                 <WalletIcon className="dark:stroke-white stroke-black" />
                 <Typography size="body" className="">
                   {isConnected ? sortWalletAddress(address) : "Connect Wallet"}

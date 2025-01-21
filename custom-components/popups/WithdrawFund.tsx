@@ -354,13 +354,13 @@ export function WithdrawFund({
 
           {toggleView === "repay" && (
             <>
-              <div className="space-y-2 mt-2">
+              <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
                 {depositData.map((item) => (
                   <div
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight text-[20px]">
+                    <span className="text-grayLight text-[20px] font-medium">
                       {item.headline}
                     </span>
                     <span className="text-textBlack  dark:text-white text-[20px]">

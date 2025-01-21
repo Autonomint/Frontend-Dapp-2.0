@@ -21,7 +21,7 @@ export default function Footer() {
   const [openGetstart, setOpenGetstart] = React.useState(false);
   const { theme } = useTheme();
   return (
-    <div className="py-5  flex items-center border-[1] border-x border-y border-grayLight">
+    <div className="py-6  flex items-center border-[1] border-x border-y border-grayLight">
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">
         <div className="flex w-full justify-center  text-sm rounded-md">
           <div className="flex w-full justify-between  ">
