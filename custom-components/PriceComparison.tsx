@@ -66,7 +66,7 @@ function PriceComparison({
           style={{
             color: isHover
               ? theme == "dark"
-                ? "white"
+                ? tagColor
                 : tagColor
               : theme == "dark"
               ? "white"
@@ -82,7 +82,7 @@ function PriceComparison({
             color:
               theme == "dark" && orgName == "AthermintXYZ"
                 ? isHover
-                  ? "#f57171"
+                  ? "#b42e2e"
                   : ""
                 : isHover
                 ? tagColor

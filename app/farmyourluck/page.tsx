@@ -124,7 +124,7 @@ function Page() {
             ))}
           </div>
         </div>
-        <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-solid-grayLight relative">
+        <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
           <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
             <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">

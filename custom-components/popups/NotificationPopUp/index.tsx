@@ -14,12 +14,12 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({}) => {
       content={
         <Button
           variant={"shadowOutline"}
-          className="border-[#041A50] h-fit p-[10px] dark:hover:bg-custom-gradient-to-top"
+          className="border-[#041A50] h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
         >
           <Bell style={{ width: "24px", height: "24px" }} />
         </Button>
       }
-      contentClass="!left-[unset] right-[0px] top-[50px]"
+      contentClass="!left-[unset] right-[0px] top-[50px] dark:bg-[#0D0D0D]"
     >
       <div></div>
     </Popup>

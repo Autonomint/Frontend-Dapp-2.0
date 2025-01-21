@@ -26,15 +26,17 @@ const PopupDropdown = () => {
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack  md:text-[24px] dark:text-white"
+            className="flex justify-between w-full h-17 px-3 py-0 border border-grayLight rounded-md text-textBlack  md:text-[24px] dark:text-white"
           >
             {selected}
-            <ChevronDownIcon className="w-4 h-4 ml-2" />
+            <div className="border border-grayLight border-l border-y-0 h-full py-4 px-4 border-r-0">
+              <ChevronDownIcon className="w-4  h-4 ml-2" />
+            </div>
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="bg-white border border-grayLight rounded-md shadow-md"
+          className="bg-white dark:bg-[#0D0D0D] border border-grayLight rounded-md shadow-md"
         >
           <div className="flex flex-col">
             {networks.map((network) => (

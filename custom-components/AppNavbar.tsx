@@ -31,7 +31,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             path: "/mintusdalist",
             isActive:
               pathname === "/mintusdalist" ||
-              pathname === "/mintUSDaWithCollateral",
+              pathname === "/mintUSDaWithCollateral/ETH",
           },
           {
             nameA: "dCDS",
@@ -61,10 +61,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       {activeBack && (
         <Button
           onClick={() => {
-            router.push("/");
+            router.back();
           }}
           className={
-            "bg-black h-full px-8 py-[18px] hover:bg-black dark:bg-custom-gradient-to-top"
+            "bg-black h-full px-8 py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
           }
         >
           <Image src={arrowLeft} width={42} height={42} alt="arrow" />
@@ -75,9 +75,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
         {navList?.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
-            className={`flex-1 px-5 py-3 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+            className={`flex-1 px-5 py-2 cursor-pointer text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
               isActive ? "bg-[#ABFFDE] dark:text-black" : ""
             }`}
+            // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
             onClick={() => router.push(path)}
           >
             {nameA}
@@ -86,7 +87,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       </div>
 
       <div
-        className="flex md:hidden  w-full px-5 py-3 text-[32px]  font-medium border-b border-grayLight"
+        className="flex md:hidden  w-full px-5 py-2 text-[32px]  font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.nameA || "Select Tab"}
