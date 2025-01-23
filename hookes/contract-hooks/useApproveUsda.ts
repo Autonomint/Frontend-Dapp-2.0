@@ -2,16 +2,16 @@ import { usDaAbi } from "@/blockchain/abis/usda";
 import { borrowingContractAddress, usDaAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
-const useApproveUsda = () => {
+const useApproveUsda = (mutation: any) => {
   const {
-    isPending: amintApproveLoading,
-    isSuccess: amintApproveSuccess,
-    isError: amintApproveError,
-    writeContractAsync: amintApproveAsync,
+    isPending: usdaApproveLoading,
+    isSuccess: usdaApproveSuccess,
+    isError: usdaApproveError,
+    writeContractAsync: usdaApproveAsync,
     reset: approveReset,
-    data: amintApproveHash,
+    data: usdaApproveHash,
   } = useWriteContract({
-    mutation: {},
+    mutation,
   });
   const { chainId } = useAccount();
 
@@ -19,7 +19,7 @@ const useApproveUsda = () => {
     lastCumulativeRate: bigint | undefined,
     normalizedAmount: string
   ) => {
-    amintApproveAsync({
+    usdaApproveAsync({
       abi: usDaAbi,
       address: usDaAddress[chainId as keyof typeof usDaAddress],
       functionName: "approve",
@@ -39,13 +39,29 @@ const useApproveUsda = () => {
       ],
     });
   };
+
+  const approveUsdaDynamic = async (
+    values: bigint,
+    contractAddress: `0x${string}`
+  ) => {
+    usdaApproveAsync({
+      abi: usDaAbi,
+      address: usDaAddress[chainId as keyof typeof usDaAddress],
+      functionName: "approve",
+      args: [
+        contractAddress, // address of borrowing contract based on chainId
+        values,
+      ],
+    });
+  };
   return {
-    amintApproveLoading,
-    amintApproveSuccess,
-    amintApproveError,
+    usdaApproveLoading,
+    usdaApproveSuccess,
+    usdaApproveError,
     approveUsda,
     approveReset,
-    amintApproveHash,
+    usdaApproveHash,
+    approveUsdaDynamic,
   };
 };
 

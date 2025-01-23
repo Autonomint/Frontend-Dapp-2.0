@@ -47,7 +47,6 @@ const useMarketChart = (
   });
 
   const formattedData = extractMonthlyPrices(data || []);
-  console.log(formattedData, "data");
   return {
     formattedData,
     isGraphLoading,

@@ -1,42 +1,43 @@
 "use client";
-import React from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import Spinner from "../assets/Spinner@1x-1.0s-200px-200px (2).svg";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { HiOutlineExternalLink } from "react-icons/hi";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import Spinner from "../assets/Spinner@1x-1.0s-200px-200px (2).svg";
 
+import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon } from "lucide-react";
 import AppNavbar from "@/custom-components/AppNavbar";
+import { ChevronDownIcon } from "lucide-react";
 import { useTheme } from "next-themes";
+import { toast, Toaster } from "sonner";
+import dcdsDark from "../assets/Frame 350 (1).svg";
+import dcdsFrame from "../assets/Frame 350.png";
+import centerImage1 from "../assets/Vector (1).svg";
 import tokenImage from "../assets/Vector (6).png";
 import add from "../assets/add-01.png";
-import minus from "../assets/minus-sign.png";
-import dcdsFrame from "../assets/Frame 350.png";
-import dcdsDark from "../assets/Frame 350 (1).svg";
-import centerImage1 from "../assets/Vector (1).svg";
 import centerImage2 from "../assets/cryptocurrency-color_usdt.svg";
-import { toast, Toaster } from "sonner";
-import ToastNotification from "@/custom-components/toasts/ToastNotification";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
-
+import minus from "../assets/minus-sign.png";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
+import { cdsAddress } from "@/blockchain/contracts";
+import { parseUnits } from "viem";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import useUsdtApprove from "@/hookes/useApproveUsdt";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
+import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
+import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
+import LoadingBox from "@/custom-components/LoadingBox";
 function TokenTvlDetails() {
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
@@ -107,28 +108,26 @@ function SelectToken() {
 }
 
 function AddToken({
-  tokenImage,
-  tokenName,
+  tokenDetails,
   setSelectedTokens,
   selectedTokens,
 }: {
-  tokenImage: any;
-  tokenName: string;
-  setSelectedTokens: React.Dispatch<
-    React.SetStateAction<{ tokenImage: any; tokenName: string }[]>
-  >;
+  tokenDetails: TokenDetails;
+  setSelectedTokens: React.Dispatch<React.SetStateAction<TokenDetails[]>>;
   selectedTokens: { tokenImage: any; tokenName: string }[];
 }) {
   const isSelected = selectedTokens.some(
-    (token) => token.tokenName === tokenName
+    (token) => token.tokenName === tokenDetails.tokenName
   );
 
   const toggleToken = () => {
-    setSelectedTokens((prev) => {
+    setSelectedTokens((prev: TokenDetails[]) => {
       if (isSelected) {
-        return prev.filter((token) => token.tokenName !== tokenName);
+        return prev.filter(
+          (token) => token.tokenName !== tokenDetails.tokenName
+        );
       } else {
-        return [...prev, { tokenImage, tokenName }];
+        return [...prev, tokenDetails];
       }
     });
   };
@@ -136,9 +135,14 @@ function AddToken({
   return (
     <div className="border border-solid border-grayLight p-5 relative">
       <div className="flex flex-col gap-4">
-        <Image src={tokenImage} alt="token" width={30} height={30} />
+        <Image
+          src={tokenDetails.tokenImage}
+          alt="token"
+          width={30}
+          height={30}
+        />
         <span className="text-[24px] text-textBlack dark:text-white">
-          {tokenName}
+          {tokenDetails.tokenName}
         </span>
       </div>
       <Button
@@ -155,37 +159,104 @@ function AddToken({
   );
 }
 
+// Define the form values type using TypeScript
+interface FormValues {
+  usdaAmount: string | number;
+  usdtAmount: string | number;
+  usdcAmount: string | number;
+  usdeAmount: string | number;
+  lockInPeriod: string;
+  liquidationGains: boolean;
+}
+
+interface TokenDetails {
+  tokenImage: any;
+  tokenName: string;
+  minTokenAmount: number;
+  balanceAvailable: number | string;
+}
+
+// Yup validation schema
+const formSchema = Yup.object().shape({
+  // usdaAmount: Yup.mixed()
+  //   .test(
+  //     "is-valid-number",
+  //     "Value must be greater than 0",
+  //     (value) => Number(value) >= 0
+  //   )
+  //   .nullable(),
+  // usdtAmount: Yup.mixed()
+  //   .test(
+  //     "is-valid-number",
+  //     "Value must be greater than 0",
+  //     (value) => Number(value) >= 0
+  //   )
+  //   .nullable(),
+  // usdcAmount: Yup.mixed()
+  //   .test(
+  //     "is-valid-number",
+  //     "Value must be greater than 0",
+  //     (value) => Number(value) >= 0
+  //   )
+  //   .nullable(),
+  // usdeAmount: Yup.mixed()
+  //   .test(
+  //     "is-valid-number",
+  //     "Value must be greater than 0",
+  //     (value) => Number(value) >= 0
+  //   )
+  //   .nullable(),
+  lockInPeriod: Yup.string().required("Lock-in period is required"),
+  liquidationGains: Yup.boolean().required(
+    "Liquidation gains must be specified"
+  ),
+});
+
 function page() {
   const { theme } = useTheme();
-  const [selectedTokens, setSelectedTokens] = React.useState<
-    { tokenImage: any; tokenName: string }[]
-  >([]);
+  const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
+
+  const [dcdsLoadingLocal, setDcdsLoadingLocal] = useState<boolean>(false);
+  const [usdtApproveLoadingLocal, setUsdtApproveLoadingLocal] =
+    useState<boolean>(false);
+  const [usdcApproveLoadingLocal, setUsdcApproveLoadingLocal] =
+    useState<boolean>(false);
+
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      usdaAmount: "",
+      usdtAmount: "",
+      usdcAmount: "",
+      usdeAmount: "",
+      lockInPeriod: "30",
+      liquidationGains: false,
+    },
+    validationSchema: formSchema,
+    onSubmit: (values) => {
+      handleDeposit();
+    },
+  });
+
+  console.log(formik.values, "formik");
 
   const dropdownItems = [
     {
-      label: "3 Months",
-      onClick: () => alert("Profile clicked"),
+      label: "30 Days",
+      onClick: () => formik.setFieldValue("lockInPeriod", "30"),
     },
     {
-      label: "6 Months",
-      onClick: () => alert("Billing clicked"),
+      label: "60 Days",
+      onClick: () => formik.setFieldValue("lockInPeriod", "60"),
     },
     {
-      label: "1 Year",
-      onClick: () => alert("Settings clicked"),
+      label: "120 days",
+      onClick: () => formik.setFieldValue("lockInPeriod", "120 days"),
     },
     {
-      label: "2 Years",
-      onClick: () => alert("Log out clicked"),
+      label: "180 days",
+      onClick: () => formik.setFieldValue("lockInPeriod", "180"),
       disabled: false,
     },
-  ];
-
-  const tokenList = [
-    { tokenImage: centerImage1, tokenName: "USDc" },
-    { tokenImage: centerImage2, tokenName: "USDa" },
-    { tokenImage: centerImage1, tokenName: "USDT" },
-    { tokenImage: centerImage2, tokenName: "USDe" },
   ];
 
   const showNormal = () => {
@@ -215,16 +286,220 @@ function page() {
       });
   };
 
+  // get usdt limit from CDS contract and store it in usdtLimit and setting default value to 0n
+
+  // Define the initial state for the options variable
+  const options = Options.newOptions()
+    .addExecutorLzReceiveOption(250000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
+
+  const { GlobalContractData, isGlobalContractDataPending } =
+    useGetUsdtAmountDepositedTillNow();
+
+  const usdtBalance = useGetBalance("TUSDT");
+  const usdaBalance = useGetBalance("USDa");
+
+  const tokenList: TokenDetails[] = [
+    {
+      tokenImage: centerImage1,
+      tokenName: "USDc",
+      minTokenAmount: 500,
+      balanceAvailable: 0,
+    },
+    ...(GlobalContractData?.usdtAmountDepositedTillNow ||
+    0 >= USDT_DEPOSIT_LIMIT_IN_DCDS
+      ? [
+          {
+            tokenImage: centerImage2,
+            tokenName: "USDa",
+
+            balanceAvailable: Number(usdaBalance).toFixed(2),
+            minTokenAmount: 500,
+          },
+        ]
+      : []),
+    ,
+    {
+      tokenImage: centerImage1,
+      tokenName: "USDT",
+      minTokenAmount: 500,
+      balanceAvailable: usdtBalance,
+    },
+    {
+      tokenImage: centerImage2,
+      tokenName: "USDe",
+      minTokenAmount: 500,
+      balanceAvailable: 0,
+    },
+  ] as TokenDetails[];
+
+  console.log(GlobalContractData, "usdtAmountDepositedTillNow");
+  const {
+    approveUsda,
+    approveUsdaDynamic,
+    approveReset,
+    usdaApproveHash,
+    usdaApproveLoading,
+    usdaApproveError,
+  } = useApproveUsda({
+    onError: () => {},
+  });
+
+  // get the confirmed txn receipt
+  const {
+    isLoading: isLoadingUsdaApproveReceipt,
+    isSuccess: usdaApprovalSuccessReceipt,
+    isError: usdaApprovalErrorReceipt,
+    data: usdaApprovalReceiptReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: usdaApproveHash,
+  });
+
+  const {
+    dcdsDepositHash,
+    dcdsDepositIsPending,
+    dcdsDepositeError,
+    handleDcdsDeposit,
+  } = useDcdsDeposit();
+
+  // get the confirmed txn receipt
+  const {
+    isLoading: isCdsConfirmationLoading,
+    isSuccess: cdsDepositSuccess,
+    isError: cdsDepositError,
+    data: DepositdataReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: dcdsDepositHash,
+    confirmations: 2,
+  });
+
+  // useEffect to check the status of the cds deposit transaction
+  useEffect(() => {
+    if (cdsDepositError) {
+    }
+    if (cdsDepositSuccess) {
+    }
+  }, [DepositdataReceipt]);
+
+  // useEffect to check the status of the amint approval transaction
+  useEffect(() => {
+    if (usdaApprovalSuccessReceipt) {
+      if (
+        Number(formik.values.usdtAmount) &&
+        (Number(formik.values.usdaAmount) ?? 0) > 0
+      ) {
+        handleUsdtApprove([
+          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+          BigInt(
+            formik.values.usdtAmount
+              ? parseUnits(formik.values.usdtAmount.toString(), 6)
+              : 0
+          ),
+        ]);
+      } else {
+        const liqAmnt =
+          ((Number(formik.values.usdaAmount ? formik.values.usdaAmount : 0) +
+            Number(formik.values.usdtAmount ? formik.values.usdtAmount : 0)) *
+            80) /
+          100;
+        if (nativeFee?.nativeFee) {
+          handleDcdsDeposit?.(
+            [
+              BigInt(
+                formik.values.usdtAmount
+                  ? parseUnits(formik.values.usdtAmount.toString(), 6)
+                  : 0
+              ),
+              BigInt(
+                formik.values.usdaAmount
+                  ? parseUnits(formik.values.usdaAmount.toString(), 6)
+                  : 0
+              ),
+              formik.values.liquidationGains,
+              formik.values.liquidationGains
+                ? parseUnits(liqAmnt.toString(), 6)
+                : 0n,
+              BigInt(Number(formik.values.lockInPeriod) * 86400000),
+            ],
+            nativeFee.nativeFee
+          );
+        }
+      }
+
+      // );
+      // showCustomToast(toastId, 1, "Approved USDa", "success", amintApproveData);
+    }
+  }, [usdaApprovalReceiptReceipt]);
+
+  const { chainId } = useAccount();
+
+  const {
+    handleUsdtApprove,
+    isSuccessUsdtApprove,
+    isPendingUsdtApprove,
+    usdtApprovedHash,
+  } = useUsdtApprove();
+
+  const {
+    isLoading: UsdtApprovalLoadingReceipt,
+    isSuccess: UsdtApprovalSuccessReceipt,
+    isError: UsdtApprovalErrorReceipt,
+    data: UsdtApprovalReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: usdtApprovedHash,
+    confirmations: 2,
+    query: {},
+  });
+
+  console.log(formik.errors, "formik errors");
+
+  const handleDeposit = () => {
+    debugger;
+    setDcdsLoadingLocal(true);
+    if (
+      (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) <=
+      USDT_DEPOSIT_LIMIT_IN_DCDS
+    ) {
+      if (
+        formik.values.usdaAmount == undefined ||
+        formik.values.usdaAmount == 0
+      ) {
+        return;
+      } else {
+        approveUsdaDynamic(
+          BigInt(
+            formik.values.usdaAmount
+              ? parseUnits(formik.values.usdaAmount.toString(), 6)
+              : 0
+          ),
+          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`
+        );
+      }
+    } else {
+      setUsdtApproveLoadingLocal(true);
+      handleUsdtApprove([
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+        BigInt(
+          formik.values.usdtAmount
+            ? parseUnits(formik.values.usdtAmount.toString(), 6)
+            : 0
+        ),
+      ]);
+    }
+  };
+
   return (
     <div>
       <AppNavbar activeBack={false} />
       <div className="grid lg:grid-cols-4 grid-cols-1">
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
-          {tokenList.map((token, key) => (
+          {tokenList.map((token: TokenDetails, key: number) => (
             <AddToken
               key={key}
-              tokenImage={token.tokenImage}
-              tokenName={token.tokenName}
+              tokenDetails={token}
               setSelectedTokens={setSelectedTokens}
               selectedTokens={selectedTokens}
             />
@@ -232,17 +507,19 @@ function page() {
         </div>
 
         <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
-          <div className="relative">
-            <Image
-              className="hidden dark:block w-full"
-              src={dcdsDark}
-              alt="dark-mode-image"
-            />
-            <Image
-              className="block dark:hidden w-full"
-              src={dcdsFrame}
-              alt="light-mode-image"
-            />
+          <div className="relative h-full  flex items-center justify-center w-full">
+            <div className="w-[65%] h-[65%] flex items-center justify-center relative">
+              <Image
+                className="hidden dark:block w-full"
+                src={dcdsDark}
+                alt="dark-mode-image"
+              />
+              <Image
+                className="block  dark:hidden w-full"
+                src={dcdsFrame}
+                alt="light-mode-image"
+              />
+            </div>
 
             {selectedTokens.length > 0 && (
               <div className="w-[200px] h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
@@ -287,7 +564,7 @@ function page() {
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <div className="max-h-[200px] overflow-y-auto">
+            <div className="max-h-[200px] overflow-y-auto no-scrollbar">
               {selectedTokens.map((token, key) => (
                 <div key={key} className="mt-4">
                   <Label
@@ -297,17 +574,22 @@ function page() {
                     {token.tokenName}
                   </Label>
                   <Input
+                    name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                     id={`token-${key}`}
-                    value={"$3000"}
                     className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
-                    placeholder="$300"
+                    placeholder="0"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values[
+                      `${token.tokenName}Amount` as keyof FormValues
+                    ]?.toString()}
                   />
                   <div className="flex justify-between">
                     <span className="text-[18px] font-medium text-grayLight">
                       Min $100
                     </span>
                     <span className="text-[18px] font-medium text-grayLight">
-                      Bal $3000
+                      Bal {token.balanceAvailable}
                     </span>
                   </div>
                 </div>
@@ -316,19 +598,27 @@ function page() {
           </div>
 
           <div>
-            <Toaster richColors />
             <div className="px-5">
               <GenericDropdownMenu
-                buttonText="3 Months"
+                buttonText={`${formik.values.lockInPeriod} Days`}
                 items={dropdownItems}
                 className="w-full text-[24px] border border-grayLight"
               />
             </div>
-            <div className="py-4 flex p-5 flex items-center justify-between w-full">
+            <div className="py-4 flex p-5  items-center justify-between w-full">
               <span className="text-grayLight font-normal text-[18px]">
                 Opt for liquidity gains?
               </span>
-              <Checkbox className="h-6 w-6  cursor-pointer data-[state=checked]:bg-black data-[state=checked]:text-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black" />
+              <Checkbox
+                type="button"
+                id="liquidationGains"
+                name="liquidationGains"
+                onCheckedChange={(value) =>
+                  formik.setFieldValue("liquidationGains", value)
+                }
+                checked={formik.values.liquidationGains}
+                className="h-6 w-6  cursor-pointer data-[state=checked]:bg-black data-[state=checked]:text-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
+              />
             </div>
             <div className="px-5">
               <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800] max-w-full">
@@ -338,13 +628,19 @@ function page() {
             </div>
             <AdditionalDCDSMetrics />
             <Button
-              onClick={() => {
-                showNormal();
-              }}
+              type="submit"
+              onClick={() => formik.handleSubmit()}
               className="bg-black text-white text-[24px] min-h-20 w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
             >
               Deposit
             </Button>
+            <LoadingBox
+              isLoading={usdtApproveLoadingLocal}
+              isFailure={UsdtApprovalErrorReceipt || isSuccessUsdtApprove}
+              isSuccess={Boolean(isSuccessUsdtApprove || UsdtApprovalReceipt)}
+              setSuccessLoading={() => console.log(true)}
+              heading="Approving USDT"
+            />
           </div>
         </div>
       </div>
