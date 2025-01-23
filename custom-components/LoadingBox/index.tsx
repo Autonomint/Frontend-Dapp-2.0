@@ -26,7 +26,7 @@ const LoadingBox = ({
     if ((isSuccess && !isLoading) || isFailure) {
       setEnd(true);
       setTimeout(() => {
-        setEnd(true);
+        setEnd(false);
       }, 500);
     }
   }, [isSuccess, !isLoading, isFailure]);
@@ -65,11 +65,11 @@ const LoadingBox = ({
     >
       {showBox && (
         <div
-          className={` absolute h-full p-6   border-[1px] border-[#7A7A7A] w-full transition-all dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
+          className={` absolute h-full p-6  flex justify-between items-center  border-[1px] border-[#7A7A7A] w-full transition-all dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
             start && "animate-slideIn"
           } ${end && "animate-slideOut"} `}
         >
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between w-full h-full items-center">
             <Typography
               size="subtitle"
               variant="regular"
@@ -88,7 +88,7 @@ const LoadingBox = ({
                   />
                 </div>
               ) : (
-                <RingLoadingIcon   />
+                <RingLoadingIcon />
               )}
             </div>
           </div>

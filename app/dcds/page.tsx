@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Spinner from "../assets/Spinner@1x-1.0s-200px-200px (2).svg";
 
 import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
@@ -38,6 +38,7 @@ import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
 import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import LoadingBox from "@/custom-components/LoadingBox";
+import { Typography } from "@/components/ui/Typography";
 function TokenTvlDetails() {
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
@@ -111,9 +112,11 @@ function AddToken({
   tokenDetails,
   setSelectedTokens,
   selectedTokens,
+  formik,
 }: {
+  formik: any;
   tokenDetails: TokenDetails;
-  setSelectedTokens: React.Dispatch<React.SetStateAction<TokenDetails[]>>;
+  setSelectedTokens: any;
   selectedTokens: { tokenImage: any; tokenName: string }[];
 }) {
   const isSelected = selectedTokens.some(
@@ -121,7 +124,15 @@ function AddToken({
   );
 
   const toggleToken = () => {
-    setSelectedTokens((prev: TokenDetails[]) => {
+    if (!tokenDetails.active) {
+      toast.error(tokenDetails.errorMessage);
+      return;
+    }
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
+      isSelected ? false : true
+    );
+    setSelectedTokens?.((prev: TokenDetails[]) => {
       if (isSelected) {
         return prev.filter(
           (token) => token.tokenName !== tokenDetails.tokenName
@@ -161,55 +172,100 @@ function AddToken({
 
 // Define the form values type using TypeScript
 interface FormValues {
-  usdaAmount: string | number;
-  usdtAmount: string | number;
-  usdcAmount: string | number;
-  usdeAmount: string | number;
-  lockInPeriod: string;
+  usdaFlag: boolean;
+  usdtFlag: boolean;
+  usdcFlag: boolean;
+  usdeFlag: boolean;
+  usdaAmount: string | number | null;
+  usdtAmount: string | number | null;
+  usdcAmount: string | number | null;
+  usdeAmount: string | number | null;
+  lockInPeriod: string | null;
   liquidationGains: boolean;
 }
 
 interface TokenDetails {
+  errorMessage?: string;
+  active?: boolean;
   tokenImage: any;
   tokenName: string;
   minTokenAmount: number;
   balanceAvailable: number | string;
 }
 
-// Yup validation schema
 const formSchema = Yup.object().shape({
-  // usdaAmount: Yup.mixed()
-  //   .test(
-  //     "is-valid-number",
-  //     "Value must be greater than 0",
-  //     (value) => Number(value) >= 0
-  //   )
-  //   .nullable(),
-  // usdtAmount: Yup.mixed()
-  //   .test(
-  //     "is-valid-number",
-  //     "Value must be greater than 0",
-  //     (value) => Number(value) >= 0
-  //   )
-  //   .nullable(),
-  // usdcAmount: Yup.mixed()
-  //   .test(
-  //     "is-valid-number",
-  //     "Value must be greater than 0",
-  //     (value) => Number(value) >= 0
-  //   )
-  //   .nullable(),
-  // usdeAmount: Yup.mixed()
-  //   .test(
-  //     "is-valid-number",
-  //     "Value must be greater than 0",
-  //     (value) => Number(value) >= 0
-  //   )
-  //   .nullable(),
+  usdaFlag: Yup.boolean(), // Flag for usdaAmount
+  usdtFlag: Yup.boolean(), // Flag for usdtAmount
+  usdcFlag: Yup.boolean(), // Flag for usdcAmount
+  usdeFlag: Yup.boolean(), // Flag for usdeAmount
+
+  usdaAmount: Yup.mixed()
+    .test("is-required", "USDA amount is required", function (value) {
+      return this.parent.usdaFlag
+        ? value !== null && value !== undefined
+        : true;
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true; // Skip this test if the value is not present (handled by the required test)
+      }
+      return Number(value) >= 0; // Ensure it's a valid number
+    })
+    .nullable(),
+
+  usdtAmount: Yup.mixed()
+    .test("is-required", "USDT amount is required", function (value) {
+      return this.parent.usdtFlag
+        ? value !== null && value !== undefined
+        : true;
+    })
+    .test("usdt-max", "usdt-max", function (value) {
+      const { usdaAmount, usdaFlag } = this.parent;
+      if (usdaFlag && usdaAmount) {
+        const maxAllowed = Number(usdaAmount) * 0.2;
+        return Number(value) <= maxAllowed;
+      }
+      return true; // No validation if usdaFlag is false
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true; // Skip if value is not present
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
+
+  usdcAmount: Yup.mixed()
+    .test("is-required", "USDC amount is required", function (value) {
+      return this.parent.usdcFlag
+        ? value !== null && value !== undefined
+        : true;
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
+
+  usdeAmount: Yup.mixed()
+    .test("is-required", "USDE amount is required", function (value) {
+      return this.parent.usdeFlag
+        ? value !== null && value !== undefined
+        : true;
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
+
   lockInPeriod: Yup.string().required("Lock-in period is required"),
-  liquidationGains: Yup.boolean().required(
-    "Liquidation gains must be specified"
-  ),
+
+  liquidationGains: Yup.boolean(),
 });
 
 function page() {
@@ -219,16 +275,24 @@ function page() {
   const [dcdsLoadingLocal, setDcdsLoadingLocal] = useState<boolean>(false);
   const [usdtApproveLoadingLocal, setUsdtApproveLoadingLocal] =
     useState<boolean>(false);
-  const [usdcApproveLoadingLocal, setUsdcApproveLoadingLocal] =
+  const [usdaApproveLoadingLocal, setUsdaApproveLoadingLocal] =
     useState<boolean>(false);
+  const [dcdsDepositLoadingLocal, setDcdsDepositLoadingLocal] =
+    useState<boolean>(false);
+
+  const { chainId } = useAccount();
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      usdaAmount: "",
-      usdtAmount: "",
-      usdcAmount: "",
-      usdeAmount: "",
-      lockInPeriod: "30",
+      usdaFlag: false,
+      usdtFlag: false,
+      usdcFlag: false,
+      usdeFlag: false,
+      usdaAmount: null,
+      usdtAmount: null,
+      usdcAmount: null,
+      usdeAmount: null,
+      lockInPeriod: null,
       liquidationGains: false,
     },
     validationSchema: formSchema,
@@ -250,7 +314,7 @@ function page() {
     },
     {
       label: "120 days",
-      onClick: () => formik.setFieldValue("lockInPeriod", "120 days"),
+      onClick: () => formik.setFieldValue("lockInPeriod", "120"),
     },
     {
       label: "180 days",
@@ -302,39 +366,46 @@ function page() {
   const usdtBalance = useGetBalance("TUSDT");
   const usdaBalance = useGetBalance("USDa");
 
-  const tokenList: TokenDetails[] = [
-    {
-      tokenImage: centerImage1,
-      tokenName: "USDc",
-      minTokenAmount: 500,
-      balanceAvailable: 0,
-    },
-    ...(GlobalContractData?.usdtAmountDepositedTillNow ||
-    0 >= USDT_DEPOSIT_LIMIT_IN_DCDS
-      ? [
-          {
-            tokenImage: centerImage2,
-            tokenName: "USDa",
-
-            balanceAvailable: Number(usdaBalance).toFixed(2),
-            minTokenAmount: 500,
-          },
-        ]
-      : []),
-    ,
-    {
-      tokenImage: centerImage1,
-      tokenName: "USDT",
-      minTokenAmount: 500,
-      balanceAvailable: usdtBalance,
-    },
-    {
-      tokenImage: centerImage2,
-      tokenName: "USDe",
-      minTokenAmount: 500,
-      balanceAvailable: 0,
-    },
-  ] as TokenDetails[];
+  const tokenList: TokenDetails[] = useMemo(() => {
+    return [
+      {
+        tokenImage: centerImage2,
+        tokenName: "USDa",
+        active:
+          (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
+          USDT_DEPOSIT_LIMIT_IN_DCDS,
+        errorMessage: "USDa not active now",
+        balanceAvailable: usdaBalance,
+        minTokenAmount: 500,
+      },
+      {
+        tokenImage: centerImage1,
+        tokenName: "USDT",
+        minTokenAmount: 500,
+        active: true,
+        balanceAvailable: usdtBalance,
+      },
+      {
+        tokenImage: centerImage1,
+        tokenName: "USDc",
+        minTokenAmount: 500,
+        active: true,
+        balanceAvailable: 0,
+      },
+      {
+        tokenImage: centerImage2,
+        tokenName: "USDe",
+        minTokenAmount: 500,
+        balanceAvailable: 0,
+        active: true,
+      },
+    ] as TokenDetails[];
+  }, [
+    GlobalContractData?.usdtAmountDepositedTillNow,
+    usdtBalance,
+    usdaBalance,
+  ]);
+  console.log(usdtBalance, usdaBalance, tokenList, "usdtBalance");
 
   console.log(GlobalContractData, "usdtAmountDepositedTillNow");
   const {
@@ -344,8 +415,11 @@ function page() {
     usdaApproveHash,
     usdaApproveLoading,
     usdaApproveError,
+    usdaApproveSuccess,
   } = useApproveUsda({
-    onError: () => {},
+    onError: () => {
+      handleDepositFailure();
+    },
   });
 
   // get the confirmed txn receipt
@@ -356,20 +430,87 @@ function page() {
     data: usdaApprovalReceiptReceipt,
   } = useWaitForTransactionReceipt({
     hash: usdaApproveHash,
+    confirmations: 2,
+    query: {},
   });
+
+  const {
+    handleUsdtApprove,
+    isSuccessUsdtApprove,
+    isPendingUsdtApprove,
+    usdtApprovedHash,
+    usdtApproveError,
+    resetUsdtApprove,
+  } = useUsdtApprove({
+    onError: () => {
+      handleDepositFailure();
+    },
+  });
+
+  const {
+    isLoading: UsdtApprovalLoadingReceipt,
+    isSuccess: UsdtApprovalSuccessReceipt,
+    isError: UsdtApprovalErrorReceipt,
+    data: UsdtApprovalReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: usdtApprovedHash,
+    confirmations: 2,
+    query: {},
+  });
+
+  // useEffect to check the status of the usdt approval transaction
+  const usdtLocal = formik.values.usdtAmount;
+  useEffect(() => {
+    debugger;
+    console.log(usdtLocal);
+
+    if (UsdtApprovalSuccessReceipt) {
+      const liqAmnt =
+        ((Number(formik.values.usdaAmount ? formik.values.usdaAmount : 0) +
+          Number(formik.values.usdtAmount ? formik.values.usdtAmount : 0)) *
+          80) /
+        100;
+      if (nativeFee) {
+        handleDcdsDeposit?.(
+          [
+            BigInt(
+              formik.values.usdtAmount
+                ? parseUnits(formik.values.usdtAmount.toString(), 6)
+                : 0
+            ),
+            BigInt(
+              formik.values.usdaAmount
+                ? parseUnits(formik.values.usdaAmount.toString(), 6)
+                : 0
+            ),
+            formik.values.liquidationGains,
+            formik.values.liquidationGains
+              ? parseUnits(liqAmnt.toString(), 6)
+              : 0n,
+            BigInt(Number(formik?.values?.lockInPeriod || 0) * 86400000),
+          ],
+          nativeFee.nativeFee
+        );
+      }
+    }
+  }, [UsdtApprovalSuccessReceipt]);
 
   const {
     dcdsDepositHash,
     dcdsDepositIsPending,
     dcdsDepositeError,
     handleDcdsDeposit,
-  } = useDcdsDeposit();
+  } = useDcdsDeposit({
+    onError: () => {
+      handleDepositFailure();
+    },
+  });
 
   // get the confirmed txn receipt
   const {
-    isLoading: isCdsConfirmationLoading,
-    isSuccess: cdsDepositSuccess,
-    isError: cdsDepositError,
+    isLoading: isCdsConfirmationLoadingReceipt,
+    isSuccess: cdsDepositSuccessReceipt,
+    isError: cdsDepositErrorReceipt,
     data: DepositdataReceipt,
   } = useWaitForTransactionReceipt({
     hash: dcdsDepositHash,
@@ -378,19 +519,22 @@ function page() {
 
   // useEffect to check the status of the cds deposit transaction
   useEffect(() => {
-    if (cdsDepositError) {
+    if (cdsDepositErrorReceipt) {
     }
-    if (cdsDepositSuccess) {
+    if (cdsDepositSuccessReceipt) {
+      handleDepositSuccess();
     }
   }, [DepositdataReceipt]);
 
   // useEffect to check the status of the amint approval transaction
   useEffect(() => {
     if (usdaApprovalSuccessReceipt) {
+      setUsdaApproveLoadingLocal(false);
       if (
         Number(formik.values.usdtAmount) &&
         (Number(formik.values.usdaAmount) ?? 0) > 0
       ) {
+        setUsdtApproveLoadingLocal(true);
         handleUsdtApprove([
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
           BigInt(
@@ -434,33 +578,18 @@ function page() {
     }
   }, [usdaApprovalReceiptReceipt]);
 
-  const { chainId } = useAccount();
-
-  const {
-    handleUsdtApprove,
-    isSuccessUsdtApprove,
-    isPendingUsdtApprove,
-    usdtApprovedHash,
-  } = useUsdtApprove();
-
-  const {
-    isLoading: UsdtApprovalLoadingReceipt,
-    isSuccess: UsdtApprovalSuccessReceipt,
-    isError: UsdtApprovalErrorReceipt,
-    data: UsdtApprovalReceipt,
-  } = useWaitForTransactionReceipt({
-    hash: usdtApprovedHash,
-    confirmations: 2,
-    query: {},
-  });
-
   console.log(formik.errors, "formik errors");
 
   const handleDeposit = () => {
     debugger;
+    if (selectedTokens.length === 0) {
+      toast.error("Please select token");
+      return;
+    }
+    resetFunctionState();
     setDcdsLoadingLocal(true);
     if (
-      (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) <=
+      (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
       USDT_DEPOSIT_LIMIT_IN_DCDS
     ) {
       if (
@@ -469,6 +598,7 @@ function page() {
       ) {
         return;
       } else {
+        setUsdaApproveLoadingLocal(true);
         approveUsdaDynamic(
           BigInt(
             formik.values.usdaAmount
@@ -491,6 +621,30 @@ function page() {
     }
   };
 
+  const resetFunctionState = () => {
+    resetUsdtApprove();
+  };
+
+  const handleDepositSuccess = () => {
+    resetLoadings();
+    toast.success("Deposit Successful");
+  };
+
+  const handleDepositFailure = () => {
+    resetLoadings();
+    toast.error("Deposit Failed");
+  };
+
+  const resetLoadings = () => {
+    console.log("resetting loadings");
+    setTimeout(() => {
+      setDcdsLoadingLocal(false);
+    }, 1000);
+    setUsdtApproveLoadingLocal(false);
+    setUsdaApproveLoadingLocal(false);
+    setDcdsDepositLoadingLocal(false);
+  };
+
   return (
     <div>
       <AppNavbar activeBack={false} />
@@ -498,6 +652,7 @@ function page() {
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
           {tokenList.map((token: TokenDetails, key: number) => (
             <AddToken
+              formik={formik}
               key={key}
               tokenDetails={token}
               setSelectedTokens={setSelectedTokens}
@@ -592,6 +747,28 @@ function page() {
                       Bal {token.balanceAvailable}
                     </span>
                   </div>
+                  <Typography
+                    size="sm"
+                    variant="regular"
+                    className="text-red-500"
+                  >
+                    {formik.errors?.[
+                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                    ] &&
+                    formik.touched?.[
+                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                    ]
+                      ? formik.errors?.[
+                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                        ] === "usdt-max"
+                        ? `USDT Amount must be less than or equal to $${(
+                            Number(formik.values.usdaAmount) * 0.2
+                          ).toFixed(2)} of USDa Amount `
+                        : formik.errors?.[
+                            `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                          ]
+                      : ""}
+                  </Typography>
                 </div>
               ))}
             </div>
@@ -600,10 +777,19 @@ function page() {
           <div>
             <div className="px-5">
               <GenericDropdownMenu
-                buttonText={`${formik.values.lockInPeriod} Days`}
+                buttonText={
+                  formik.values.lockInPeriod
+                    ? `${formik.values.lockInPeriod} Days`
+                    : "Select Lock-in Period"
+                }
                 items={dropdownItems}
                 className="w-full text-[24px] border border-grayLight"
               />
+              <Typography size="sm" variant="regular" className="text-red-500">
+                {formik.errors.lockInPeriod && formik.touched.lockInPeriod
+                  ? formik.errors.lockInPeriod
+                  : ""}
+              </Typography>
             </div>
             <div className="py-4 flex p-5  items-center justify-between w-full">
               <span className="text-grayLight font-normal text-[18px]">
@@ -627,20 +813,39 @@ function page() {
               </div>
             </div>
             <AdditionalDCDSMetrics />
-            <Button
-              type="submit"
-              onClick={() => formik.handleSubmit()}
-              className="bg-black text-white text-[24px] min-h-20 w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
-            >
-              Deposit
-            </Button>
-            <LoadingBox
-              isLoading={usdtApproveLoadingLocal}
-              isFailure={UsdtApprovalErrorReceipt || isSuccessUsdtApprove}
-              isSuccess={Boolean(isSuccessUsdtApprove || UsdtApprovalReceipt)}
-              setSuccessLoading={() => console.log(true)}
-              heading="Approving USDT"
-            />
+            <div className=" h-[90px]">
+              {!dcdsLoadingLocal && (
+                <Button
+                  type="submit"
+                  onClick={() => formik.handleSubmit()}
+                  className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
+                >
+                  Deposit
+                </Button>
+              )}
+
+              <LoadingBox
+                isLoading={usdtApproveLoadingLocal}
+                isFailure={UsdtApprovalErrorReceipt || usdtApproveError}
+                isSuccess={Boolean(UsdtApprovalSuccessReceipt)}
+                setSuccessLoading={() => console.log(true)}
+                heading="Approving USDT"
+              />
+              <LoadingBox
+                isLoading={usdaApproveLoadingLocal}
+                isFailure={usdaApprovalErrorReceipt || usdaApproveError}
+                isSuccess={Boolean(usdaApprovalReceiptReceipt)}
+                setSuccessLoading={() => console.log(true)}
+                heading="Approving USDa"
+              />
+              <LoadingBox
+                isLoading={dcdsDepositLoadingLocal}
+                isFailure={dcdsDepositeError || cdsDepositErrorReceipt}
+                isSuccess={Boolean(DepositdataReceipt)}
+                setSuccessLoading={() => console.log(true)}
+                heading="Depositing"
+              />
+            </div>
           </div>
         </div>
       </div>

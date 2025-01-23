@@ -19,6 +19,4 @@ export const BorrowStatus = {
 
 export const DEFAULT_TOAST_POSITION = "top-right";
 
-
-export  const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;
- 
+export const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;

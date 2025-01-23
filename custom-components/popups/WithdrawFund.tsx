@@ -268,9 +268,9 @@ export function WithdrawFund({
   const {
     approveUsda,
     approveReset,
-    amintApproveHash,
-    amintApproveLoading,
-    amintApproveError,
+    usdaApproveHash,
+    usdaApproveLoading,
+    usdaApproveError,
   } = useApproveUsda({
     onError: () => {
       setTimeout(() => {
@@ -288,9 +288,9 @@ export function WithdrawFund({
     isError: usdaHashError,
     isLoading: usdaHashLoading,
   } = useWaitForTransactionReceipt({
-    hash: amintApproveHash,
+    hash: usdaApproveHash,
     query: {
-      enabled: !!amintApproveHash,
+      enabled: !!usdaApproveHash,
     },
   });
 
@@ -460,7 +460,7 @@ export function WithdrawFund({
                 />
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
-                  isFailure={amintApproveError}
+                  isFailure={usdaApproveError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
                   heading="Approving USDa 2/3"

@@ -64,7 +64,11 @@ export default function RootLayout({
           </QueryProvider>
         </div>
       </body>
-      <Toaster richColors />
+      <Toaster
+        richColors
+        position="top-right"
+        className="dark:bg-custom-gradient-to-top"
+      />
     </html>
   );
 }

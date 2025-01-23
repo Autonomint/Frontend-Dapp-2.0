@@ -78,7 +78,7 @@ import { useAccount, useWriteContract } from "wagmi";
 //   functionName: "deposit",
 // });
 
-const useDcdsDeposit = () => {
+const useDcdsDeposit = (mutation: Record<string, any>) => {
   const { chainId } = useAccount();
   const {
     data: dcdsDepositHash,
@@ -86,7 +86,9 @@ const useDcdsDeposit = () => {
     isPending: dcdsDepositIsPending,
     writeContract: writeDcdsDeposit,
     reset: resetDcdsDeposit,
-  } = useWriteContract();
+  } = useWriteContract({
+    mutation,
+  });
 
   const handleDcdsDeposit = async (
     args: [bigint, bigint, Widen<boolean>, bigint, bigint],

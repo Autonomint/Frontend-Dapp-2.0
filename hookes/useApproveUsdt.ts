@@ -66,14 +66,16 @@ import { useAccount, useWriteContract } from "wagmi";
 //   },
 // });
 
-const useUsdtApprove = () => {
+const useUsdtApprove = (mutation: any) => {
   const { chainId } = useAccount();
   const {
     data: usdtApprovedHash,
     writeContract: usdtApproveWrite,
     isPending: isPendingUsdtApprove,
     isSuccess: isSuccessUsdtApprove,
-  } = useWriteContract({});
+    reset: resetUsdtApprove,
+    isError: usdtApproveError,
+  } = useWriteContract({ mutation });
 
   const handleUsdtApprove = (args: [`0x${string}`, bigint]) => {
     usdtApproveWrite({
@@ -90,6 +92,8 @@ const useUsdtApprove = () => {
     isSuccessUsdtApprove,
     usdtApprovedHash,
     handleUsdtApprove,
+    resetUsdtApprove,
+    usdtApproveError,
   };
 };
 

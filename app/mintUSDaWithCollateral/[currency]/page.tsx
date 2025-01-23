@@ -144,7 +144,6 @@ function TradingViewWidget() {
       const element = container.current.querySelector(
         ".tv-widget-chart--with-border"
       );
-      debugger;
       if (element) {
         (element as HTMLElement).style.border = "none";
       }
