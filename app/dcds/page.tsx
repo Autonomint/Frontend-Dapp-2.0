@@ -29,7 +29,7 @@ import * as Yup from "yup";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
 import { cdsAddress } from "@/blockchain/contracts";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import useUsdtApprove from "@/hookes/useApproveUsdt";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
@@ -39,37 +39,55 @@ import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import LoadingBox from "@/custom-components/LoadingBox";
 import { Typography } from "@/components/ui/Typography";
-function TokenTvlDetails() {
+function TokenTvlDetails({
+  tokenName,
+  tvl,
+}: {
+  tokenName: string;
+  tvl: string;
+}) {
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
       <div className="flex flex-col gap-8">
         <Image src={tokenImage} alt="token" width={32} height={32} />
-        <span className="text-[24px] text-textBlack dark:text-white">USDc</span>
+        <span className="text-[24px] text-textBlack dark:text-white">
+          {tokenName}
+        </span>
       </div>
       <div className="flex flex-col gap-8">
         <span className="text-[18px] font-normal text-right text-grayLight dark:text-white">
           TVL
         </span>
         <span className="text-[24px] font-medium text-textBlack dark:text-white">
-          $100,000,000
+          {tvl}
         </span>
       </div>
     </div>
   );
 }
 
-function AdditionalDCDSMetrics() {
+function AdditionalDCDSMetrics({
+  apy,
+  depositing,
+}: {
+  apy: string;
+  depositing: string;
+}) {
   return (
     <div className="p-5 flex flex-col gap-3">
       <div className="flex justify-between">
         <span className="text-grayLight text-[18px] font-medium">APY</span>
-        <span className="text-grayLight text-[18px] font-medium">--</span>
+        <span className="text-black dark:text-white text-[18px] font-medium">
+          {apy}
+        </span>
       </div>
       <div className="flex justify-between">
         <span className="text-grayLight text-[18px] font-medium">
           Depositing
         </span>
-        <span className="text-grayLight text-[18px] font-medium">--</span>
+        <span className="text-black text-[18px] dark:text-white font-medium">
+          {depositing}
+        </span>
       </div>
     </div>
   );
@@ -459,35 +477,35 @@ function page() {
   });
 
   // useEffect to check the status of the usdt approval transaction
-  const usdtLocal = formik.values.usdtAmount;
-  useEffect(() => {
-    debugger;
-    console.log(usdtLocal);
+  const usdtAmountLocal = formik.values.usdtAmount;
+  const usdaAmountLocal = formik.values.usdaAmount;
+  const liquidationGains = formik.values.liquidationGains;
+  const lockInPeriodLocal = formik.values.lockInPeriod;
 
+  useEffect(() => {
     if (UsdtApprovalSuccessReceipt) {
+      setUsdtApproveLoadingLocal(false);
+      setTimeout(() => {
+        setDcdsDepositLoadingLocal(true);
+      }, 600);
+
       const liqAmnt =
-        ((Number(formik.values.usdaAmount ? formik.values.usdaAmount : 0) +
-          Number(formik.values.usdtAmount ? formik.values.usdtAmount : 0)) *
+        ((Number(usdaAmountLocal ? usdaAmountLocal : 0) +
+          Number(usdtAmountLocal ? usdtAmountLocal : 0)) *
           80) /
         100;
       if (nativeFee) {
         handleDcdsDeposit?.(
           [
             BigInt(
-              formik.values.usdtAmount
-                ? parseUnits(formik.values.usdtAmount.toString(), 6)
-                : 0
+              usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
             ),
             BigInt(
-              formik.values.usdaAmount
-                ? parseUnits(formik.values.usdaAmount.toString(), 6)
-                : 0
+              usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
             ),
-            formik.values.liquidationGains,
-            formik.values.liquidationGains
-              ? parseUnits(liqAmnt.toString(), 6)
-              : 0n,
-            BigInt(Number(formik?.values?.lockInPeriod || 0) * 86400000),
+            liquidationGains,
+            liquidationGains ? parseUnits(liqAmnt.toString(), 6) : 0n,
+            BigInt(Number(lockInPeriodLocal || 0) * 86400000),
           ],
           nativeFee.nativeFee
         );
@@ -534,7 +552,9 @@ function page() {
         Number(formik.values.usdtAmount) &&
         (Number(formik.values.usdaAmount) ?? 0) > 0
       ) {
-        setUsdtApproveLoadingLocal(true);
+        setTimeout(() => {
+          setUsdtApproveLoadingLocal(true);
+        }, 600);
         handleUsdtApprove([
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
           BigInt(
@@ -581,7 +601,6 @@ function page() {
   console.log(formik.errors, "formik errors");
 
   const handleDeposit = () => {
-    debugger;
     if (selectedTokens.length === 0) {
       toast.error("Please select token");
       return;
@@ -662,8 +681,8 @@ function page() {
         </div>
 
         <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
-          <div className="relative h-full  flex items-center justify-center w-full">
-            <div className="w-[65%] h-[65%] flex items-center justify-center relative">
+          <div className="relative h-full  flex flex-col items-center justify-center w-full">
+            <div className="w-[60%] h-[60%] flex items-center justify-center relative">
               <Image
                 className="hidden dark:block w-full"
                 src={dcdsDark}
@@ -711,6 +730,27 @@ function page() {
                 </span>
               </div>
             )}
+          </div>
+          <div className=" flex px-4 my-3 justify-start items-center w-full gap-14">
+            <div>
+              {" "}
+              <Typography
+                className="text-black cursor-pointer text-[18px] font-medium dark:text-white underline"
+                size="lg"
+                variant="regular"
+              >
+                How it works?
+              </Typography>
+            </div>
+            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-2">
+              <Typography
+                size="lg"
+                className="text-[#FF0000] dark:text-[#FF1A1A] text-[18px] font-medium"
+                variant="regular"
+              >
+                This fund will be exposed to liquidation risks
+              </Typography>
+            </div>
           </div>
         </div>
 
@@ -812,8 +852,17 @@ function page() {
                 & protocol in return for fixed yields.
               </div>
             </div>
-            <AdditionalDCDSMetrics />
-            <div className=" h-[90px]">
+            <AdditionalDCDSMetrics
+              apy="Expected range 5% to 200%"
+              depositing={
+                formik.values.usdaAmount
+                  ? `${formik.values.usdaAmount || 0} USDa + ${
+                      formik.values.usdtAmount || 0
+                    } USDT`
+                  : "-"
+              }
+            />
+            <div className=" h-[86px]">
               {!dcdsLoadingLocal && (
                 <Button
                   type="submit"
@@ -849,9 +898,17 @@ function page() {
           </div>
         </div>
       </div>
-      <TokenTvlDetails />
-      <TokenTvlDetails />
-      <TokenTvlDetails />
+      <TokenTvlDetails
+        tokenName="USDT"
+        tvl={`${formatUnits(
+          GlobalContractData?.usdtAmountDepositedTillNow || 0n,
+          6
+        )} USDT`}
+      />
+      <TokenTvlDetails
+        tokenName="USDa"
+        tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} USDa`}
+      />
     </div>
   );
 }

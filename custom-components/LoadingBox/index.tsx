@@ -40,7 +40,7 @@ const LoadingBox = ({
         setShowBox(false);
         setShowSuccess(false);
         // setSuccessLoading?.(false);
-      }, 500);
+      }, 400);
       setTimeout(() => {
         setSuccessLoading?.(false);
       }, 1000);
@@ -79,11 +79,11 @@ const LoadingBox = ({
             </Typography>
             <div>
               {showSuccess ? (
-                <div className="h-6 w-6 flex items-center justify-center rounded-full bg-[#ABFFDE]">
+                <div className="h-8 w-8 flex items-center justify-center rounded-full bg-[#ABFFDE]">
                   <CheckIcon
                     style={{
-                      width: "10px",
-                      height: "10px",
+                      width: "12px",
+                      height: "12px",
                     }}
                   />
                 </div>
