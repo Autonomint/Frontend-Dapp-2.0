@@ -1,0 +1,101 @@
+import { CheckIcon, RingLoadingIcon } from "@/components/ui/SvgIcons";
+import { Typography } from "@/components/ui/Typography";
+import Image from "next/image";
+import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
+import { useEffect, useState } from "react";
+
+const LoadingBox = ({
+  isLoading,
+  heading,
+  isSuccess,
+  isFailure,
+  setSuccessLoading,
+}: {
+  isLoading: boolean;
+  heading?: string;
+  isSuccess?: boolean;
+  isFailure?: boolean;
+  setSuccessLoading: (value: boolean) => void;
+}) => {
+  const [showBox, setShowBox] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const start = isLoading;
+  const [end, setEnd] = useState<boolean>(false);
+
+  useEffect(() => {
+    if ((isSuccess && !isLoading) || isFailure) {
+      setEnd(true);
+      setTimeout(() => {
+        setEnd(true);
+      }, 500);
+    }
+  }, [isSuccess, !isLoading, isFailure]);
+
+  useEffect(() => {
+    if (end) {
+      if (isSuccess && !isLoading) {
+        setShowSuccess(true);
+      }
+      setTimeout(() => {
+        setShowBox(false);
+        setShowSuccess(false);
+        // setSuccessLoading?.(false);
+      }, 500);
+      setTimeout(() => {
+        setSuccessLoading?.(false);
+      }, 1000);
+    }
+    if (start) {
+      setShowBox(true);
+      setSuccessLoading(true);
+    }
+  }, [end, start, isSuccess, isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(() => {
+        setSuccessLoading?.(false);
+      }, 1000);
+    }
+  }, [isLoading]);
+
+  return (
+    <div
+      className={`relative  ${showBox && "h-[84px]"}  w-full overflow-hidden`}
+    >
+      {showBox && (
+        <div
+          className={` absolute h-full p-6   border-[1px] border-[#7A7A7A] w-full transition-all dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${
+            start && "animate-slideIn"
+          } ${end && "animate-slideOut"} `}
+        >
+          <div className="flex justify-between items-center">
+            <Typography
+              size="subtitle"
+              variant="regular"
+              className="text-black"
+            >
+              {heading || "Transaction Pending... 1/3"}
+            </Typography>
+            <div>
+              {showSuccess ? (
+                <div className="h-6 w-6 flex items-center justify-center rounded-full bg-[#ABFFDE]">
+                  <CheckIcon
+                    style={{
+                      width: "10px",
+                      height: "10px",
+                    }}
+                  />
+                </div>
+              ) : (
+                <RingLoadingIcon   />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LoadingBox;

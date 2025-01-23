@@ -17,9 +17,19 @@ export default {
           "50%": { transform: "scale(1.1)" },
           "100%": { transform: "scale(1)" },
         },
+        slideIn: {
+          "0%": { right: "-100%" },
+          "100%": { right: "0%" },
+        },
+        slideOut: {
+          "0%": { left: "0%" },
+          "100%": { left: "-100%" },
+        },
       },
       animation: {
         spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        slideIn: "slideIn 0.6s linear ",
+        slideOut: "slideOut 0.6s linear ",
       },
       backgroundImage: {
         "custom-gradient-to-top":

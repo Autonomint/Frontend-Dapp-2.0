@@ -16,4 +16,9 @@ export const BorrowStatus = {
   WITHDREW: "WITHDREW",
   LIQUIDATED: "LIQUIDATED",
 } as const;
+
 export const DEFAULT_TOAST_POSITION = "top-right";
+
+
+export  const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;
+ 

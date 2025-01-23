@@ -1,14 +1,4 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
@@ -94,7 +84,6 @@ export function WithdrawModal({
     },
   ];
   const [depositData, setDepositData] = useState(depositDetails);
-  console.log(depositData, "depositData");
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
     useLastCumulativeRate();
@@ -124,7 +113,6 @@ export function WithdrawModal({
                   : 0
               ) * lastCumulativeRate
             ) / BigInt(10 ** 27);
-      console.log(lastCumulativeRate, totalAmintAmnt);
 
       totalAmintAmount.current = Number(totalAmintAmnt);
 
@@ -173,7 +161,6 @@ export function WithdrawModal({
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
     if (ethPrice) {
-      console.log(ethPrice, position.ethPrice);
       //if current ethPrice > deposited time ethPrice
       if (parseFloat(ethPrice.toString()) > position.ethPrice) {
         setAmountProtected(0);

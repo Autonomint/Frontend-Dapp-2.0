@@ -142,22 +142,22 @@ function DCDSHoverElement() {
       onClick={() => {
         router.push("/dcds");
       }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS 2xl:gap-8 gap-10 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
     >
-      <div className=" text-textBlack text-[38px] font-medium dark:text-white">
+      <div className=" text-textBlack text-[32px] 2xl:text-[38px] font-medium dark:text-white">
         $1,000 Invested would have become $3,000
       </div>
       <Image
         src={PriceGraph}
         alt="Price Graph"
-        className="w-[900px] object-fit block dark:hidden"
+        className="2xl:w-[900px] w-[900px] object-fit block dark:hidden"
       />
       <Image
         src={DCDSHover}
         alt="Price Graph"
-        className="w-[900px] object-fit hidden dark:block"
+        className="2xl:w-[900px] w-[900px] object-fit hidden dark:block"
       />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white flex items-center gap-4">
+      <div className=" text-textBlack text-[32px] 2xl:text-[38px] 2xl:pb-12 pb-8 font-medium dark:text-white flex items-center gap-4">
         Get up to 200% APY
         <TooltipProvider>
           <Tooltip>
@@ -225,7 +225,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       <div className="text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee Comparison
       </div>
-      <div className="flex gap-8 ml-6 mb-20 bg-none">
+      <div className="flex gap-6 2xl:gap-8 ml-6 mb-20 bg-none">
         {feesList.map((feeCom, idx) => {
           return (
             <PriceComparison
@@ -301,7 +301,6 @@ export default function Home() {
     },
   ];
 
-  console.log(oneEthOptionFees, "oneEthOptionFees");
 
   const pairs = [];
   for (let i = 0; i < items.length; i += 2) {

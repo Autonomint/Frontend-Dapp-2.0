@@ -319,7 +319,6 @@ function Portfolio() {
     positionListRefetech,
     positionListLoading,
   } = useGetPositionList();
-  console.log(positionList, "positionList");
 
   return (
     <div className="flex flex-col">

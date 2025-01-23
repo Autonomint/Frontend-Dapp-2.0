@@ -51,7 +51,6 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleBtnClick = () => {
     if (!isConnected) open();
   };
-  console.log(chainId, chainId == NetworkId.EthereumSepolia, "chainId");
 
   return (
     <div>
@@ -81,19 +80,63 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
-                  <DownArrowIcon className="w-4 h-4 dark:stroke-black  " />
+                  <DownArrowIcon className="w-4 h-4 dark:stroke-black stroke-black  " />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="!w-[200px] border bg-white  border-gray-200 absolute p-4 rounded-md shadow-md">
-                <div className="flex flex-row gap-1">
-                  <EthereumIcon className="w-4 h-4 dark:fill-white fill-black" />
-                  <Typography className="">Ethereum</Typography>
-                  <DownArrowIcon className="w-4 h-4 dark:text-black" />
+              <PopoverContent
+                align="center"
+                className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
+              >
+                <div className=" flex flex-col gap-4">
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155111,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <EthereumIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className="fill-black dark:fill-white"
+                    />
+                    <Typography className="text-[24px] dark:text-white font-medium">
+                      Ethereum{" "}
+                    </Typography>{" "}
+                    {chainId == NetworkId.EthereumSepolia ? (
+                      <Check width={18} height={18} />
+                    ) : null}
+                  </div>
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 84532,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <BaseIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className="fill-black dark:fill-white"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Base{" "}
+                    </Typography>
+                    {chainId == NetworkId.BaseSepolia && (
+                      <Check width={18} height={18} />
+                    )}
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>
           </div>
-          <div className="relative flex p-[10px] px-5  border-solid border-l-2 border-black  flex-row items-center gap-3 ">
+          <div className="relative flex p-[13px] px-5  border-solid border-l-2 border-black  flex-row items-center gap-3 ">
             <WalletIcon className="w-4 h-4 dark:stroke-white stroke-black" />
             <Typography size="body" className="">
               {"Connect Wallet"}

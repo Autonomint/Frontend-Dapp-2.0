@@ -31,8 +31,9 @@ function PriceComparison({
     <div
       className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col px-6 py-7 gap-4 flex-1 transition-all duration-300 ease-in-out`}
+      } group flex-col px-4  2xl:px-6 py-7 gap-4 flex-1 transition-all duration-300 ease-in-out`}
       style={{
+        backgroundImage: isHover ? gradientBackground : "none",
         transition: "background 0.3s ease-in-out",
       }}
       onMouseEnter={(e) => {
