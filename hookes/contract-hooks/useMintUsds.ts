@@ -25,6 +25,7 @@ const useDepositTokens = (mutation: any) => {
     data: depositDatahash, // Data received from the `useBorrowingContractDepositTokens` hook
     writeContract, // Function to initiate a write operation
     reset, // Function to reset the state of the hook
+    isError: depositError, // Error state
   } = useWriteContract({
     mutation: {
       ...mutation,
@@ -56,6 +57,7 @@ const useDepositTokens = (mutation: any) => {
     depositDatahash,
     mintUSDa,
     reset,
+    depositError,
   };
 };
 

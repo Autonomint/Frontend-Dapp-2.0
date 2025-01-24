@@ -17,9 +17,19 @@ export default {
           "50%": { transform: "scale(1.1)" },
           "100%": { transform: "scale(1)" },
         },
+        slideIn: {
+          "0%": { right: "-100%" },
+          "100%": { right: "0%" },
+        },
+        slideOut: {
+          "0%": { left: "0%" },
+          "100%": { left: "-100%" },
+        },
       },
       animation: {
         spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        slideIn: "slideIn 0.6s linear ",
+        slideOut: "slideOut 0.6s linear ",
       },
       backgroundImage: {
         "custom-gradient-to-top":
@@ -27,6 +37,8 @@ export default {
         "custom-gradient-to-bottom":
           "linear-gradient(to bottom, #2C5364, #203A43, #0F2027);",
         "custom-gradient-blue": "linear-gradient(90deg, #002A4E, #002A4E00);",
+        "home-btn-bg":
+          "linear-gradient(180deg, #4A7182 0%, #48626B 49.5%, #37484F 100%)",
       },
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],

@@ -190,3 +190,9 @@ body {
 .borderRed::before {
   background: #b42e2e;
 }
+
+/* trading view styles */
+
+.remove_border {
+  border: transparent !important;
+}

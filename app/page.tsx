@@ -104,7 +104,7 @@ function TransferBetweeHoverElement() {
           </Typography>
         </div>
       </div>
-      <Button className="absolute bottom-0 px-6 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute bottom-0 px-6 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
         Bridge
         <Image
           src={arrow}
@@ -127,7 +127,7 @@ function FarmYourLuckHoverElement() {
       <div className="text-[24px] text-grayLight font-medium bg-none">
         Claim back 100% of your Option fees
       </div>
-      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:bg-home-btn-bg">
         Farm your luck
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -142,22 +142,22 @@ function DCDSHoverElement() {
       onClick={() => {
         router.push("/dcds");
       }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
+      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS 2xl:gap-8 gap-10 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-8 relative  dark:bg-custom-gradient-to-top"
     >
-      <div className=" text-textBlack text-[38px] font-medium dark:text-white">
-        $1,000 Invested would have become $3,000
+      <div className=" text-textBlack text-[32px] 2xl:text-[38px] font-medium dark:text-white">
+        Earn high yields by offering dCDS protection
       </div>
       <Image
         src={PriceGraph}
         alt="Price Graph"
-        className="w-[900px] object-fit block dark:hidden"
+        className="2xl:w-[900px] w-[900px] object-fit block dark:hidden"
       />
       <Image
         src={DCDSHover}
         alt="Price Graph"
-        className="w-[900px] object-fit hidden dark:block"
+        className="2xl:w-[900px] w-[900px] object-fit hidden dark:block"
       />
-      <div className=" text-textBlack text-[38px] pb-12 font-medium dark:text-white flex items-center gap-4">
+      <div className=" text-textBlack text-[32px] 2xl:text-[38px] 2xl:pb-12 pb-8 font-medium dark:text-white flex items-center gap-4">
         Get up to 200% APY
         <TooltipProvider>
           <Tooltip>
@@ -174,7 +174,7 @@ function DCDSHoverElement() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack  dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[108px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -225,7 +225,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       <div className="text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee Comparison
       </div>
-      <div className="flex gap-8 ml-6 mb-20 bg-none">
+      <div className="flex gap-6 2xl:gap-8 ml-6 mb-20 bg-none">
         {feesList.map((feeCom, idx) => {
           return (
             <PriceComparison
@@ -241,7 +241,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
           );
         })}
       </div>
-      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+      <Button className="absolute px-6 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
         Mint USDa
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -282,8 +282,8 @@ export default function Home() {
       borderColor: "borderGreen",
     },
     {
-      orgName: "Athermint",
-      amount: "$0.02",
+      orgName: "Deribit",
+      amount: "$280",
       tag: "Lowest Fee",
       tagColor: "#D6A100",
       tagBg: "#FFF7E0",
@@ -291,8 +291,8 @@ export default function Home() {
       borderColor: "borderYellow",
     },
     {
-      orgName: "AthermintXYZ",
-      amount: "$0.02",
+      orgName: "Hegic",
+      amount: "$272",
       tag: "Lowest Fee",
       tagColor: "#b42e2e",
       tagBg: "#FEE2E2",
@@ -300,8 +300,6 @@ export default function Home() {
       borderColor: "borderRed",
     },
   ];
-
-  console.log(oneEthOptionFees, "oneEthOptionFees");
 
   const pairs = [];
   for (let i = 0; i < items.length; i += 2) {

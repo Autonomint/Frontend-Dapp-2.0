@@ -14,11 +14,12 @@ import displayNumberWithPrecision, {
   formatTimestamp,
 } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { useWaitForTransactionReceipt } from "wagmi";
 import PopupDropdown from "../PopupDropdown";
 import CustomDropdown from "../CustomDropdown";
 import { toast, Toaster } from "sonner";
+import LoadingBox from "../LoadingBox";
 
 export function WithdrawFund({
   position,
@@ -100,7 +101,6 @@ export function WithdrawFund({
     },
   ];
   const [depositData, setDepositData] = useState(depositDetails);
-  console.log(depositData, "depositData");
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
     useLastCumulativeRate();
@@ -112,6 +112,12 @@ export function WithdrawFund({
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
 
+  const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
+    useState<boolean>(false);
+  const [isApproveLoadingLocal, setIsApproveLoadingLocal] =
+    useState<boolean>(false);
+  const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
+    useState<boolean>(false);
   /**
    * Updates the deposit data based on the provided details.
    * If the details are available, it updates each value in the depositData array.
@@ -133,8 +139,6 @@ export function WithdrawFund({
                 )
               ) * lastCumulativeRate
             ) / BigInt(10 ** 27);
-      console.log(lastCumulativeRate, totalAmintAmnt);
-      debugger;
       totalAmintAmount.current = Number(totalAmintAmnt);
 
       // If details are available, update each value in the depositData array
@@ -183,7 +187,6 @@ export function WithdrawFund({
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
     if (ethPrice) {
-      console.log(ethPrice, position.ethPrice);
       //if current ethPrice > deposited time ethPrice
       if (parseFloat(ethPrice.toString()) > position.ethPrice) {
         setAmountProtected(0);
@@ -236,18 +239,48 @@ export function WithdrawFund({
     cumulativeRate,
     cumulativeReset,
     cumulativeRateLoading,
-  } = useCalculateInterest();
+    cumulativeRateError,
+    cumulativeRateSuccess,
+  } = useCalculateInterest({
+    onError: () => {
+      setTimeout(() => {
+        setRepayLoading(false);
+        setIsLoadingCumulativeLocal(false);
+        setIsApproveLoadingLocal(false);
+        setWithdrawLoadingLocal(false);
+      }, 1000);
+    },
+  });
+
   const {
     isLoading: ispendingCumulative,
-    isSuccess: cumulativeRateSuccess,
+    isSuccess: cumulativeRateReciptSuccess,
     data: culmulativeData,
+    isFetching: isCumulativeFetching,
   } = useWaitForTransactionReceipt({
     hash: (cumulativeRate || "0x") as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
+    query: {
+      enabled: cumulativeRateSuccess,
+    },
   });
 
-  const { approveUsda, approveReset, amintApproveHash, amintApproveLoading } =
-    useApproveUsda();
+  const {
+    approveUsda,
+    approveReset,
+    usdaApproveHash,
+    usdaApproveLoading,
+    usdaApproveError,
+  } = useApproveUsda({
+    onError: () => {
+      setTimeout(() => {
+        setRepayLoading(false);
+        setIsLoadingCumulativeLocal(false);
+        setIsApproveLoadingLocal(false);
+        setWithdrawLoadingLocal(false);
+      }, 1000);
+    },
+  });
 
   const {
     data: usdaHashData,
@@ -255,7 +288,10 @@ export function WithdrawFund({
     isError: usdaHashError,
     isLoading: usdaHashLoading,
   } = useWaitForTransactionReceipt({
-    hash: amintApproveHash,
+    hash: usdaApproveHash,
+    query: {
+      enabled: !!usdaApproveHash,
+    },
   });
 
   const {
@@ -263,7 +299,17 @@ export function WithdrawFund({
     borrowReset,
     isPendingBorrowWithdraw,
     borrowWithdrawData,
-  } = useWithdrawUsda();
+    borrowWithdrawError,
+  } = useWithdrawUsda({
+    onError: () => {
+      setTimeout(() => {
+        setRepayLoading(false);
+        setIsLoadingCumulativeLocal(false);
+        setIsApproveLoadingLocal(false);
+        setWithdrawLoadingLocal(false);
+      }, 1000);
+    },
+  });
 
   const {
     isLoading: isLoadingWithdrawReceipt,
@@ -277,16 +323,20 @@ export function WithdrawFund({
   useEffect(() => {
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
-      setRepayLoading(false);
       toast.success("Withdraw Successful", {
         position: "top-right",
         className: "dark:bg-custom-gradient-to-top",
       });
       positionListRefetech();
+      setWithdrawLoadingLocal(false);
+      setTimeout(() => {
+        setRepayLoading(false);
+      }, 1000);
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt]);
 
   const handleRepay = async () => {
+    setIsLoadingCumulativeLocal(true);
     setRepayLoading(true);
     setOpenConfirmNotice(false);
     cumulativeReset?.();
@@ -299,6 +349,10 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (culmulativeData) {
+      setIsLoadingCumulativeLocal(false);
+      setTimeout(() => {
+        setIsApproveLoadingLocal(true);
+      }, 800);
       // Perform the amint approval after the cumulative rate is calculated
       approveUsda(lastCumulativeRate, position.normalizedAmount);
     }
@@ -306,13 +360,27 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (usdaHashData && usdaHashSucces) {
+      setIsApproveLoadingLocal(false);
+      setTimeout(() => {
+        setWithdrawLoadingLocal(true);
+      }, 800);
       withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
     }
   }, [usdaHashData]);
 
+  const handleCloseDialog = (value: boolean) => {
+    cumulativeReset?.();
+    approveReset?.();
+    borrowReset?.();
+    setIsLoadingCumulativeLocal(false);
+    setIsApproveLoadingLocal(false);
+    setWithdrawLoadingLocal(false);
+    setIsDialogOpen(value);
+  };
+
   return (
     <>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className="sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
           <div className="flex">
@@ -369,17 +437,42 @@ export function WithdrawFund({
                   </div>
                 ))}
               </div>
-              <Button
-                disabled={position.status == BorrowStatus.WITHDREW}
-                onClick={handleRepay}
-                className="w-full mt-6 p-8 bg-black text-white text-[24px]"
-              >
-                {repayLoading
-                  ? "Loading..."
-                  : position.status == BorrowStatus.DEPOSITED
-                  ? `Repay amount ${position.noOfAmintMinted} USDa`
-                  : `Withdrawn ${position.depositedAmount} ETH`}
-              </Button>
+              <div className=" h-[70px] mt-6">
+                {!repayLoading && (
+                  <Button
+                    disabled={position.status == BorrowStatus.WITHDREW}
+                    onClick={handleRepay}
+                    className="w-full p-8 bg-black text-white text-[24px]"
+                  >
+                    {repayLoading
+                      ? "Loading..."
+                      : position.status == BorrowStatus.DEPOSITED
+                      ? `Repay amount ${position.noOfAmintMinted} USDa`
+                      : `Withdrawn ${position.depositedAmount} ETH`}
+                  </Button>
+                )}
+                <LoadingBox
+                  isLoading={isLoadingCumulativeLocal}
+                  isFailure={cumulativeRateError}
+                  isSuccess={cumulativeRateReciptSuccess}
+                  setSuccessLoading={() => console.log()}
+                  heading="Calculating Interest "
+                />
+                <LoadingBox
+                  isLoading={isApproveLoadingLocal}
+                  isFailure={usdaApproveError}
+                  isSuccess={usdaHashSucces}
+                  setSuccessLoading={() => console.log()}
+                  heading="Approving USDa "
+                />
+                <LoadingBox
+                  isLoading={withdrawLoadingLocal}
+                  isFailure={borrowWithdrawError}
+                  isSuccess={isSuccessWithdrawReceipt}
+                  setSuccessLoading={() => console.log()}
+                  heading="Withdrawing"
+                />
+              </div>
             </>
           )}
 

@@ -33,7 +33,6 @@ const useFetchOptionFees = (
   strikePercent: number
 ) => {
   const { chainId } = useAccount();
-  console.log(chainId, collateralAmount, ethPrice, strikePercent, "enabled");
 
   const {
     data,

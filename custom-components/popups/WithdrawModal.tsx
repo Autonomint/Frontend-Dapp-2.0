@@ -1,40 +1,44 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
+import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
+import useGetAPY from "@/hookes/api-hooks/useGetAPY";
+import { dcdsDepositDetails } from "@/hookes/api-hooks/useGetDcdsDetails";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import displayNumberWithPrecision, {
-  daysFromTimestamp,
-  formatTimestamp,
-} from "@/utils/helpers";
+import useDcdsWithdraw from "@/hookes/useDcdsWithdraw";
+import { calculateTimeDifference } from "@/utils/helpers";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import LoadingBox from "../LoadingBox";
+import { toast } from "sonner";
+import { Typography } from "@/components/ui/Typography";
 
-export function WithdrawModal({
+export function DcdsWithdrawModal({
   position,
   isDialogOpen,
   setIsDialogOpen,
 }: {
-  position: PositionData;
+  position: dcdsDepositDetails;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
 }) {
   const [spinner, setSpinner] = useState(false);
 
+  // kept this inside because every row is going to have different state
   const depositDetails = [
     {
-      headline: "ETH Deposited",
-      value: "0.00123",
+      headline: "USDa Deposited",
+      value: "1200",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "USDT Deposited",
+      value: "1200",
       tooltip: false,
       tooltipText: "",
     },
@@ -45,56 +49,49 @@ export function WithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "USDa Amount Minted",
-      value: "1.234",
-      tooltip: true,
-      tooltipText: "80% of the total deposited amount",
-    },
-    {
-      headline: "Total Amount (USDa minted + Interest)",
-      value: "-",
+      headline: "Deposit Time",
+      value: "10 mins ago",
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Deposit Time APR",
+      headline: "Lock In Period",
+      value: "30 days",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Days passed since Deposit",
+      value: "0 days",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "APY till now",
       value: "5%",
+      tooltip: true,
+      tooltipText: "APY of the index",
+    },
+    {
+      headline: "Yearly APY",
+      value: "Yes",
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Deposited Time",
-      value: "-",
+      headline: "Opted for liquidations",
+      value: "Yes",
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Downside Percentage At Deposit",
-      value: "20%",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Liquidated?",
-      value: "No",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Interest Rate Gained",
-      value: "-",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Abond Minted",
-      value: "-",
+      headline: "Liquidated Collateral Value",
+      value: "Yes",
       tooltip: false,
       tooltipText: "",
     },
   ];
   const [depositData, setDepositData] = useState(depositDetails);
-  console.log(depositData, "depositData");
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
     useLastCumulativeRate();
@@ -104,6 +101,11 @@ export function WithdrawModal({
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
+  const { address, chainId } = useAccount();
+  const [dcdsFundWithdrawLoadingLocal, setDcdsFundWithdrawLoadingLocal] =
+    useState<boolean>(false);
+  const [withdrawMethodLoading, setWithdrawMethodLoading] =
+    useState<boolean>(false);
 
   /**
    * Updates the deposit data based on the provided details.
@@ -111,140 +113,143 @@ export function WithdrawModal({
    * If the details are not available, it sets each value in the depositData array to '-'.
    */
 
+  const { apy } = useGetAPY(position.index);
+
+  const { calculateBackendWithdraw, withdrawdata } =
+    useCalculateWithdrawAmount();
+
   function handleDepositData() {
-    // Calculate the totalAmintAmnt
-    if (position && lastCumulativeRate) {
-      const totalAmintAmnt =
-        lastCumulativeRate === undefined
-          ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
-          : BigInt(
-              BigInt(
-                parseInt(position.normalizedAmount)
-                  ? Number(parseInt(position.normalizedAmount)) * 10 ** 6
-                  : 0
-              ) * lastCumulativeRate
-            ) / BigInt(10 ** 27);
-      console.log(lastCumulativeRate, totalAmintAmnt);
-
-      totalAmintAmount.current = Number(totalAmintAmnt);
-
-      // If details are available, update each value in the depositData array
+    if (position && apy) {
       const updatedData = [...depositData];
       updatedData[0].value =
-        position.depositedAmount +
-        ` (${(
-          (Number(position.depositedAmount) * Number(position.ethPrice)) /
-          100
-        ).toFixed(2)} $) `;
-      updatedData[1].value = `${Number(position.ethPrice) / 100}`;
-      updatedData[2].value = Number(position.noOfAmintMinted).toFixed(2);
-      updatedData[3].value = (
-        parseFloat(totalAmintAmnt.toString()) /
-        10 ** 6
-      ).toFixed(2);
-      updatedData[4].value = `${position.aprAtDeposit}%`;
-      updatedData[5].value = new Date(
-        position.depositedTime * 1000
+        position.depositedAmint == "undefined" ||
+        position.depositedAmint == "NaN"
+          ? "0"
+          : position.depositedAmint;
+      // Update depositedAmint value
+      updatedData[1].value =
+        position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
+          ? "0"
+          : position.depositedUsdt;
+      // Update depositedAmint value
+      updatedData[2].value = `${Number(position.ethPriceAtDeposit) / 100}`;
+      // Update ethPriceAtDeposit value
+      updatedData[3].value = new Date(
+        Number(position.depositedTime) * 1000
       ).toLocaleString();
-      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
-      updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
-      updatedData[8].value =
-        interestGained != undefined ? Number(interestGained).toFixed(2) : "-";
-      updatedData[9].value = position.noOfAbondMinted
-        ? position.noOfAbondMinted
-        : "-";
+      // Update depositedTime value and format time in 'DD/MM/YYYY'
+      updatedData[4].value = `${(
+        Number(position.lockingPeriod) / 86400000
+      ).toFixed(0)} days`;
+      // Update lockingPeriod value
+      updatedData[5].value = calculateTimeDifference(
+        position.depositedTime + "000"
+      );
+      // Update time difference value
+      updatedData[6].value = `${Number(apy == undefined ? 0 : apy[5]).toFixed(
+        2
+      )}%`;
+      // Update aprAtDeposit value
+      updatedData[7].value = `${Number(apy == undefined ? 0 : apy[0]).toFixed(
+        2
+      )}%`;
+      // Update optedForLiquidation value
+      updatedData[8].value = position.optedForLiquidation ? "Yes" : "No";
+      // Update optedForLiquidation value
+      updatedData[9].value = `${Number(apy == undefined ? 0 : apy[3]).toFixed(
+        2
+      )} ETH (${Number(apy == undefined ? 0 : apy[4]).toFixed(2)}$)`;
+      // Update optedForLiquidation value
       setDepositData(updatedData);
+      // Update the depositData state with updatedData
+      calculateBackendWithdraw?.({
+        address: address as `0x${string}`,
+        index: position.index,
+        chainId: chainId as number,
+        ethPrice: (Number(ethPrice ?? 0n) / 100).toFixed(2),
+      });
     } else {
-      // If details are not available, set each value in the depositData array to '-'
       const updatedData = [...depositData];
-      updatedData[0].value = "-";
-      updatedData[1].value = "-";
-      updatedData[2].value = "-";
-      updatedData[3].value = "-";
-      updatedData[4].value = "-";
-      updatedData[5].value = "-";
-      updatedData[6].value = "-";
-      updatedData[7].value = "-";
-      updatedData[8].value = "-";
-      setDepositData(updatedData);
+      // If details are not available, set each value in depositData to '-'
+      updatedData.forEach((data) => {
+        data.value = "-";
+      });
+      setDepositData(updatedData); // Update the depositData state with updatedData
     }
   }
-
-  const handleAmountProtected = () => {
-    //check if we have current ethPrice available or not
-    if (ethPrice) {
-      console.log(ethPrice, position.ethPrice);
-      //if current ethPrice > deposited time ethPrice
-      if (parseFloat(ethPrice.toString()) > position.ethPrice) {
-        setAmountProtected(0);
-      }
-      //if current ethPrice < depositedethPrice
-      else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
-        const amountProt =
-          parseFloat(position.depositedAmount) *
-          (position.ethPrice - parseFloat(ethPrice.toString()));
-        const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / 100).toFixed(2))
-        );
-        setAmountProtected(amountProtPrecision);
-      }
-      //if current ethprice < 0.8 of depositedethPrice
-      else if (parseFloat(ethPrice.toString()) <= 0.8 * position.ethPrice) {
-        //
-        const amountProt =
-          0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
-        const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / 100).toFixed(2))
-        );
-        setAmountProtected(amountProtPrecision);
-      }
-      setAmountView(!amountView);
-    } else {
-      setAmountView(!amountView);
-      setAmountProtected(0);
-    }
-  };
 
   useEffect(() => {
     setSpinner(true);
     handleDepositData();
-    handleAmountProtected();
     setOpenConfirmNotice(true);
     setSpinner(false);
   }, [position, lastCumulativeRate, interestGained]);
 
-  const dcdsWidthDrawMetrics = [
-    {
-      heading: "Fee Gained",
-      value: "-",
-    },
-    {
-      heading: "Deposited Time",
-      value: position.depositedTime
-        ? formatTimestamp(position.depositedTime)
-        : "-",
-    },
-    {
-      heading: "ETH price at deposit",
-      value: `$${depositData[1].value}`,
-    },
-    {
-      heading: "Lock In Period",
-      value: "-",
-    },
-    {
-      heading: "Deposit-time APR & Current APR",
-      value: `${depositData[4].value}/-`,
-    },
-    {
-      heading: "Days passed since Deposit",
-      value: `${daysFromTimestamp(position.depositedTime)} Days`,
-    },
-  ];
+  // Define the initial state for the options variable
+  const options = Options.newOptions()
+    .addExecutorLzReceiveOption(250000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
 
+  const {
+    dcdsFundWithdrawData,
+    dcdsFundWithdrawError,
+    handleDcdsFundWithdraw,
+    isDcdsFundWithdrawPending,
+    resetDcdsFundWithdraw,
+  } = useDcdsWithdraw({
+    onError: () => {
+      setTimeout(() => {
+        setDcdsFundWithdrawLoadingLocal(false);
+      }, 1000);
+      setWithdrawMethodLoading(false);
+      toast.error("Withdraw Failed");
+    },
+  });
+
+  const {
+    data: cdsLogdataReceipt,
+    isError: isCdserrorReceipt,
+    isSuccess: isCdsSuccessReceipt,
+  } = useWaitForTransactionReceipt({
+    hash: dcdsFundWithdrawData, // The transaction hash to wait for
+    confirmations: 2, // Number of confirmations required for success
+  });
+
+  console.log(isCdserrorReceipt, "isCdserrorReceipt");
+
+  useEffect(() => {
+    if (isCdsSuccessReceipt) {
+      setWithdrawMethodLoading(false);
+      toast.success("Withdraw Successful");
+    }
+    if (isCdserrorReceipt) {
+      setTimeout(() => {
+        setDcdsFundWithdrawLoadingLocal(false);
+      }, 1000);
+      setWithdrawMethodLoading(false);
+      toast.error("Withdraw Failed");
+    }
+  }, [cdsLogdataReceipt, isCdserrorReceipt]);
+
+  const handleWithdrawFund = () => {
+    setDcdsFundWithdrawLoadingLocal(true);
+    if (nativeFee) {
+      setWithdrawMethodLoading(true);
+      handleDcdsFundWithdraw?.([BigInt(position.index)], nativeFee.nativeFee);
+    }
+  };
+  console.log(dcdsFundWithdrawLoadingLocal, withdrawMethodLoading, ".");
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    resetDcdsFundWithdraw();
+    setDcdsFundWithdrawLoadingLocal(false);
+    setWithdrawMethodLoading(false);
+  };
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="sm:max-w-[700px] bg-white ">
+    <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
+      <DialogContent className="sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
         <div
           style={{
             fontSize: "28px",
@@ -253,7 +258,7 @@ export function WithdrawModal({
         >
           Withdraw Fund
         </div>
-        <div className="flex justify-between mt-8 mb-6 text-textBlack">
+        {/* <div className="flex justify-between mt-8 mb-6 text-textBlack">
           <span
             style={{
               fontSize: "28px",
@@ -270,16 +275,16 @@ export function WithdrawModal({
           >
             ${position.depositedAmount}
           </span>
-        </div>
-        <div>
-          {dcdsWidthDrawMetrics.map((dcdsWidthDrawMetricsObj, idx) => {
+        </div> */}
+        <div className="h-[200px] overflow-auto no-scrollbar">
+          {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
             return (
-              <div key={idx} className="flex justify-between mb-6">
+              <div key={idx} className="flex justify-between mb-2">
                 <span className="text-[18px] font-medium text-grayLight">
                   {" "}
-                  {dcdsWidthDrawMetricsObj.heading}
+                  {dcdsWidthDrawMetricsObj.headline}
                 </span>
-                <span className="text-[18px] font-medium text-textBlack">
+                <span className="text-[18px] dark:text-white font-medium text-textBlack">
                   {dcdsWidthDrawMetricsObj.value}
                 </span>
               </div>
@@ -287,16 +292,56 @@ export function WithdrawModal({
           })}
         </div>
         <div className="flex w-full">
-          <div className="flex-1 w-full items-center gap-4 border border-solid border-grayLight p-3 font-medium">
-            <Label htmlFor="r2" className="text-[18px]">
-              45%
+          <div className="flex-1 flex flex-col justify-start items-start  gap-1  border border-solid border-grayLight p-4">
+            <Label className="text-[18px] font-normal text-[#777777]">
+              Price Gains
+            </Label>
+            <Label className="text-[28px] font-medium dark:text-white">
+              {(
+                Number(apy == undefined ? 0 : apy[1]) +
+                Number(apy == undefined ? 0 : apy[2])
+              ).toFixed(2)}
+            </Label>
+            <Label className="text-[14px] font-normal text-[#777777]">
+              Option Fee + Liquidation Gains
+            </Label>
+            <Label className="text-[14px] font-medium dark:text-white">
+              {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
             </Label>
           </div>
-          <div className="flex-1 items-center gap-4 border border-solid border-grayLight p-3">
-            <Label htmlFor="r3" className="text-[18px]">
-              +$100
+          <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight p-4 font-medium">
+            <Label className="text-[18px] font-normal text-[#777777]">
+              Yields
+            </Label>
+            <Label className="text-[28px] font-medium dark:text-white">
+              {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
             </Label>
           </div>
+        </div>
+        <Typography className=" text-[18px] text-[#777777] ">
+          Note: Your amount will be used to offer protection to borrowers &
+          protocol in return for fixed yields
+        </Typography>
+        <div className="h-[86px]">
+          {!dcdsFundWithdrawLoadingLocal && (
+            <Button
+              onClick={handleWithdrawFund}
+              disabled={
+                (position.status === "WITHDREW" ? true : false) ||
+                Number(position.lockingPeriod) * 1000 > Date.now()
+              }
+              className="w-full  p-8 py-10 bg-black text-white text-[32px]"
+            >
+              {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
+            </Button>
+          )}
+          <LoadingBox
+            isLoading={withdrawMethodLoading}
+            isFailure={dcdsFundWithdrawError}
+            isSuccess={Boolean(dcdsFundWithdrawData)}
+            setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+            heading="Withdrawing Funds"
+          />
         </div>
       </DialogContent>
     </Dialog>

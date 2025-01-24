@@ -2,7 +2,7 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
-const useCalculateInterest = () => {
+const useCalculateInterest = (mutation: any) => {
   const { chainId } = useAccount();
   const {
     isPending: cumulativeRateLoading,
@@ -10,8 +10,9 @@ const useCalculateInterest = () => {
     data: cumulativeRate,
     writeContractAsync: calculateCumulativeRateAsync,
     reset: cumulativeReset,
+    isSuccess: cumulativeRateSuccess,
   } = useWriteContract({
-    mutation: {},
+    mutation,
   });
 
   const calculateCumulativeRate = async () => {
@@ -35,6 +36,7 @@ const useCalculateInterest = () => {
     cumulativeRate: cumulativeRate as bigint | undefined,
     calculateCumulativeRate,
     cumulativeReset,
+    cumulativeRateSuccess,
   };
 };
 

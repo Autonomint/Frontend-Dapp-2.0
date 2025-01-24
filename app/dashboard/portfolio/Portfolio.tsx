@@ -2,15 +2,19 @@
 import { SearchIcon } from "@/components/ui/SvgIcons";
 import { Typography } from "@/components/ui/Typography";
 import { Input } from "@/components/ui/input";
-import { RebalancePopup } from "@/custom-components/popups/Rebalance";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { useScroll } from "@/contexts/scroll";
 import { WithdrawFund } from "@/custom-components/popups/WithdrawFund";
-import { WithdrawModal } from "@/custom-components/popups/WithdrawModal";
+import { DcdsWithdrawModal } from "@/custom-components/popups/WithdrawModal";
+import useGetDcdsDepositList, {
+  dcdsDepositDetails,
+} from "@/hookes/api-hooks/useGetDcdsDetails";
 import useGetPositionList, {
   PositionData,
 } from "@/hookes/api-hooks/useGetPositionList";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import displayNumberWithPrecision from "@/utils/helpers";
-import { useEffect, useState } from "react";
+import displayNumberWithPrecision, { formatTimestamp } from "@/utils/helpers";
+import { useEffect, useRef, useState } from "react";
 
 const PositionTableRow = ({
   position,
@@ -23,7 +27,9 @@ const PositionTableRow = ({
   setViewPosition,
   isRenewRepayOpen,
   setRenewRepay,
+  highlight = false,
 }: {
+  highlight: boolean;
   isViewPositionOpen: boolean;
   setViewPosition: (isOpen: boolean) => void;
   isRenewRepayOpen: boolean;
@@ -126,7 +132,13 @@ const PositionTableRow = ({
     setSelectedPosition(position);
   };
   return (
-    <tr className="border border-solid border-grayLight">
+    <tr
+      className={`border ${
+        highlight
+          ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          : ""
+      } border-solid border-grayLight`}
+    >
       <td className="px-5 py-6">{idx}</td>
       <td className="px-5 py-6">{position.depositedAmount}</td>
       <td className="px-5 py-6">
@@ -197,6 +209,73 @@ const PositionTableRow = ({
     </tr>
   );
 };
+const DcdsPositionTableRow = ({
+  position,
+  tabPosition,
+  idx,
+  setSelectedPosition,
+  setIsRebalanceDialogOpen,
+  setIsWithdrawDialogOpen,
+  isViewPositionOpen,
+  setViewPosition,
+  isRenewRepayOpen,
+  setRenewRepay,
+  highlight = false,
+}: {
+  highlight: boolean;
+  isViewPositionOpen: boolean;
+  setViewPosition: (isOpen: boolean) => void;
+  isRenewRepayOpen: boolean;
+  setRenewRepay: (isOpen: boolean) => void;
+  setIsRebalanceDialogOpen: (isOpen: boolean) => void;
+  setIsWithdrawDialogOpen: (isOpen: boolean) => void;
+  position: dcdsDepositDetails;
+  tabPosition: "Borrowed" | "Deposited";
+  idx: number;
+  setSelectedPosition: (position: dcdsDepositDetails) => void;
+}) => {
+  const handleRowClick = () => {
+    setSelectedPosition(position);
+    setIsWithdrawDialogOpen(true);
+  };
+  return (
+    <tr
+      className={`border ${
+        highlight
+          ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          : ""
+      } border-solid border-grayLight`}
+    >
+      <td className="px-5 py-6">{position.index}</td>
+      <td className="px-5 py-6 hidden md:table-cell">
+        {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
+        {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt}
+      </td>
+      <td className="px-5 py-6 hidden md:table-cell">
+        {formatTimestamp(Number(position.depositedTime))}
+      </td>
+
+      <td className="px-5 py-6 hidden md:table-cell">
+        {(Number(position.lockingPeriod) / 86400000).toFixed(0)} days
+      </td>
+
+      <td className={`px-5 py-6  md:text-right md:table-cell md:space-x-12`}>
+        <span
+          onClick={handleRowClick}
+          className="font-bold cursor-pointer text-[20px] underline "
+        >
+          Withdraw
+        </span>
+        {/* <span
+          onClick={handleRowClick}
+          className="font-bold cursor-pointer text-[20px] underline  "
+        >
+          Rebalance
+        </span> */}
+      </td>
+    </tr>
+  );
+};
 
 function PortolioTable({
   tabPosition,
@@ -221,8 +300,38 @@ function PortolioTable({
   positionList: PositionData[];
   setSelectedPosition: (position: PositionData) => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { isScroll, setIsScroll } = useScroll();
+  const scrollToElement = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scroll({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (isScroll) {
+      const scrollContainer = document.getElementById("body-scroll-container");
+      if (scrollContainer) {
+        scrollContainer.scroll({
+          top: scrollContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+      scrollToElement();
+
+      setTimeout(() => {
+        setIsScroll(false);
+      }, 10000);
+    }
+  }, [positionList]);
   return (
-    <div className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar">
+    <div
+      ref={scrollRef}
+      className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
+    >
       <table className="table-auto w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>
@@ -258,6 +367,116 @@ function PortolioTable({
                 setViewPosition={setViewPosition}
                 isRenewRepayOpen={isRenewRepayOpen}
                 setRenewRepay={setRenewRepay}
+                highlight={key + 1 === positionList.length && isScroll}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+      {!positionListLoading && positionList.length === 0 ? (
+        <div className="border-t flex justify-center  border-x-0 border-b-0 border border-grayLight">
+          <Typography size="lg" variant="regular" className="mt-3">
+            No Data Available
+          </Typography>
+        </div>
+      ) : null}
+      {positionListLoading ? (
+        <div className="border-t flex justify-center  border-x-0 border-b-0 border border-grayLight">
+          <Typography size="lg" variant="regular" className="mt-3">
+            Loading...
+          </Typography>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+function DcdsDepositTable({
+  tabPosition,
+  positionList,
+  setSelectedPosition,
+  setIsRebalanceDialogOpen,
+  setIsWithdrawDialogOpen,
+  isViewPositionOpen,
+  setViewPosition,
+  isRenewRepayOpen,
+  setRenewRepay,
+  positionListLoading,
+}: {
+  positionListLoading: boolean;
+  isViewPositionOpen: boolean;
+  setViewPosition: (isOpen: boolean) => void;
+  isRenewRepayOpen: boolean;
+  setRenewRepay: (isOpen: boolean) => void;
+  setIsRebalanceDialogOpen: (isOpen: boolean) => void;
+  setIsWithdrawDialogOpen: (isOpen: boolean) => void;
+  tabPosition: "Borrowed" | "Deposited";
+  positionList: dcdsDepositDetails[];
+  setSelectedPosition: (position: dcdsDepositDetails) => void;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { isScroll, setIsScroll } = useScroll();
+  const scrollToElement = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scroll({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (isScroll) {
+      const scrollContainer = document.getElementById("body-scroll-container");
+      if (scrollContainer) {
+        scrollContainer.scroll({
+          top: scrollContainer.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+      scrollToElement();
+
+      setTimeout(() => {
+        setIsScroll(false);
+      }, 10000);
+    }
+  }, [positionList]);
+  return (
+    <div
+      ref={scrollRef}
+      className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
+    >
+      <table className="table-auto w-full border-collapse text-[20px]">
+        <thead className="text-left font-normal text-grayLight ">
+          <tr>
+            <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
+            <th className="pl-5 font-normal w-4/5 lg:w-auto">
+              USDa / Usdt Deposited
+            </th>
+            <th className="pl-5 hidden md:table-cell font-normal">
+              Deposited Time
+            </th>
+            <th className="pl-5 hidden md:table-cell font-normal">
+              Lock In period
+            </th>
+            <th className="pl-5 hidden md:table-cell font-normal">Withdraw</th>
+          </tr>
+        </thead>
+        <tbody className="font-normal ">
+          {positionList.map((position: dcdsDepositDetails, key: number) => {
+            return (
+              <DcdsPositionTableRow
+                key={key}
+                idx={key + 1}
+                position={position}
+                tabPosition={tabPosition}
+                setSelectedPosition={setSelectedPosition}
+                setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+                setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+                isViewPositionOpen={isViewPositionOpen}
+                setViewPosition={setViewPosition}
+                isRenewRepayOpen={isRenewRepayOpen}
+                setRenewRepay={setRenewRepay}
+                highlight={key + 1 === positionList.length && isScroll}
               />
             );
           })}
@@ -304,9 +523,13 @@ function Portfolio() {
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"
   );
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
     null
   );
+
+  const [selectedDcdsPosition, setSelectedDcdsPosition] =
+    useState<dcdsDepositDetails | null>(null);
 
   const [isViewPositionOpen, setViewPosition] = useState(false);
   const [isRenewRepayOpen, setRenewRepay] = useState(false);
@@ -319,8 +542,17 @@ function Portfolio() {
     positionListRefetech,
     positionListLoading,
   } = useGetPositionList();
-  console.log(positionList, "positionList");
 
+  const {
+    dcdsPositionList,
+    dcdsPositionListError,
+    dcdsPositionListLoading,
+    dcdsPositionListRefetech,
+  } = useGetDcdsDepositList();
+
+  useEffect(() => {
+    setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
+  }, [portfolioTab]);
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -377,26 +609,41 @@ function Portfolio() {
           />
         </div>
       </div>
-      <PortolioTable
-        positionListLoading={positionListLoading}
-        setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
-        setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
-        setSelectedPosition={setSelectedPosition}
-        positionList={positionList}
-        tabPosition={tabPosition}
-        isViewPositionOpen={isViewPositionOpen}
-        setViewPosition={setViewPosition}
-        isRenewRepayOpen={isRenewRepayOpen}
-        setRenewRepay={setRenewRepay}
-      />
+      {tabPosition == "Borrowed" ? (
+        <PortolioTable
+          positionListLoading={positionListLoading}
+          setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+          setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+          setSelectedPosition={setSelectedPosition}
+          positionList={positionList}
+          tabPosition={tabPosition}
+          isViewPositionOpen={isViewPositionOpen}
+          setViewPosition={setViewPosition}
+          isRenewRepayOpen={isRenewRepayOpen}
+          setRenewRepay={setRenewRepay}
+        />
+      ) : (
+        <DcdsDepositTable
+          positionListLoading={dcdsPositionListLoading}
+          setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+          setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+          setSelectedPosition={setSelectedDcdsPosition}
+          positionList={dcdsPositionList?.deposits || []}
+          tabPosition={tabPosition}
+          isViewPositionOpen={isViewPositionOpen}
+          setViewPosition={setViewPosition}
+          isRenewRepayOpen={isRenewRepayOpen}
+          setRenewRepay={setRenewRepay}
+        />
+      )}
       {/* <RebalancePopup
         isDialogOpen={false}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
-      <WithdrawModal
-        position={(selectedPosition || []) as PositionData}
-        isDialogOpen={isViewPositionOpen}
-        setIsDialogOpen={() => setViewPosition(false)}
+      <DcdsWithdrawModal
+        position={(selectedDcdsPosition || []) as dcdsDepositDetails}
+        isDialogOpen={isWithdrawDialogOpen}
+        setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
       />
       <WithdrawFund
         setSelectedPosition={setSelectedPosition}

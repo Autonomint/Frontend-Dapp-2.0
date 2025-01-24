@@ -37,10 +37,12 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import * as Yup from "yup";
-import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
 import { GetServerSideProps } from "next";
-import { FormYourLuckIcon } from "@/components/ui/SvgIcons";
+import { CheckIcon, FormYourLuckIcon } from "@/components/ui/SvgIcons";
 import { useTheme } from "next-themes";
+import LoadingBox from "@/custom-components/LoadingBox";
+import { useScroll } from "@/contexts/scroll";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
 
 ChartJS.register(
   CategoryScale,
@@ -96,60 +98,67 @@ function TradingViewWidget() {
       "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
-    script.innerHTML = `
-        {
-          "symbols": [
-            [
-              "BINANCE:ETHUSD|1D"
-            ]
-          ],
-          "chartOnly": true,
-          "width": "100%",
-          "height": "100%",
-          "locale": "en",
-          "colorTheme": "light",
-          "autosize": true,
-          "showVolume": false,
-          "showMA": false,
-          "hideDateRanges": false,
-          "hideMarketStatus": false,
-          "hideSymbolLogo": false,
-          "scalePosition": "right",
-          "scaleMode": "Normal",
-          "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-          "fontSize": "10",
-          "noTimeScale": false,
-          "valuesTracking": "1",
-          "changeMode": "price-and-percent",
-          "chartType": "area",
-          "maLineColor": "#2962FF",
-          "maLineWidth": 1,
-          "maLength": 9,
-          "headerFontSize": "medium",
-          "gridLineColor": "rgba(255, 255, 255, 1)",
-          "lineWidth": 2,
-          "lineType": 0,
-          "dateRanges": [
-            "1d|1",
-            "1m|30",
-            "3m|60",
-            "12m|1D",
-            "60m|1W",
-            "all|1M"
-          ],
-          "lineColor": "rgba(0, 103, 159, 1)",
-          "topColor": "rgba(229, 243, 255, 1)",
-          "bottomColor": "rgba(255, 253, 228, 1)"
-        }`;
-    container?.current?.appendChild(script);
-  }, [theme]);
+
+    // Define the widget configuration
+    const widgetConfig = {
+      symbols: [["BINANCE:ETHUSD|1D"]],
+      chartOnly: true,
+      width: "100%",
+      height: "100%",
+      locale: "en",
+      colorTheme: theme === "dark" ? "dark" : "light", // Adjust theme here
+      autosize: true,
+      showVolume: false,
+      showMA: false,
+      hideDateRanges: false,
+      hideMarketStatus: false,
+      hideSymbolLogo: false,
+      scaleMode: "Normal",
+      borderWidth: 0,
+      scalePosition: "left",
+      backgroundColor: theme === "dark" ? "black" : "white",
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+      fontSize: "10",
+      noTimeScale: false,
+      valuesTracking: "1",
+      changeMode: "price-and-percent",
+      chartType: "area",
+      maLineColor: "#2962FF",
+      maLineWidth: 1,
+      maLength: 9,
+      headerFontSize: "medium",
+      gridLineColor: "rgb(255 255 255 / 0%)",
+      borderColor: "red",
+      lineWidth: 2,
+      lineType: 0,
+      dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
+      lineColor: "rgba(0, 103, 159, 1)",
+      topColor: "rgba(229, 243, 255, 1)",
+      bottomColor: "rgba(255, 253, 228, 1)",
+    };
+
+    // Pass the widget configuration as JSON
+    script.innerHTML = JSON.stringify(widgetConfig);
+    // Append script to container
+
+    if (container.current) {
+      const element = container.current.querySelector(
+        ".tv-widget-chart--with-border"
+      );
+      if (element) {
+        (element as HTMLElement).style.border = "none";
+      }
+      while (container.current.firstChild) {
+        container.current.removeChild(container.current.firstChild);
+      }
+    }
+    container.current?.appendChild(script);
+  }, [theme]); // Re-run effect when `theme` changes
 
   return (
-    <div
-      className="tradingview-widget-container overflow-hidden"
-      ref={container}
-    >
-      <div className="tradingview-widget-container__widget"></div>
+    <div className="tradingview-widget-container " ref={container}>
+      {/* <div className="tradingview-widget-container__widget"></div> */}
     </div>
   );
 }
@@ -272,108 +281,139 @@ function AdditionalMetics({
             color={metric.color}
           />
         ))}
-        <div className="w-full">
-          <div className="flex flex-col gap-1 w-full">
-            <div className="flex w-full h-[60px] mb-2">
-              {[
-                {
-                  label: "Deposit",
-                  value: Number(deposit || 0),
-                  gradient: "linear-gradient(to right, #627EEA4D,#627EEA00)",
-                  gradientText: "#627EEA",
-                },
-                {
-                  label: "Option Fee",
-                  value: Number(optionFees || 0),
-                  gradient: "linear-gradient(to right, #FF52704D,#FF527000)",
-                  gradientText: "#FF5270",
-                },
+        <div className="w-full h-[80px]">
+          {Number(deposit) !== 0 &&
+            Number(optionFees) !== 0 &&
+            Number(usdaBorrowed) !== 0 &&
+            Number(Dp) !== 0 && (
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex w-full h-[60px] mb-2">
+                  {[
+                    {
+                      label: "Deposit",
+                      value: Number(deposit || 0),
+                      gradient:
+                        "linear-gradient(to right, #627EEA4D,#627EEA00)",
+                      gradientText: "#627EEA",
+                      percentLeftPx: "8px",
+                      borderLeftPx: "0px",
+                    },
+                    {
+                      label: "Option Fee",
+                      value: Number(optionFees || 0),
+                      gradient: "linear-gradient(to left, #FF52704D,#FF527000)",
+                      gradientText: "#FF5270",
+                      percentLeftPx: "-28px",
+                      borderLeftPx: "23px",
+                    },
 
-                {
-                  label: "Downside Protection",
-                  value: Number(Dp || 0),
-                  gradient: "linear-gradient(to right, #05A5524D, #05A55200)",
-                  gradientText: "#05A552",
-                },
-              ].map((metric, index, arr) => {
-                const total = arr.reduce((acc, item) => acc + item.value, 0);
-                const percentage = (metric.value / total) * 100 || 0;
+                    {
+                      label: "Downside Protection",
+                      value: Number(Dp || 0),
+                      gradient:
+                        "linear-gradient(to right, #05A5524D, #05A55200)",
+                      gradientText: "#05A552",
+                      percentLeftPx: "8px",
+                      borderLeftPx: "0px",
+                    },
+                  ].map((metric, index, arr) => {
+                    const total = arr.reduce(
+                      (acc, item) => acc + item.value,
+                      0
+                    );
+                    const percentage = (metric.value / total) * 100 || 0;
 
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      width: `${percentage}%`,
-                    }}
-                    className="relative h-full flex flex-col justify-end"
-                  >
-                    <div
-                      className="w-full"
-                      style={{
-                        position: "absolute",
-                        backgroundColor: "transparent",
-                        color: metric.gradientText,
-                        left: "8px",
-                      }}
-                    >
-                      {percentage.toFixed(2)}%
-                    </div>
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          width: `${percentage}%`,
+                        }}
+                        className={` ${
+                          index == 1 && "mr-1"
+                        } relative h-full flex flex-col justify-end`}
+                      >
+                        {index == 1 && (
+                          <div
+                            style={{
+                              height: "80%",
+                              background: metric.gradient,
+                            }}
+                          />
+                        )}
+                        <div
+                          className="w-full"
+                          style={{
+                            position: "absolute",
+                            backgroundColor: "transparent",
+                            color: metric.gradientText,
+                            left: metric.percentLeftPx,
+                          }}
+                        >
+                          {percentage.toFixed(2)}%
+                        </div>
 
-                    <div
-                      style={{
-                        position: "absolute",
-                        height: "48px",
-                        width: "2px",
-                        backgroundColor: metric.gradientText,
-                        left: 0,
-                      }}
-                    />
+                        <div
+                          style={{
+                            position: "absolute",
+                            height: "48px",
+                            width: "2px",
+                            backgroundColor: metric.gradientText,
+                            left: metric.borderLeftPx,
+                          }}
+                        />
 
-                    <div
-                      style={{
-                        height: "80%",
-                        background: metric.gradient,
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+                        {index !== 1 && (
+                          <div
+                            style={{
+                              height: "80%",
+                              background: metric.gradient,
+                            }}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
 
-            <div className="flex w-full h-2 bg-gray-200 rounded-none overflow-hidden">
-              {[
-                {
-                  label: "Deposit",
-                  value: Number(deposit),
-                  gradient: "#627EEA",
-                },
-                {
-                  label: "Option Fee",
-                  value: Number(optionFees),
-                  gradient: "#FF5270",
-                },
-                {
-                  label: "Downside Protection",
-                  value: Number(Dp),
-                  gradient: "#05A552",
-                },
-              ].map((metric, index, arr) => {
-                const total = arr.reduce((acc, item) => acc + item.value, 0);
-                const percentage = (metric.value / total) * 100;
+                <div className="flex w-full h-2 bg-gray-200 rounded-none overflow-hidden">
+                  {[
+                    {
+                      label: "Deposit",
+                      value: Number(deposit),
+                      gradient: "#627EEA",
+                    },
+                    {
+                      label: "Option Fee",
+                      value: Number(optionFees),
+                      gradient: "#FF5270",
+                    },
+                    {
+                      label: "Downside Protection",
+                      value: Number(Dp),
+                      gradient: "#05A552",
+                    },
+                  ].map((metric, index, arr) => {
+                    const total = arr.reduce(
+                      (acc, item) => acc + item.value,
+                      0
+                    );
+                    const percentage = (metric.value / total) * 100;
 
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      width: `${percentage}%`,
-                      background: metric.gradient,
-                    }}
-                    title={`${metric.label}: ${percentage.toFixed(2)}%`}
-                  />
-                );
-              })}
-            </div>
-          </div>
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          width: `${percentage}%`,
+                          background: metric.gradient,
+                        }}
+                        title={`${metric.label}: ${percentage.toFixed(2)}%`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
         </div>
       </div>
 
@@ -405,6 +445,8 @@ function AdditionalDetails({ currency }: { currency: string }) {
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address });
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
+  const { isScroll, setIsScroll } = useScroll();
+
   const formik = useFormik({
     initialValues: {
       collateral: currency || "eth",
@@ -427,9 +469,8 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
-  console.log("quoteError", ltv, quoteError, options);
 
-  const { depositDatahash, isDepositsLoading, mintUSDa, reset } =
+  const { depositDatahash, isDepositsLoading, mintUSDa, reset, depositError } =
     useDepositTokens({
       onError: () => {
         setMintLoading(false);
@@ -439,7 +480,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
     data: Depositdata,
-    isError: depositError,
+    isError: depositHashError,
     error: depositErrorDetails,
     isLoading: isDepositdataLoading,
     isSuccess: isDepositSuccess,
@@ -448,7 +489,11 @@ function AdditionalDetails({ currency }: { currency: string }) {
     confirmations: 2,
   });
 
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
+
   useEffect(() => {
+    setIsScroll(true);
+    setPortfolioTab("Borrowed");
     if (isDepositSuccess && Depositdata) {
       toast.success(`${"Mint Successful"}`, {
         position: "top-right",
@@ -467,6 +512,8 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
   async function handleMint(values: any) {
     setMintLoading(true);
+    setMintBtnLoading(true);
+    reset();
     const strikePrice = values.strikePrice;
     const colateralamount = parseUnits(
       formik.values.collateralAmount.toString(),
@@ -503,8 +550,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
     }
   }
 
-  console.log("depositDatahash", formik.values.collateralAmount, formik.errors);
-
   /**
    * Retrieves the option fees for a given address.
    *
@@ -529,7 +574,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
       }`
     );
     const data = await response.json();
-    console.log(data);
     return data[1] ? data[1] / 10 ** 6 : 0;
   }
 
@@ -580,6 +624,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
       setAmintToBeMinted("0");
       setDownsideProtectionAmnt("0");
       setOptionFees(0);
+      setUpsideCollateral(0);
     } else if (formik.values.collateralAmount != 0) {
       formik.setErrors({
         collateralAmount: "",
@@ -594,7 +639,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
       });
     }
   }, [formik.values.collateralAmount, formik.values.strikePrice]);
-  console.log(optionFees, ">>");
 
   const handleSetMaxBal = () => {
     formik.setFieldValue(
@@ -602,6 +646,8 @@ function AdditionalDetails({ currency }: { currency: string }) {
       Number(ethBalance.data?.formatted || 0)
     );
   };
+
+  const [mintBtnLoading, setMintBtnLoading] = useState(false);
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -723,13 +769,24 @@ function AdditionalDetails({ currency }: { currency: string }) {
           })}
         </div> */}
       </div>
-      <div className="col-span-1">
-        <Button
-          type="submit"
-          className="bg-textBlack text-white py-6 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-top"
-        >
-          {mintLoading ? "Loading..." : "Mint USDa"}
-        </Button>
+      <div className="col-span-1 h-[85px]">
+        {!mintBtnLoading && (
+          <Button
+            type="submit"
+            className={`
+             bg-black dark:bg-custom-gradient-to-top py-6
+           text-white  font-semibold text-[24px] w-full h-full rounded-md `}
+          >
+            {!mintBtnLoading && "Mint USDa"}
+          </Button>
+        )}
+        <LoadingBox
+          isLoading={mintLoading}
+          isFailure={depositError || depositHashError}
+          isSuccess={Boolean(Depositdata)}
+          setSuccessLoading={setMintBtnLoading}
+          heading="Minting USDa"
+        />
       </div>
     </form>
   );
