@@ -492,9 +492,9 @@ function AdditionalDetails({ currency }: { currency: string }) {
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   useEffect(() => {
-    setIsScroll(true);
-    setPortfolioTab("Borrowed");
     if (isDepositSuccess && Depositdata) {
+      setPortfolioTab("Borrowed");
+      setIsScroll(true);
       toast.success(`${"Mint Successful"}`, {
         position: "top-right",
         className: "dark:bg-custom-gradient-to-top",
