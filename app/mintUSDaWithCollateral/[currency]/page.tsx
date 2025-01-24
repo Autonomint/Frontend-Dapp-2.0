@@ -658,6 +658,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
             <div className="flex-col gap-1 justify-start">
               <div className="flex">
                 <Input
+                  type="number"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.collateralAmount}
