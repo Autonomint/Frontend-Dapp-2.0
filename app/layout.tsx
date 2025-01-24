@@ -3,13 +3,13 @@ import QueryProvider from "@/providers/QueryProvider";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
-import Footer from "../custom-components/Footer";
 import { Toaster } from "sonner";
+import Footer from "../custom-components/Footer";
 
-import "./globals.css";
-import Provider from "../contexts";
-import { ThemeProvider, useTheme } from "next-themes";
 import Navbar from "@/custom-components/Navbar";
+import { ThemeProvider } from "next-themes";
+import Provider from "../contexts";
+import "./globals.css";
 
 const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
   // ssr: false,
@@ -54,7 +54,10 @@ export default function RootLayout({
                 <ThemeProvider attribute="class">
                   <Navbar />
                   {/* <AppNavbar /> */}
-                  <div className="flex-grow overflow-y-auto no-scrollbar border-r-0">
+                  <div
+                    id={"body-scroll-container"}
+                    className="flex-grow overflow-y-auto no-scrollbar border-r-0"
+                  >
                     {children}
                     <Footer />
                   </div>

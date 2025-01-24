@@ -3,8 +3,8 @@ import React, { useState } from "react";
 
 const gradientMap: { [key: string]: string } = {
   Autonomint: "linear-gradient(to right, #FFFFFF, #CCFFEB)",
-  Athermint: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
-  AthermintXYZ: "linear-gradient(to right, #FFFFFF, #FEE2E2)",
+  Deribit: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
+  Hegic: "linear-gradient(to right, #FFFFFF, #FEE2E2)",
 };
 
 function PriceComparison({
@@ -33,7 +33,11 @@ function PriceComparison({
         isHover && "priceCardBorderLeft "
       } group flex-col px-4  2xl:px-6 py-7 gap-4 flex-1 transition-all duration-300 ease-in-out`}
       style={{
-        backgroundImage: isHover ? gradientBackground : "none",
+        backgroundImage: isHover
+          ? theme == "dark"
+            ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
+            : gradientBackground
+          : "none",
         transition: "background 0.3s ease-in-out",
       }}
       onMouseEnter={(e) => {

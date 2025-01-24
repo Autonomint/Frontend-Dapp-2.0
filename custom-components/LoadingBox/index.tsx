@@ -47,7 +47,7 @@ const LoadingBox = ({
     }
     if (start) {
       setShowBox(true);
-      setSuccessLoading(true);
+      // setSuccessLoading(true);
     }
   }, [end, start, isSuccess, isLoading]);
 

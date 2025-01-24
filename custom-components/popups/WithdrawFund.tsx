@@ -456,21 +456,21 @@ export function WithdrawFund({
                   isFailure={cumulativeRateError}
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
-                  heading="Calculating Interest 1/3"
+                  heading="Calculating Interest "
                 />
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
                   isFailure={usdaApproveError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa 2/3"
+                  heading="Approving USDa "
                 />
                 <LoadingBox
                   isLoading={withdrawLoadingLocal}
                   isFailure={borrowWithdrawError}
                   isSuccess={isSuccessWithdrawReceipt}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa 3/3"
+                  heading="Withdrawing"
                 />
               </div>
             </>

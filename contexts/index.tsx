@@ -1,5 +1,13 @@
 import { NetworkProvider } from "./network";
+import { PortfolioTabProvider } from "./portfolio-tab";
+import { ScrollProvider } from "./scroll";
 const Provider = ({ children }: { children: React.ReactNode }) => {
-  return <NetworkProvider>{children}</NetworkProvider>;
+  return (
+    <ScrollProvider>
+      <PortfolioTabProvider>
+        <NetworkProvider>{children}</NetworkProvider>;
+      </PortfolioTabProvider>
+    </ScrollProvider>
+  );
 };
 export default Provider;

@@ -41,6 +41,8 @@ import { GetServerSideProps } from "next";
 import { CheckIcon, FormYourLuckIcon } from "@/components/ui/SvgIcons";
 import { useTheme } from "next-themes";
 import LoadingBox from "@/custom-components/LoadingBox";
+import { useScroll } from "@/contexts/scroll";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
 
 ChartJS.register(
   CategoryScale,
@@ -443,6 +445,8 @@ function AdditionalDetails({ currency }: { currency: string }) {
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address });
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
+  const { isScroll, setIsScroll } = useScroll();
+
   const formik = useFormik({
     initialValues: {
       collateral: currency || "eth",
@@ -485,7 +489,11 @@ function AdditionalDetails({ currency }: { currency: string }) {
     confirmations: 2,
   });
 
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
+
   useEffect(() => {
+    setIsScroll(true);
+    setPortfolioTab("Borrowed");
     if (isDepositSuccess && Depositdata) {
       toast.success(`${"Mint Successful"}`, {
         position: "top-right",
@@ -504,6 +512,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
 
   async function handleMint(values: any) {
     setMintLoading(true);
+    setMintBtnLoading(true);
     reset();
     const strikePrice = values.strikePrice;
     const colateralamount = parseUnits(

@@ -37,6 +37,8 @@ export default {
         "custom-gradient-to-bottom":
           "linear-gradient(to bottom, #2C5364, #203A43, #0F2027);",
         "custom-gradient-blue": "linear-gradient(90deg, #002A4E, #002A4E00);",
+        "home-btn-bg":
+          "linear-gradient(180deg, #4A7182 0%, #48626B 49.5%, #37484F 100%)",
       },
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],

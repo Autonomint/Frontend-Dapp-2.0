@@ -39,6 +39,9 @@ import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import LoadingBox from "@/custom-components/LoadingBox";
 import { Typography } from "@/components/ui/Typography";
+import { useScroll } from "@/contexts/scroll";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { useRouter } from "next/navigation";
 function TokenTvlDetails({
   tokenName,
   tvl,
@@ -289,7 +292,7 @@ const formSchema = Yup.object().shape({
 function page() {
   const { theme } = useTheme();
   const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
-
+  const router = useRouter();
   const [dcdsLoadingLocal, setDcdsLoadingLocal] = useState<boolean>(false);
   const [usdtApproveLoadingLocal, setUsdtApproveLoadingLocal] =
     useState<boolean>(false);
@@ -644,9 +647,15 @@ function page() {
     resetUsdtApprove();
   };
 
+  const { isScroll, setIsScroll } = useScroll();
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
+
   const handleDepositSuccess = () => {
+    setIsScroll(true);
+    setPortfolioTab("Deposited");
     resetLoadings();
     toast.success("Deposit Successful");
+    router.push("/dashboard/portfolio");
   };
 
   const handleDepositFailure = () => {
@@ -903,11 +912,11 @@ function page() {
         tvl={`${formatUnits(
           GlobalContractData?.usdtAmountDepositedTillNow || 0n,
           6
-        )} USDT`}
+        )}`}
       />
       <TokenTvlDetails
         tokenName="USDa"
-        tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} USDa`}
+        tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} `}
       />
     </div>
   );
