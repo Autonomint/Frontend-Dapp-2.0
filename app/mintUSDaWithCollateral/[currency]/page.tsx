@@ -492,9 +492,9 @@ function AdditionalDetails({ currency }: { currency: string }) {
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   useEffect(() => {
-    setIsScroll(true);
-    setPortfolioTab("Borrowed");
     if (isDepositSuccess && Depositdata) {
+      setPortfolioTab("Borrowed");
+      setIsScroll(true);
       toast.success(`${"Mint Successful"}`, {
         position: "top-right",
         className: "dark:bg-custom-gradient-to-top",
@@ -658,6 +658,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
             <div className="flex-col gap-1 justify-start">
               <div className="flex">
                 <Input
+                  type="number"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.collateralAmount}

@@ -73,7 +73,7 @@ const LoadingBox = ({
             <Typography
               size="subtitle"
               variant="regular"
-              className="text-black"
+              className="text-black dark:text-white"
             >
               {heading || "Transaction Pending... 1/3"}
             </Typography>
@@ -88,7 +88,7 @@ const LoadingBox = ({
                   />
                 </div>
               ) : (
-                <RingLoadingIcon />
+                <RingLoadingIcon className="fill-black dark:fill-white" />
               )}
             </div>
           </div>

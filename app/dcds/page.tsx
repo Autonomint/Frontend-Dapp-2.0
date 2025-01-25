@@ -778,6 +778,7 @@ function page() {
                     {token.tokenName}
                   </Label>
                   <Input
+                    type="number"
                     name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                     id={`token-${key}`}
                     className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"

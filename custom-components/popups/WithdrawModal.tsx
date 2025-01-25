@@ -276,7 +276,7 @@ export function DcdsWithdrawModal({
             ${position.depositedAmount}
           </span>
         </div> */}
-        <div className="h-[200px] overflow-auto no-scrollbar">
+        <div className="h-[250px] overflow-auto no-scrollbar">
           {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
             return (
               <div key={idx} className="flex justify-between mb-2">
@@ -292,11 +292,11 @@ export function DcdsWithdrawModal({
           })}
         </div>
         <div className="flex w-full">
-          <div className="flex-1 flex flex-col justify-start items-start  gap-1  border border-solid border-grayLight p-4">
+          <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
             <Label className="text-[18px] font-normal text-[#777777]">
               Price Gains
             </Label>
-            <Label className="text-[28px] font-medium dark:text-white">
+            <Label className="text-[24px] font-medium dark:text-white">
               {(
                 Number(apy == undefined ? 0 : apy[1]) +
                 Number(apy == undefined ? 0 : apy[2])
@@ -309,16 +309,16 @@ export function DcdsWithdrawModal({
               {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
             </Label>
           </div>
-          <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight p-4 font-medium">
+          <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
             <Label className="text-[18px] font-normal text-[#777777]">
               Yields
             </Label>
-            <Label className="text-[28px] font-medium dark:text-white">
+            <Label className="text-[24px] font-medium dark:text-white">
               {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
             </Label>
           </div>
         </div>
-        <Typography className=" text-[18px] text-[#777777] ">
+        <Typography className=" text-[16px] text-[#777777] ">
           Note: Your amount will be used to offer protection to borrowers &
           protocol in return for fixed yields
         </Typography>
