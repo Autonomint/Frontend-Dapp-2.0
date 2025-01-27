@@ -53,7 +53,6 @@ export default function RootLayout({
               <Provider>
                 <ThemeProvider attribute="class">
                   <Navbar />
-                  {/* <AppNavbar /> */}
                   <div
                     id={"body-scroll-container"}
                     className="flex-grow overflow-y-auto no-scrollbar border-r-0"

@@ -8,7 +8,7 @@ import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useDcdsWithdraw from "@/hookes/useDcdsWithdraw";
+import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
 import { calculateTimeDifference } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";

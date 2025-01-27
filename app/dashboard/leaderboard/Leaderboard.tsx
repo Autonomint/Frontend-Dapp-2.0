@@ -1,6 +1,17 @@
 "use client";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useGetLeaderboard, {
+  LeaderboardDetails,
+} from "@/hookes/api-hooks/useGetLeaderboard";
+import { formatNumber, sortWalletAddress } from "@/utils/helpers";
+import { formatEther } from "viem";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
-function PortolioTable() {
+function PortolioTable({
+  leaderboardData,
+}: {
+  leaderboardData: LeaderboardDetails[];
+}) {
   return (
     <div className="overflow-x-auto min-h-[500px]">
       <table className="table-auto w-full border-collapse text-[20px]">
@@ -20,21 +31,39 @@ function PortolioTable() {
           </tr>
         </thead>
         <tbody className="font-normal ">
-          <tr className="border border-grayLight">
-            <td className="px-5 py-6">01</td>
-            <td className="px-5 py-6">0x67a...8ujk</td>
-            <td className="px-5 py-6 hidden md:table-cell">$800</td>
-            <td className="px-5 py-6 hidden md:table-cell">--</td>
-            <td className="px-5 py-6 hidden md:table-cell">0.4</td>
-            <td className="px-5 py-6 hidden md:table-cell font-normal">
-              <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
-                Borrower
-              </span>
-            </td>
-            <td className="px-5 py-6 hidden md:table-cell font-normal text-right">
-              189,789
-            </td>
-          </tr>
+          {leaderboardData.map((item, index) => {
+            return (
+              <tr key={index} className="border border-grayLight">
+                <td className="px-5 py-6">{index + 1}</td>
+                <td className="px-5 py-6">{sortWalletAddress(item.address)}</td>
+                <td className="px-5 py-6 hidden md:table-cell">
+                  {item.totalAmint ? Number(item.totalAmint).toFixed(4) : "--"}
+                </td>
+                <td className="px-5 py-6 hidden md:table-cell">
+                  {item.totalDepositedAmount
+                    ? Number(item.totalDepositedAmount).toFixed(2)
+                    : "--"}
+                </td>
+                <td className="px-5 py-6 hidden md:table-cell">
+                  {item.totalLTV ? item.totalLTV : "--"}
+                </td>
+                <td className="px-5 py-6 hidden md:table-cell font-normal">
+                  {!!item.totalAmint ? (
+                    <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
+                      Borrower
+                    </span>
+                  ) : (
+                    <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
+                      Deposit
+                    </span>
+                  )}
+                </td>
+                <td className="px-5 py-6 hidden md:table-cell font-normal text-right">
+                  {item.points ? item.points : "--"}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -61,25 +90,43 @@ function PortfolioMetrics({
 }
 
 function Leaderboard() {
+  // Fetch the total volume of borrowers amount in USD
+  const { omniChainData } = useGetOmniChainData();
+  const {
+    leaderboardData,
+    borrowdepositsError,
+    cdsdepositsError,
+    totalBorrowCount,
+    totalDepositedCount,
+  } = useGetLeaderboard();
+
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total number of borrowers"
-            value="10,027"
+            value={totalBorrowCount.toString() || ""}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total number of dcds depositors"
-            value="9,061"
+            value={totalDepositedCount.toString() || ""}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Value Locked (TVL)"
-            value="$12,000,267"
+            value={`$${formatNumber(
+              Number(omniChainData?.totalCdsDepositedAmount ?? 0n) / 10 ** 6 +
+                Number(
+                  formatEther(
+                    (omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n) /
+                      BigInt(100)
+                  )
+                )
+            )}`}
           />
         </div>
         <div className="col-span-1">
@@ -89,7 +136,7 @@ function Leaderboard() {
           />
         </div>
       </div>
-      <PortolioTable />
+      <PortolioTable leaderboardData={leaderboardData} />
     </div>
   );
 }

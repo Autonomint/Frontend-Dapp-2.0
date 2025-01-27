@@ -31,7 +31,7 @@ import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
 import { cdsAddress } from "@/blockchain/contracts";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import useUsdtApprove from "@/hookes/useApproveUsdt";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
@@ -165,7 +165,7 @@ function AddToken({
   };
 
   return (
-    <div className="border border-solid border-grayLight p-5 relative">
+    <div className="border border-solid border-grayLight p-5 flex justify-start items-center h-full relative">
       <div className="flex flex-col gap-4">
         <Image
           src={tokenDetails.tokenImage}
@@ -676,7 +676,7 @@ function page() {
   return (
     <div>
       <AppNavbar activeBack={false} />
-      <div className="grid lg:grid-cols-4 grid-cols-1">
+      <div className="grid h-[97%] lg:grid-cols-4 grid-cols-1">
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
           {tokenList.map((token: TokenDetails, key: number) => (
             <AddToken
@@ -691,14 +691,15 @@ function page() {
 
         <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
-            <div className="w-[60%] h-[60%] flex items-center justify-center relative">
+            <div className="2xl:w-[73%] 3xl:w-[55%] 3xl:h-[93%] w-[60%] 2xl:h-[93%] h-[73%] flex items-center justify-center relative">
               <Image
-                className="hidden dark:block w-full"
+                className="hidden dark:block w-full h-full"
                 src={dcdsDark}
                 alt="dark-mode-image"
+                layout="fill"
               />
               <Image
-                className="block  dark:hidden w-full"
+                className="block  dark:hidden w-full h-full"
                 src={dcdsFrame}
                 alt="light-mode-image"
               />
@@ -740,17 +741,15 @@ function page() {
               </div>
             )}
           </div>
-          <div className=" flex px-4 my-3 justify-start items-center w-full gap-14">
-            <div>
-              {" "}
-              <Typography
-                className="text-black cursor-pointer text-[18px] font-medium dark:text-white underline"
-                size="lg"
-                variant="regular"
-              >
-                How it works?
-              </Typography>
-            </div>
+          <div className=" flex px-4 my-3 justify-center items-center w-full gap-14">
+            {" "}
+            <Typography
+              className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
+              size="lg"
+              variant="regular"
+            >
+              How it works?
+            </Typography>
             <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-2">
               <Typography
                 size="lg"
@@ -764,11 +763,11 @@ function page() {
         </div>
 
         <div className="col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
-          <div className="p-5">
+          <div className="p-5 ">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <div className="max-h-[200px] overflow-y-auto no-scrollbar">
+            <div className="h-[200px] 2xl:h-[300px] overflow-y-auto no-scrollbar">
               {selectedTokens.map((token, key) => (
                 <div key={key} className="mt-4">
                   <Label

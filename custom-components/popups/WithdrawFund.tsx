@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PositionData } from "@/hookes/api-hooks/useGetPositionList";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
@@ -9,18 +9,14 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { BorrowStatus } from "@/utils/constants";
-import displayNumberWithPrecision, {
-  daysFromTimestamp,
-  formatTimestamp,
-} from "@/utils/helpers";
+import displayNumberWithPrecision from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useWaitForTransactionReceipt } from "wagmi";
-import PopupDropdown from "../PopupDropdown";
-import CustomDropdown from "../CustomDropdown";
-import { toast, Toaster } from "sonner";
 import LoadingBox from "../LoadingBox";
-
+import PopupDropdown from "../PopupDropdown";
+import { RadioGroupItem } from "@/components/ui/radio-group";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -385,35 +381,50 @@ export function WithdrawFund({
           <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
           <div className="flex">
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
-              <input
-                id="bordered-radio-2"
-                type="radio"
-                checked={toggleView === "repay"}
-                onChange={() => setToggleView("repay")}
-                name="bordered-radio"
-                className="w-6 h-6 text-white bg-gray-100 border-gray-300 focus:ring-white ring-white dark:focus:ring-white dark:ring-white dark:ring-offset-white dark:bg-white dark:border-white"
-              />
-
+              <div className="inline-flex items-center">
+                <label
+                  className="relative flex items-center cursor-pointer"
+                  htmlFor="html"
+                >
+                  <input
+                    name="framework"
+                    type="radio"
+                    checked={toggleView === "repay"}
+                    onChange={() => setToggleView("repay")}
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    id="html"
+                  />
+                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                </label>
+              </div>
               <label
                 htmlFor="bordered-radio-1"
-                className="w-full py-2 ms-2 text-[32px] font-medium text-grayLight dark:text-white"
+                className="w-full py-2 ms-2 text-[32px] font-medium text-textBlack  dark:text-white"
               >
                 Repay
               </label>
             </div>
 
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
-              <input
-                id="bordered-radio-2"
-                type="radio"
-                onChange={() => setToggleView("renew")}
-                checked={toggleView === "renew"}
-                name="bordered-radio"
-                className="w-6 h-6 text-white bg-white border-3  border-gray-300 focus:ring-white dark:focus:ring-white dark:ring-offset-white dark:bg-white dark:border-white"
-              />
+              <div className="inline-flex items-center">
+                <label
+                  className="relative flex items-center cursor-pointer"
+                  htmlFor="html"
+                >
+                  <input
+                    name="framework"
+                    type="radio"
+                    onChange={() => setToggleView("renew")}
+                    checked={toggleView === "renew"}
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    id="html"
+                  />
+                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                </label>
+              </div>
               <label
                 htmlFor="bordered-radio-2"
-                className="w-full py-2 ms-2 text-[32px] font-medium text-grayLight dark:text-white"
+                className="w-full py-2 ms-2 text-[32px]  text-textBlack font-medium  dark:text-white "
               >
                 Renew
               </label>
@@ -431,7 +442,7 @@ export function WithdrawFund({
                     <span className="text-grayLight text-[20px] font-medium">
                       {item.headline}
                     </span>
-                    <span className="text-textBlack  dark:text-white text-[20px]">
+                    <span className="text-textBlack font-medium  dark:text-white text-[20px]">
                       {item.value}
                     </span>
                   </div>

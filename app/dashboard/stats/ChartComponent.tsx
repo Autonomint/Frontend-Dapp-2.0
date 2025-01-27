@@ -157,7 +157,9 @@ export function ChartComponent({
   timeFrame,
   maxH = "max-h-[400px]",
   hideElements = false,
+  stats,
 }: {
+  stats: { value: string | number; headline: string }[];
   title?: string;
   timeFrame?: string;
   maxH?: string;
@@ -195,8 +197,15 @@ export function ChartComponent({
         }}
         className="flex py-3 my-3"
       >
-        <StatsMetrics value={"489,829,928"} metricVal={"USDa Minted"} />
-        <StatsMetrics value={"$1"} metricVal={"USDa Price"} />
+        {stats.map((item, index) => {
+          return (
+            <StatsMetrics
+              key={index}
+              value={item.value.toString()}
+              metricVal={item.headline}
+            />
+          );
+        })}
       </div>
 
       <Line options={options} data={data} className={`w-1/2 ${maxH}`} />

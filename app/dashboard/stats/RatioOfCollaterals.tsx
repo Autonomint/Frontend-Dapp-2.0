@@ -135,7 +135,13 @@ export function StatsMetrics({
   );
 }
 
-function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
+function RatioOfCollaterals({
+  timeFrame,
+  stats,
+}: {
+  timeFrame: string;
+  stats: { value: string; headline: string }[];
+}) {
   return (
     <div className="flex items-start h-full">
       <div
@@ -154,16 +160,15 @@ function RatioOfCollaterals({ timeFrame }: { timeFrame: string }) {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-7 w-full mt-8">
-          <StatsMetrics value={"1.15"} metricVal={"Current Ratio"} />
-          <StatsMetrics
-            value={"$489,992,092"}
-            metricVal={"Total dCDS Pool value"}
-          />
-          <StatsMetrics
-            value={"$788,917,981"}
-            metricVal={"Net dCDS Pool Value"}
-          />
-          <StatsMetrics value={"+$788,917"} metricVal={"dCDS Profit/Loss"} />
+          {stats.map((item, index) => {
+            return (
+              <StatsMetrics
+                value={item.value}
+                key={index}
+                metricVal={item.headline}
+              />
+            );
+          })}
         </div>
         <div className="flex w-full h-6 bg-gray-200 rounded-none overflow-hidden my-[12px]">
           {[
