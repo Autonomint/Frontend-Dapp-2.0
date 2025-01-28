@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { ChartComponent, data, options } from "./ChartComponent";
+import { ChartComponent, options } from "./ChartComponent";
 import RatioOfCollaterals from "./RatioOfCollaterals";
 import { Line } from "react-chartjs-2";
 import RatioOfCollateralAdditional from "./RatioOfCollateralAdditional";
@@ -31,7 +31,7 @@ const amintPrice = [
   },
   {
     headline: "USDa price",
-    value: "$0",
+    value: "$1",
   },
 ];
 const lockedValues = [
@@ -61,6 +61,8 @@ const RatioValues = [
     value: "+0%",
     headline: "dCDS Profit/Loss",
   },
+];
+const RatioValuesBottom = [
   {
     headline: "Collateral",
     value: "+0%",
@@ -74,7 +76,7 @@ const RatioValues = [
 const abondValues = [
   {
     headline: "ABOND Price",
-    value: "$0",
+    value: "$4",
   },
   {
     headline: "ABOND Total Supply",
@@ -82,20 +84,33 @@ const abondValues = [
   },
   {
     headline: "ABOND  Market Cap",
-    value: "0",
+    value: "-",
     lastElement: true,
   },
 ];
 
-const FeesValues = [
+const BorrowFeesValues = [
+  { headline: "Borrowing Fees", value: "5%" },
+
   {
+    headline: "Total Collateral Protected",
+    value: "0 USDa",
+  },
+
+  {
+    headline: "Total ABOND Yield",
+    value: "-",
+  },
+];
+const OptionFeesValues = [
+  {
+    headline: "Option Fee",
     value: "0",
   },
+
   {
-    value: "0 USDa",
-  },
-  {
-    value: "0 USDa",
+    headline: "Total Upside Gained",
+    value: "15%",
   },
 ];
 
@@ -159,7 +174,6 @@ function page() {
       totalSupplyAbond != undefined
     ) {
       amintPrice[0].value = userTotalBorrowAmount;
-      amintPrice[1].value = userTotalBorrowAmount;
 
       amintValues[0].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
@@ -181,17 +195,19 @@ function page() {
           )
         : "0";
       lockedValues[1].value = omniChainData.totalCdsDepositedAmount
-        ? formatNumber(Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6)
+        ? `${formatNumber(
+            Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
+          )} USDa`
         : "0";
-      lockedValues[2].value = omniChainData.totalCdsDepositedAmount
-        ? formatNumber(
-            Number(
-              formatEther(
-                omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-              )
-            )
-          )
-        : "0";
+      // lockedValues[2].value = omniChainData.totalCdsDepositedAmount
+      //   ? formatNumber(
+      //       Number(
+      //         formatEther(
+      //           omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
+      //         )
+      //       )
+      //     )
+      //   : "0";
 
       // ratio values
       RatioValues[0].value =
@@ -213,7 +229,7 @@ function page() {
           )
         ) +
         Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6;
-      RatioValues[4].value = (
+      RatioValuesBottom[0].value = (
         (Number(
           formatEther(
             omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
@@ -222,23 +238,23 @@ function page() {
           total) *
         100
       ).toFixed(1);
-      RatioValues[5].value = (
+      RatioValuesBottom[1].value = (
         (Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6 / total) *
         100
       ).toFixed(1);
 
       // fees values
-      FeesValues[0].value = `${
+      OptionFeesValues[0].value = `${
         feeOptions[1] == undefined
           ? 0
           : (parseFloat(feeOptions[1]) / 10 ** 6).toFixed(2)
       }`;
-      FeesValues[1].value = `${
-        feeOptions[1] == undefined
-          ? 0
-          : (parseFloat(feeOptions[1]) / 10 ** 6).toFixed(2)
-      }`;
-      FeesValues[2].value = formatNumber(
+      // FeesValues[1].value = `${
+      //   feeOptions[1] == undefined
+      //     ? 0
+      //     : (parseFloat(feeOptions[1]) / 10 ** 6).toFixed(2)
+      // }`;
+      BorrowFeesValues[1].value = formatNumber(
         Number(
           formatEther(
             omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
@@ -250,26 +266,33 @@ function page() {
       abondValues[1].value = totalSupplyAbond
         ? formatNumber(Number(totalSupplyAbond) / 10 ** 18)
         : "0";
-      setLoading(false);
+      // abondValues[2].value = totalSupplyAbond
+      //   ? formatNumber(Number(totalSupplyAbond) / 10 ** 18)
+      //   : "0";
     }
   };
+
+  console.log(totalSupplyAbond, abondValues, "totalSupplyAbond");
+
   return (
-    <div>
-      <div className="grid md:grid-cols-2 grid-cols-1 -mt-6">
+    <div className="mt-[-20px]">
+      <div className="grid md:grid-cols-2 grid-cols-1 ">
         <div>
           <ChartComponent
             stats={amintPrice}
             title="USDa Price Chart"
             timeFrame="All Time"
             hideElements={false}
+            chartApiFlag="amintPrice"
           />
         </div>
         <div>
           <ChartComponent
             stats={amintValues}
-            title="  USDa Supply Chart"
+            title="USDa Supply Chart"
             timeFrame="1Y"
             hideElements={false}
+            chartApiFlag=""
           />
         </div>
         <div>
@@ -278,6 +301,7 @@ function page() {
             title="ABOND"
             timeFrame="All Time"
             hideElements={false}
+            chartApiFlag=""
           />
         </div>
         <div>
@@ -285,15 +309,41 @@ function page() {
             stats={lockedValues}
             title="Value Locked"
             timeFrame="1M"
+            chartApiFlag=""
             hideElements={false}
           />
         </div>
       </div>
-      <div>
-        <RatioOfCollaterals stats={RatioValues} timeFrame="10M" />
+      <div className="border-[1px] border-b border-grayLight">
+        <RatioOfCollaterals
+          RatioValuesBottom={RatioValuesBottom}
+          stats={RatioValues}
+          timeFrame="10D"
+          chartApiFlag="ratio"
+        />
       </div>
-      <div>
+      {/* <div>
         <RatioOfCollateralAdditional />
+      </div> */}
+      <div className="grid md:grid-cols-2 grid-cols-1 pt-6">
+        <div>
+          <ChartComponent
+            stats={BorrowFeesValues}
+            title="Option Fees Chart"
+            timeFrame="All Time"
+            hideElements={false}
+            chartApiFlag="optionFees"
+          />
+        </div>
+        <div>
+          <ChartComponent
+            stats={OptionFeesValues}
+            title="Borrowing Fees Chart"
+            timeFrame="All Time"
+            hideElements={false}
+            chartApiFlag="borrowingFees"
+          />
+        </div>
       </div>
     </div>
   );

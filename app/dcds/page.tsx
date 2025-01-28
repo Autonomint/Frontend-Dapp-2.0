@@ -381,7 +381,7 @@ function page() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
 
-  const { GlobalContractData, isGlobalContractDataPending } =
+  const { omniChainData: GlobalContractData } =
     useGetUsdtAmountDepositedTillNow();
 
   const usdtBalance = useGetBalance("TUSDT");

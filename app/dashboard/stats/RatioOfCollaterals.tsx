@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { TimeFrame } from "./ChartComponent";
 import {
   Chart as ChartJS,
@@ -14,6 +14,9 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { cn } from "@/utils/helpers";
+import { BACKEND_API_URL } from "@/utils/urls";
+import { useAccount } from "wagmi";
+import { useTheme } from "next-themes";
 
 ChartJS.register(
   CategoryScale,
@@ -138,14 +141,104 @@ export function StatsMetrics({
 function RatioOfCollaterals({
   timeFrame,
   stats,
+  RatioValuesBottom,
+  chartApiFlag,
+  maxH = "max-h-[300px]",
 }: {
+  maxH?: string;
+  chartApiFlag: string;
+  RatioValuesBottom: { value: string; headline: string }[];
   timeFrame: string;
   stats: { value: string; headline: string }[];
 }) {
+  const [time, setTime] = React.useState("allTime");
+  let currentDate = new Date();
+  const { theme } = useTheme();
+
+  const [chartData, setChartData] = React.useState<string[]>([]);
+  const { chainId } = useAccount();
+
+  async function changeTime() {
+    try {
+      const res = await fetch(
+        `${BACKEND_API_URL}/borrows/chart/${chartApiFlag}/${chainId}/` +
+          `${time === "allTime" ? "0/YES" : `${time}/NO`}`
+      );
+      console.log("data chart : ", res);
+      const data = await res.json();
+      data.reverse();
+      setChartData(data);
+    } catch (error) {
+      console.log(error);
+      // setChartData(AmintData);
+    }
+  }
+
+  useEffect(() => {
+    if (chainId) {
+      changeTime();
+    }
+  }, [time, chainId]);
+
+  // Reverse the data array to so correct order
+  const formattedData = chartData
+    .map((value) => {
+      let name;
+      name =
+        String(currentDate.getDate()) +
+        "/" +
+        String(currentDate.getMonth() + 1);
+      currentDate.setDate(currentDate.getDate() - 1);
+      return Number(value);
+    })
+    .reverse();
+
+  console.log(formattedData, "formattedData");
+  const dataLocal = {
+    labels,
+    datasets: [
+      {
+        fill: true,
+        data: formattedData,
+        borderColor: "#00679F",
+        pointRadius: 0,
+        borderWidth: 2,
+        backgroundColor: function (context: any) {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) {
+            return null;
+          }
+
+          const gradient = ctx.createLinearGradient(
+            0,
+            chartArea.top,
+            0,
+            chartArea.bottom
+          );
+          gradient.addColorStop(0, theme == "dark" ? "#002A4E" : "#E5F3FF");
+          gradient.addColorStop(1, theme == "dark" ? "#002A4E00" : "#FFFDE4");
+          return gradient;
+          // }
+
+          // const gradient = ctx.createLinearGradient(
+          //   0,
+          //   chartArea.top,
+          //   0,
+          //   chartArea.bottom
+          // );
+          // gradient.addColorStop(0, "#E5F3FF");
+          // gradient.addColorStop(1, "#FFFDE4");
+          // return gradient;
+        },
+      },
+    ],
+  };
   return (
-    <div className="flex items-start h-full">
+    <div className="flex  items-start h-full">
       <div
-        className="p-5 flex flex-1 flex-col justify-between  h-full"
+        className="p-5 flex w-[50%] flex-1 flex-col justify-between  h-full"
         style={{
           borderLeft: "none",
           borderTop: "none",
@@ -155,9 +248,6 @@ function RatioOfCollaterals({
           <span className="flex-1 font-medium text-[24px] text-grayLight">
             {"Ratio of Collaterals"}
           </span>
-          <div className="hidden flex-1 lg:block mr-4">
-            <TimeFrame timeFrame={timeFrame} />
-          </div>
         </div>
         <div className="grid grid-cols-2 gap-7 w-full mt-8">
           {stats.map((item, index) => {
@@ -166,25 +256,31 @@ function RatioOfCollaterals({
                 value={item.value}
                 key={index}
                 metricVal={item.headline}
+                classNameValue={` ${
+                  item.headline === "dCDS Profit/Loss"
+                    ? "text-[#05A552] dark:text-[#06BE5F]"
+                    : "dark:text-white"
+                }`}
               />
             );
           })}
         </div>
-        <div className="flex w-full h-6 bg-gray-200 rounded-none overflow-hidden my-[12px]">
+        <div className="flex w-full h-8 bg-gray-200 rounded-none overflow-hidden my-[12px]">
           {[
             {
               label: "Deposit",
-              value: 2,
+              value: Number(RatioValuesBottom[0]?.value),
               gradient: "#05A552",
             },
             {
               label: "Option Fee",
-              value: 0.7,
+              value: Number(RatioValuesBottom[1].value),
               gradient: "#478BFF",
             },
           ].map((metric, index, arr) => {
             const total = arr.reduce((acc, item) => acc + item.value, 0);
             const percentage = (metric.value / total) * 100;
+            console.log(total, percentage, arr, RatioValuesBottom, "per");
 
             return (
               <div
@@ -199,23 +295,30 @@ function RatioOfCollaterals({
           })}
         </div>
         <div className="grid grid-cols-2 gap-7 w-full">
-          <StatsMetrics
-            value={"1.15"}
-            metricVal={"Current Ratio"}
-            classNameValue="dark:text-[#05A552]"
-            classNameMetricVal="dark:text-[#05A552]"
-          />
-          <StatsMetrics
-            value={"$489,992,092"}
-            metricVal={"Total dCDS Pool value"}
-            classNameValue="dark:text-[#478BFF]"
-            classNameMetricVal="dark:text-[#478BFF]"
-          />
+          {RatioValuesBottom.map((item, index) => {
+            return (
+              <StatsMetrics
+                value={item.value}
+                metricVal={item.headline}
+                classNameValue={` ${
+                  item.headline === "Collateral"
+                    ? "text-[#05A552] dark:text-[#06BE5F]"
+                    : "dark:text-white"
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
       {/* <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div> */}
-      <div className="flex flex-1 h-full">
-        <Line options={options} data={data} className={`w-full h-full p-5`} />
+      <div className="flex w-[50%] flex-col h-full">
+        <div className=" flex-1 justify-end flex items-end  mt-4 mr-4">
+          <div className="w-[60%]">
+            <TimeFrame timeFrame={time} setTime={setTime} />
+          </div>
+        </div>
+
+        <Line options={options} data={dataLocal} className={`w-1/2 ${maxH}`} />
       </div>
     </div>
   );

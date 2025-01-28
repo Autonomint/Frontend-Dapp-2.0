@@ -133,7 +133,7 @@ function Leaderboard() {
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Total Earned Points"
+            subHeading="Total Distributed Points"
             value="2.6 Million"
           />
         </div>

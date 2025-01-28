@@ -135,3 +135,9 @@ export function formatNumber(num: number) {
     return num.toFixed(2);
   }
 }
+
+export function secondsToMinutes(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes} minute(s) ${remainingSeconds} second(s)`;
+}

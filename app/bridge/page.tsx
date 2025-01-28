@@ -10,18 +10,23 @@ import React, {
 } from "react";
 import CustomDropdown from "../../custom-components/CustomDropdown";
 import AppNavbar from "@/custom-components/AppNavbar";
-
+import { http, createConfig } from "@wagmi/core";
+import { mainnet, sepolia } from "@wagmi/core/chains";
 import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
 import {
   useAccount,
   useBalance,
   useChainId,
+  useConfig,
+  useEstimateGas,
+  usePublicClient,
+  useSimulateContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { padHex, parseEther } from "viem";
+import { formatEther, formatUnits, padHex, parseEther, parseUnits } from "viem";
 import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
 import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
 import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
@@ -30,7 +35,7 @@ import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
 import { NetworkId } from "@/utils/constants";
 import { toast } from "sonner";
 import LoadingBox from "@/custom-components/LoadingBox";
-
+import { formatTimestamp, secondsToMinutes } from "@/utils/helpers";
 function BridgeComponentRight({
   heading,
   network,
@@ -63,7 +68,7 @@ function BridgeComponentRight({
               buttonText="Mode"
               items={[
                 {
-                  label: "Base",
+                  label: "Mode",
                   onClick: () => {},
                 },
               ]}
@@ -78,7 +83,7 @@ function BridgeComponentRight({
               buttonText={token}
               items={[
                 {
-                  label: "USDC",
+                  label: "USDa",
                   onClick: () => {},
                 },
               ]}
@@ -87,22 +92,7 @@ function BridgeComponentRight({
           </div>
         </div>
         <div className="border border-solid border-grayLight p-5">
-          <div className="flex justify-between">
-            <div
-              className={
-                `${heading == "From" ? "" : "dark:text-white"}` +
-                "text-grayLight text-lg "
-              }
-            >
-              You {heading == "From" ? "Send" : "Receive"}
-            </div>
-            <div className="text-grayLight text-lg flex gap-3 ">
-              Available Bal: 7001
-              <span className="text-textBlack text-lg dark:text-white">
-                Max
-              </span>
-            </div>
-          </div>
+          <div className="flex justify-between h-[27px]"></div>
           <div className="text-[42px] text-textBlack  mt-8 dark:text-white">
             ${receiveAmount}
           </div>
@@ -134,6 +124,9 @@ function BridgeComponentLeft({
 }) {
   const { switchChain } = useSwitchChain();
 
+  const { chainId } = useAccount();
+  console.log(chainId, "chainId");
+
   return (
     <div
       className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
@@ -155,14 +148,14 @@ function BridgeComponentLeft({
                 {
                   label: "Sepolia",
                   onClick: () => {
-                    switchChain({ chainId: NetworkId.EthereumSepolia });
+                    switchChain({ chainId: 11155111 });
                     setSendNetwork("Sepolia");
                   },
                 },
                 {
                   label: "Base",
                   onClick: () => {
-                    switchChain({ chainId: NetworkId.EthereumSepolia });
+                    switchChain({ chainId: 84532 });
                     setSendNetwork("Base");
                   },
                 },
@@ -214,7 +207,7 @@ function BridgeComponentLeft({
             value={sendAmount}
             onChange={(e) => setSendAmount(Number(e.target.value))}
             type="number"
-            className="text-[42px] border-0 outline-0 text-textBlack  mt-8 dark:text-white"
+            className="text-[42px] bg-transparent border-0 outline-0 text-textBlack  mt-8 dark:text-white"
           />
         </div>
       </div>
@@ -255,6 +248,7 @@ function page() {
   const [sendNetwork, setSendNetwork] = useState<"Sepolia" | "Base">("Sepolia");
   const [sendAmount, setSendAmount] = useState<number>(0);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
+  const [estimateTime, setEstimateTime] = useState<number>(0);
 
   const [transferLoadingLocal, setTransferLoadingLocal] =
     useState<boolean>(false);
@@ -293,12 +287,17 @@ function page() {
     } else {
       setCollateralAmountString((sendAmount * 10 ** 6).toString());
     }
-    const amount = parseEther(letamount) - 37671213890518646n;
-    if (chainId === 84532 && nativeFee1 && nativeFee2) {
-      const amount = parseEther(letamount) - nativeFee1.nativeFee;
+    let amount = 0n;
+    if (sendToken === "USDa" && nativeFee1) {
+      amount = parseUnits(letamount, 18) - nativeFee1.nativeFee;
     }
+
+    // if (sendToken === "TUSDT" && nativeFee2) {
+    //   amount = parseEther(letamount) - nativeFee2.nativeFee;
+    // }
+
     if (sendAmount != 0) {
-      setReceiveAmount(Number((Number(amount) / 10 ** 18).toFixed(4)));
+      setReceiveAmount(Number(formatUnits(amount, 18)));
     }
   }, [sendAmount]);
 
@@ -373,11 +372,36 @@ function page() {
     hash: amintApproveData,
   });
 
+  // const config = useConfig();
+
+  // const configCore = createConfig({
+  //   chains: [sepolia],
+  //   transports: {
+  //     [baseSepolia.id]: http(),
+  //     [sepolia.id]: http(),
+  //     [optimismSepolia.id]: http(),
+  //   },
+  // });
+  // const getGas = async () => {
+  //   const estimatedGas = await estimateContractGas(configCore, {
+  //     abi: usDaAbi,
+  //     address: usDaAddress[chainId as keyof typeof usDaAddress],
+  //     functionName: "approve",
+  //     args: [
+  //       usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
+  //       BigInt(sendAmount * 10 ** 6),
+  //     ],
+  //   });
+  //   console.log(estimatedGas, "gas");
+  // };
+
   // If the transaction is confirmed, show a toast notification and call UsdaApprove write call to bridge token
   useEffect(() => {
     if (usdaApproveSuccess && accountAddress) {
       setUsdaApproveLoading(false);
-      setSendLoading(true);
+      setTimeout(() => {
+        setSendLoading(true);
+      }, 1000);
       usdaApproveWrite({
         abi: usDaAbi,
         address: usDaAddress[chainId as keyof typeof usDaAddress],
@@ -387,8 +411,7 @@ function page() {
           { nativeFee: 37671213890518646n, lzTokenFee: 0n },
           accountAddress,
         ],
-        // value: nativeFee1.nativeFee,
-        value: 37671213890518646n,
+        value: nativeFee1?.nativeFee,
       });
     } else if (usdaErrorApprove) {
       handleTransferFail();
@@ -484,7 +507,9 @@ function page() {
   useEffect(() => {
     if (tusDTApproveSuccess && accountAddress) {
       setUsdtApproveLoading(false);
-      setSendLoading(true);
+      setTimeout(() => {
+        setSendLoading(true);
+      }, 1000);
       tusdtApproveWrite({
         abi: testusdtAbiAbi,
         address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
@@ -494,8 +519,7 @@ function page() {
           { nativeFee: 37671213890518646n, lzTokenFee: 0n },
           accountAddress,
         ],
-        // value: nativeFee2.nativeFee, Hard coded value for now Change it latter
-        value: 37671213890518646n,
+        value: nativeFee2?.nativeFee,
       });
     } else if (usdaErrorApprove) {
       handleTransferFail();
@@ -535,6 +559,12 @@ function page() {
 
   // Handle the form submission
   async function onSubmit() {
+    if (sendAmount === 0) {
+      return toast.error("Please enter a valid amount");
+    }
+    if (!isConnected) {
+      return toast.error("Please connect your wallet");
+    }
     if (accountAddress) {
       setTransferLoadingLocal(true);
       if (sendToken === "USDa") {
@@ -564,6 +594,48 @@ function page() {
       }
     }
   }
+
+  const result = useEstimateGas({
+    account: accountAddress,
+    to: usDaAddress[chainId as keyof typeof usDaAddress],
+    value: parseEther("0.01"),
+  });
+
+  const publicClient = usePublicClient();
+
+  async function estimateTransactionTime() {
+    try {
+      // 1. Fetch the current gas price
+      const gasPrice = await publicClient?.getGasPrice();
+      console.log("Current Gas Price (wei):", gasPrice?.toString());
+
+      // 2. Fetch the number of pending transactions
+      const pendingTransactions = 3;
+      console.log("Pending Transactions:", pendingTransactions);
+
+      // 3. Fetch the latest block to get the average block time
+      const latestBlock = await publicClient?.getBlock();
+      const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
+      console.log("Latest Block Number:", latestBlock?.number);
+
+      // 4. Estimate the time for your transaction to be included in a block
+      const transactionsPerBlock = 200; // Approximate number of transactions per block
+      const estimatedBlocksToWait = Math.ceil(
+        pendingTransactions / transactionsPerBlock
+      );
+      const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
+      setEstimateTime(estimatedTimeInSeconds);
+      console.log(`Estimated Time: ${estimatedTimeInSeconds} seconds`);
+      return estimatedTimeInSeconds;
+    } catch (error) {
+      console.error("Error estimating transaction time:", error);
+      throw error;
+    }
+  }
+
+  useEffect(() => {
+    estimateTransactionTime();
+  }, []);
 
   // // Fetch the native fee for USDa
   // useEffect(() => {
@@ -602,10 +674,6 @@ function page() {
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields
-            label={"Amount to receive"}
-            value={"160 Hug × 23 Hug"}
-          />
-          <BridgeMetricFields
             label={"Gas"}
             value={
               sendToken === "USDa"
@@ -615,9 +683,12 @@ function page() {
                 : "0"
             }
           />
-          <BridgeMetricFields label={"Time"} value={"~2min"} />
+          <BridgeMetricFields
+            label={"Time"}
+            value={secondsToMinutes(estimateTime * 2)}
+          />
         </div>
-        <div className="h-[85px] w-full">
+        <div className="h-[100px] w-full">
           {!transferLoadingLocal && (
             <Button
               onClick={onSubmit}

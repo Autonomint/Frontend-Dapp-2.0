@@ -133,9 +133,12 @@ function TradingViewWidget() {
       lineWidth: 2,
       lineType: 0,
       dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
-      lineColor: "rgba(0, 103, 159, 1)",
-      topColor: "rgba(229, 243, 255, 1)",
-      bottomColor: "rgba(255, 253, 228, 1)",
+      lineColor:
+        theme === "dark" ? "rgba(0, 120, 185, 1 )" : "rgba(0, 103, 159, 1)",
+      topColor:
+        theme === "dark" ? "rgba(0, 42, 78, 1)" : "rgba(229, 243, 255, 1)",
+      bottomColor:
+        theme === "dark" ? "rgba(0, 42, 78, 0)" : "rgba(255, 253, 228, 1)",
     };
 
     // Pass the widget configuration as JSON
