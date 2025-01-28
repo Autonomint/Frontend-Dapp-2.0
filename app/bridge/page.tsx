@@ -1,17 +1,44 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  use,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import CustomDropdown from "../../custom-components/CustomDropdown";
 import AppNavbar from "@/custom-components/AppNavbar";
 
 import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
+import {
+  useAccount,
+  useBalance,
+  useChainId,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { padHex, parseEther } from "viem";
+import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
+import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
+import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
+import { usDaAbi } from "@/blockchain/abis/usda";
+import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
+import { NetworkId } from "@/utils/constants";
+import { toast } from "sonner";
+import LoadingBox from "@/custom-components/LoadingBox";
 
-function BridgeComponent({
+function BridgeComponentRight({
   heading,
   network,
   token,
   totalAmount,
+  receiveAmount,
 }: {
+  receiveAmount: number;
   heading: string;
   network: string;
   token: string;
@@ -33,18 +60,28 @@ function BridgeComponent({
               Network
             </span>
             <GenericDropdownMenu
-              buttonText="Sepolia"
-              items={[]}
+              buttonText="Mode"
+              items={[
+                {
+                  label: "Base",
+                  onClick: () => {},
+                },
+              ]}
               className="w-full text-[24px] border border-grayLight h-[65px]"
             />
           </div>
           <div className="flex flex-col gap-3 flex-1">
             <span className="text-[18px] font-medium text-grayLight">
-              Network
+              Token
             </span>
             <GenericDropdownMenu
-              buttonText="USDa"
-              items={[]}
+              buttonText={token}
+              items={[
+                {
+                  label: "USDC",
+                  onClick: () => {},
+                },
+              ]}
               className="w-full text-[24px] border border-grayLight h-[65px]"
             />
           </div>
@@ -67,8 +104,118 @@ function BridgeComponent({
             </div>
           </div>
           <div className="text-[42px] text-textBlack  mt-8 dark:text-white">
-            $1,201
+            ${receiveAmount}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+function BridgeComponentLeft({
+  heading,
+  network,
+  token,
+  totalAmount,
+  setSendToken,
+  setSendNetwork,
+  setSendAmount,
+  sendAmount,
+  balance,
+}: {
+  balance: number;
+  setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
+  setSendAmount: Dispatch<SetStateAction<number>>;
+  sendAmount: number;
+  setSendNetwork: Dispatch<React.SetStateAction<"Base" | "Sepolia">>;
+  heading: string;
+  network: string;
+  token: string;
+  totalAmount: string;
+}) {
+  const { switchChain } = useSwitchChain();
+
+  return (
+    <div
+      className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
+        heading === "To"
+          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
+          : "bg-none dark:bg-none"
+      }`}
+    >
+      <div className=" text-[32px] font-medium mb-4">{heading}</div>
+      <div className="flex flex-col gap-7">
+        <div className="flex gap-6">
+          <div className="flex flex-col gap-3 flex-1">
+            <span className="text-[18px] font-medium text-grayLight">
+              Network
+            </span>
+            <GenericDropdownMenu
+              buttonText={network}
+              items={[
+                {
+                  label: "Sepolia",
+                  onClick: () => {
+                    switchChain({ chainId: NetworkId.EthereumSepolia });
+                    setSendNetwork("Sepolia");
+                  },
+                },
+                {
+                  label: "Base",
+                  onClick: () => {
+                    switchChain({ chainId: NetworkId.EthereumSepolia });
+                    setSendNetwork("Base");
+                  },
+                },
+              ]}
+              className="w-full text-[24px] border border-grayLight h-[65px]"
+            />
+          </div>
+          <div className="flex flex-col gap-3 flex-1">
+            <span className="text-[18px] font-medium text-grayLight">
+              Token
+            </span>
+            <GenericDropdownMenu
+              buttonText={token}
+              items={[
+                {
+                  label: "USDa",
+                  onClick: () => setSendToken("USDa"),
+                },
+                {
+                  label: "TUSDT",
+                  onClick: () => setSendToken("TUSDT"),
+                },
+              ]}
+              className="w-full text-[24px] border border-grayLight h-[65px]"
+            />
+          </div>
+        </div>
+        <div className="border border-solid border-grayLight p-5">
+          <div className="flex justify-between">
+            <div
+              className={
+                `${heading == "From" ? "" : "dark:text-white"}` +
+                "text-grayLight text-lg "
+              }
+            >
+              You {heading == "From" ? "Send" : "Receive"}
+            </div>
+            <div className="text-grayLight text-lg flex gap-3 ">
+              Available Bal: {balance}
+              <span
+                onClick={() => setSendAmount(balance)}
+                className="text-textBlack text-lg cursor-pointer dark:text-white"
+              >
+                Max
+              </span>
+            </div>
+          </div>
+          <input
+            value={sendAmount}
+            onChange={(e) => setSendAmount(Number(e.target.value))}
+            type="number"
+            className="text-[42px] border-0 outline-0 text-textBlack  mt-8 dark:text-white"
+          />
         </div>
       </div>
     </div>
@@ -92,35 +239,424 @@ function BridgeMetricFields({
   );
 }
 
+interface TransactionParams {
+  dstEid: number; // Assuming Eid is a string, adjust the type if it's different
+  to: `0x${string}`; // Account address padded to 32 characters
+  amountLD: bigint; // Amount in Ether, parsed from a string
+  minAmountLD: bigint; // Minimum amount in Ether, parsed from a string
+  extraOptions: any; // Assuming options is of a generic type, adjust as necessary
+  composeMsg: `0x${string}`; // A hexadecimal string
+  oftCmd: `0x${string}`; // Another hexadecimal string
+}
+
 function page() {
+  const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
+  const [receiveToken, setReceiveToken] = useState<"USDa" | "TUSDT">("USDa");
+  const [sendNetwork, setSendNetwork] = useState<"Sepolia" | "Base">("Sepolia");
+  const [sendAmount, setSendAmount] = useState<number>(0);
+  const [receiveAmount, setReceiveAmount] = useState<number>(0);
+
+  const [transferLoadingLocal, setTransferLoadingLocal] =
+    useState<boolean>(false);
+
+  const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
+    useState<boolean>(false);
+  const [usdtApproveLoading, setUsdtApproveLoading] = useState<boolean>(false);
+
+  const [sendLoading, setSendLoading] = useState<boolean>(false);
+
+  const { switchChain } = useSwitchChain();
+
+  const { address: accountAddress, isConnected } = useAccount();
+
+  const toastId = useRef<string | number>("");
+
+  const chainId = useChainId();
+
+  const Eid = chainId === 11155111 ? 40245 : 40161;
+
+  // Option Fees to be added to the transaction parameters (200000)
+  const options = Options.newOptions()
+    .addExecutorLzReceiveOption(200000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const [collateralAmountString, setCollateralAmountString] =
+    useState<string>("0");
+
+  // Calculation Based on ChainID to bridge amount. It will fetch and update value of outputCollateralAmount (you can change according to your logic and write it clear)
+  useEffect(() => {
+    let letamount = sendAmount.toString();
+    if (!sendAmount) {
+      setCollateralAmountString("0");
+      letamount = "0";
+    } else {
+      setCollateralAmountString((sendAmount * 10 ** 6).toString());
+    }
+    const amount = parseEther(letamount) - 37671213890518646n;
+    if (chainId === 84532 && nativeFee1 && nativeFee2) {
+      const amount = parseEther(letamount) - nativeFee1.nativeFee;
+    }
+    if (sendAmount != 0) {
+      setReceiveAmount(Number((Number(amount) / 10 ** 18).toFixed(4)));
+    }
+  }, [sendAmount]);
+
+  // Get the tusdt balance of the user
+  const { data: tusdtBal } = useBalance({
+    address: accountAddress,
+    token: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+  });
+
+  // Get the usda balance of the user
+  const { data: usdaBal } = useBalance({
+    address: accountAddress,
+    token: usDaAddress[chainId as keyof typeof usDaAddress],
+  });
+
+  // Get the maximum amount of collateral set to the input field
+  const getmax = () => {
+    if (sendToken === "USDa") {
+      setSendAmount(Number(usdaBal?.formatted.slice(0, 8)));
+    } else if (sendToken === "TUSDT") {
+      setSendAmount(Number(tusdtBal?.formatted.slice(0, 8)));
+    }
+  };
+
+  //  Define the transaction parameters
+  const transactionParams: TransactionParams = {
+    dstEid: 40260,
+    to: padHex(accountAddress ?? ("0" as `0x${string}`), {
+      size: 32,
+    }) as `0x${string}`,
+    amountLD: BigInt(collateralAmountString),
+    minAmountLD: BigInt(collateralAmountString),
+    extraOptions: options,
+    composeMsg: `0x${"".padEnd(64, "0")}`,
+    oftCmd: `0x${"".padEnd(64, "0")}`,
+  };
+
+  // Get the native fee for the transaction
+  const { nativeFee1, refetchnativeFee1 } =
+    useGetBridgeFeeUsda(transactionParams);
+
+  // Get the native fee for the transaction
+  const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
+    useGetBridgeFeeUsdt(transactionParams);
+  // Approve USDa
+
+  const {
+    isPending: amintApproveLoading,
+    data: amintApproveData,
+    writeContract: amintApproveWrite,
+    isSuccess: amintApproved,
+    isError: depositError,
+    error: depositHashError,
+  } = useWriteContract({
+    mutation: {
+      onError(error: any) {
+        handleTransferFail();
+      },
+
+      // Handle success and show a custom toast notification
+      onSuccess: (data) => {},
+    },
+  });
+
+  // Wait for the transaction to be confirmed
+  const {
+    data: amintTransactionAllowed,
+    isLoading: isAmintTransactionLoading,
+    isError: usdaErrorApprove,
+    isSuccess: usdaApproveSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: amintApproveData,
+  });
+
+  // If the transaction is confirmed, show a toast notification and call UsdaApprove write call to bridge token
+  useEffect(() => {
+    if (usdaApproveSuccess && accountAddress) {
+      setUsdaApproveLoading(false);
+      setSendLoading(true);
+      usdaApproveWrite({
+        abi: usDaAbi,
+        address: usDaAddress[chainId as keyof typeof usDaAddress],
+        functionName: "send",
+        args: [
+          transactionParams as never,
+          { nativeFee: 37671213890518646n, lzTokenFee: 0n },
+          accountAddress,
+        ],
+        // value: nativeFee1.nativeFee,
+        value: 37671213890518646n,
+      });
+    } else if (usdaErrorApprove) {
+      handleTransferFail();
+    }
+  }, [amintTransactionAllowed]);
+
+  // Approve TUSDT
+
+  const {
+    isPending: usdaApproveLoading,
+    data: usdaApproveData,
+    writeContract: usdaApproveWrite,
+    isSuccess: usdaApproved,
+    isError: usdaErrorApproveFn,
+  } = useWriteContract({
+    mutation: {
+      onError(error: any) {
+        handleTransferFail();
+      },
+      onSuccess: (data) => {},
+    },
+  });
+
+  // Wait for the transaction to be confirmed
+  const {
+    data: usdaTransactionConfirmed,
+    isLoading: isUsdaTransactionLoading,
+    isError: usdaIsError,
+    isSuccess: usdaIsSuccess,
+    error: usdaError,
+  } = useWaitForTransactionReceipt({
+    hash: usdaApproveData,
+  });
+  // If the transaction is confirmed, show a toast notification
+  useEffect(() => {
+    if (usdaIsSuccess) {
+      setSendLoading(false);
+      setTimeout(() => {
+        setTransferLoadingLocal(false);
+      }, 1000);
+      toast.success("Transaction Confirmed");
+    } else if (usdaIsError) {
+      setSendLoading(false);
+      setTimeout(() => {
+        setTransferLoadingLocal(false);
+      }, 1000);
+      toast.error("Transaction Failed");
+    }
+  }, [usdaTransactionConfirmed]);
+
+  const handleTransferFail = () => {
+    toast.error("Transaction Failed");
+    clearLoading();
+  };
+  const clearLoading = () => {
+    setTimeout(() => {
+      setTransferLoadingLocal(false);
+    }, 1000);
+    setUsdaApproveLoading(false);
+    setUsdtApproveLoading(false);
+    setSendLoading(false);
+  };
+
+  // Approve TUSDT
+  const {
+    isPending: tusDTApproveLoading,
+    data: tusDTApproveData,
+    writeContract: tusDTApproveWrite,
+    isSuccess: tusDTApproved,
+    isError: tusDTErrorApproveFn,
+  } = useWriteContract({
+    mutation: {
+      onError(error: any) {
+        handleTransferFail();
+      },
+
+      // Handle success and show a custom toast notification
+      onSuccess: (data) => {},
+    },
+  });
+
+  // Wait for the transaction to be confirmed
+  const {
+    data: tusDTTransactionAllowed,
+    isLoading: tusDTTransactionLoading,
+    isError: tusDTErrorApprove,
+    isSuccess: tusDTApproveSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: tusDTApproveData,
+  });
+
+  // If the transaction is confirmed, show a toast notification and call tusdtApprove write call to bridge token
+  useEffect(() => {
+    if (tusDTApproveSuccess && accountAddress) {
+      setUsdtApproveLoading(false);
+      setSendLoading(true);
+      tusdtApproveWrite({
+        abi: testusdtAbiAbi,
+        address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+        functionName: "send",
+        args: [
+          transactionParams as never,
+          { nativeFee: 37671213890518646n, lzTokenFee: 0n },
+          accountAddress,
+        ],
+        // value: nativeFee2.nativeFee, Hard coded value for now Change it latter
+        value: 37671213890518646n,
+      });
+    } else if (usdaErrorApprove) {
+      handleTransferFail();
+    }
+  }, [tusDTTransactionAllowed]);
+
+  const {
+    isPending: tusdtApproveLoading,
+    data: tusdtApproveData,
+    writeContract: tusdtApproveWrite,
+    isSuccess: tusdtApproved,
+    isError: tusdtErrorApproveFn,
+  } = useWriteContract({});
+
+  // Wait for the transaction to be confirmed
+  const {
+    data: tusdtTransactionConfirmed,
+    isLoading: istusdtTransactionLoading,
+    isError: tusdtIsError,
+    isSuccess: tusdtIsSuccess,
+    error: tusdtError,
+  } = useWaitForTransactionReceipt({
+    hash: tusdtApproveData,
+  });
+  // If the transaction is confirmed, show a toast notification
+  useEffect(() => {
+    if (tusdtIsSuccess) {
+      setSendLoading(false);
+      setTimeout(() => {
+        setTransferLoadingLocal(false);
+      }, 1000);
+      toast.success("Transaction Confirmed");
+    } else if (tusdtIsError) {
+      handleTransferFail();
+    }
+  }, [usdaTransactionConfirmed]);
+
+  // Handle the form submission
+  async function onSubmit() {
+    if (accountAddress) {
+      setTransferLoadingLocal(true);
+      if (sendToken === "USDa") {
+        setUsdaApproveLoading(true);
+        amintApproveWrite({
+          abi: usDaAbi,
+          address: usDaAddress[chainId as keyof typeof usDaAddress],
+          functionName: "approve",
+          args: [
+            usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
+            BigInt(sendAmount * 10 ** 6),
+          ],
+        });
+      } else if (sendToken === "TUSDT") {
+        setUsdtApproveLoading(true);
+        tusDTApproveWrite({
+          abi: testusdtAbiAbi,
+          address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
+          functionName: "approve",
+          args: [
+            testusdtAbiAddress[
+              chainId as keyof typeof testusdtAbiAddress
+            ] as `0x${string}`,
+            BigInt(sendAmount * 10 ** 6),
+          ],
+        });
+      }
+    }
+  }
+
+  // // Fetch the native fee for USDa
+  // useEffect(() => {
+  //   if (form.getValues("inputCollateral") === "usda") {
+  //     refetchnativeFee1();
+  //     form.setValue("outputCollateral", "usda");
+  //   } else if (form.getValues("inputCollateral") === "tusdt") {
+  //     refetchnativeFee2();
+  //     form.setValue("outputCollateral", "tusdt");
+  //   }
+  // }, [form.watch("inputCollateral")]);
+
   return (
     <div className="flex flex-col h-full">
       <AppNavbar activeBack={false} />
       <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
-        <BridgeComponent
+        <BridgeComponentLeft
+          balance={Number(
+            sendToken === "USDa" ? usdaBal?.formatted : tusdtBal?.formatted
+          )}
           heading={"From"}
-          network={"Sepolia"}
-          token={"USDa"}
+          network={sendNetwork}
+          token={sendToken}
+          setSendToken={setSendToken}
+          setSendNetwork={setSendNetwork}
           totalAmount={"$1,202"}
+          sendAmount={sendAmount}
+          setSendAmount={setSendAmount}
         />
-        <BridgeComponent
+        <BridgeComponentRight
           heading={"To"}
           network={"Base"}
-          token={"USDC"}
+          token={sendToken}
           totalAmount={"$1,200"}
+          receiveAmount={receiveAmount}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields
             label={"Amount to receive"}
             value={"160 Hug × 23 Hug"}
           />
-          <BridgeMetricFields label={"Gas"} value={"$1.80 (0.001 ETH)"} />
+          <BridgeMetricFields
+            label={"Gas"}
+            value={
+              sendToken === "USDa"
+                ? (Number(nativeFee1?.nativeFee) / 10 ** 18).toString()
+                : sendToken === "TUSDT"
+                ? (Number(nativeFee2?.nativeFee) / 10 ** 18).toString()
+                : "0"
+            }
+          />
           <BridgeMetricFields label={"Time"} value={"~2min"} />
         </div>
+        <div className="h-[85px] w-full">
+          {!transferLoadingLocal && (
+            <Button
+              onClick={onSubmit}
+              className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight"
+            >
+              Bridge
+            </Button>
+          )}
 
-        <Button className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight">
-          Bridge
-        </Button>
+          <LoadingBox
+            isLoading={usdaApproveLoadingLocal}
+            isFailure={depositError || usdaErrorApprove}
+            isSuccess={Boolean(usdaApproveSuccess)}
+            setSuccessLoading={() => console.log()}
+            heading="Approving USDa"
+          />
+
+          <LoadingBox
+            isLoading={usdtApproveLoading}
+            isFailure={tusDTErrorApproveFn || tusDTErrorApprove}
+            isSuccess={Boolean(tusDTApproveSuccess)}
+            setSuccessLoading={() => console.log()}
+            heading="Approving USDT"
+          />
+          <LoadingBox
+            isLoading={sendLoading && sendToken === "USDa"}
+            isFailure={usdaErrorApproveFn || usdaIsError}
+            isSuccess={Boolean(usdaIsSuccess)}
+            setSuccessLoading={() => console.log()}
+            heading={"Transferring " + sendToken}
+          />
+          <LoadingBox
+            isLoading={sendLoading && sendToken === "TUSDT"}
+            isFailure={tusdtErrorApproveFn || tusdtIsError}
+            isSuccess={Boolean(tusdtIsSuccess)}
+            setSuccessLoading={() => console.log()}
+            heading={"Transferring " + sendToken}
+          />
+        </div>
       </div>
     </div>
   );

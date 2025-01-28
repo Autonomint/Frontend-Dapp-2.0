@@ -1,4 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
+import { it } from "node:test";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "wagmi/query";
@@ -42,24 +43,24 @@ const useGetLeaderboard = () => {
   function sortLeaderboardDetails(
     items: LeaderboardDetails[]
   ): LeaderboardDetails[] {
-    return items.sort((a, b) => {
-      // Convert totalDepositedAmount and totalAmint to numbers for comparison
-      const aTotalDeposited = parseFloat(a.totalDepositedAmount || "0");
-      const bTotalDeposited = parseFloat(b.totalDepositedAmount || "0");
-      const aTotalAmint = parseFloat(a.totalAmint || "0");
-      const bTotalAmint = parseFloat(b.totalAmint || "0");
+    return items
+      .map((item) => {
+        return {
+          ...item,
+          sortByValue: item.totalDepositedAmount || item.totalAmint || 0,
+        };
+      })
+      .sort((a, b) => {
+        // First, compare by totalDepositedAmount
+        if (Number(a?.sortByValue) > Number(b.sortByValue)) {
+          return -1;
+        } else if (Number(a?.sortByValue) < Number(b.sortByValue)) {
+          return 1;
+        }
 
-      // First, compare by totalDepositedAmount
-      if (aTotalDeposited > bTotalDeposited) return -1;
-      if (aTotalDeposited < bTotalDeposited) return 1;
-
-      // If totalDepositedAmount is equal, compare by totalAmint
-      if (aTotalAmint > bTotalAmint) return -1;
-      if (aTotalAmint < bTotalAmint) return 1;
-
-      // If both are equal, maintain the original order
-      return 0;
-    });
+        // If both are equal, maintain the original order
+        return 0;
+      });
   }
 
   const totalBorrowCount = useMemo(() => {

@@ -100,6 +100,8 @@ function Leaderboard() {
     totalDepositedCount,
   } = useGetLeaderboard();
 
+  console.log(leaderboardData, "leaderboardData");
+
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
