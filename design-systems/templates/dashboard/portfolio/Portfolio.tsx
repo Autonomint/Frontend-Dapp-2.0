@@ -16,7 +16,10 @@ import useGetPositionList, {
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import displayNumberWithPrecision, { formatTimestamp } from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  formatTimestamp,
+  handleWheel,
+} from "@/utils/helpers";
 import { useEffect, useRef, useState } from "react";
 
 const PositionTableRow = ({
@@ -624,6 +627,7 @@ function Portfolio() {
         <div className="flex w-[48%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
+            onWheel={handleWheel}
             className="border-0 md:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
             placeholder="Search Transactions"
           />

@@ -16,6 +16,7 @@ import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import { toast } from "sonner";
 import { Typography } from "@/components/ui/Typography";
+import ToastNotification from "../toasts/ToastNotification";
 
 export function DcdsWithdrawModal({
   position,
@@ -222,7 +223,24 @@ export function DcdsWithdrawModal({
   useEffect(() => {
     if (isCdsSuccessReceipt) {
       setWithdrawMethodLoading(false);
-      toast.success("Withdraw Successful");
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${cdsLogdataReceipt.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${cdsLogdataReceipt.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Withdraw Successful"
+            message=""
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
     }
     if (isCdserrorReceipt) {
       setTimeout(() => {

@@ -1,41 +1,36 @@
 "use client";
+import { usDaAbi } from "@/blockchain/abis/usda";
+import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
+import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
 import { Button } from "@/components/ui/button";
+import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
+import { Typography } from "@/components/ui/Typography";
+import AppNavbar from "@/custom-components/AppNavbar";
+import LoadingBox from "@/custom-components/LoadingBox";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
+import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
+import { handleWheel, secondsToMinutes } from "@/utils/helpers";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
 import React, {
   Dispatch,
   SetStateAction,
-  use,
   useEffect,
   useRef,
   useState,
 } from "react";
-import CustomDropdown from "../../custom-components/CustomDropdown";
-import AppNavbar from "@/custom-components/AppNavbar";
-import { http, createConfig } from "@wagmi/core";
-import { mainnet, sepolia } from "@wagmi/core/chains";
-import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
+import { toast } from "sonner";
+import { formatUnits, padHex, parseEther, parseUnits } from "viem";
 import {
   useAccount,
   useBalance,
   useChainId,
-  useConfig,
   useEstimateGas,
   usePublicClient,
-  useSimulateContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { formatEther, formatUnits, padHex, parseEther, parseUnits } from "viem";
-import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
-import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
-import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
-import { usDaAbi } from "@/blockchain/abis/usda";
-import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import { NetworkId } from "@/utils/constants";
-import { toast } from "sonner";
-import LoadingBox from "@/custom-components/LoadingBox";
-import { formatTimestamp, secondsToMinutes } from "@/utils/helpers";
 function BridgeComponentRight({
   heading,
   network,
@@ -111,11 +106,13 @@ function BridgeComponentLeft({
   setSendAmount,
   sendAmount,
   balance,
+  amountError,
 }: {
   balance: number;
+  amountError: string;
   setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
-  setSendAmount: Dispatch<SetStateAction<number>>;
-  sendAmount: number;
+  setSendAmount: Dispatch<SetStateAction<number | null>>;
+  sendAmount: number | null;
   setSendNetwork: Dispatch<React.SetStateAction<"Base" | "Sepolia">>;
   heading: string;
   network: string;
@@ -174,10 +171,6 @@ function BridgeComponentLeft({
                   label: "USDa",
                   onClick: () => setSendToken("USDa"),
                 },
-                {
-                  label: "TUSDT",
-                  onClick: () => setSendToken("TUSDT"),
-                },
               ]}
               className="w-full text-[24px] border border-grayLight h-[65px]"
             />
@@ -204,11 +197,17 @@ function BridgeComponentLeft({
             </div>
           </div>
           <input
-            value={sendAmount}
+            onWheel={handleWheel}
+            value={sendAmount || undefined}
             onChange={(e) => setSendAmount(Number(e.target.value))}
             type="number"
+            placeholder="0"
             className="text-[42px] bg-transparent border-0 outline-0 text-textBlack  mt-8 dark:text-white"
           />
+
+          <Typography size="sm" variant="regular" className="text-red-500">
+            {amountError}
+          </Typography>
         </div>
       </div>
     </div>
@@ -246,10 +245,10 @@ function page() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
   const [receiveToken, setReceiveToken] = useState<"USDa" | "TUSDT">("USDa");
   const [sendNetwork, setSendNetwork] = useState<"Sepolia" | "Base">("Sepolia");
-  const [sendAmount, setSendAmount] = useState<number>(0);
+  const [sendAmount, setSendAmount] = useState<number | null>(null);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [estimateTime, setEstimateTime] = useState<number>(0);
-
+  const [amountError, setAmountError] = useState<string>("");
   const [transferLoadingLocal, setTransferLoadingLocal] =
     useState<boolean>(false);
 
@@ -278,9 +277,19 @@ function page() {
   const [collateralAmountString, setCollateralAmountString] =
     useState<string>("0");
 
+  useEffect(() => {
+    if ((sendAmount || 0) > Number(usdaBal?.formatted)) {
+      setAmountError(
+        `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`
+      );
+    } else {
+      setAmountError("");
+    }
+  }, [sendAmount]);
+
   // Calculation Based on ChainID to bridge amount. It will fetch and update value of outputCollateralAmount (you can change according to your logic and write it clear)
   useEffect(() => {
-    let letamount = sendAmount.toString();
+    let letamount = (sendAmount || 0).toString();
     if (!sendAmount) {
       setCollateralAmountString("0");
       letamount = "0";
@@ -408,7 +417,7 @@ function page() {
         functionName: "send",
         args: [
           transactionParams as never,
-          { nativeFee: 37671213890518646n, lzTokenFee: 0n },
+          { nativeFee: nativeFee1?.nativeFee ?? 0n, lzTokenFee: 0n },
           accountAddress,
         ],
         value: nativeFee1?.nativeFee,
@@ -452,7 +461,24 @@ function page() {
       setTimeout(() => {
         setTransferLoadingLocal(false);
       }, 1000);
-      toast.success("Transaction Confirmed");
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${usdaTransactionConfirmed.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${usdaTransactionConfirmed.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Transaction Confirmed"
+            message=""
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
     } else if (usdaIsError) {
       setSendLoading(false);
       setTimeout(() => {
@@ -559,6 +585,9 @@ function page() {
 
   // Handle the form submission
   async function onSubmit() {
+    if (amountError) {
+      return toast.error(amountError);
+    }
     if (sendAmount === 0) {
       return toast.error("Please enter a valid amount");
     }
@@ -575,7 +604,7 @@ function page() {
           functionName: "approve",
           args: [
             usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
-            BigInt(sendAmount * 10 ** 6),
+            BigInt((sendAmount || 0) * 10 ** 6),
           ],
         });
       } else if (sendToken === "TUSDT") {
@@ -588,7 +617,7 @@ function page() {
             testusdtAbiAddress[
               chainId as keyof typeof testusdtAbiAddress
             ] as `0x${string}`,
-            BigInt(sendAmount * 10 ** 6),
+            BigInt((sendAmount || 0) * 10 ** 6),
           ],
         });
       }
@@ -664,7 +693,9 @@ function page() {
           totalAmount={"$1,202"}
           sendAmount={sendAmount}
           setSendAmount={setSendAmount}
+          amountError={amountError}
         />
+
         <BridgeComponentRight
           heading={"To"}
           network={"Base"}

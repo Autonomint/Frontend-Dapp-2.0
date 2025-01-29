@@ -134,6 +134,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
       {referral !== "null" ? (
         <div className="flex mt-3">
           <Input
+            readOnly
             className="rounded-none !text-lg h-12 px-4 !font-medium"
             value={referralLink}
           />
@@ -143,7 +144,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
             variant={"outline"}
             size={"lg"}
           >
-            Copy
+            {copy}
           </Button>
         </div>
       ) : (

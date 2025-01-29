@@ -13,10 +13,11 @@ import displayNumberWithPrecision from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
 import { RadioGroupItem } from "@/components/ui/radio-group";
+import ToastNotification from "../toasts/ToastNotification";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -107,6 +108,8 @@ export function WithdrawFund({
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
+
+  const { chainId } = useAccount();
 
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
     useState<boolean>(false);
@@ -319,9 +322,23 @@ export function WithdrawFund({
   useEffect(() => {
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
-      toast.success("Withdraw Successful", {
-        position: "top-right",
-        className: "dark:bg-custom-gradient-to-top",
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${withdrawReceipt.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${withdrawReceipt.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Repay Successful"
+            message=""
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
       });
       positionListRefetech();
       setWithdrawLoadingLocal(false);

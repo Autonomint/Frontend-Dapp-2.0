@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +15,8 @@ import { Line } from "react-chartjs-2";
 import { useTheme } from "next-themes";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useAccount } from "wagmi";
+import { calculateAverages } from "@/utils/helpers";
+import { ChartFilter } from "@/utils/interface";
 
 ChartJS.register(
   CategoryScale,
@@ -141,7 +143,7 @@ export function ChartComponent({
 }) {
   let currentDate = new Date();
 
-  const [time, setTime] = React.useState("allTime");
+  const [time, setTime] = React.useState<ChartFilter>("allTime");
 
   const [chartData, setChartData] = React.useState<string[]>([]);
   const { chainId } = useAccount();
@@ -170,25 +172,28 @@ export function ChartComponent({
   }, [time, title, chainId]);
 
   // Reverse the data array to so correct order
-  const formattedData = chartData
-    .map((value) => {
-      let name;
-      name =
-        String(currentDate.getDate()) +
-        "/" +
-        String(currentDate.getMonth() + 1);
-      currentDate.setDate(currentDate.getDate() - 1);
-      return Number(value);
-    })
-    .reverse();
+
+  const formattedData: { labels: string[]; averages: number[] } =
+    useMemo(() => {
+      return calculateAverages(chartData, time);
+    }, [time, chartData]);
+
+  console.log(
+    calculateAverages(chartData, time),
+    chartData,
+    title,
+    time,
+    "calculateMonthlyAverages"
+  );
 
   console.log(formattedData, theme, "formattedData");
+
   const dataLocal = {
-    labels,
+    labels: formattedData.labels,
     datasets: [
       {
         fill: true,
-        data: formattedData,
+        data: formattedData.averages,
         borderColor: "#00679F",
         pointRadius: 0,
         borderWidth: 2,
@@ -210,17 +215,6 @@ export function ChartComponent({
           gradient.addColorStop(0, theme == "dark" ? "#002A4E" : "#E5F3FF");
           gradient.addColorStop(1, theme == "dark" ? "#002A4E00" : "#FFFDE4");
           return gradient;
-          // }
-
-          // const gradient = ctx.createLinearGradient(
-          //   0,
-          //   chartArea.top,
-          //   0,
-          //   chartArea.bottom
-          // );
-          // gradient.addColorStop(0, "#E5F3FF");
-          // gradient.addColorStop(1, "#FFFDE4");
-          // return gradient;
         },
       },
     ],

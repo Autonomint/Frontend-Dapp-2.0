@@ -1,9 +1,9 @@
-import Portfolio from "./Portfolio";
+import PortfolioTemplate from "@/design-systems/templates/dashboard/portfolio";
 
 function page() {
   return (
     <div>
-      <Portfolio />
+      <PortfolioTemplate />
     </div>
   );
 }

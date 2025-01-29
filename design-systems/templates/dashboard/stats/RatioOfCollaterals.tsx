@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { TimeFrame } from "./ChartComponent";
 import {
   Chart as ChartJS,
@@ -13,10 +13,11 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { cn } from "@/utils/helpers";
+import { calculateAverages, cn } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useAccount } from "wagmi";
 import { useTheme } from "next-themes";
+import { ChartFilter } from "@/utils/interface";
 
 ChartJS.register(
   CategoryScale,
@@ -151,7 +152,7 @@ function RatioOfCollaterals({
   timeFrame: string;
   stats: { value: string; headline: string }[];
 }) {
-  const [time, setTime] = React.useState("allTime");
+  const [time, setTime] = React.useState<ChartFilter>("allTime");
   let currentDate = new Date();
   const { theme } = useTheme();
 
@@ -180,26 +181,24 @@ function RatioOfCollaterals({
     }
   }, [time, chainId]);
 
-  // Reverse the data array to so correct order
-  const formattedData = chartData
-    .map((value) => {
-      let name;
-      name =
-        String(currentDate.getDate()) +
-        "/" +
-        String(currentDate.getMonth() + 1);
-      currentDate.setDate(currentDate.getDate() - 1);
-      return Number(value);
-    })
-    .reverse();
+  const formattedData: { labels: string[]; averages: number[] } =
+    useMemo(() => {
+      return calculateAverages(chartData, time);
+    }, [time, chartData]);
 
-  console.log(formattedData, "formattedData");
+  console.log(
+    calculateAverages(chartData, time),
+    chartData,
+    time,
+    "calculateAverages"
+  );
+
   const dataLocal = {
-    labels,
+    labels: formattedData.labels,
     datasets: [
       {
         fill: true,
-        data: formattedData,
+        data: formattedData.averages,
         borderColor: "#00679F",
         pointRadius: 0,
         borderWidth: 2,
@@ -303,6 +302,8 @@ function RatioOfCollaterals({
                 classNameValue={` ${
                   item.headline === "Collateral"
                     ? "text-[#05A552] dark:text-[#06BE5F]"
+                    : item.headline === "dCDS"
+                    ? "text-[#478BFF] dark:text-[#38B6FF]"
                     : "dark:text-white"
                 }`}
               />

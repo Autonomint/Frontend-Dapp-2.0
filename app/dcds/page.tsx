@@ -42,6 +42,8 @@ import { Typography } from "@/components/ui/Typography";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useRouter } from "next/navigation";
+import { handleWheel } from "@/utils/helpers";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
 function TokenTvlDetails({
   tokenName,
   tvl,
@@ -103,6 +105,8 @@ function SelectToken() {
         Select Token
       </Label>
       <Input
+        onWheel={handleWheel}
+        type="number"
         className="rounded-none border border-grayLight font-medium"
         placeholder="Amount"
       />
@@ -343,6 +347,19 @@ function page() {
       disabled: false,
     },
   ];
+
+  const showToastError = () => {
+    toast.custom((t) => (
+      <ToastNotification
+        title="Transaction failed"
+        message="Please try again"
+        linkText=""
+        linkUrl=""
+        onClose={() => toast.dismiss(t)}
+        className="bg-[#AA0001]"
+      />
+    ));
+  };
 
   const showNormal = () => {
     const customLoaderId = toast.loading(
@@ -654,7 +671,24 @@ function page() {
     setIsScroll(true);
     setPortfolioTab("Deposited");
     resetLoadings();
-    toast.success("Deposit Successful");
+    toast.custom((t) => {
+      const link =
+        chainId === 84532
+          ? `https://sepolia.basescan.org/tx/${DepositdataReceipt?.transactionHash} `
+          : `https://sepolia.etherscan.io/tx/${DepositdataReceipt?.transactionHash}`;
+
+      return (
+        <ToastNotification
+          title="Deposit Successful"
+          message=""
+          linkText={
+            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+          }
+          linkUrl={link}
+          onClose={() => toast.dismiss(t)}
+        />
+      );
+    });
     router.push("/dashboard/portfolio");
   };
 
@@ -777,6 +811,7 @@ function page() {
                     {token.tokenName}
                   </Label>
                   <Input
+                    onWheel={handleWheel}
                     type="number"
                     name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                     id={`token-${key}`}

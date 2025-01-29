@@ -11,7 +11,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
-import displayNumberWithPrecision from "@/utils/helpers";
+import displayNumberWithPrecision, { handleWheel } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import {
@@ -43,6 +43,8 @@ import { useTheme } from "next-themes";
 import LoadingBox from "@/custom-components/LoadingBox";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import { NetworkId } from "@/utils/constants";
 
 ChartJS.register(
   CategoryScale,
@@ -498,9 +500,24 @@ function AdditionalDetails({ currency }: { currency: string }) {
     if (isDepositSuccess && Depositdata) {
       setPortfolioTab("Borrowed");
       setIsScroll(true);
-      toast.success(`${"Mint Successful"}`, {
-        position: "top-right",
-        className: "dark:bg-custom-gradient-to-top",
+
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${Depositdata.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${Depositdata.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Mint Successful"
+            message="New Deposit has been created"
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
       });
       setMintLoading(false);
       handleResetPage();
@@ -661,6 +678,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
             <div className="flex-col gap-1 justify-start">
               <div className="flex">
                 <Input
+                  onWheel={handleWheel}
                   type="number"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

@@ -13,12 +13,15 @@ import { Button } from "@/components/ui/button";
 import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/Typography";
+import AppNavbar from "@/custom-components/AppNavbar";
 import LoadingBox from "@/custom-components/LoadingBox";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { on } from "events";
 import { useFormik } from "formik";
-import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatEther } from "viem";
 import {
@@ -37,18 +40,21 @@ const formSchema = Yup.object({
   collateralAmount: Yup.number()
     .positive("Value must be positive")
     .min(0.02, "Value must be at least 0.02")
-    .required("Collateral amount is required"),
+    .max(Yup.ref("usdaBalance"), "Collateral amount cannot exceed balance")
+    .required("Collateral amount is required")
+    .nullable(),
   outputCollateralAmount: Yup.number().positive("Value must be positive"),
-  // .required("Output collateral amount is required"),
   outputCollateral: Yup.string(),
-  //   .required("Output collateral is required"),
+  usdaBalance: Yup.number(),
 });
+
 // Define the initial values
 const initialValues = {
   inputCollateral: "",
-  collateralAmount: 0,
+  collateralAmount: undefined,
   outputCollateral: "",
   outputCollateralAmount: 0,
+  usdaBalance: 0,
 };
 const RedeemContainer = () => {
   const [redeemLoadingLocal, setRedeemLoadingLocal] = useState<boolean>(false);
@@ -67,21 +73,35 @@ const RedeemContainer = () => {
       handleSubmit(values);
     },
   });
+
+  console.log(formik);
+
   const chainId = useChainId();
-  const { data: abondbalance } = useBalance({
+
+  const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
     address: abondAddress ? accountAddress : undefined,
     token: abondAddress
       ? abondAddress[chainId as keyof typeof abondAddress]
       : undefined,
   });
 
-  const { data: amintbalance } = useBalance({
+  const { data: amintbalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
     token: usDaAddress
       ? usDaAddress[chainId as keyof typeof usDaAddress]
       : undefined,
   });
-  const toastId = useRef<string | number>("");
+
+  useEffect(() => {
+    if (formik.values.inputCollateral == "abond") {
+      formik.setFieldValue("usdaBalance", Number(abondbalance?.formatted));
+    } else if (formik.values.inputCollateral == "amint") {
+      formik.setFieldValue("usdaBalance", Number(amintbalance?.formatted));
+    }
+  }, [abondbalance, amintbalance, formik.values.inputCollateral]);
+
+  console.log(formik, "formik");
+
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(200000, 0)
     .toHex()
@@ -119,10 +139,10 @@ const RedeemContainer = () => {
 
   useEffect(() => {
     if (usdaApproveSuccess && nativeFee1) {
+      setUsdaApproveLocal(false);
       setTimeout(() => {
-        setUsdaApproveLocal(false);
+        setRedeemFnLoadingLocal(true);
       }, 1000);
-      setRedeemFnLoadingLocal(true);
       redeemUsdt?.({
         abi: cdsAbi,
         address: cdsAddress[chainId as keyof typeof cdsAddress],
@@ -178,9 +198,30 @@ const RedeemContainer = () => {
   const handleFail = () => {
     toast.error("Redeem Failed");
     handleClearLoading();
+    refetchBlAbond();
+    refetchBlAmint();
   };
   const handleSuccess = () => {
-    toast.success("Redeem Successful");
+    toast.custom((t) => {
+      const link =
+        chainId === 84532
+          ? `https://sepolia.basescan.org/tx/${redeemdataUsdt?.transactionHash} `
+          : `https://sepolia.etherscan.io/tx/${redeemdataUsdt?.transactionHash}`;
+
+      return (
+        <ToastNotification
+          title="Redeem Successful"
+          message=""
+          linkText={
+            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+          }
+          linkUrl={link}
+          onClose={() => toast.dismiss(t)}
+        />
+      );
+    });
+    refetchBlAbond();
+    refetchBlAmint();
     handleClearLoading();
     formik.setValues(initialValues);
     formik.setTouched({
@@ -217,12 +258,12 @@ const RedeemContainer = () => {
   useEffect(() => {
     if (
       formik.values.inputCollateral === "abond" &&
-      formik.values.collateralAmount > 0
+      (formik.values.collateralAmount || 0) > 0
     ) {
       console.log(abondbalance?.formatted);
 
       if (
-        formik.values.collateralAmount >
+        (formik.values.collateralAmount || 0) >
         Number(abondbalance?.formatted.slice(0, 8))
       ) {
         formik.setErrors({
@@ -241,11 +282,11 @@ const RedeemContainer = () => {
       }
     } else if (
       formik.values.inputCollateral === "amint" &&
-      formik.values.collateralAmount > 0
+      (formik.values.collateralAmount || 0) > 0
     ) {
       console.log(amintbalance?.formatted);
       if (
-        formik.values.collateralAmount >
+        (formik.values.collateralAmount || 0) >
         Number(amintbalance?.formatted.slice(0, 9))
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
@@ -297,10 +338,10 @@ const RedeemContainer = () => {
 
   useEffect(() => {
     if (abondApproveSuccess) {
+      setAbondApproveLoadingLocal(false);
       setTimeout(() => {
-        setAbondApproveLoadingLocal(false);
+        setRedeemFnLoadingLocal(true);
       }, 1000);
-      setRedeemFnLoadingLocal(true);
       redeemEth?.({
         abi: borrowingContractAbi,
         address:
@@ -375,7 +416,7 @@ const RedeemContainer = () => {
         functionName: "approve",
         args: [
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-          BigInt(values.collateralAmount * 10 ** 6),
+          BigInt((values.collateralAmount || 0) * 10 ** 6),
         ],
       });
     } else if (values.inputCollateral === "abond") {
@@ -390,7 +431,7 @@ const RedeemContainer = () => {
           borrowingContractAddress[
             chainId as keyof typeof borrowingContractAddress
           ] as `0x${string}`,
-          BigInt(values.collateralAmount * 10 ** 18),
+          BigInt((values.collateralAmount || 0) * 10 ** 18),
         ],
       });
     }
@@ -407,22 +448,35 @@ const RedeemContainer = () => {
     },
   ];
 
+  const pathname = usePathname();
+
   console.log(abondApproveLoadingLocal, "abondApproveLoadingLocal");
 
   return (
-    <div className="flex flex-col">
-      <div className="p-8 border-solid border-graylight">
+    <div className="flex flex-col h-[78vh]">
+      <AppNavbar
+        activeBack={true}
+        tabOptions={[
+          {
+            nameA: "Redeem",
+            path: "/redeem",
+            isActive: pathname === "",
+          },
+        ]}
+      />
+      <div className="py-8 px-[15%] border-solid border-graylight">
         <div className="flex gap-8 flex-col md:flex-row">
           <div className="flex flex-col flex-1">
             <span className="text-medium text-grayLight text-lg ">
               Input Amount
             </span>
             <Input
+              onWheel={handleWheel}
               type="number"
               name="collateralAmount"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.collateralAmount}
+              value={formik.values.collateralAmount || ""}
               className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
             />
             <Typography size="sm" variant="regular" className="text-red-500">
@@ -448,6 +502,14 @@ const RedeemContainer = () => {
               items={dropdownItems}
               className="w-full text-[24px] border border-grayLight"
             />
+            <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
+              Balance{" "}
+              <span className="text-grayLight">
+                {formik.values.inputCollateral == "amint"
+                  ? `${amintbalance?.formatted} USDa`
+                  : `${abondbalance?.formatted} Abond`}
+              </span>
+            </div>
             <Typography size="sm" variant="regular" className="text-red-500">
               {formik.errors.inputCollateral && formik.touched.inputCollateral
                 ? formik.errors.inputCollateral
@@ -495,16 +557,11 @@ const RedeemContainer = () => {
           </div>
         </div>
       </div>
-
-      <div className="grid md:grid-cols-2 mb-[178px]">
-        <div className="border border-solid border-grayLight-1 dark:border-grayLight md:p-12 p-6">
-          <div className="flex justify-between">
-            <div className="text-grayLight md:text-lg  text-[14px]">
-              Note: A withdrawal Fee of 2% will be applied.
-            </div>
-          </div>
-        </div>
-        <div className="w-full h-full">
+      <div className="text-grayLight md:text-lg text-center mb-4 text-[14px]">
+        Note: A withdrawal Fee of 2% will be applied.
+      </div>
+      <div className="flex justify-center items-center mb-20">
+        <div className="w-[45%] h-[120px]">
           {!redeemLoadingLocal && (
             <Button
               onClick={() => formik.handleSubmit()}

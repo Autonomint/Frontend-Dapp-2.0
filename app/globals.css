@@ -196,3 +196,15 @@ body {
 .remove_border {
   border: transparent !important;
 }
+
+/* Hide arrows in Chrome, Safari, and newer Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
