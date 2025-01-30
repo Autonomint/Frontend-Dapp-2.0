@@ -31,7 +31,7 @@ import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
 import { cdsAddress } from "@/blockchain/contracts";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import useUsdtApprove from "@/hookes/useApproveUsdt";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
@@ -42,6 +42,9 @@ import { Typography } from "@/components/ui/Typography";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useRouter } from "next/navigation";
+import { handleWheel } from "@/utils/helpers";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 function TokenTvlDetails({
   tokenName,
   tvl,
@@ -103,6 +106,8 @@ function SelectToken() {
         Select Token
       </Label>
       <Input
+        onWheel={handleWheel}
+        type="number"
         className="rounded-none border border-grayLight font-medium"
         placeholder="Amount"
       />
@@ -146,7 +151,12 @@ function AddToken({
 
   const toggleToken = () => {
     if (!tokenDetails.active) {
-      toast.error(tokenDetails.errorMessage);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title={tokenDetails?.errorMessage || ""}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
       return;
     }
     formik.setFieldValue(
@@ -165,7 +175,7 @@ function AddToken({
   };
 
   return (
-    <div className="border border-solid border-grayLight p-5 relative">
+    <div className="border border-solid border-grayLight p-5 flex justify-start items-center h-full relative">
       <div className="flex flex-col gap-4">
         <Image
           src={tokenDetails.tokenImage}
@@ -322,8 +332,6 @@ function page() {
     },
   });
 
-  console.log(formik.values, "formik");
-
   const dropdownItems = [
     {
       label: "30 Days",
@@ -343,6 +351,19 @@ function page() {
       disabled: false,
     },
   ];
+
+  const showToastError = () => {
+    toast.custom((t) => (
+      <ToastNotification
+        title="Transaction failed"
+        message="Please try again"
+        linkText=""
+        linkUrl=""
+        onClose={() => toast.dismiss(t)}
+        className="bg-[#AA0001]"
+      />
+    ));
+  };
 
   const showNormal = () => {
     const customLoaderId = toast.loading(
@@ -367,7 +388,12 @@ function page() {
       })
       .catch(() => {
         toast.dismiss(customLoaderId);
-        toast.error("An error occurred!", { position: "top-right" });
+        toast.custom((t) => (
+          <ToastNotificationError
+            title={"An error occurred!"}
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
       });
   };
 
@@ -381,7 +407,7 @@ function page() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
 
-  const { GlobalContractData, isGlobalContractDataPending } =
+  const { omniChainData: GlobalContractData } =
     useGetUsdtAmountDepositedTillNow();
 
   const usdtBalance = useGetBalance("TUSDT");
@@ -426,9 +452,7 @@ function page() {
     usdtBalance,
     usdaBalance,
   ]);
-  console.log(usdtBalance, usdaBalance, tokenList, "usdtBalance");
 
-  console.log(GlobalContractData, "usdtAmountDepositedTillNow");
   const {
     approveUsda,
     approveUsdaDynamic,
@@ -601,11 +625,14 @@ function page() {
     }
   }, [usdaApprovalReceiptReceipt]);
 
-  console.log(formik.errors, "formik errors");
-
   const handleDeposit = () => {
     if (selectedTokens.length === 0) {
-      toast.error("Please select token");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please select token"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
       return;
     }
     resetFunctionState();
@@ -654,17 +681,38 @@ function page() {
     setIsScroll(true);
     setPortfolioTab("Deposited");
     resetLoadings();
-    toast.success("Deposit Successful");
+    toast.custom((t) => {
+      const link =
+        chainId === 84532
+          ? `https://sepolia.basescan.org/tx/${DepositdataReceipt?.transactionHash} `
+          : `https://sepolia.etherscan.io/tx/${DepositdataReceipt?.transactionHash}`;
+
+      return (
+        <ToastNotification
+          title="Deposit Successful"
+          message=""
+          linkText={
+            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+          }
+          linkUrl={link}
+          onClose={() => toast.dismiss(t)}
+        />
+      );
+    });
     router.push("/dashboard/portfolio");
   };
 
   const handleDepositFailure = () => {
     resetLoadings();
-    toast.error("Deposit Failed");
+    toast.custom((t) => (
+      <ToastNotificationError
+        title="Transaction failed, Please try again"
+        onClose={() => toast.dismiss(t)}
+      />
+    ));
   };
 
   const resetLoadings = () => {
-    console.log("resetting loadings");
     setTimeout(() => {
       setDcdsLoadingLocal(false);
     }, 1000);
@@ -676,7 +724,7 @@ function page() {
   return (
     <div>
       <AppNavbar activeBack={false} />
-      <div className="grid lg:grid-cols-4 grid-cols-1">
+      <div className="grid h-[97%] lg:grid-cols-4 grid-cols-1">
         <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
           {tokenList.map((token: TokenDetails, key: number) => (
             <AddToken
@@ -691,14 +739,15 @@ function page() {
 
         <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
-            <div className="w-[60%] h-[60%] flex items-center justify-center relative">
+            <div className="2xl:w-[73%] 3xl:w-[55%] 3xl:h-[93%] w-[60%] 2xl:h-[93%] h-[73%] flex items-center justify-center relative">
               <Image
-                className="hidden dark:block w-full"
+                className="hidden dark:block w-full h-full"
                 src={dcdsDark}
                 alt="dark-mode-image"
+                layout="fill"
               />
               <Image
-                className="block  dark:hidden w-full"
+                className="block  dark:hidden w-full h-full"
                 src={dcdsFrame}
                 alt="light-mode-image"
               />
@@ -740,17 +789,15 @@ function page() {
               </div>
             )}
           </div>
-          <div className=" flex px-4 my-3 justify-start items-center w-full gap-14">
-            <div>
-              {" "}
-              <Typography
-                className="text-black cursor-pointer text-[18px] font-medium dark:text-white underline"
-                size="lg"
-                variant="regular"
-              >
-                How it works?
-              </Typography>
-            </div>
+          <div className=" flex px-4 my-3 justify-center items-center w-full gap-14">
+            {" "}
+            <Typography
+              className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
+              size="lg"
+              variant="regular"
+            >
+              How it works?
+            </Typography>
             <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-2">
               <Typography
                 size="lg"
@@ -764,11 +811,11 @@ function page() {
         </div>
 
         <div className="col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
-          <div className="p-5">
+          <div className="p-5 ">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <div className="max-h-[200px] overflow-y-auto no-scrollbar">
+            <div className="h-[200px] 2xl:h-[300px] overflow-y-auto no-scrollbar">
               {selectedTokens.map((token, key) => (
                 <div key={key} className="mt-4">
                   <Label
@@ -778,6 +825,7 @@ function page() {
                     {token.tokenName}
                   </Label>
                   <Input
+                    onWheel={handleWheel}
                     type="number"
                     name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                     id={`token-${key}`}

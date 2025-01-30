@@ -1,5 +1,5 @@
 import { cookieStorage, createStorage } from "wagmi";
-
+import { http, createConfig } from "@wagmi/core";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   baseSepolia,
@@ -9,6 +9,7 @@ import {
 } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { projectId } from "@/utils/constants";
+import { createPublicClient } from "viem";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
@@ -38,6 +39,8 @@ const modal = createAppKit({
   defaultNetwork: mainnet,
   metadata: metadata,
   features: {
-    analytics: true, // Optional - defaults to your Cloud configuration
+    email: false,
+    socials: false,
+    analytics: false, // Optional - defaults to your Cloud configuration
   },
 });

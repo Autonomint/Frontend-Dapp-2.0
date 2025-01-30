@@ -5,7 +5,7 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ScrollProvider>
       <PortfolioTabProvider>
-        <NetworkProvider>{children}</NetworkProvider>;
+        <NetworkProvider>{children}</NetworkProvider>
       </PortfolioTabProvider>
     </ScrollProvider>
   );

@@ -1,3 +1,5 @@
+import { LinkIcon } from "@/components/ui/SvgIcons";
+
 const ToastNotification = ({
   title,
   message,
@@ -16,22 +18,25 @@ const ToastNotification = ({
   return (
     <div
       className={
-        "bg-[#05A552] text-white p-4 rounded shadow-lg flex items-start justify-between relative w-[278px] max-h-content " +
+        "bg-[#05A552] dark:bg-[#05A552] text-white p-4  shadow-lg flex items-start justify-between relative w-[278px] max-h-content " +
         ` ${className}`
       }
     >
       <div className="text-left">
         <div className="text-[18px] font-medium">{title}</div>
-        <div className="text-[14px] font-medium">{message}</div>
+        <div className="text-[14px]  gap-2 font-medium">{message}</div>
         {linkUrl && (
-          <a
-            href={linkUrl}
-            className="text-[14px] underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {linkText}
-          </a>
+          <div className="flex items-center mt-2 gap-2 text-[14px]">
+            <a
+              href={linkUrl}
+              className="text-[14px] underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {linkText}
+            </a>
+            <LinkIcon style={{ width: "18px", height: "18px" }} />
+          </div>
         )}
       </div>
       <button

@@ -60,9 +60,7 @@ const LoadingBox = ({
   }, [isLoading]);
 
   return (
-    <div
-      className={`relative  ${showBox && "h-[84px]"}  w-full overflow-hidden`}
-    >
+    <div className={`relative  ${showBox && "h-full"}  w-full overflow-hidden`}>
       {showBox && (
         <div
           className={` absolute h-full p-6  flex justify-between items-center  border-[1px] border-[#7A7A7A] w-full transition-all dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  ${

@@ -6,14 +6,20 @@ import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useScroll } from "@/contexts/scroll";
 import { WithdrawFund } from "@/custom-components/popups/WithdrawFund";
 import { DcdsWithdrawModal } from "@/custom-components/popups/WithdrawModal";
+import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
 import useGetDcdsDepositList, {
   dcdsDepositDetails,
 } from "@/hookes/api-hooks/useGetDcdsDetails";
 import useGetPositionList, {
   PositionData,
 } from "@/hookes/api-hooks/useGetPositionList";
+import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
+import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import displayNumberWithPrecision, { formatTimestamp } from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  formatTimestamp,
+  handleWheel,
+} from "@/utils/helpers";
 import { useEffect, useRef, useState } from "react";
 
 const PositionTableRow = ({
@@ -536,6 +542,9 @@ function Portfolio() {
   // will handle all this through redux later
   const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
+  const { userTotalBorrowAmount } = useGetTotalBorrow();
+  const { totalUserDeposit } = useGetTotalUserDeposit();
+  const { points, referralPoints } = useGetUserPoint();
   const {
     positionList,
     positionListError,
@@ -553,20 +562,32 @@ function Portfolio() {
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
+
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Total Borrowed" value="$1,290" />
+          <PortfolioMetrics
+            subHeading="Total Borrowed"
+            value={`${userTotalBorrowAmount} USDa`}
+          />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Total Deposited" value="$2,320" />
+          <PortfolioMetrics
+            subHeading="Total Deposited"
+            value={`$${totalUserDeposit}`}
+          />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics subHeading="Fee Earned" value="$120" />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Points" value="89,027" />
+          <PortfolioMetrics
+            subHeading="Points"
+            value={(
+              Number(referralPoints || 0) + Number(points?.[0] || 0)
+            ).toString()}
+          />
         </div>
       </div>
       <div className="flex mt-5">
@@ -604,6 +625,7 @@ function Portfolio() {
         <div className="flex w-[48%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
+            onWheel={handleWheel}
             className="border-0 md:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
             placeholder="Search Transactions"
           />

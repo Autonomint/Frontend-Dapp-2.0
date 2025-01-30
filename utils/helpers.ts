@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ChartFilter } from "./interface";
+import { WheelEvent } from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -124,3 +126,122 @@ export function calculateTimeDifference(storedTime: string): string {
 
   return timeDiff;
 }
+
+// Define the formatNumber function
+export function formatNumber(num: number) {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(2) + "M";
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(2) + "k";
+  } else {
+    return num.toFixed(2);
+  }
+}
+
+export function secondsToMinutes(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes} minute(s) ${remainingSeconds} second(s)`;
+}
+
+export function calculateAverages(
+  dailyValues: string[],
+  filter: "allTime" | "365" | "183" | "30" | "10"
+): { labels: string[]; averages: number[] } {
+  const currentDate = new Date();
+  let chunkSize: number;
+  let labels: string[] = [];
+
+  switch (filter) {
+    case "allTime":
+      // Group by years for "allTime"
+      chunkSize = 365; // Approximate chunk size for one year
+      labels = Array.from({ length: 12 }, (_, i) => {
+        const year = new Date(currentDate);
+        year.setFullYear(currentDate.getFullYear() - i);
+        return year.getFullYear().toString();
+      }).reverse(); // Latest year first
+      break;
+
+    case "365":
+      // Divide by months for a total of 12 entries for 365 days
+      chunkSize = Math.ceil(365 / 12); // Approximate days per month (~30.42 days)
+      labels = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setMonth(currentDate.getMonth() - i);
+        return date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        });
+      }).reverse();
+      break;
+
+    case "183":
+      // Divide by months for 6 months
+      chunkSize = Math.ceil(183 / 6); // Approximate days per month
+      labels = Array.from({ length: 6 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setMonth(currentDate.getMonth() - i);
+        return date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        });
+      }).reverse();
+      break;
+
+    case "30":
+      // Get the last 30 days from dailyValues
+      dailyValues = dailyValues.slice(-30); // Take the last 30 values
+      chunkSize = 1; // 1 day per entry
+      labels = Array.from({ length: 30 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setDate(currentDate.getDate() - i);
+        return `${date.getDate()}/${date.getMonth() + 1}`;
+      }).reverse();
+      break;
+
+    case "10":
+      // Divide by day names for 10-day filter
+      dailyValues = dailyValues.slice(-10); // Take the last 10 values
+      chunkSize = 1; // 1 day per entry
+      labels = Array.from({ length: 10 }, (_, i) => {
+        const date = new Date(currentDate);
+        date.setDate(currentDate.getDate() - i);
+        return date.toLocaleString("default", { weekday: "long" });
+      }).reverse();
+      break;
+
+    default:
+      throw new Error(
+        "Invalid filter option. Use 'allTime', '365', '183', '30', or '10'."
+      );
+  }
+
+  const averages: number[] = [];
+
+  // Calculate averages for each chunk
+  for (let i = 0; i < dailyValues.length; i += chunkSize) {
+    const chunk = dailyValues.slice(i, i + chunkSize);
+    const sum = chunk.reduce((acc, val) => acc + parseFloat(val), 0);
+    const average = sum / chunk.length;
+    averages.push(average);
+  }
+
+  // Add 0 for remaining entries in averages
+  const totalChunks = labels.length;
+  const dataChunks = averages.length;
+
+  if (totalChunks > dataChunks) {
+    const missingEntries = totalChunks - dataChunks;
+    const zeros = Array(missingEntries).fill(0);
+    averages.unshift(...zeros); // Add zeros at the beginning
+  }
+
+  return { labels, averages };
+}
+
+export const handleWheel = (
+  event: React.WheelEvent<HTMLInputElement>
+): void => {
+  event.currentTarget.blur(); // Prevents changing the number value on scroll
+};

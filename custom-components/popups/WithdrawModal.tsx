@@ -8,7 +8,7 @@ import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useDcdsWithdraw from "@/hookes/useDcdsWithdraw";
+import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
 import { calculateTimeDifference } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +16,8 @@ import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import { toast } from "sonner";
 import { Typography } from "@/components/ui/Typography";
+import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 
 export function DcdsWithdrawModal({
   position,
@@ -204,7 +206,12 @@ export function DcdsWithdrawModal({
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
       setWithdrawMethodLoading(false);
-      toast.error("Withdraw Failed");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -217,19 +224,40 @@ export function DcdsWithdrawModal({
     confirmations: 2, // Number of confirmations required for success
   });
 
-  console.log(isCdserrorReceipt, "isCdserrorReceipt");
 
   useEffect(() => {
     if (isCdsSuccessReceipt) {
       setWithdrawMethodLoading(false);
-      toast.success("Withdraw Successful");
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${cdsLogdataReceipt.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${cdsLogdataReceipt.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Withdraw Successful"
+            message=""
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
     }
     if (isCdserrorReceipt) {
       setTimeout(() => {
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
       setWithdrawMethodLoading(false);
-      toast.error("Withdraw Failed");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [cdsLogdataReceipt, isCdserrorReceipt]);
 
@@ -240,7 +268,6 @@ export function DcdsWithdrawModal({
       handleDcdsFundWithdraw?.([BigInt(position.index)], nativeFee.nativeFee);
     }
   };
-  console.log(dcdsFundWithdrawLoadingLocal, withdrawMethodLoading, ".");
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     resetDcdsFundWithdraw();

@@ -11,7 +11,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
-import displayNumberWithPrecision from "@/utils/helpers";
+import displayNumberWithPrecision, { handleWheel } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import {
@@ -43,6 +43,9 @@ import { useTheme } from "next-themes";
 import LoadingBox from "@/custom-components/LoadingBox";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import { NetworkId } from "@/utils/constants";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 
 ChartJS.register(
   CategoryScale,
@@ -133,9 +136,12 @@ function TradingViewWidget() {
       lineWidth: 2,
       lineType: 0,
       dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
-      lineColor: "rgba(0, 103, 159, 1)",
-      topColor: "rgba(229, 243, 255, 1)",
-      bottomColor: "rgba(255, 253, 228, 1)",
+      lineColor:
+        theme === "dark" ? "rgba(0, 120, 185, 1 )" : "rgba(0, 103, 159, 1)",
+      topColor:
+        theme === "dark" ? "rgba(0, 42, 78, 1)" : "rgba(229, 243, 255, 1)",
+      bottomColor:
+        theme === "dark" ? "rgba(0, 42, 78, 0)" : "rgba(255, 253, 228, 1)",
     };
 
     // Pass the widget configuration as JSON
@@ -474,6 +480,14 @@ function AdditionalDetails({ currency }: { currency: string }) {
     useDepositTokens({
       onError: () => {
         setMintLoading(false);
+        toast.custom((t) => {
+          return (
+            <ToastNotificationError
+              title="Transaction failed, Please try again"
+              onClose={() => toast.dismiss(t)}
+            />
+          );
+        });
       },
     });
 
@@ -495,13 +509,38 @@ function AdditionalDetails({ currency }: { currency: string }) {
     if (isDepositSuccess && Depositdata) {
       setPortfolioTab("Borrowed");
       setIsScroll(true);
-      toast.success(`${"Mint Successful"}`, {
-        position: "top-right",
-        className: "dark:bg-custom-gradient-to-top",
+
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${Depositdata.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${Depositdata.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Mint Successful"
+            message="New Deposit has been created"
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
       });
       setMintLoading(false);
       handleResetPage();
       router.push("/dashboard/portfolio");
+    } else if (depositHashError) {
+      setMintLoading(false);
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
     }
   }, [Depositdata, isDepositSuccess]);
 
@@ -658,6 +697,7 @@ function AdditionalDetails({ currency }: { currency: string }) {
             <div className="flex-col gap-1 justify-start">
               <div className="flex">
                 <Input
+                  onWheel={handleWheel}
                   type="number"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
