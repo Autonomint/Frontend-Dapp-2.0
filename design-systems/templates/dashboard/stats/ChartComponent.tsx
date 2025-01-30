@@ -155,7 +155,6 @@ export function ChartComponent({
         `${BACKEND_API_URL}/borrows/chart/${chartApiFlag}/${chainId}/` +
           `${time === "allTime" ? "0/YES" : `${time}/NO`}`
       );
-      console.log("data chart : ", res);
       const data = await res.json();
       data.reverse();
       setChartData(data);
@@ -177,16 +176,6 @@ export function ChartComponent({
     useMemo(() => {
       return calculateAverages(chartData, time);
     }, [time, chartData]);
-
-  console.log(
-    calculateAverages(chartData, time),
-    chartData,
-    title,
-    time,
-    "calculateMonthlyAverages"
-  );
-
-  console.log(formattedData, theme, "formattedData");
 
   const dataLocal = {
     labels: formattedData.labels,

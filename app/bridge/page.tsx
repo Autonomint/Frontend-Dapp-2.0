@@ -123,7 +123,6 @@ function BridgeComponentLeft({
   const { switchChain } = useSwitchChain();
 
   const { chainId } = useAccount();
-  console.log(chainId, "chainId");
 
   return (
     <div
@@ -670,16 +669,13 @@ function page() {
     try {
       // 1. Fetch the current gas price
       const gasPrice = await publicClient?.getGasPrice();
-      console.log("Current Gas Price (wei):", gasPrice?.toString());
 
       // 2. Fetch the number of pending transactions
       const pendingTransactions = 3;
-      console.log("Pending Transactions:", pendingTransactions);
 
       // 3. Fetch the latest block to get the average block time
       const latestBlock = await publicClient?.getBlock();
       const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
-      console.log("Latest Block Number:", latestBlock?.number);
 
       // 4. Estimate the time for your transaction to be included in a block
       const transactionsPerBlock = 200; // Approximate number of transactions per block
@@ -688,7 +684,6 @@ function page() {
       );
       const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
       setEstimateTime(estimatedTimeInSeconds);
-      console.log(`Estimated Time: ${estimatedTimeInSeconds} seconds`);
       return estimatedTimeInSeconds;
     } catch (error) {
       console.error("Error estimating transaction time:", error);

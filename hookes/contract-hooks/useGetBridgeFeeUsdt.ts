@@ -17,8 +17,6 @@ const useGetBridgeFeeUsdt = (transactionParams: any) => {
     args: [transactionParams as any, false],
   });
 
-  console.log(nativeFee2, TUSDTQuoteError, refetchnativeFee2, "M");
-
   return {
     nativeFee2,
     TUSDTQuoteError,

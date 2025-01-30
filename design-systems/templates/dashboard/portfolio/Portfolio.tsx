@@ -563,8 +563,6 @@ function Portfolio() {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
 
-  console.log(referralPoints, points, "points");
-
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">

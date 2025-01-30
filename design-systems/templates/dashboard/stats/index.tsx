@@ -127,7 +127,6 @@ function StatsTemplate() {
   const { usdValue: ethPrice } = useGetUsdValue();
   const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda();
   const { totalSupplyAbond } = useGetTotalSupplyAbond();
-  console.log(usdaSupply, "usdaSupply");
 
   const { omniChainData } = useGetomniChainData();
   const { userTotalBorrowAmount } = useGetTotalBorrow();
@@ -281,8 +280,6 @@ function StatsTemplate() {
       //   : "0";
     }
   };
-
-  console.log(totalSupplyAbond, abondValues, "totalSupplyAbond");
 
   return (
     <div className="mt-[-20px]">

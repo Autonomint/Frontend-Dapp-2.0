@@ -75,8 +75,6 @@ const RedeemContainer = () => {
     },
   });
 
-  console.log(formik);
-
   const chainId = useChainId();
 
   const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
@@ -101,16 +99,12 @@ const RedeemContainer = () => {
     }
   }, [abondbalance, amintbalance, formik.values.inputCollateral]);
 
-  console.log(formik, "formik");
-
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(200000, 0)
     .toHex()
     .toString() as `0x${string}`;
   const Eid = chainId === 11155111 ? 40245 : 40161;
   const { quoteValue: nativeFee1, quoteError } = useGetGlobalQuote(options);
-
-  console.log(nativeFee1?.nativeFee);
 
   const {
     isPending: amintApproveLoading,
@@ -169,8 +163,6 @@ const RedeemContainer = () => {
     // Handle errors during the process
     mutation: {
       onError: (error: any) => {
-        // console.log(error.message);
-        console.log("MESSAGE", error.cause);
         handleFail();
         // Show a custom toast notification for the error
       },
@@ -213,7 +205,7 @@ const RedeemContainer = () => {
       const link =
         chainId === 84532
           ? `https://sepolia.basescan.org/tx/${
-              formik.values.inputCollateral === "abond"
+              formik.values.inputCollateral === "amint"
                 ? redeemdataUsdt?.transactionHash
                 : redeemdataEth?.transactionHash
             } `
@@ -268,15 +260,11 @@ const RedeemContainer = () => {
     ],
   });
 
-  console.log(outputData, formik.values.collateralAmount, error, "outputData");
-
   useEffect(() => {
     if (
       formik.values.inputCollateral === "abond" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
-      console.log(abondbalance?.formatted);
-
       if (
         (formik.values.collateralAmount || 0) >
         Number(abondbalance?.formatted.slice(0, 8))
@@ -299,7 +287,6 @@ const RedeemContainer = () => {
       formik.values.inputCollateral === "amint" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
-      console.log(amintbalance?.formatted);
       if (
         (formik.values.collateralAmount || 0) >
         Number(amintbalance?.formatted.slice(0, 9))
@@ -393,7 +380,6 @@ const RedeemContainer = () => {
       },
       // Handle the successful completion of the CDS deposit process
       onSuccess: (data) => {
-        console.log(data);
         // Show a custom toast notification for the successful transaction
       },
     },
@@ -420,10 +406,8 @@ const RedeemContainer = () => {
   console.log(formik.errors, "w");
 
   async function handleSubmit(values: typeof initialValues) {
-    debugger;
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      console.log("redeem usdt");
       setUsdaApproveLocal(true);
       amintApproveWrite({
         abi: usDaAbi,
@@ -435,7 +419,6 @@ const RedeemContainer = () => {
         ],
       });
     } else if (values.inputCollateral === "abond") {
-      console.log("redeem eth");
       setRedeemLoadingLocal(true);
       setAbondApproveLoadingLocal(true);
       abondApproveWrite({
@@ -465,7 +448,6 @@ const RedeemContainer = () => {
 
   const pathname = usePathname();
 
-  console.log(abondApproveLoadingLocal, "abondApproveLoadingLocal");
 
   return (
     <div className="flex flex-col h-[78vh]">

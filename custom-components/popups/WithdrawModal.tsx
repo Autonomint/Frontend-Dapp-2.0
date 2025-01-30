@@ -224,7 +224,6 @@ export function DcdsWithdrawModal({
     confirmations: 2, // Number of confirmations required for success
   });
 
-  console.log(isCdserrorReceipt, "isCdserrorReceipt");
 
   useEffect(() => {
     if (isCdsSuccessReceipt) {
@@ -256,7 +255,6 @@ export function DcdsWithdrawModal({
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
-          s
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -270,7 +268,6 @@ export function DcdsWithdrawModal({
       handleDcdsFundWithdraw?.([BigInt(position.index)], nativeFee.nativeFee);
     }
   };
-  console.log(dcdsFundWithdrawLoadingLocal, withdrawMethodLoading, ".");
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     resetDcdsFundWithdraw();

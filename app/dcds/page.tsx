@@ -332,8 +332,6 @@ function page() {
     },
   });
 
-  console.log(formik.values, "formik");
-
   const dropdownItems = [
     {
       label: "30 Days",
@@ -454,9 +452,7 @@ function page() {
     usdtBalance,
     usdaBalance,
   ]);
-  console.log(usdtBalance, usdaBalance, tokenList, "usdtBalance");
 
-  console.log(GlobalContractData, "usdtAmountDepositedTillNow");
   const {
     approveUsda,
     approveUsdaDynamic,
@@ -629,8 +625,6 @@ function page() {
     }
   }, [usdaApprovalReceiptReceipt]);
 
-  console.log(formik.errors, "formik errors");
-
   const handleDeposit = () => {
     if (selectedTokens.length === 0) {
       toast.custom((t) => (
@@ -719,7 +713,6 @@ function page() {
   };
 
   const resetLoadings = () => {
-    console.log("resetting loadings");
     setTimeout(() => {
       setDcdsLoadingLocal(false);
     }, 1000);

@@ -165,7 +165,6 @@ function RatioOfCollaterals({
         `${BACKEND_API_URL}/borrows/chart/${chartApiFlag}/${chainId}/` +
           `${time === "allTime" ? "0/YES" : `${time}/NO`}`
       );
-      console.log("data chart : ", res);
       const data = await res.json();
       data.reverse();
       setChartData(data);
@@ -186,12 +185,7 @@ function RatioOfCollaterals({
       return calculateAverages(chartData, time);
     }, [time, chartData]);
 
-  console.log(
-    calculateAverages(chartData, time),
-    chartData,
-    time,
-    "calculateAverages"
-  );
+ 
 
   const dataLocal = {
     labels: formattedData.labels,
@@ -279,7 +273,6 @@ function RatioOfCollaterals({
           ].map((metric, index, arr) => {
             const total = arr.reduce((acc, item) => acc + item.value, 0);
             const percentage = (metric.value / total) * 100;
-            console.log(total, percentage, arr, RatioValuesBottom, "per");
 
             return (
               <div

@@ -63,7 +63,6 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
     try {
       await navigator.clipboard.writeText(referralLink);
       // Optionally, show a message to the user indicating the link was copied
-      console.log("Referral link copied to clipboard!");
       setCopy("Copied!");
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -107,7 +106,6 @@ const ReferPopup: React.FC<ReferPopupProps> = ({}) => {
     // Open the Twitter share URL in a new window
     window.open(shareUrl, "_blank");
   }
-  console.log(referral, referral !== "null", "referral");
 
   return (
     <Popup
