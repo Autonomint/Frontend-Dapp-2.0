@@ -1,4 +1,4 @@
-const ToastNotification = ({
+const ToastNotificationError = ({
   title,
   message,
   linkText,
@@ -7,7 +7,7 @@ const ToastNotification = ({
   onClose,
 }: {
   title: string;
-  message: string;
+  message?: string;
   linkText?: string;
   linkUrl?: string;
   className?: string;
@@ -16,23 +16,12 @@ const ToastNotification = ({
   return (
     <div
       className={
-        "bg-[#05A552] dark:bg-[#05A552] text-white p-4  shadow-lg flex items-start justify-between relative w-[278px] max-h-content " +
+        "bg-[#AA0001] dark:bg-[#FB3748] text-white p-4  shadow-lg flex items-start justify-between relative w-[278px] max-h-content " +
         ` ${className}`
       }
     >
       <div className="text-left">
         <div className="text-[18px] font-medium">{title}</div>
-        <div className="text-[14px] font-medium">{message}</div>
-        {linkUrl && (
-          <a
-            href={linkUrl}
-            className="text-[14px] underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {linkText}
-          </a>
-        )}
       </div>
       <button
         onClick={onClose}
@@ -44,4 +33,4 @@ const ToastNotification = ({
   );
 };
 
-export default ToastNotification;
+export default ToastNotificationError;

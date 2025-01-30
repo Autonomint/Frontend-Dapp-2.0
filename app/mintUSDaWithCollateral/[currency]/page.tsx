@@ -45,6 +45,7 @@ import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import { NetworkId } from "@/utils/constants";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 
 ChartJS.register(
   CategoryScale,
@@ -479,6 +480,14 @@ function AdditionalDetails({ currency }: { currency: string }) {
     useDepositTokens({
       onError: () => {
         setMintLoading(false);
+        toast.custom((t) => {
+          return (
+            <ToastNotificationError
+              title="Transaction failed, Please try again"
+              onClose={() => toast.dismiss(t)}
+            />
+          );
+        });
       },
     });
 
@@ -522,6 +531,16 @@ function AdditionalDetails({ currency }: { currency: string }) {
       setMintLoading(false);
       handleResetPage();
       router.push("/dashboard/portfolio");
+    } else if (depositHashError) {
+      setMintLoading(false);
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
     }
   }, [Depositdata, isDepositSuccess]);
 

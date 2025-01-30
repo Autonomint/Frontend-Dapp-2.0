@@ -16,6 +16,7 @@ import { Typography } from "@/components/ui/Typography";
 import AppNavbar from "@/custom-components/AppNavbar";
 import LoadingBox from "@/custom-components/LoadingBox";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -197,6 +198,12 @@ const RedeemContainer = () => {
 
   const handleFail = () => {
     toast.error("Redeem Failed");
+    toast.custom((t) => (
+      <ToastNotificationError
+        title="Transaction failed, Please try again"
+        onClose={() => toast.dismiss(t)}
+      />
+    ));
     handleClearLoading();
     refetchBlAbond();
     refetchBlAmint();
@@ -205,8 +212,16 @@ const RedeemContainer = () => {
     toast.custom((t) => {
       const link =
         chainId === 84532
-          ? `https://sepolia.basescan.org/tx/${redeemdataUsdt?.transactionHash} `
-          : `https://sepolia.etherscan.io/tx/${redeemdataUsdt?.transactionHash}`;
+          ? `https://sepolia.basescan.org/tx/${
+              formik.values.inputCollateral === "abond"
+                ? redeemdataUsdt?.transactionHash
+                : redeemdataEth?.transactionHash
+            } `
+          : `https://sepolia.etherscan.io/tx/${
+              formik.values.inputCollateral === "amint"
+                ? redeemdataUsdt?.transactionHash
+                : redeemdataEth?.transactionHash
+            }`;
 
       return (
         <ToastNotification

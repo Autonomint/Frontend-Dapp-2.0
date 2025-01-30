@@ -17,6 +17,7 @@ import LoadingBox from "../LoadingBox";
 import { toast } from "sonner";
 import { Typography } from "@/components/ui/Typography";
 import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 
 export function DcdsWithdrawModal({
   position,
@@ -205,7 +206,12 @@ export function DcdsWithdrawModal({
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
       setWithdrawMethodLoading(false);
-      toast.error("Withdraw Failed");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -247,7 +253,13 @@ export function DcdsWithdrawModal({
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
       setWithdrawMethodLoading(false);
-      toast.error("Withdraw Failed");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          s
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [cdsLogdataReceipt, isCdserrorReceipt]);
 

@@ -8,6 +8,7 @@ import { Typography } from "@/components/ui/Typography";
 import AppNavbar from "@/custom-components/AppNavbar";
 import LoadingBox from "@/custom-components/LoadingBox";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
 import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
 import { handleWheel, secondsToMinutes } from "@/utils/helpers";
@@ -287,6 +288,14 @@ function page() {
     }
   }, [sendAmount]);
 
+  useEffect(() => {
+    if (chainId === 11155111) {
+      setSendNetwork("Sepolia");
+    } else if (chainId === 84532) {
+      setSendNetwork("Base");
+    }
+  }, [chainId]);
+
   // Calculation Based on ChainID to bridge amount. It will fetch and update value of outputCollateralAmount (you can change according to your logic and write it clear)
   useEffect(() => {
     let letamount = (sendAmount || 0).toString();
@@ -484,12 +493,22 @@ function page() {
       setTimeout(() => {
         setTransferLoadingLocal(false);
       }, 1000);
-      toast.error("Transaction Failed");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [usdaTransactionConfirmed]);
 
   const handleTransferFail = () => {
-    toast.error("Transaction Failed");
+    toast.custom((t) => (
+      <ToastNotificationError
+        title="Transaction failed, Please try again"
+        onClose={() => toast.dismiss(t)}
+      />
+    ));
     clearLoading();
   };
   const clearLoading = () => {
@@ -586,13 +605,28 @@ function page() {
   // Handle the form submission
   async function onSubmit() {
     if (amountError) {
-      return toast.error(amountError);
+      return toast.custom((t) => (
+        <ToastNotificationError
+          title={amountError}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
     if (sendAmount === 0) {
-      return toast.error("Please enter a valid amount");
+      return toast.custom((t) => (
+        <ToastNotificationError
+          title={"Please enter a valid amount"}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
     if (!isConnected) {
-      return toast.error("Please connect your wallet");
+      return toast.custom((t) => (
+        <ToastNotificationError
+          title={"Please connect your wallet"}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
     if (accountAddress) {
       setTransferLoadingLocal(true);

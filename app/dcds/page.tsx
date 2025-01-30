@@ -44,6 +44,7 @@ import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useRouter } from "next/navigation";
 import { handleWheel } from "@/utils/helpers";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 function TokenTvlDetails({
   tokenName,
   tvl,
@@ -150,7 +151,12 @@ function AddToken({
 
   const toggleToken = () => {
     if (!tokenDetails.active) {
-      toast.error(tokenDetails.errorMessage);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title={tokenDetails?.errorMessage || ""}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
       return;
     }
     formik.setFieldValue(
@@ -384,7 +390,12 @@ function page() {
       })
       .catch(() => {
         toast.dismiss(customLoaderId);
-        toast.error("An error occurred!", { position: "top-right" });
+        toast.custom((t) => (
+          <ToastNotificationError
+            title={"An error occurred!"}
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
       });
   };
 
@@ -622,7 +633,12 @@ function page() {
 
   const handleDeposit = () => {
     if (selectedTokens.length === 0) {
-      toast.error("Please select token");
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please select token"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
       return;
     }
     resetFunctionState();
@@ -694,7 +710,12 @@ function page() {
 
   const handleDepositFailure = () => {
     resetLoadings();
-    toast.error("Deposit Failed");
+    toast.custom((t) => (
+      <ToastNotificationError
+        title="Transaction failed, Please try again"
+        onClose={() => toast.dismiss(t)}
+      />
+    ));
   };
 
   const resetLoadings = () => {

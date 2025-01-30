@@ -112,6 +112,10 @@ const OptionFeesValues = [
     headline: "Total Upside Gained",
     value: "15%",
   },
+  {
+    headline: "",
+    value: "",
+  },
 ];
 
 function StatsTemplate() {
@@ -353,7 +357,7 @@ function StatsTemplate() {
                 );
               })}
             </div>
-            <div className="flex flex-col gap-8">
+            <div className="flex  flex-col gap-8">
               {OptionFeesValues.map((item, index) => {
                 return (
                   <StatsMetrics
@@ -391,7 +395,6 @@ function StatsTemplate() {
                     ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
                     : ""
                 }`}
-                onClick={() => setFeeOption("Borrowing Fees")}
               >
                 Borrowing Fees
               </div>

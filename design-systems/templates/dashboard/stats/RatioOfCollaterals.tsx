@@ -268,12 +268,12 @@ function RatioOfCollaterals({
           {[
             {
               label: "Deposit",
-              value: Number(RatioValuesBottom[0]?.value),
+              value: Number(RatioValuesBottom[0]?.value.replace("%", "")),
               gradient: "#05A552",
             },
             {
               label: "Option Fee",
-              value: Number(RatioValuesBottom[1].value),
+              value: Number(RatioValuesBottom[1].value.replace("%", "")),
               gradient: "#478BFF",
             },
           ].map((metric, index, arr) => {

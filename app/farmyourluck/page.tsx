@@ -17,6 +17,7 @@ function Page() {
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
   const { theme } = useTheme();
+  const [isPayed, setIsPayed] = useState(false);
 
   useEffect(() => {
     if (selectedIndexForReward !== -1) {
@@ -39,12 +40,15 @@ function Page() {
   }, [buttonText]);
 
   const handleClick = (index: number) => {
-    setIsFlipped((prev) => {
-      const newFlipped = [...prev];
-      newFlipped[index] = !newFlipped[index];
-      return newFlipped;
-    });
-    setSelectedIndex(index);
+    debugger;
+    if (isPayed && selectedIndex == -1) {
+      setIsFlipped((prev) => {
+        const newFlipped = [...prev];
+        newFlipped[index] = !newFlipped[index];
+        return newFlipped;
+      });
+      setSelectedIndex(index);
+    }
   };
 
   const textVariants = {
@@ -88,7 +92,10 @@ function Page() {
               <div
                 key={index}
                 onClick={() => handleClick(index)}
-                className="group aspect-square lg:aspect-auto lg:h-auto lg:w-auto w-full h-full cursor-pointer"
+                className={
+                  `${selectedIndex === index ? "" : ""}` +
+                  "  group aspect-square lg:aspect-auto lg:h-auto lg:w-auto w-full h-full cursor-pointer"
+                }
               >
                 <div
                   className={`card-container ${
@@ -172,7 +179,14 @@ function Page() {
               </ol>
             </div>
             <button
-              onClick={() => setSelectedIndexForReward(selectedIndex)}
+              onClick={() => {
+                setIsPayed(true);
+                setButtonText("Select Card");
+
+                if (isPayed) {
+                  setSelectedIndexForReward(selectedIndex);
+                }
+              }}
               className="absolute bg-black w-full left-0 bottom-0 text-white h-[90px] font-bold text-[32px] dark:bg-custom-gradient-to-top"
             >
               <AnimatePresence mode="wait">
