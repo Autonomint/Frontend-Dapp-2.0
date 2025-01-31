@@ -189,7 +189,6 @@ const RedeemContainer = () => {
   }, [redeemdataUsdt]);
 
   const handleFail = () => {
-    toast.error("Redeem Failed");
     toast.custom((t) => (
       <ToastNotificationError
         title="Transaction failed, Please try again"
@@ -467,6 +466,7 @@ const RedeemContainer = () => {
               Input Amount
             </span>
             <Input
+              placeholder="0"
               onWheel={handleWheel}
               type="number"
               name="collateralAmount"
@@ -526,7 +526,7 @@ const RedeemContainer = () => {
                   </div>
                 </div>
               ) : formik.values.inputCollateral === "abond" ? (
-                <div className="text-sm text-[#041A50] mt-2 font-medium dark:text-[#FFFF] flex justify-between">
+                <div className="text-sm text-black mt-2 font-medium dark:text-[#FFFF] flex justify-between">
                   <div className="flex justify-start items-center gap-2 mr-1 basis-2/5">
                     <div className="flex items-center p-1 text-2xl  text-bold">
                       {outputData
@@ -545,7 +545,7 @@ const RedeemContainer = () => {
                   <div className="flex justify-between basis-2/5 text-bold"></div>
                 </div>
               ) : (
-                <div className="flex items-center pt-1 basis-3/5 text-[#00679F] dark:text-white text-2xl font-semibold">
+                <div className="flex items-center pt-1 basis-3/5 text-black dark:text-white text-2xl font-semibold">
                   Output Amount
                 </div>
               )}
