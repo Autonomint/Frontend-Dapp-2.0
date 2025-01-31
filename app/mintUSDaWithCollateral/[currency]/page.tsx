@@ -297,7 +297,7 @@ function AdditionalMetics({
                   {[
                     {
                       label: "Deposit",
-                      value: Number(deposit || 0),
+                      value: Number(usdaBorrowed || 0),
                       gradient:
                         "linear-gradient(to right, #627EEA4D,#627EEA00)",
                       gradientText: "#627EEA",
@@ -310,7 +310,8 @@ function AdditionalMetics({
                       gradient: "linear-gradient(to left, #FF52704D,#FF527000)",
                       gradientText: "#FF5270",
                       percentLeftPx: "-28px",
-                      borderLeftPx: "23px",
+                      borderLeftPx: "",
+                      borderRightPx: "0px",
                     },
 
                     {
@@ -366,6 +367,7 @@ function AdditionalMetics({
                             width: "2px",
                             backgroundColor: metric.gradientText,
                             left: metric.borderLeftPx,
+                            right: metric.borderRightPx,
                           }}
                         />
 
@@ -386,7 +388,7 @@ function AdditionalMetics({
                   {[
                     {
                       label: "Deposit",
-                      value: Number(deposit),
+                      value: Number(usdaBorrowed),
                       gradient: "#627EEA",
                     },
                     {

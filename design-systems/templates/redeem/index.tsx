@@ -448,9 +448,8 @@ const RedeemContainer = () => {
 
   const pathname = usePathname();
 
-
   return (
-    <div className="flex flex-col h-[78vh]">
+    <div className="flex flex-col h-full mb-20">
       <AppNavbar
         activeBack={true}
         tabOptions={[
@@ -514,14 +513,14 @@ const RedeemContainer = () => {
             </Typography>
           </div>
         </div>
-        <div className="border border-solid border-grayLight-1 dark:border-grayLight p-5 mt-8">
+        <div className="border border-solid border-grayLight dark:border-grayLight p-5 mt-8">
           <div className="flex justify-between">
             <div className="text-grayLight text-lg ">Redeemable Amount</div>
           </div>
           <div className="md:text-[42px] text-[32px] text-textBlack  mt-8 font-medium dark:text-white">
             <div>
               {formik.values.inputCollateral === "amint" ? (
-                <div className="text-sm text-[#004795] font-medium dark:text-[#FFFF] mt-2 flex justify-start">
+                <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
                   <div className="p-1 text-2xl basis-3/5 text-bold">
                     {formik.values.collateralAmount} USDT
                   </div>

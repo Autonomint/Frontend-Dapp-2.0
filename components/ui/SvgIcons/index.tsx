@@ -187,9 +187,9 @@ export const DownArrowIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M13 1.00005C13 1.00005 8.5811 7 7 7C5.4188 7 1 1 1 1"
         // stroke={strokeColor}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -206,14 +206,14 @@ export const FormYourLuckIcon: React.FC<SvgIconProps> = (props) => {
     >
       <path
         d="M9.7296 17.6026C8.53332 17.5946 6.88598 17.302 5.59343 16.0095C3.29144 13.7075 4.16108 10.2801 4.16108 10.2801C4.16108 10.2801 5.95576 9.82483 7.82017 10.4454C7.80655 10.3433 7.79513 10.2399 7.78616 10.1351C7.77023 9.94889 7.76175 9.75857 7.76181 9.56385C7.76175 5.5577 11.3228 3.33203 11.3228 3.33203C11.3228 3.33203 13.548 4.72287 14.4805 7.28451C17.5829 5.11396 21.3492 5.98305 21.3492 5.98305C21.3492 5.98305 22.2183 9.74937 20.0478 12.8518C22.6095 13.7843 24.0002 16.0095 24.0002 16.0095C24.0002 16.0095 21.7746 19.5706 17.7684 19.5705C17.4643 19.5705 17.1703 19.55 16.8869 19.5121C17.5074 21.3765 17.0522 23.1712 17.0522 23.1712C17.0522 23.1712 13.6248 24.0408 11.3228 21.7388"
-        stroke-width="1.66669"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.66669"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M4 23.332L15.1112 12.2207"
-        stroke-width="1.66669"
-        stroke-linecap="round"
+        strokeWidth="1.66669"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -231,9 +231,9 @@ export const CheckIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M1 5L3.5 7.5L9 1.5"
         stroke="#111111"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -251,14 +251,14 @@ export const LinkIcon: React.FC<SvgIconProps> = (props) => {
       <path
         d="M7.39917 2C4.96653 2.00438 3.69265 2.06411 2.87855 2.87835C2 3.75704 2 5.17128 2 7.99972C2 10.8282 2 12.2425 2.87855 13.1211C3.7571 13.9999 5.17111 13.9999 7.99917 13.9999C10.8271 13.9999 12.2412 13.9999 13.1197 13.1211C13.9338 12.3069 13.9935 11.0328 13.9979 8.59979"
         stroke="white"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M13.7027 2.33034L7.3645 8.70533M13.7027 2.33034C13.3734 2.0006 11.1549 2.03133 10.6859 2.03801M13.7027 2.33034C14.032 2.66009 14.0013 4.88141 13.9946 5.35102"
         stroke="white"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
