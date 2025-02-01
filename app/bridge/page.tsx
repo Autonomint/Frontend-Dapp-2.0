@@ -313,8 +313,8 @@ function page() {
     //   amount = parseEther(letamount) - nativeFee2.nativeFee;
     // }
 
-    if (sendAmount != 0) {
-      setReceiveAmount(Number(formatUnits(amount, 18)));
+    if (sendAmount != null) {
+      setReceiveAmount(Number(formatUnits(sendAmount == 0 ? 0n : amount, 18)));
     }
   }, [sendAmount]);
 
@@ -707,7 +707,7 @@ function page() {
   // }, [form.watch("inputCollateral")]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full ">
       <AppNavbar activeBack={false} />
       <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
         <BridgeComponentLeft
@@ -733,22 +733,13 @@ function page() {
           receiveAmount={receiveAmount}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
-          <BridgeMetricFields
-            label={"Gas"}
-            value={
-              sendToken === "USDa"
-                ? (Number(nativeFee1?.nativeFee) / 10 ** 18).toString()
-                : sendToken === "TUSDT"
-                ? (Number(nativeFee2?.nativeFee) / 10 ** 18).toString()
-                : "0"
-            }
-          />
+          <BridgeMetricFields label={"Gas"} value={"-"} />
           <BridgeMetricFields
             label={"Time"}
             value={secondsToMinutes(estimateTime * 2)}
           />
         </div>
-        <div className="h-[100px] w-full">
+        <div className=" w-full">
           {!transferLoadingLocal && (
             <Button
               onClick={onSubmit}

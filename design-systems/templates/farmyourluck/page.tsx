@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import "../../../styles/farmyourluckstyles.css";
 import { useTheme } from "next-themes";
 import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
+import { toast } from "sonner";
+import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 
 function FarmYourLuckTemplate() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -33,23 +35,6 @@ function FarmYourLuckTemplate() {
       setRewardAmount("+0.001 ETH");
     }
   }, [buttonText]);
-
-  const handleLuckCardClick = (index: number) => {
-    if (isPayed && selectedIndex == -1) {
-      setIsFlipped((prev) => {
-        const newFlipped = [...prev];
-        newFlipped[index] = !newFlipped[index];
-        return newFlipped;
-      });
-
-      setSelectedIndex(index);
-      if (isPayed && selectedIndexForReward === -1) {
-        setSelectedIndexForReward(index);
-      }
-      setButtonText("Reveal Reward");
-      setSupportingText("Revealed upon confirmation.");
-    }
-  };
 
   const textVariants = {
     hidden: { opacity: 0, x: 50 },
@@ -89,13 +74,13 @@ function FarmYourLuckTemplate() {
       userChosenBoxIndex: selectedIndexForReward,
     });
 
-
     if (selectedIndexForReward !== -1 && res) {
       setSupportingText("Congratulations! You have earned");
       setButtonText("Congratulations!");
       setRewardAmount("0.01 ETH");
 
       setIsRevealed(true);
+
       return;
     } else if (selectedIndexForReward !== -1 && !res) {
       setRewardAmount("Better Luck Next Time");
@@ -104,6 +89,68 @@ function FarmYourLuckTemplate() {
       setIsRevealed(true);
     }
   };
+
+  const handleLuckCardClick = (index: number) => {
+    if (!isPayed) {
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            onClose={() => toast.dismiss(t)}
+            title="Please Pay $5 First"
+          />
+        );
+      });
+    }
+    if (isPayed && !isRevealed) {
+      setIsFlipped((prev) => {
+        const newFlipped = [...prev].map((value) => false);
+        newFlipped[index] = !newFlipped[index];
+        return newFlipped;
+      });
+
+      setSelectedIndex(index);
+      if (isPayed && selectedIndexForReward === -1) {
+        setSelectedIndexForReward(index);
+      }
+      setButtonText("Reveal Reward");
+      setSupportingText("Revealed upon confirmation.");
+    }
+  };
+
+  const handleReset = () => {
+    setSelectedIndex(-1);
+    setSelectedIndexForReward(-1);
+    setIsFlipped(Array.from({ length: 9 }).fill(false));
+    setIsRevealed(false);
+    setGotReward(false);
+    setSupportingText("Tap a card to view details");
+    setRewardAmount("");
+    setButtonText("Pay $5");
+    setIsPayed(false);
+  };
+
+  const handleButtonClick = () => {
+    setIsPayed(true);
+
+    if (isRevealed) {
+      handleReset();
+    }
+
+    if (!isPayed) {
+      setButtonText("Pay $5");
+    }
+
+    if (selectedIndexForReward == -1) {
+      setButtonText("Select Card");
+    }
+
+    if (isPayed && selectedIndexForReward !== -1 && !isRevealed) {
+      handleCheckLuck();
+    }
+  };
+
+  console.log(isPayed, selectedIndex == -1, "check");
+
   return (
     <div className="h-full w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
@@ -115,7 +162,9 @@ function FarmYourLuckTemplate() {
                 key={index}
                 onClick={() => handleLuckCardClick(index + 1)}
                 className={
-                  `${selectedIndex === index + 1 ? "" : ""}` +
+                  `border-grayLight border-[1px] ${
+                    selectedIndex === index + 1 ? "" : ""
+                  }` +
                   "  group aspect-square lg:aspect-auto lg:h-auto lg:w-auto w-full h-full cursor-pointer"
                 }
               >
@@ -126,9 +175,11 @@ function FarmYourLuckTemplate() {
                 >
                   <div className="card-front"></div>
                   <div
-                    className={`card-back text-center ${
+                    className={`  card-back text-center ${
                       selectedIndex === index + 1 &&
-                      selectedIndexForReward === index + 1
+                      selectedIndexForReward === index + 1 &&
+                      isRevealed &&
+                      isPayed
                         ? "selected selected-for-reward"
                         : selectedIndex === index + 1
                         ? "selected"
@@ -143,9 +194,9 @@ function FarmYourLuckTemplate() {
                         selectedIndexForReward === index + 1 &&
                         isPayed &&
                         isRevealed
-                          ? "selected-for-reward-amount"
+                          ? "selected-for-reward-amount "
                           : "selected-for-reward-amount-hidden"
-                      }`}
+                      } text-[28px] 2xl:text-[32px] 3xl:text-[42px]`}
                     >
                       {rewardAmount}
                     </div>
@@ -203,20 +254,13 @@ function FarmYourLuckTemplate() {
               </ol>
             </div>
             <button
-              onClick={() => {
-                if (!isPayed) {
-                  setButtonText("Pay $5");
-                }
-                setIsPayed(true);
-                if (selectedIndexForReward == -1) {
-                  setButtonText("Select Card");
-                }
-
-                if (isPayed && selectedIndexForReward !== -1) {
-                  handleCheckLuck();
-                }
-              }}
-              className="absolute bg-black w-full left-0 bottom-0 text-white h-[90px] font-bold text-[32px] dark:bg-custom-gradient-to-top"
+              disabled={isPayed && selectedIndex == -1}
+              onClick={() => handleButtonClick()}
+              className={`  absolute w-full  left-0 bottom-0 text-white h-[90px] font-bold text-[32px]  ${
+                isPayed && selectedIndex == -1
+                  ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
+                  : " bg-black  dark:bg-custom-gradient-to-top"
+              }`}
             >
               <AnimatePresence mode="wait">
                 <motion.span

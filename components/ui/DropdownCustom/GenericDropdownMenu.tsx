@@ -55,7 +55,7 @@ export function GenericDropdownMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className={`bg-white dark:bg-black border border-gray-300 dark:border-gray-700 shadow-md`}
+        className={`bg-white dark:bg-black border p-3 border-grayLight dark:border-gray-700 shadow-md`}
         style={{ width: dropdownWidth }}
         align="start"
       >
@@ -64,7 +64,7 @@ export function GenericDropdownMenu({
             <DropdownMenuItem
               onClick={item.onClick}
               disabled={item.disabled}
-              className={`${
+              className={` text-[18px] ${
                 item.disabled ? "opacity-50 cursor-not-allowed" : "opacity-100"
               }`}
             >

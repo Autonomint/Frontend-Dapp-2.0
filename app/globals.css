@@ -208,3 +208,54 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.loader {
+  border: 16px solid transparent;
+  border-radius: 50%;
+  border-top: 16px solid transparent;
+  border-bottom: 16px solid transparent;
+  width: 100%;
+  height: 100%;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 8s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+/* Optionally, you can target autofill for specific input types like text, email, etc. */
+input[type="text"]:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
+  border: 1px solid #ccc;
+  background: transparent;
+}
+/* Optionally, you can target autofill for specific input types like text, email, etc. */
+input[type="number"]:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  box-shadow: 0 0 0px 1000px transparent inset;
+  border: 1px solid #ccc;
+  background: transparent;
+}

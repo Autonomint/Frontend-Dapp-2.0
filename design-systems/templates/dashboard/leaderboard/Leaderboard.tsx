@@ -6,6 +6,7 @@ import useGetLeaderboard, {
 import { formatNumber, sortWalletAddress } from "@/utils/helpers";
 import { formatEther } from "viem";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 
 function PortolioTable({
   leaderboardData,
@@ -100,6 +101,8 @@ function Leaderboard() {
     totalDepositedCount,
   } = useGetLeaderboard();
 
+  const { points, referralPoints } = useGetUserPoint();
+
   return (
     <div className="flex flex-col">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -132,7 +135,9 @@ function Leaderboard() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value="2.6 Million"
+            value={
+              points == undefined ? 0 : points[1] + Number(referralPoints ?? 0)
+            }
           />
         </div>
       </div>

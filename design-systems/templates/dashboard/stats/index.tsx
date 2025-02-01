@@ -373,10 +373,10 @@ function StatsTemplate() {
           </div>
         </div>
         <div className="flex  relative flex-col">
-          <div className="absolute w-[40%] top-[20px] left-[26px]">
+          <div className="absolute w-[35%] 2xl:w-[35%] top-[20px] left-[26px]">
             <div className="flex w-[100%] flex-1 border border-grayLight text-left relative">
               <div
-                className={`flex-1 p-[8px] text-center cursor-pointer ${
+                className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${
                   feeOption === "Option Fees"
                     ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
                     : ""
@@ -387,7 +387,7 @@ function StatsTemplate() {
               </div>
               <div className="w-[1px] bg-grayLight h-auto"></div>
               <div
-                className={`flex-1 p-[8px] text-center cursor-pointer ${
+                className={`flex-1 p-[2px] py-[10px] flex items-center justify-center  text-[15px] 2xl:text-[18px] 2xl:p-[8px] text-center cursor-pointer ${
                   feeOption === "Borrowing Fees"
                     ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
                     : ""
@@ -398,7 +398,7 @@ function StatsTemplate() {
             </div>
           </div>
 
-          <div>
+          <div className="">
             {feeOption === "Option Fees" ? (
               <ChartComponent
                 stats={[]}

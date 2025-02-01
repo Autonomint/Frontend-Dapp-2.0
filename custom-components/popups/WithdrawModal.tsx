@@ -185,7 +185,7 @@ export function DcdsWithdrawModal({
     handleDepositData();
     setOpenConfirmNotice(true);
     setSpinner(false);
-  }, [position, lastCumulativeRate, interestGained]);
+  }, [position, lastCumulativeRate, interestGained, apy]);
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
@@ -223,7 +223,6 @@ export function DcdsWithdrawModal({
     hash: dcdsFundWithdrawData, // The transaction hash to wait for
     confirmations: 2, // Number of confirmations required for success
   });
-
 
   useEffect(() => {
     if (isCdsSuccessReceipt) {
@@ -274,6 +273,8 @@ export function DcdsWithdrawModal({
     setDcdsFundWithdrawLoadingLocal(false);
     setWithdrawMethodLoading(false);
   };
+  console.log(depositData, "depositData");
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">

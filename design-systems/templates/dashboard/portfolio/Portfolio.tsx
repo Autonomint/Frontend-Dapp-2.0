@@ -622,7 +622,7 @@ function Portfolio() {
           Deposited Position
         </div>
         <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border-grayLight border  border-r-0 border-solid"></div>
-        <div className="flex w-[48%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
+        <div className="flex w-[42%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}

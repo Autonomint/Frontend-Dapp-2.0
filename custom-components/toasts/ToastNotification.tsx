@@ -18,7 +18,7 @@ const ToastNotification = ({
   return (
     <div
       className={
-        "bg-[#05A552] dark:bg-[#05A552] text-white p-4  shadow-lg flex items-start justify-between relative w-[278px] max-h-content " +
+        "bg-[#05A552] dark:bg-[#05A552] text-white p-4 pr-6 shadow-lg flex items-start justify-between relative w-[320px] max-h-content " +
         ` ${className}`
       }
     >

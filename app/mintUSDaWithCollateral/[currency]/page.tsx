@@ -297,7 +297,7 @@ function AdditionalMetics({
                   {[
                     {
                       label: "Deposit",
-                      value: Number(deposit || 0),
+                      value: Number(usdaBorrowed || 0),
                       gradient:
                         "linear-gradient(to right, #627EEA4D,#627EEA00)",
                       gradientText: "#627EEA",
@@ -310,7 +310,8 @@ function AdditionalMetics({
                       gradient: "linear-gradient(to left, #FF52704D,#FF527000)",
                       gradientText: "#FF5270",
                       percentLeftPx: "-28px",
-                      borderLeftPx: "23px",
+                      borderLeftPx: "",
+                      borderRightPx: "0px",
                     },
 
                     {
@@ -366,6 +367,7 @@ function AdditionalMetics({
                             width: "2px",
                             backgroundColor: metric.gradientText,
                             left: metric.borderLeftPx,
+                            right: metric.borderRightPx,
                           }}
                         />
 
@@ -386,7 +388,7 @@ function AdditionalMetics({
                   {[
                     {
                       label: "Deposit",
-                      value: Number(deposit),
+                      value: Number(usdaBorrowed),
                       gradient: "#627EEA",
                     },
                     {
@@ -432,11 +434,14 @@ function AdditionalMetics({
 
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
-  collateralAmount: Yup.mixed().required("Collateral amount is required"),
+  collateralAmount: Yup.number()
+    .max(Yup.ref("balance"), `Amont must be less than or equal to balance`)
+    .required("Collateral amount is required"),
   strikePrice: Yup.number()
     .min(5, "Minimum is 5")
     .max(25, "Maximum is 25")
     .required("Strike price is required"),
+  balance: Yup.number(),
 });
 
 function AdditionalDetails({ currency }: { currency: string }) {
@@ -458,11 +463,17 @@ function AdditionalDetails({ currency }: { currency: string }) {
       collateral: currency || "eth",
       collateralAmount: 0,
       strikePrice: 5,
+      balance: 0,
     },
     validationSchema: formSchema,
     onSubmit: handleMint,
   });
 
+  console.log(formik, "balance");
+
+  useEffect(() => {
+    formik.setFieldValue("balance", formattedBalance);
+  }, [formattedBalance]);
   useEffect(() => {
     formik.setFieldValue("collateral", currency);
   }, [currency]);
@@ -550,6 +561,24 @@ function AdditionalDetails({ currency }: { currency: string }) {
   };
 
   async function handleMint(values: any) {
+    if (!address) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please connect your wallet"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+    if (!formik.values.collateralAmount) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please enter amount"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
     setMintLoading(true);
     setMintBtnLoading(true);
     reset();

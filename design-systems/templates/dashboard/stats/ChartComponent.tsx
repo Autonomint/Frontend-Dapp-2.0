@@ -218,19 +218,22 @@ export function ChartComponent({
       }}
     >
       <div className="flex justify-between">
-        <span
-          style={{
-            display: hideElements ? "none" : "block",
-          }}
-          className="flex-1 justify-center items-center font-medium text-[24px] text-grayLight"
-        >
-          {title}
-        </span>
+        <div className="w-[40%] ">
+          <span
+            style={{
+              display: hideElements ? "none" : "block",
+            }}
+            className="flex-1 justify-center items-center font-medium text-[24px] text-grayLight"
+          >
+            {title}
+          </span>
+        </div>
+
         <div
           style={{
             display: hideElements ? "none" : "block",
           }}
-          className="hidden flex-1 lg:block"
+          className="hidden flex-1 lg:block w-[60%]"
         >
           <TimeFrame timeFrame={time} setTime={setTime} />
         </div>
