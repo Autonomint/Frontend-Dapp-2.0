@@ -115,7 +115,7 @@ export function StatsMetrics({
   className?: string;
 }) {
   return (
-    <div className="flex flex-col flex-1 gap-3">
+    <div className="flex w-1/2 lg:flex-1 flex-col  gap-3">
       <span className="text-[24px] font-medium text-textBlack dark:text-white">
         {value}
       </span>
@@ -217,8 +217,8 @@ export function ChartComponent({
         borderTop: "none",
       }}
     >
-      <div className="flex justify-between">
-        <div className="w-[40%] ">
+      <div className="flex lg:flex-col xl:flex-row justify-between">
+        <div className="w-full sm:w-[40%] lg:w-full xl:w-[40%]  ">
           <span
             style={{
               display: hideElements ? "none" : "block",
@@ -230,10 +230,8 @@ export function ChartComponent({
         </div>
 
         <div
-          style={{
-            display: hideElements ? "none" : "block",
-          }}
-          className="hidden flex-1 lg:block w-[60%]"
+          style={{}}
+          className="hidden flex-1 lg:flex lg-mt-4 xl-mt-0 lg:w-[100%] w-[60%]"
         >
           <TimeFrame timeFrame={time} setTime={setTime} />
         </div>
@@ -242,7 +240,7 @@ export function ChartComponent({
         style={{
           display: hideElements ? "none" : "flex",
         }}
-        className="flex py-3 my-3"
+        className="flex flex-wrap  w-full py-3 my-3"
       >
         {stats.map((item, index) => {
           return (

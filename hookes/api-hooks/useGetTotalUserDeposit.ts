@@ -30,6 +30,7 @@ const useGetTotalUserDeposit = () => {
         NetworkId.EthereumSepolia.toString(),
         address ? address : undefined
       ),
+    retry: 1,
     staleTime: 5000,
     enabled: !!address,
   });
@@ -40,13 +41,14 @@ const useGetTotalUserDeposit = () => {
     isSuccess: baseSepoliaCDSDataFetched,
     refetch: refetchBaseSepoliaCDSDepositorData,
   } = useQuery({
-    queryKey: ["dCDSdepositorsData", NetworkId.BaseSepolia, , address],
+    queryKey: ["dCDSdepositorsUserData", NetworkId.BaseSepolia, , address],
     queryFn: () =>
       getCDSDepositorData(
         NetworkId.BaseSepolia.toString(),
         address ? address : undefined
       ),
     staleTime: 5000,
+    retry: 1,
     enabled: !!address,
   });
 

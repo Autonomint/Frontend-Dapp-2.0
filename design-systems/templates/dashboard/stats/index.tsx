@@ -282,8 +282,8 @@ function StatsTemplate() {
   };
 
   return (
-    <div className="mt-[-20px]">
-      <div className="grid md:grid-cols-2 grid-cols-1 ">
+    <div className="md:mt-[-20px]">
+      <div className="grid lg:grid-cols-2 grid-cols-1 ">
         <div>
           <ChartComponent
             stats={amintPrice}
@@ -330,7 +330,7 @@ function StatsTemplate() {
         />
       </div>
 
-      <div className="grid md:grid-cols-2 grid-cols-1 ">
+      <div className="grid lg:grid-cols-2 grid-cols-1 ">
         <div className="p-5 border-left border-grayLight border-[1px]">
           <div className="flex justify-between">
             <span className="flex-1 font-medium text-[24px] text-grayLight">
@@ -373,7 +373,7 @@ function StatsTemplate() {
           </div>
         </div>
         <div className="flex  relative flex-col">
-          <div className="absolute w-[35%] 2xl:w-[35%] top-[20px] left-[26px]">
+          <div className="absolute w-[80%] md:w-[35%] lg:w-[50%] 2xl:w-[35%] top-[20px] left-[20px]">
             <div className="flex w-[100%] flex-1 border border-grayLight text-left relative">
               <div
                 className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${
@@ -398,7 +398,7 @@ function StatsTemplate() {
             </div>
           </div>
 
-          <div className="">
+          <div className="lg:mt-14 xl:mt-0">
             {feeOption === "Option Fees" ? (
               <ChartComponent
                 stats={[]}

@@ -25,7 +25,7 @@ export default function Footer() {
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">
         <div className="flex w-full justify-center  text-sm rounded-md">
           <div className="flex w-full justify-between  ">
-            <div className="flex items-center  gap-4">
+            <div className="  items-center hidden lg:flex  gap-4">
               <div className="w-[3rem] h-[3rem]">
                 <Image
                   src={logo}
@@ -47,7 +47,7 @@ export default function Footer() {
                 />
               </div>
             </div>
-            <div className="w-[20%] flex gap-6 justify-end mr-4">
+            <div className="lg:w-[20%] w-full flex gap-6 justify-center lg:justify-end mr-4">
               <Button
                 variant={"shadowOutline"}
                 className="border-[#041A50] p-[10px]"

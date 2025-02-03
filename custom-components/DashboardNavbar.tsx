@@ -1,8 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import React from "react";
-import Image from "next/image";
-import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 
 function DashboardNavbar() {
@@ -30,11 +26,11 @@ function DashboardNavbar() {
 
   return (
     <div className="flex">
-      <div className="hidden md:flex w-full border border-grayLight border-r-0 border-l-0 my-5">
+      <div className="flex w-full border border-grayLight border-r-0 border-l-0 sm:my-5">
         {navList.map(({ nameA, path, isActive }) => (
           <div
             key={nameA}
-            className={`flex-1 px-5 py-2 text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+            className={`flex-1 px-5 py-2 text-[18px] sm:text-[24px] lg:text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
               isActive
                 ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
                 : ""
@@ -46,12 +42,12 @@ function DashboardNavbar() {
         ))}
       </div>
 
-      <div
+      {/* <div
         className="flex md:hidden  w-full px-5 py-2 text-[32px]  font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.nameA || "Select Tab"}
-      </div>
+      </div> */}
     </div>
   );
 }

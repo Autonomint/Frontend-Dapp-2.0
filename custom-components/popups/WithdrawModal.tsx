@@ -277,15 +277,8 @@ export function DcdsWithdrawModal({
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-      <DialogContent className="sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
-        <div
-          style={{
-            fontSize: "28px",
-            fontWeight: "500",
-          }}
-        >
-          Withdraw Fund
-        </div>
+      <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
+        <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
         {/* <div className="flex justify-between mt-8 mb-6 text-textBlack">
           <span
             style={{
@@ -308,11 +301,11 @@ export function DcdsWithdrawModal({
           {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
             return (
               <div key={idx} className="flex justify-between mb-2">
-                <span className="text-[18px] font-medium text-grayLight">
+                <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
                   {" "}
                   {dcdsWidthDrawMetricsObj.headline}
                 </span>
-                <span className="text-[18px] dark:text-white font-medium text-textBlack">
+                <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
                   {dcdsWidthDrawMetricsObj.value}
                 </span>
               </div>
@@ -321,16 +314,16 @@ export function DcdsWithdrawModal({
         </div>
         <div className="flex w-full">
           <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-            <Label className="text-[18px] font-normal text-[#777777]">
+            <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
               Price Gains
             </Label>
-            <Label className="text-[24px] font-medium dark:text-white">
+            <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
               {(
                 Number(apy == undefined ? 0 : apy[1]) +
                 Number(apy == undefined ? 0 : apy[2])
               ).toFixed(2)}
             </Label>
-            <Label className="text-[14px] font-normal text-[#777777]">
+            <Label className=" text-[12px] font-normal text-[#777777]">
               Option Fee + Liquidation Gains
             </Label>
             <Label className="text-[14px] font-medium dark:text-white">
@@ -338,19 +331,22 @@ export function DcdsWithdrawModal({
             </Label>
           </div>
           <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
-            <Label className="text-[18px] font-normal text-[#777777]">
+            <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
               Yields
             </Label>
-            <Label className="text-[24px] font-medium dark:text-white">
+            <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
               {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
             </Label>
           </div>
         </div>
-        <Typography className=" text-[16px] text-[#777777] ">
+        <Typography
+          variant="regular"
+          className="text-[14px] md:text-[16px] text-[#777777] "
+        >
           Note: Your amount will be used to offer protection to borrowers &
           protocol in return for fixed yields
         </Typography>
-        <div className="h-[86px]">
+        <div className="h-[50px] md:h-[86px]">
           {!dcdsFundWithdrawLoadingLocal && (
             <Button
               onClick={handleWithdrawFund}
@@ -358,7 +354,7 @@ export function DcdsWithdrawModal({
                 (position.status === "WITHDREW" ? true : false) ||
                 Number(position.lockingPeriod) * 1000 > Date.now()
               }
-              className="w-full  p-8 py-10 bg-black text-white text-[32px]"
+              className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
             >
               {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
             </Button>
