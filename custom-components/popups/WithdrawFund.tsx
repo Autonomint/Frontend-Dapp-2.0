@@ -16,8 +16,8 @@ import { toast } from "sonner";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
-import { RadioGroupItem } from "@/components/ui/radio-group";
 import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -242,12 +242,18 @@ export function WithdrawFund({
     cumulativeRateSuccess,
   } = useCalculateInterest({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -256,6 +262,7 @@ export function WithdrawFund({
     isSuccess: cumulativeRateReciptSuccess,
     data: culmulativeData,
     isFetching: isCumulativeFetching,
+    isError: cumulativeRateErrorReceipt,
   } = useWaitForTransactionReceipt({
     hash: (cumulativeRate || "0x") as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
@@ -272,12 +279,18 @@ export function WithdrawFund({
     usdaApproveError,
   } = useApproveUsda({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -301,12 +314,18 @@ export function WithdrawFund({
     borrowWithdrawError,
   } = useWithdrawUsda({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -314,6 +333,7 @@ export function WithdrawFund({
     isLoading: isLoadingWithdrawReceipt,
     isSuccess: isSuccessWithdrawReceipt,
     data: withdrawReceipt,
+    isError: withdrawErrorReceipt,
   } = useWaitForTransactionReceipt({
     hash: (borrowWithdrawData || "0x") as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
@@ -345,6 +365,13 @@ export function WithdrawFund({
       setTimeout(() => {
         setRepayLoading(false);
       }, 1000);
+    } else if (withdrawErrorReceipt) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt]);
 
@@ -378,6 +405,13 @@ export function WithdrawFund({
         setWithdrawLoadingLocal(true);
       }, 800);
       withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
+    } else if (usdaHashError) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [usdaHashData]);
 
@@ -408,10 +442,10 @@ export function WithdrawFund({
                     type="radio"
                     checked={toggleView === "repay"}
                     onChange={() => setToggleView("repay")}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] dark:border-white border-black dark:checked:border-white checked:border-black transition-all"
                     id="html"
                   />
-                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                  <span className="absolute bg-black w-3 h-3 dark:bg-white rounded-full opacity-0 peer-checked:opacity-100  transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>
               </div>
               <label
@@ -433,10 +467,10 @@ export function WithdrawFund({
                     type="radio"
                     onChange={() => setToggleView("renew")}
                     checked={toggleView === "renew"}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
                     id="html"
                   />
-                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                  <span className="absolute dark:bg-white bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>
               </div>
               <label
@@ -481,7 +515,7 @@ export function WithdrawFund({
                 )}
                 <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
-                  isFailure={cumulativeRateError}
+                  isFailure={cumulativeRateError || cumulativeRateErrorReceipt}
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
                   heading="Calculating Interest "

@@ -46,7 +46,12 @@ const Popup = ({
                   {title || "Popup Title"}
                 </Typography>
                 <span className="cursor-pointer" onClick={togglePopup}>
-                  <X />
+                  <X
+                    style={{ width: "24px", height: "24px" }}
+                    size={50}
+                    width={50}
+                    height={50}
+                  />
                 </span>
               </div>
               {children}

@@ -249,13 +249,13 @@ input:-webkit-autofill {
 input[type="text"]:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px transparent inset;
   box-shadow: 0 0 0px 1000px transparent inset;
-  border: 1px solid #ccc;
+  border: 1px solid transparent;
   background: transparent;
 }
 /* Optionally, you can target autofill for specific input types like text, email, etc. */
 input[type="number"]:-webkit-autofill {
   -webkit-box-shadow: 0 0 0px 1000px transparent inset;
   box-shadow: 0 0 0px 1000px transparent inset;
-  border: 1px solid #ccc;
+  border: 1px solid transparent;
   background: transparent;
 }

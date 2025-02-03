@@ -41,6 +41,9 @@
 .card-front:hover {
   box-shadow: 5px 5px;
 }
+.dark .card-front:hover {
+  box-shadow: none;
+}
 
 .card-back.selected.selected-for-reward {
   background: white;

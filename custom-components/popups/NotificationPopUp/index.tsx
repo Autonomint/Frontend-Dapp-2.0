@@ -1,18 +1,18 @@
+import { useEthersSigner } from "@/blockchain/WalletConfigs/EtherSigner";
 import { Button } from "@/components/ui/button";
 import Popup from "@/components/ui/PopUp";
-import { Bell } from "lucide-react";
-import React from "react";
+import { CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI } from "@/utils/constants";
+import { arrayify } from "@ethersproject/bytes";
 import {
   NotifiContext,
   NotifiInputFieldsText,
-  NotifiInputSeparators,
   NotifiSubscriptionCard,
 } from "@notifi-network/notifi-react-card";
 import "@notifi-network/notifi-react-card/dist/index.css";
-import { useAccount } from "wagmi";
+import { Bell } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEthersSigner } from "@/blockchain/WalletConfigs/EtherSigner";
-import { arrayify } from "@ethersproject/bytes";
+import React from "react";
+import { useAccount } from "wagmi";
 interface NotificationPopupProps {
   //   twitter: string; // Path to the twitter icon image
 }
@@ -51,7 +51,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({}) => {
     >
       <div className="pb-2">
         <NotifiContext
-          dappAddress="9xu0e0btkv6g71ypagwo"
+          dappAddress={DAPP_ADDRESS_NOTIFI}
           env="Production"
           signMessage={async (message: Uint8Array) => {
             const result = await signer.signMessage(message);
@@ -64,7 +64,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({}) => {
             classNames={{
               container: "!bg-transparent",
             }}
-            cardId="fb7bcc660ddb4d6e99703595e6eed049"
+            cardId={CARD_ID_NOTIFI}
             inputLabels={inputLabels}
             darkMode={resolvedTheme == "dark" ? true : false}
           />
