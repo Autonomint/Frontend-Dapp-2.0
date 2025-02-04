@@ -31,7 +31,7 @@ function PriceComparison({
     <div
       className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col px-4  2xl:px-6 py-7 gap-4 flex-1 transition-all duration-300 ease-in-out`}
+      } group flex-col lg:px-0 xl:px-4 2xl:px-6 lg:p-3 xl:py-7  gap-4  w-[40%] xl:w-[60%]  xl:flex-1 transition-all duration-300 ease-in-out`}
       style={{
         backgroundImage: isHover
           ? theme == "dark"
@@ -53,15 +53,15 @@ function PriceComparison({
       }}
     >
       <div className="flex justify-between items-center">
-        <span className=" text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
+        <span className=" text-[14px] lg:text-[18px] xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
           {orgName}
         </span>
         <span
           style={{
             backgroundColor: isHover ? tagColor : tagBg,
             color: isHover ? "white" : textColor,
-            padding: "4px",
           }}
+          className="text-[14px] lg:text-[18px] xl:text-[24px] p-1 "
         >
           {tag}
         </span>
@@ -76,9 +76,8 @@ function PriceComparison({
               : theme == "dark"
               ? "white"
               : "black",
-            fontSize: "24px",
           }}
-          className={` text-textBlack text-[24px]`}
+          className={` text-textBlack  text-[14px] lg:text-[18px] xl:text-[24px]`}
         >
           Fee
         </span>
@@ -94,8 +93,8 @@ function PriceComparison({
                 : theme == "dark"
                 ? "white"
                 : "black",
-            fontSize: "24px",
           }}
+          className={` text-[14px] lg:text-[18px] xl:text-[24px]`}
         >
           {amount}
         </span>

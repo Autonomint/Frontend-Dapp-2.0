@@ -3,17 +3,16 @@ import autonomintTxtImage from "@/app/assets/autonomint.svg";
 import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
 import { Button } from "@/components/ui/button";
+import { MenuIcon } from "@/components/ui/SvgIcons";
+import { Typography } from "@/components/ui/Typography";
 import { Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import NotificationPopup from "./popups/NotificationPopUp";
 import ReferPopup from "./popups/ReferPopUp";
 import WalletPopup from "./popups/WalletPopUp";
-import { useTheme } from "next-themes";
-import Link from "next/link";
-import { MenuIcon } from "@/components/ui/SvgIcons";
-import { useState } from "react";
-import NotificationPopupMobile from "./popups/NotificationPopUpMobile";
-import ReferPopupMobile from "./popups/ReferPopUpMobile";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -91,13 +90,13 @@ function Navbar() {
 
       {/* Menu Links */}
       <div
-        className={`lg:hidden w-full p-4 border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`w-[70%]  lg:hidden p-4 border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
-        style={{ top: 94, left: 0, height: "100vh", width: "60%" }}
+        style={{ top: 94, left: 0, height: "100vh" }}
       >
-        <ul className="flex w-full h-full  justify-start   items-center gap-6 flex-col ">
-          <li>
+        <ul className=" px-[20%] py-[5%] flex w-full h-full  justify-start   items-start gap-4 flex-col ">
+          {/* <li>
             <Button
               variant={"shadowOutline"}
               className="border-[#041A50] h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -113,6 +112,55 @@ function Navbar() {
           </li>
           <li>
             <ReferPopupMobile wrapperClassName="" />
+          </li> */}
+          <li>
+            <Link onClick={closeMenu} href="/mintusdalist">
+              <Typography className="text-[24px]" variant="regular">
+                Mint USDa
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/dcds">
+              <Typography className="text-[24px]" variant="regular">
+                dCDS
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/bridge">
+              <Typography className="text-[24px]" variant="regular">
+                Bridge
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/farmyourluck">
+              <Typography className="text-[24px]" variant="regular">
+                Farm You Luck
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/dashboard/portfolio">
+              <Typography className="text-[24px]" variant="regular">
+                Dashboard
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/redeem">
+              <Typography className="text-[24px]" variant="regular">
+                Redeem
+              </Typography>
+            </Link>
+          </li>
+          <li>
+            <Link onClick={closeMenu} href="/buy">
+              <Typography className="text-[24px]" variant="regular">
+                Buy
+              </Typography>
+            </Link>
           </li>
         </ul>
       </div>

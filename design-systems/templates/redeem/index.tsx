@@ -473,7 +473,7 @@ const RedeemContainer = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.collateralAmount || ""}
-              className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
+              className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
             />
             <Typography size="sm" variant="regular" className="text-red-500">
               {formik.errors.collateralAmount && formik.touched.collateralAmount

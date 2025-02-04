@@ -302,15 +302,89 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
           {/* Mobile Button */}
           <Button
-            onClick={() => setIsDialogOpen(true)}
             variant={"shadowOutline"}
             className="border-[#041A50] lg:hidden  p-0 gap-0 shadow-outlined-none lg:shadow-outlined   h-fit dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] "
           >
             <div className="relative flex p-[13px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
-              <WalletIcon className="dark:stroke-white stroke-black" />
-              <Typography size="body" className="">
-                {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
-              </Typography>
+              <Popover>
+                <PopoverTrigger className="" asChild>
+                  <div className="relative flex items-center gap-1">
+                    {chainId == NetworkId.EthereumSepolia ? (
+                      <EthereumIcon
+                        className=" stroke-black  "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    ) : chainId == NetworkId.BaseSepolia ? (
+                      <BaseIcon
+                        className=" stroke-black  "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    ) : (
+                      <OptimismIcon
+                        className=" fill-black "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    )}
+                    <DownArrowIcon className="w-2 h-2 stroke-black  " />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="center"
+                  className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
+                >
+                  <div className=" flex flex-col gap-4">
+                    <div
+                      onClick={() =>
+                        switchChain({
+                          chainId: 11155111,
+                        })
+                      }
+                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                    >
+                      <EthereumIcon
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                        }}
+                        className="fill-black dark:fill-white"
+                      />
+                      <Typography className="text-[24px] dark:text-white font-medium">
+                        Ethereum{" "}
+                      </Typography>{" "}
+                      {chainId == NetworkId.EthereumSepolia ? (
+                        <Check width={18} height={18} />
+                      ) : null}
+                    </div>
+                    <div
+                      onClick={() =>
+                        switchChain({
+                          chainId: 84532,
+                        })
+                      }
+                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                    >
+                      <BaseIcon
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                        }}
+                        className="fill-black dark:fill-white"
+                      />
+                      <Typography className="text-[24px] font-medium">
+                        Base{" "}
+                      </Typography>
+                      {chainId == NetworkId.BaseSepolia && (
+                        <Check width={18} height={18} />
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <div onClick={() => setIsDialogOpen(true)}>
+                <Typography size="body" className="">
+                  {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
+                </Typography>
+              </div>
             </div>
           </Button>
           <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>

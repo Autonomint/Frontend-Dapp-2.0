@@ -8,6 +8,7 @@ import arrow from "../assets/arrow-right-02.png";
 import { useRouter, useSearchParams } from "next/navigation";
 import AppNavbar from "@/custom-components/AppNavbar";
 import { motion } from "framer-motion";
+import useDeviceType from "@/hookes/useDeviceType";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -28,8 +29,8 @@ const farmTextVariants = {
 //@ts-ignore
 function ListItemMetric({ label, value, color }: Metric) {
   return (
-    <div className="flex md:flex-col justify-between w-full md:h-full text-left md:text-center items-start md:items-center mt-4 md:mt-0">
-      <div className="text-grayLight font-normal text-lg w-[150px] md:w-auto">
+    <div className="flex md:flex-col md:mt-3 lg:mt-0 justify-between w-full md:h-[80%]  text-left md:text-center items-start lg:items-center mt-4 ">
+      <div className="text-grayLight font-normal text-lg w-[220px] md:w-auto">
         {label}
       </div>
       <div
@@ -50,9 +51,13 @@ function SingleListItemImage({
   stakedToken: string;
 }) {
   return (
-    <div className="flex flex-col items-start justify-center gap-14 min-w-[120px]">
-      <Image src={src} width={58} height={58} alt={stakedToken} />
-      <div className="text-textBlack font-medium text-[32px] dark:text-white">
+    <div className="flex flex-col items-start justify-center gap-2 lg:gap-14 min-w-[120px]">
+      <Image
+        src={src}
+        className="w-[40px] h-[40px] lg:w-[58px] lg:h-[58px]"
+        alt={stakedToken}
+      />
+      <div className="text-textBlack font-medium text-[28px] lg:text-[32px] dark:text-white">
         {stakedToken}
       </div>
     </div>
@@ -79,35 +84,44 @@ function SingleListItem({
   const router = useRouter();
 
   return (
-    <motion.div
-      className="flex flex-col md:flex-row w-full items-start p-6 border-b border-solid border-grayLight gap-6 relative"
-      style={{ borderTopWidth: indexVal === 0 ? 1 : 0 }}
-      initial="hidden"
-      animate="visible"
-      variants={listItemVariants}
-    >
-      <div className="flex lg:w-1/2 flex-col md:flex-row w-full">
-        <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-        <div className="flex flex-grow flex-col md:flex-row w-full max-w-screen-md h-[160px]">
-          {metrics.map((metric, index) => (
-            <div key={index} className="md:flex-1">
-              <ListItemMetric {...metric} />
-            </div>
-          ))}
+    <div className="flex  lg:h-auto flex-col lg:flex-row w-full items-start border-b border-solid border-grayLight gap-6 relative">
+      <motion.div
+        className="p-6 w-full pb-0 lg:pb-6"
+        style={{ borderTopWidth: indexVal === 0 ? 1 : 0 }}
+        initial="hidden"
+        animate="visible"
+        variants={listItemVariants}
+      >
+        <div className="flex lg:w-[75%]   flex-col lg:flex-row w-full">
+          <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
+          <div className="flex flex-grow flex-col md:flex-row w-full max-w-screen-md h-[120px] lg:h-[160px]">
+            {metrics.map((metric, index) => (
+              <div key={index} className="md:flex-1">
+                <ListItemMetric {...metric} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      <div>
-        <Button
-          onClick={() => {
-            router.push(`/mintUSDaWithCollateral/${item.token}`);
-          }}
-          className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-        >
-          <Image src={arrow} width={42} height={42} alt="arrow" />
-        </Button>
-      </div>
-    </motion.div>
+        <div className="hidden lg:block">
+          <Button
+            onClick={() => {
+              router.push(`/mintUSDaWithCollateral/${item.token}`);
+            }}
+            className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+          >
+            <Image src={arrow} width={42} height={42} alt="arrow" />
+          </Button>
+        </div>
+      </motion.div>
+      <Button
+        onClick={() => {
+          router.push(`/mintUSDaWithCollateral/${item.token}`);
+        }}
+        className="lg:hidden  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+      >
+        <Image src={arrow} width={42} height={42} alt="arrow" />
+      </Button>
+    </div>
   );
 }
 
@@ -134,9 +148,12 @@ function MintUSDaList() {
     },
   ];
 
+  const deviceType = useDeviceType();
+  const showBack = deviceType === "mobile" || deviceType === "tablet";
+
   return (
-    <div>
-      <AppNavbar activeBack={false} />
+    <div className="min-h-[86vh] xl:h-auto">
+      <AppNavbar activeBack={showBack} />
       <div className="md:relative">
         <motion.div className="flex flex-col lg:max-w-[93%]">
           {list.map((item, index) => (
@@ -145,12 +162,12 @@ function MintUSDaList() {
         </motion.div>
 
         <motion.div
-          className="absolute right-0 top-0  h-full lg:max-w-[6%] hidden lg:flex items-center justify-center"
+          className="absolute right-0 top-0  h-full lg:max-w-[7%] border-x-0 border-y-0 border-b border-grayLight border-[1px]  hidden lg:flex items-center justify-center"
           initial="hidden"
           animate="visible"
           variants={farmTextVariants}
         >
-          <div className="transform rotate-90 text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
+          <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
             Farm Your Luck
           </div>
         </motion.div>
