@@ -1,24 +1,17 @@
-import twitter from "@/app/assets/new-twitter.svg";
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Popup from "@/components/ui/PopUp";
 import { Typography } from "@/components/ui/Typography";
+import AppNavbar from "@/custom-components/AppNavbar";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
-import { Gift } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import twitter from "@/app/assets/new-twitter.svg";
 
-interface ReferPopupProps {
-  //   twitter: string; // Path to the twitter icon image
-  wrapperClassName?: string;
-}
-
-const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-
+const ReferralTemplate = () => {
   const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");
@@ -110,68 +103,59 @@ const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     // Open the Twitter share URL in a new window
     window.open(shareUrl, "_blank");
   }
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
   return (
-    <div className={wrapperClassName}>
-      <Button
-        onClick={() => setIsDialogOpen(true)}
-        variant={"shadowOutline"}
-        className="border-[#041A50] cursor-pointer  h-fit p-[10px] flex gap-2 bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
-      >
-        <Gift style={{ width: "24px", height: "24px" }} />{" "}
-        <Typography size="body" className="">
-          Referral
-        </Typography>
-      </Button>
-      <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="text-2xl  font-semibold mb-4">Refer and Earn</div>
-          <div className="mt-4">
-            <Typography size="body" className="text-grayLight">
-              Refer Autonomint to your friends and boost your earnings!
-            </Typography>
-          </div>
-          {referral !== "null" ? (
-            <div className="flex mt-3">
-              <Input
-                readOnly
-                className="rounded-none !text-[16px] h-12 px-4 !font-medium"
-                value={referralLink}
-              />
-              <Button
-                onClick={copyToClipboard}
-                className="rounded-none !text-lg border-l-0 !font-medium h-12 px-4"
-                variant={"outline"}
-                size={"lg"}
-              >
-                {copy}
-              </Button>
-            </div>
-          ) : (
+    <div className="flex flex-col h-[calc(100vh-185px)] ">
+      <AppNavbar
+        tabOptions={[
+          {
+            isActive: true,
+            path: "/referral",
+            nameA: "Referral",
+          },
+        ]}
+      />
+      <div className="p-[10%] sm:p-[15%] h-full gap-5 flex flex-col items-center justify-center">
+        <div className="mt-4">
+          <Typography size="lg" className=" text-grayLight text-center ">
+            Refer Autonomint to your friends and boost your earnings!
+          </Typography>
+        </div>
+        {referral !== "null" ? (
+          <div className="w-full lg:w-[60%] flex mt-3">
+            <Input
+              readOnly
+              className="rounded-none !text-lg h-12 px-4 !font-medium"
+              value={referralLink}
+            />
             <Button
-              onClick={generateReferral}
-              variant={"default"}
-              className="border-[#041A50] !text-lg mt-8 h-fit  font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
+              onClick={copyToClipboard}
+              className="rounded-none !text-lg border-l-0 !font-medium h-12 px-4"
+              variant={"outline"}
+              size={"lg"}
             >
-              Create Referral Link
+              {copy}
             </Button>
-          )}
-
+          </div>
+        ) : (
           <Button
-            onClick={() => shareOnTwitter("", referralLink)}
+            onClick={generateReferral}
             variant={"default"}
-            className="border-[#041A50] text-lg mt-8 h-fit  font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
+            className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
           >
-            <Image alt="twitter" src={twitter} /> Share on twitter
+            Create Referral Link
           </Button>
-        </DialogContent>
-      </Dialog>
+        )}
+
+        <Button
+          onClick={() => shareOnTwitter("", referralLink)}
+          variant={"default"}
+          className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
+        >
+          <Image alt="twitter" src={twitter} /> Share on twitter
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default ReferPopupMobile;
+export default ReferralTemplate;

@@ -24,6 +24,7 @@ type DropdownMenuProps = {
   items: DropdownItem[];
   className?: string;
   icon?: React.ReactNode;
+  iconWrapBg?: string;
 };
 
 export function GenericDropdownMenu({
@@ -31,6 +32,7 @@ export function GenericDropdownMenu({
   items,
   className = "",
   icon = <ChevronDownIcon className="w-4 h-4" />,
+  iconWrapBg,
 }: DropdownMenuProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [dropdownWidth, setDropdownWidth] = useState<string | undefined>();
@@ -50,7 +52,9 @@ export function GenericDropdownMenu({
           className={`flex items-center justify-between relative h-[50px] ${className}`}
         >
           <span className="flex-1 text-left overflow-hidden">{buttonText}</span>
-          <div className="h-full w-[30%]  bg-transparent flex justify-center items-center border-l border-[1px] border-grayLight border-y-0 border-r-0 absolute right-0">
+          <div
+            className={`h-full w-[30%]  bg-transparent flex justify-center items-center border-l border-[1px] border-grayLight border-y-0 border-r-0 absolute right-0 ${iconWrapBg}`}
+          >
             {icon}
           </div>
         </Button>

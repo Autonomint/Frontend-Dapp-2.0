@@ -5,6 +5,7 @@ import Image from "next/image";
 import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 interface AppNavbarProps {
   tabOptions?: TabOption[];
   activeBack?: boolean;
@@ -73,16 +74,19 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
 
       <div className="hidden lg:flex w-full border-b border-grayLight">
         {navList?.map(({ nameA, path, isActive }) => (
-          <div
+          <Link
+            prefetch={true}
+            href={path}
             key={nameA}
             className={`flex-1 px-5  py-[8px] md:py-[13px] cursor-pointer text-2xl sm:text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
-              isActive ? "bg-[#ABFFDE] dark:text-black" : ""
+              isActive && navList.length > 1
+                ? "bg-[#ABFFDE] dark:text-black"
+                : ""
             }`}
             // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
-            onClick={() => router.push(path)}
           >
             {nameA}
-          </div>
+          </Link>
         ))}
       </div>
 

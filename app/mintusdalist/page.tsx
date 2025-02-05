@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AppNavbar from "@/custom-components/AppNavbar";
 import { motion } from "framer-motion";
 import useDeviceType from "@/hookes/useDeviceType";
+import Link from "next/link";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -103,23 +104,20 @@ function SingleListItem({
           </div>
         </div>
         <div className="hidden lg:block">
-          <Button
-            onClick={() => {
-              router.push(`/mintUSDaWithCollateral/${item.token}`);
-            }}
-            className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-          >
-            <Image src={arrow} width={42} height={42} alt="arrow" />
+          <Button className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+            <Link
+              prefetch={true}
+              href={`/mintUSDaWithCollateral/${item.token}`}
+            >
+              <Image src={arrow} width={42} height={42} alt="arrow" />
+            </Link>
           </Button>
         </div>
       </motion.div>
-      <Button
-        onClick={() => {
-          router.push(`/mintUSDaWithCollateral/${item.token}`);
-        }}
-        className="lg:hidden  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-      >
-        <Image src={arrow} width={42} height={42} alt="arrow" />
+      <Button className="lg:hidden  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
+        <Link prefetch={true} href={`/mintUSDaWithCollateral/${item.token}`}>
+          <Image src={arrow} width={42} height={42} alt="arrow" />
+        </Link>
       </Button>
     </div>
   );

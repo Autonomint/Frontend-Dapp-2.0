@@ -217,13 +217,13 @@ export function ChartComponent({
         borderTop: "none",
       }}
     >
-      <div className="flex lg:flex-col xl:flex-row justify-between">
-        <div className="w-full sm:w-[40%] lg:w-full xl:w-[40%]  ">
+      <div className="flex lg:flex-col  xl:flex-row justify-between">
+        <div className="w-full sm:w-[40%] flex justify-start items-center  lg:w-full xl:w-[35%]  ">
           <span
             style={{
               display: hideElements ? "none" : "block",
             }}
-            className="flex-1 justify-center items-center font-medium text-[24px] text-grayLight"
+            className="flex-1 justify-center items-center font-medium text-[20px] 2xl:text-[24px] text-grayLight"
           >
             {title}
           </span>
@@ -231,7 +231,7 @@ export function ChartComponent({
 
         <div
           style={{}}
-          className="hidden flex-1 lg:flex lg-mt-4 xl-mt-0 lg:w-[100%] w-[60%]"
+          className="hidden flex-1 lg:flex lg:mt-4 xl:mt-0 lg:w-[100%] xl:w-[65%] w-[60%]"
         >
           <TimeFrame timeFrame={time} setTime={setTime} />
         </div>

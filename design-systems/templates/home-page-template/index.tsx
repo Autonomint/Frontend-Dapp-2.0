@@ -33,6 +33,7 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useTheme } from "next-themes";
 import infinityImage from "@/app/assets/infinity.svg";
+import useDeviceType from "@/hookes/useDeviceType";
 
 function TransferBetweeHoverElement() {
   const { theme } = useTheme();
@@ -175,7 +176,7 @@ function DCDSHoverElement() {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <Button className="absolute lg:px-6 px-2 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[32px] flex justify-between h-[60px] lg:h-[108px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
+      <Button className="absolute lg:px-6 px-2 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[24px]  lg:text-[32px] flex justify-between h-[60px] lg:h-[108px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
@@ -248,7 +249,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       <div className="  xl:hidden gap-6 2xl:gap-8 lg:ml-6 mb-20 bg-none">
         <PriceComparison
           orgName={feesList[0].orgName}
-          tag={feesList[0].tag}
+          tag={""}
           amount={feesList[0].amount}
           tagColor={feesList[0].tagColor}
           textColor={feesList[0].textColor}
@@ -320,6 +321,7 @@ export default function HomeTemplate() {
   for (let i = 0; i < items.length; i += 2) {
     pairs.push(items.slice(i, i + 2));
   }
+  const deviceType = useDeviceType();
 
   useEffect(() => {
     const animateMint = document.querySelector(".animateMint");
@@ -346,7 +348,9 @@ export default function HomeTemplate() {
     }
     if (hoveredIndex === 1) {
       animateDCDS?.classList.add("animatingRightOpen");
-      closeAnimateMint?.classList.add("animatingLeftClose");
+      if (deviceType !== "mobile" && deviceType !== "tablet") {
+        closeAnimateMint?.classList.add("animatingLeftClose");
+      }
       closeAnimateButtom?.classList.add("animatingButtomClose");
     }
     if (hoveredIndex === 2) {
@@ -371,11 +375,13 @@ export default function HomeTemplate() {
         src={boat}
         alt="light-mode-image"
       />
-      <Image
-        className="block  full lg:hidden w-full"
-        src={bannerMobileImage}
-        alt="light-mode-image"
-      />
+      <div
+        className={`block  w-full h-[137px] sm:h-[200px] full lg:hidden ${
+          theme == "light"
+            ? "home-banner-container"
+            : "home-banner-dark-container"
+        }`}
+      ></div>
 
       <div className="border-[1px] overflow-hidden  border-t-grayLight ">
         {/* 1st row */}
@@ -567,7 +573,7 @@ export default function HomeTemplate() {
             className={`flex flex-col lg:flex-row mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
             <div
-              className={`relative  sm:hidden cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
+              className={`relative lg:hidden cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
               onClick={() => {
                 router.push("/dashboard/portfolio");
               }}

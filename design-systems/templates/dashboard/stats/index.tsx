@@ -373,32 +373,39 @@ function StatsTemplate() {
           </div>
         </div>
         <div className="flex  relative flex-col">
-          <div className="absolute w-[80%] md:w-[35%] lg:w-[50%] 2xl:w-[35%] top-[20px] left-[20px]">
-            <div className="flex w-[100%] flex-1 border border-grayLight text-left relative">
-              <div
-                className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${
-                  feeOption === "Option Fees"
-                    ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
-                    : ""
-                }`}
-                onClick={() => setFeeOption("Option Fees")}
-              >
-                Option Fees
-              </div>
-              <div className="w-[1px] bg-grayLight h-auto"></div>
-              <div
-                className={`flex-1 p-[2px] py-[10px] flex items-center justify-center  text-[15px] 2xl:text-[18px] 2xl:p-[8px] text-center cursor-pointer ${
-                  feeOption === "Borrowing Fees"
-                    ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
-                    : ""
-                }`}
-              >
-                Borrowing Fees
+          <div className=" p-5 pb-0 flex gap-3 md:gap-0 flex-col md:flex-row w-full justify-between items-center">
+            <div className=" w-full md:w-[50%] sm:w-[40%] flex justify-start items-center  lg:w-full xl:w-[35%]  ">
+              <span className="flex-1 justify-center items-center font-medium text-[20px] 2xl:text-[24px] text-grayLight">
+                {"Fees chart"}
+              </span>
+            </div>
+            <div className=" w-full   md:w-[50%]   top-[20px] right-[20px]">
+              <div className="flex w-[100%] flex-1 border border-grayLight text-left relative">
+                <div
+                  className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${
+                    feeOption === "Option Fees"
+                      ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
+                      : ""
+                  }`}
+                  onClick={() => setFeeOption("Option Fees")}
+                >
+                  Option Fees
+                </div>
+                <div className="w-[1px] bg-grayLight h-auto"></div>
+                <div
+                  className={`flex-1 p-[2px] py-[10px] flex items-center justify-center  text-[15px] 2xl:text-[18px] 2xl:p-[8px] text-center cursor-pointer ${
+                    feeOption === "Borrowing Fees"
+                      ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
+                      : ""
+                  }`}
+                >
+                  Borrowing Fees
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:mt-14 xl:mt-0">
+          <div className="">
             {feeOption === "Option Fees" ? (
               <ChartComponent
                 stats={[]}

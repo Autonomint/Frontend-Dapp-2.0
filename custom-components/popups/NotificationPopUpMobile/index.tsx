@@ -1,3 +1,4 @@
+"use client";
 import { useEthersSigner } from "@/blockchain/WalletConfigs/EtherSigner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";

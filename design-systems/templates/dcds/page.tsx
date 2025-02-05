@@ -45,6 +45,7 @@ import { useRouter } from "next/navigation";
 import { handleWheel } from "@/utils/helpers";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import useDeviceType from "@/hookes/useDeviceType";
 
 function TokenTvlDetails({
   tokenName,
@@ -84,7 +85,7 @@ function AdditionalDCDSMetrics({
     <div className="p-5 flex flex-col gap-3">
       <div className="flex justify-between">
         <span className="text-grayLight text-[18px] font-medium">APY</span>
-        <span className="text-black dark:text-white text-[18px] font-medium">
+        <span className="text-black w-[60%] 2xl:w-[80%] text-end dark:text-white text-[18px] font-medium">
           {apy}
         </span>
       </div>
@@ -749,11 +750,14 @@ function DCDSTemplate() {
     { char: "l", translate: "translate(-12px, 60px)", rotate: "rotate(25deg)" },
     { char: "l", translate: "translate(-18px, 80px)", rotate: "rotate(30deg)" },
   ];
+
+  const deviceType = useDeviceType();
+  const showBack = deviceType === "mobile" || deviceType === "tablet";
   return (
     <div>
-      <AppNavbar activeBack={false} />
+      <AppNavbar activeBack={showBack} />
       <div className="grid h-[97%] lg:grid-cols-4 grid-cols-1">
-        <div className="col-span-1 flex flex-col p-5 gap-8 border border-t-0 border-grayLight border-solid">
+        <div className="lg:col-span-2 xl:col-span-1 flex flex-col p-5 md:px-16 md:py-5 lg:p-5 gap-8 border border-t-0 border-grayLight border-solid">
           {tokenList.map((token: TokenDetails, key: number) => (
             <AddToken
               formik={formik}
@@ -765,9 +769,9 @@ function DCDSTemplate() {
           ))}
         </div>
 
-        <div className="hidden lg:flex col-span-2 flex-col items-center justify-center relative">
+        <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
-            <div className="2xl:w-[76%] 3xl:w-[50%] 3xl:h-[93%] xl:w-[77%] xl:h-[89%] w-[60%] 2xl:h-[95%] h-[73%] flex items-center justify-center relative">
+            <div className="2xl:w-[600px] 3xl:w-[650px] 3xl:h-[650px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[600px] h-[400px] flex items-center justify-center relative">
               <Image
                 className="hidden dark:block w-full h-full"
                 src={dcdsDark}
@@ -779,9 +783,9 @@ function DCDSTemplate() {
                 src={dcdsFrame}
                 alt="light-mode-image"
               />
-              <div className="w-full h-full absolute">
-                {/* <div className="loader relative"> */}
-                {/* <svg
+              {/* <div className="w-full h-full absolute"> */}
+              {/* <div className="loader relative"> */}
+              {/* <svg
                     className="w-full h-full"
                     xmlns="http://www.w3.org/2000/svg"
                   >
@@ -817,7 +821,7 @@ function DCDSTemplate() {
                       </textPath>
                     </text>
                   </svg> */}
-                {/* <div
+              {/* <div
                     style={{
                       textAlign: "center",
                       paddingTop: "",
@@ -837,8 +841,8 @@ function DCDSTemplate() {
                       </span>
                     ))}
                   </div> */}
-                {/* </div> */}
-                {/* {selectedTokens.length === 0 && (
+              {/* </div> */}
+              {/* {selectedTokens.length === 0 && (
                   <Typography
                     className="absolute z-20 text-grayLight  left-1/2 top-1/2 -translate-x-1/2 text-center -translate-y-1/2 w-[30%]"
                     size="lg"
@@ -848,7 +852,7 @@ function DCDSTemplate() {
                     your wish
                   </Typography>
                 )} */}
-              </div>
+              {/* </div> */}
             </div>
 
             {selectedTokens.length > 0 && (
@@ -896,10 +900,10 @@ function DCDSTemplate() {
             >
               How it works?
             </Typography>
-            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-2">
+            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-1 2xl:p-2">
               <Typography
                 size="lg"
-                className="text-[#FF0000] dark:text-[#FF1A1A] text-[18px] font-medium"
+                className="text-[#FF0000] dark:text-[#FF1A1A] !text-[14px] 2xl:!text-[18px] font-medium"
                 variant="regular"
               >
                 This fund will be exposed to liquidation risks
@@ -908,8 +912,8 @@ function DCDSTemplate() {
           </div>
         </div>
 
-        <div className="col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
-          <div className="p-5 ">
+        <div className="lg:col-span-2 xl:col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
+          <div className=" p-5 md:px-16 md:py-5  lg:p-5 ">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
@@ -971,15 +975,16 @@ function DCDSTemplate() {
           </div>
 
           <div>
-            <div className="px-5">
+            <div className=" px-5 md:px-16 md:py-5  lg:px-5">
               <GenericDropdownMenu
                 buttonText={
                   formik.values.lockInPeriod
                     ? `${formik.values.lockInPeriod} Days`
-                    : "Select Lock-in Period"
+                    : "Lock-in Period"
                 }
                 items={dropdownItems}
                 className="w-full text-[20px] 2xl:text-[24px] border border-grayLight"
+                iconWrapBg="bg-white "
               />
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.lockInPeriod && formik.touched.lockInPeriod
@@ -987,7 +992,7 @@ function DCDSTemplate() {
                   : ""}
               </Typography>
             </div>
-            <div className="py-4 flex p-5  items-center justify-between w-full">
+            <div className="p-5 md:px-16 md:py-5  lg:p-5 flex   items-center justify-between w-full">
               <span className="text-grayLight font-normal text-[18px]">
                 Opt for liquidity gains?
               </span>
@@ -1002,22 +1007,24 @@ function DCDSTemplate() {
                 className="h-6 w-6  cursor-pointer data-[state=checked]:bg-black data-[state=checked]:text-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
               />
             </div>
-            <div className="px-5">
+            <div className=" md:px-16 md:py-5  px-5 lg:px-5">
               <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800] max-w-full">
                 Note: Your amount will be used to offer protection to borrowers
                 & protocol in return for fixed yields.
               </div>
             </div>
-            <AdditionalDCDSMetrics
-              apy="Expected range 5% to 200%"
-              depositing={
-                formik.values.usdaAmount
-                  ? `${formik.values.usdaAmount || 0} USDa + ${
-                      formik.values.usdtAmount || 0
-                    } USDT`
-                  : "-"
-              }
-            />
+            <div className="  md:px-16 md:py-5  lg:px-5">
+              <AdditionalDCDSMetrics
+                apy="Expected range 5% to 200%"
+                depositing={
+                  formik.values.usdaAmount
+                    ? `${formik.values.usdaAmount || 0} USDa + ${
+                        formik.values.usdtAmount || 0
+                      } USDT`
+                    : "-"
+                }
+              />
+            </div>
             <div className=" h-[86px]">
               {!dcdsLoadingLocal && (
                 <Button

@@ -11,8 +11,10 @@ import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
 import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
+import useDeviceType from "@/hookes/useDeviceType";
 import { handleWheel, secondsToMinutes } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { usePathname } from "next/navigation";
 import React, {
   Dispatch,
   SetStateAction,
@@ -711,9 +713,12 @@ function BridgeTemplate() {
   //   }
   // }, [form.watch("inputCollateral")]);
 
+  const deviceType = useDeviceType();
+  const showBack = deviceType === "mobile" || deviceType === "tablet";
+
   return (
-    <div className="flex flex-col min-h-full ">
-      <AppNavbar activeBack={false} />
+    <div className="flex flex-col min-h-[calc(100vh-185px)] ">
+      <AppNavbar activeBack={showBack} />
       <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
         <BridgeComponentLeft
           balance={Number(

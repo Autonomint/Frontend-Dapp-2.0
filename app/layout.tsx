@@ -1,4 +1,3 @@
-// "use client";
 import QueryProvider from "@/providers/QueryProvider";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";

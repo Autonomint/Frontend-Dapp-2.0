@@ -273,7 +273,6 @@ export function DcdsWithdrawModal({
     setDcdsFundWithdrawLoadingLocal(false);
     setWithdrawMethodLoading(false);
   };
-  console.log(depositData, "depositData");
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>

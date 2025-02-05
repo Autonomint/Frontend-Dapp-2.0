@@ -311,21 +311,21 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   <div className="relative flex items-center gap-1">
                     {chainId == NetworkId.EthereumSepolia ? (
                       <EthereumIcon
-                        className=" stroke-black  "
+                        className="dark:stroke-white stroke-black  "
                         style={{ width: "20px", height: "20px" }}
                       />
                     ) : chainId == NetworkId.BaseSepolia ? (
                       <BaseIcon
-                        className=" stroke-black  "
+                        className=" stroke-black  dark:stroke-white"
                         style={{ width: "20px", height: "20px" }}
                       />
                     ) : (
                       <OptimismIcon
-                        className=" fill-black "
+                        className="dark:stroke-white fill-black "
                         style={{ width: "20px", height: "20px" }}
                       />
                     )}
-                    <DownArrowIcon className="w-2 h-2 stroke-black  " />
+                    <DownArrowIcon className="w-2 h-2 dark:stroke-white stroke-black  " />
                   </div>
                 </PopoverTrigger>
                 <PopoverContent

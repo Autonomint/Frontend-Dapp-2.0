@@ -469,8 +469,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
     onSubmit: handleMint,
   });
 
-  console.log(formik, "balance");
-
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
   }, [formattedBalance]);

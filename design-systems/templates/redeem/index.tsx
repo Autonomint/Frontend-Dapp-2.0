@@ -18,6 +18,7 @@ import LoadingBox from "@/custom-components/LoadingBox";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useDeviceType from "@/hookes/useDeviceType";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -448,158 +449,161 @@ const RedeemContainer = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full mb-20">
+    <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar
         activeBack={true}
         tabOptions={[
           {
             nameA: "Redeem",
             path: "/redeem",
-            isActive: pathname === "",
+            isActive: pathname === "/redeem",
           },
         ]}
       />
-      <div className="py-8 px-[15%] border-solid border-graylight">
-        <div className="flex gap-8 flex-col md:flex-row">
-          <div className="flex flex-col flex-1">
-            <span className="text-medium text-grayLight text-lg ">
-              Input Amount
-            </span>
-            <Input
-              placeholder="0"
-              onWheel={handleWheel}
-              type="number"
-              name="collateralAmount"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.collateralAmount || ""}
-              className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
-            />
-            <Typography size="sm" variant="regular" className="text-red-500">
-              {formik.errors.collateralAmount && formik.touched.collateralAmount
-                ? formik.errors.collateralAmount
-                : ""}
-            </Typography>
-          </div>
-          <div className="flex flex-col flex-1">
-            <span className="text-medium text-grayLight text-lg ">
-              Select Collateral
-            </span>
-            <GenericDropdownMenu
-              buttonText={
-                formik.values.inputCollateral
-                  ? `${
-                      formik.values.inputCollateral === "amint"
-                        ? "USDa"
-                        : "Abond"
-                    }`
-                  : "Select"
-              }
-              items={dropdownItems}
-              className="w-full text-[24px] border border-grayLight"
-            />
-            <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
-              Balance{" "}
-              <span className="text-grayLight">
-                {formik.values.inputCollateral == "amint"
-                  ? `${amintbalance?.formatted} USDa`
-                  : `${abondbalance?.formatted} Abond`}
+      <div className="w-full h-full flex flex-col flex-1 justify-center">
+        <div className="lg:py-8 py-5 px-5 lg:px-[15%] border-solid border-graylight">
+          <div className="flex gap-8 flex-col md:flex-row">
+            <div className="flex flex-col gap-2 flex-1">
+              <span className="text-medium text-grayLight text-lg ">
+                Input Amount
               </span>
+              <Input
+                placeholder="0"
+                onWheel={handleWheel}
+                type="number"
+                name="collateralAmount"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.collateralAmount || ""}
+                className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
+              />
+              <Typography size="sm" variant="regular" className="text-red-500">
+                {formik.errors.collateralAmount &&
+                formik.touched.collateralAmount
+                  ? formik.errors.collateralAmount
+                  : ""}
+              </Typography>
             </div>
-            <Typography size="sm" variant="regular" className="text-red-500">
-              {formik.errors.inputCollateral && formik.touched.inputCollateral
-                ? formik.errors.inputCollateral
-                : ""}
-            </Typography>
+            <div className="flex flex-col gap-2 flex-1">
+              <span className="text-medium text-grayLight text-lg ">
+                Select Collateral
+              </span>
+              <GenericDropdownMenu
+                buttonText={
+                  formik.values.inputCollateral
+                    ? `${
+                        formik.values.inputCollateral === "amint"
+                          ? "USDa"
+                          : "Abond"
+                      }`
+                    : "Select"
+                }
+                items={dropdownItems}
+                className="w-full text-[24px] border border-grayLight"
+              />
+              <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
+                Balance{" "}
+                <span className="text-grayLight">
+                  {formik.values.inputCollateral == "amint"
+                    ? `${amintbalance?.formatted} USDa`
+                    : `${abondbalance?.formatted} Abond`}
+                </span>
+              </div>
+              <Typography size="sm" variant="regular" className="text-red-500">
+                {formik.errors.inputCollateral && formik.touched.inputCollateral
+                  ? formik.errors.inputCollateral
+                  : ""}
+              </Typography>
+            </div>
+          </div>
+          <div className="border border-solid border-grayLight dark:border-grayLight p-5 mt-2 lg:mt-8">
+            <div className="flex justify-between">
+              <div className="text-grayLight text-lg ">Redeemable Amount</div>
+            </div>
+            <div className="md:text-[42px] text-[32px] text-textBlack  mt-8 font-medium dark:text-white">
+              <div>
+                {formik.values.inputCollateral === "amint" ? (
+                  <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
+                    <div className="p-1 text-2xl basis-3/5 text-bold">
+                      {formik.values.collateralAmount} USDT
+                    </div>
+                  </div>
+                ) : formik.values.inputCollateral === "abond" ? (
+                  <div className="text-sm text-black mt-2 font-medium dark:text-[#FFFF] flex ">
+                    <div className="flex justify-start items-center gap-2 mr-1 ">
+                      <div className="flex items-center p-1 text-2xl  text-bold">
+                        {outputData
+                          ? Number(formatEther(outputData[0])).toFixed(5)
+                          : 0}{" "}
+                        ETH
+                      </div>
+                      <div className="text-xl">+</div>
+                      <div className="flex items-center p-1 text-2xl  text-bold">
+                        {outputData
+                          ? Number(formatEther(outputData[2])).toFixed(2)
+                          : 0}{" "}
+                        USDa
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center pt-1 basis-3/5 text-black dark:text-white text-2xl font-semibold">
+                    Output Amount
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-        <div className="border border-solid border-grayLight dark:border-grayLight p-5 mt-8">
-          <div className="flex justify-between">
-            <div className="text-grayLight text-lg ">Redeemable Amount</div>
-          </div>
-          <div className="md:text-[42px] text-[32px] text-textBlack  mt-8 font-medium dark:text-white">
-            <div>
-              {formik.values.inputCollateral === "amint" ? (
-                <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
-                  <div className="p-1 text-2xl basis-3/5 text-bold">
-                    {formik.values.collateralAmount} USDT
-                  </div>
-                </div>
-              ) : formik.values.inputCollateral === "abond" ? (
-                <div className="text-sm text-black mt-2 font-medium dark:text-[#FFFF] flex justify-between">
-                  <div className="flex justify-start items-center gap-2 mr-1 basis-2/5">
-                    <div className="flex items-center p-1 text-2xl  text-bold">
-                      {outputData
-                        ? Number(formatEther(outputData[0])).toFixed(5)
-                        : 0}{" "}
-                      ETH
-                    </div>
-                    <div className="text-xl">+</div>
-                    <div className="flex items-center p-1 text-2xl  text-bold">
-                      {outputData
-                        ? Number(formatEther(outputData[2])).toFixed(2)
-                        : 0}{" "}
-                      USDa
-                    </div>
-                  </div>
-                  <div className="flex justify-between basis-2/5 text-bold"></div>
-                </div>
-              ) : (
-                <div className="flex items-center pt-1 basis-3/5 text-black dark:text-white text-2xl font-semibold">
-                  Output Amount
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="text-grayLight md:text-lg text-center lg:mb-4 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
+          Note: A withdrawal Fee of 2% will be applied.
         </div>
-      </div>
-      <div className="text-grayLight md:text-lg text-center mb-4 text-[14px]">
-        Note: A withdrawal Fee of 2% will be applied.
-      </div>
-      <div className="flex justify-center items-center mb-20">
-        <div className="w-[45%] h-[120px]">
-          {!redeemLoadingLocal && (
-            <Button
-              onClick={() => formik.handleSubmit()}
-              className="bg-textBlack w-full text-white h-full text-white md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
-            >
-              Redeem
-            </Button>
-          )}
-          <LoadingBox
-            isLoading={usdaApproveLoadingLocal}
-            isFailure={usdaErrorApproveTs || usdaErrorApprove}
-            isSuccess={Boolean(usdaApproveSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading="Approving USDa"
-          />
-          <LoadingBox
-            isLoading={abondApproveLoadingLocal}
-            isFailure={abondIsError || abondApproveError}
-            isSuccess={Boolean(abondApproveSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading="Approving Abond"
-          />
+        <div className="flex justify-center items-center lg:mb-20">
+          <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
+            {!redeemLoadingLocal && (
+              <Button
+                onClick={() => formik.handleSubmit()}
+                className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
+              >
+                Redeem
+              </Button>
+            )}
+            <LoadingBox
+              isLoading={usdaApproveLoadingLocal}
+              isFailure={usdaErrorApproveTs || usdaErrorApprove}
+              isSuccess={Boolean(usdaApproveSuccess)}
+              setSuccessLoading={() => console.log()}
+              heading="Approving USDa"
+            />
+            <LoadingBox
+              isLoading={abondApproveLoadingLocal}
+              isFailure={abondIsError || abondApproveError}
+              isSuccess={Boolean(abondApproveSuccess)}
+              setSuccessLoading={() => console.log()}
+              heading="Approving Abond"
+            />
 
-          <LoadingBox
-            isLoading={
-              redeemFnLoadingLocal && formik.values.inputCollateral === "usda"
-            }
-            isFailure={redeemUsdtIsError || redeemUsdtError}
-            isSuccess={Boolean(redeemUsdtSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading={"Redeeming " + formik.values.inputCollateral}
-          />
+            <LoadingBox
+              isLoading={
+                redeemFnLoadingLocal && formik.values.inputCollateral === "usda"
+              }
+              isFailure={redeemUsdtIsError || redeemUsdtError}
+              isSuccess={Boolean(redeemUsdtSuccess)}
+              setSuccessLoading={() => console.log()}
+              heading={"Redeeming " + formik.values.inputCollateral}
+            />
 
-          <LoadingBox
-            isLoading={
-              redeemFnLoadingLocal && formik.values.inputCollateral === "abond"
-            }
-            isFailure={redeemEthIsError || redeemEthError}
-            isSuccess={Boolean(redeemEthSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading={"Redeeming " + formik.values.inputCollateral}
-          />
+            <LoadingBox
+              isLoading={
+                redeemFnLoadingLocal &&
+                formik.values.inputCollateral === "abond"
+              }
+              isFailure={redeemEthIsError || redeemEthError}
+              isSuccess={Boolean(redeemEthSuccess)}
+              setSuccessLoading={() => console.log()}
+              heading={"Redeeming " + formik.values.inputCollateral}
+            />
+          </div>
         </div>
       </div>
     </div>
