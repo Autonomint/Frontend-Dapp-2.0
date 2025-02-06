@@ -1,21 +1,17 @@
-import twitter from "@/app/assets/new-twitter.svg";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Popup from "@/components/ui/PopUp";
 import { Typography } from "@/components/ui/Typography";
+import AppNavbar from "@/custom-components/AppNavbar";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
-import { Gift } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import twitter from "@/app/assets/new-twitter.svg";
 
-interface ReferPopupProps {
-  //   twitter: string; // Path to the twitter icon image
-  wrapperClassName?: string;
-}
-
-const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
+const ReferralTemplate = () => {
   const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");
@@ -107,32 +103,25 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     // Open the Twitter share URL in a new window
     window.open(shareUrl, "_blank");
   }
-
   return (
-    <div className={wrapperClassName}>
-      <Popup
-        popUpWidth="665px"
-        title="Refer and Earn"
-        content={
-          <Button
-            variant={"shadowOutline"}
-            className="border-[#041A50] cursor-pointer  h-fit p-[10px] flex gap-2 hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:hover:bg-custom-gradient-to-top"
-          >
-            <Gift style={{ width: "24px", height: "24px" }} />{" "}
-            <Typography size="body" className="">
-              Referral
-            </Typography>
-          </Button>
-        }
-        contentClass="!left-[unset] right-[0px] top-[50px] dark:bg-black"
-      >
+    <div className="flex flex-col h-[calc(100vh-185px)] ">
+      <AppNavbar
+        tabOptions={[
+          {
+            isActive: true,
+            path: "/referral",
+            nameA: "Referral",
+          },
+        ]}
+      />
+      <div className="p-[10%] sm:p-[15%] h-full gap-5 flex flex-col items-center justify-center">
         <div className="mt-4">
-          <Typography size="lg" className="text-grayLight">
+          <Typography size="lg" className=" text-grayLight text-center ">
             Refer Autonomint to your friends and boost your earnings!
           </Typography>
         </div>
         {referral !== "null" ? (
-          <div className="flex mt-3">
+          <div className="w-full lg:w-[60%] flex mt-3">
             <Input
               readOnly
               className="rounded-none !text-lg h-12 px-4 !font-medium"
@@ -164,9 +153,9 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
         >
           <Image alt="twitter" src={twitter} /> Share on twitter
         </Button>
-      </Popup>
+      </div>
     </div>
   );
 };
 
-export default ReferPopup;
+export default ReferralTemplate;

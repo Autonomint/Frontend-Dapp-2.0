@@ -99,6 +99,7 @@ export default {
       },
       boxShadow: {
         outlined: "2px 2px 0px 0px  #000000",
+        "outlined-none": "0px 0px 0px 0px  #000000",
       },
       fontSize: {
         h1: "64px",

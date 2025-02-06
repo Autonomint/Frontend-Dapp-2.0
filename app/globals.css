@@ -174,7 +174,7 @@ body {
   top: 0;
   left: -25px;
   width: 10px;
-  height: 144px;
+  height: 100%;
   margin-left: 10px;
   border-radius: 10px;
 
@@ -239,23 +239,48 @@ input[type="number"] {
 }
 
 input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-  box-shadow: 0 0 0px 1000px transparent inset;
-  border: 1px solid transparent;
-  background: transparent;
+  -webkit-box-shadow: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
 }
 
 /* Optionally, you can target autofill for specific input types like text, email, etc. */
 input[type="text"]:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-  box-shadow: 0 0 0px 1000px transparent inset;
-  border: 1px solid #ccc;
-  background: transparent;
+  -webkit-box-shadow: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
 }
 /* Optionally, you can target autofill for specific input types like text, email, etc. */
 input[type="number"]:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
-  box-shadow: 0 0 0px 1000px transparent inset;
-  border: 1px solid #ccc;
-  background: transparent;
+  -webkit-box-shadow: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
+}
+
+.home-banner-container {
+  width: 100%;
+  background-image: url("assets/home-banner.svg");
+  background-size: cover;
+  background-position-x: 0px;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.home-banner-dark-container {
+  width: 100%;
+  background-image: url("assets/home-banner-dark.svg");
+  background-size: cover;
+  background-position-x: 0px;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }

@@ -214,14 +214,14 @@ function ChartComponent() {
     setIsLoaded(true);
   }, [data]);
   return (
-    <div className="p-6 h-full">
-      <div className="flex justify-start gap-2 mb-2 items-center">
+    <div className="lg:p-6 p-2 h-full">
+      <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
         <Image src={EthImage} width={40} height={40} alt="eth" />
         <Typography className="text-[32px] dark:text-white font-medium text-black ">
           ETH
         </Typography>
       </div>
-      <div className="w-full h-[560px] flex items-center justify-center">
+      <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
         <TradingViewWidget />
       </div>
     </div>
@@ -468,8 +468,6 @@ function AdditionalDetails({ currency }: { currency: string }) {
     validationSchema: formSchema,
     onSubmit: handleMint,
   });
-
-  console.log(formik, "balance");
 
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
@@ -869,21 +867,21 @@ function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
   return (
     <>
       <AppNavbar />
-      <div className="grid md:grid-cols-3 grid-cols-1">
-        <div className="col-span-2 hidden md:block border border-solid border-grayLight">
+      <div className="grid lg:grid-cols-3 grid-cols-1">
+        <div className="col-span-2 hidden lg:block border border-solid border-grayLight">
           <ChartComponent />
         </div>
-        <div className="col-span-1 hidden md:block border border-solid border-grayLight">
+        <div className="col-span-1 hidden lg:block border border-solid border-grayLight">
           <AdditionalDetails currency={currency} />
         </div>
-        <div className="col-span-1 block md:hidden border border-solid border-grayLight">
+        <div className="col-span-1 block lg:hidden border border-solid border-grayLight">
           <AdditionalDetails currency={currency} />
         </div>
-        <div className="col-span-2 block md:hidden border border-solid border-grayLight">
+        <div className="col-span-2 block lg:hidden border border-solid border-grayLight">
           <ChartComponent />
         </div>
 
-        <div className="col-span-2 border border-solid border-grayLight p-8">
+        <div className="col-span-2 border border-solid border-grayLight p-6 lg:p-8">
           <div className="flex flex-col justify-start">
             <div className=" text-textBlack text-3xl font-medium dark:text-white">
               How it works?
@@ -913,7 +911,7 @@ function MintUSDa({ params }: { params: Promise<{ currency: string }> }) {
           >
             <Button
               variant={"shadowOutline"}
-              className="w-[50px]  !h-[50px] !py-4 !shadow-none"
+              className="w-[50px] hidden  lg:flex !h-[50px] !py-4 !shadow-none"
             >
               <FormYourLuckIcon
                 style={{

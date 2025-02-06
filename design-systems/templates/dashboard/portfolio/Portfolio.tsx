@@ -252,20 +252,20 @@ const DcdsPositionTableRow = ({
           : ""
       } border-solid border-grayLight`}
     >
-      <td className="px-5 py-6">{position.index}</td>
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-6 ">{position.index}</td>
+      <td className="px-5 py-6 text-center sm:text-left">
         {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
         {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt}
       </td>
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-6 ">
         {formatTimestamp(Number(position.depositedTime))}
       </td>
 
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-6 ">
         {(Number(position.lockingPeriod) / 86400000).toFixed(0)} days
       </td>
 
-      <td className={`px-5 py-6  md:text-right md:table-cell md:space-x-12`}>
+      <td className={`px-5 py-6  md:text-right md:space-x-12`}>
         <span
           onClick={handleRowClick}
           className="font-bold cursor-pointer text-[20px] underline "
@@ -338,7 +338,7 @@ function PortolioTable({
       ref={scrollRef}
       className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
     >
-      <table className="table-auto w-full border-collapse text-[20px]">
+      <table className="table-auto w-[530px]  sm:w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
@@ -451,20 +451,14 @@ function DcdsDepositTable({
       ref={scrollRef}
       className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
     >
-      <table className="table-auto w-full border-collapse text-[20px]">
+      <table className="table-auto w-[900px] sm:w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>
-            <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
-            <th className="pl-5 font-normal w-4/5 lg:w-auto">
-              USDa / Usdt Deposited
-            </th>
-            <th className="pl-5 hidden md:table-cell font-normal">
-              Deposited Time
-            </th>
-            <th className="pl-5 hidden md:table-cell font-normal">
-              Lock In period
-            </th>
-            <th className="pl-5 hidden md:table-cell font-normal">Withdraw</th>
+            <th className="pl-5 font-normal py-5 ">ID</th>
+            <th className="pl-5 font-normal ">USDa / Usdt Deposited</th>
+            <th className="pl-5  font-normal">Deposited Time</th>
+            <th className="pl-5  font-normal">Lock In period</th>
+            <th className="pl-5  font-normal">Withdraw</th>
           </tr>
         </thead>
         <tbody className="font-normal ">
@@ -565,7 +559,7 @@ function Portfolio() {
 
   return (
     <div className="flex flex-col">
-      <div className="grid md:grid-cols-4 grid-cols-2">
+      <div className="grid lg:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Borrowed"
@@ -590,7 +584,7 @@ function Portfolio() {
           />
         </div>
       </div>
-      <div className="flex mt-5">
+      <div className="flex sm:mt-5">
         <div
           onClick={() => {
             setTabPosition("Borrowed");
@@ -611,7 +605,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer" +
+            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-2 sm:p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer flex items-center justify-center" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -622,7 +616,7 @@ function Portfolio() {
           Deposited Position
         </div>
         <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border-grayLight border  border-r-0 border-solid"></div>
-        <div className="flex w-[42%]  px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
+        <div className=" w-[42%] hidden lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}

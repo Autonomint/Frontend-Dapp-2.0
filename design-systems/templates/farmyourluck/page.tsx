@@ -152,10 +152,10 @@ function FarmYourLuckTemplate() {
   console.log(isPayed, selectedIndex == -1, "check");
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="min-h-full lg:h-full w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
-        <div className="grid col-span-1 lg:col-span-4">
+        <div className="grid col-span-1 lg:col-span-3">
           <div className="grid grid-cols-3 gap-6 md:p-8 p-5">
             {Array.from({ length: 9 }).map((_, index) => (
               <div
@@ -206,7 +206,7 @@ function FarmYourLuckTemplate() {
             ))}
           </div>
         </div>
-        <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
+        <div className="grid col-span-1 lg:col-span-3 lg:p-6 border border-grayLight relative">
           <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
             <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">

@@ -185,8 +185,6 @@ function RatioOfCollaterals({
       return calculateAverages(chartData, time);
     }, [time, chartData]);
 
- 
-
   const dataLocal = {
     labels: formattedData.labels,
     datasets: [
@@ -229,9 +227,9 @@ function RatioOfCollaterals({
     ],
   };
   return (
-    <div className="flex  items-start h-full">
+    <div className="flex flex-col lg:flex-row   items-start h-full">
       <div
-        className="p-5 flex w-[50%] flex-1 flex-col justify-between  h-full"
+        className="p-5 flex w-full lg:w-[50%] flex-1 flex-col justify-between  h-full"
         style={{
           borderLeft: "none",
           borderTop: "none",
@@ -305,14 +303,18 @@ function RatioOfCollaterals({
         </div>
       </div>
       {/* <div className="border-l border-grayLight h-[calc(50%+2rem)] w-[10px] p-5"></div> */}
-      <div className="flex w-[50%] flex-col h-full">
-        <div className=" flex-1 justify-end flex items-end  mt-4 mr-4">
-          <div className="w-[60%]">
+      <div className="flex  w-full lg:w-[50%] flex-col h-full">
+        <div className=" hidden  flex-1 justify-end md:flex items-end  mt-4 mr-4">
+          <div className="lg:w-[80%] w-[60%]">
             <TimeFrame timeFrame={time} setTime={setTime} />
           </div>
         </div>
 
-        <Line options={options} data={dataLocal} className={`w-1/2 ${maxH}`} />
+        <Line
+          options={options}
+          data={dataLocal}
+          className={`w-1/2 p-4 sm:p-0 ${maxH}`}
+        />
       </div>
     </div>
   );

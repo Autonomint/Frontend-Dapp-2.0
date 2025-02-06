@@ -16,8 +16,8 @@ import { toast } from "sonner";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
-import { RadioGroupItem } from "@/components/ui/radio-group";
 import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -242,12 +242,18 @@ export function WithdrawFund({
     cumulativeRateSuccess,
   } = useCalculateInterest({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -256,6 +262,7 @@ export function WithdrawFund({
     isSuccess: cumulativeRateReciptSuccess,
     data: culmulativeData,
     isFetching: isCumulativeFetching,
+    isError: cumulativeRateErrorReceipt,
   } = useWaitForTransactionReceipt({
     hash: (cumulativeRate || "0x") as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
@@ -272,12 +279,18 @@ export function WithdrawFund({
     usdaApproveError,
   } = useApproveUsda({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -301,12 +314,18 @@ export function WithdrawFund({
     borrowWithdrawError,
   } = useWithdrawUsda({
     onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);
-        setIsLoadingCumulativeLocal(false);
-        setIsApproveLoadingLocal(false);
-        setWithdrawLoadingLocal(false);
       }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     },
   });
 
@@ -314,6 +333,7 @@ export function WithdrawFund({
     isLoading: isLoadingWithdrawReceipt,
     isSuccess: isSuccessWithdrawReceipt,
     data: withdrawReceipt,
+    isError: withdrawErrorReceipt,
   } = useWaitForTransactionReceipt({
     hash: (borrowWithdrawData || "0x") as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
@@ -345,6 +365,13 @@ export function WithdrawFund({
       setTimeout(() => {
         setRepayLoading(false);
       }, 1000);
+    } else if (withdrawErrorReceipt) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt]);
 
@@ -378,6 +405,13 @@ export function WithdrawFund({
         setWithdrawLoadingLocal(true);
       }, 800);
       withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
+    } else if (usdaHashError) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   }, [usdaHashData]);
 
@@ -394,7 +428,7 @@ export function WithdrawFund({
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+        <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
           <div className="flex">
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
@@ -408,15 +442,15 @@ export function WithdrawFund({
                     type="radio"
                     checked={toggleView === "repay"}
                     onChange={() => setToggleView("repay")}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
                     id="html"
                   />
-                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                  <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>
               </div>
               <label
                 htmlFor="bordered-radio-1"
-                className="w-full py-2 ms-2 text-[32px] font-medium text-textBlack  dark:text-white"
+                className="w-full py-2 ms-2 text-[20px]  sm:text-2xl md:text-[32px] font-medium text-textBlack  dark:text-white"
               >
                 Repay
               </label>
@@ -433,15 +467,15 @@ export function WithdrawFund({
                     type="radio"
                     onChange={() => setToggleView("renew")}
                     checked={toggleView === "renew"}
-                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-full  border-[4px] border-black checked:border-black transition-all"
+                    className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
                     id="html"
                   />
-                  <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                  <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>
               </div>
               <label
                 htmlFor="bordered-radio-2"
-                className="w-full py-2 ms-2 text-[32px]  text-textBlack font-medium  dark:text-white "
+                className="w-full py-2 ms-2 text-[20px]  sm:text-2xl md:text-[32px]  text-textBlack font-medium  dark:text-white "
               >
                 Renew
               </label>
@@ -456,21 +490,21 @@ export function WithdrawFund({
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight text-[20px] font-medium">
+                    <span className="text-grayLight text-[16px] md:text-[20px] font-medium">
                       {item.headline}
                     </span>
-                    <span className="text-textBlack font-medium  dark:text-white text-[20px]">
+                    <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
                       {item.value}
                     </span>
                   </div>
                 ))}
               </div>
-              <div className=" h-[70px] mt-6">
+              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
                 {!repayLoading && (
                   <Button
                     disabled={position.status == BorrowStatus.WITHDREW}
                     onClick={handleRepay}
-                    className="w-full p-8 bg-black text-white text-[24px]"
+                    className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
                   >
                     {repayLoading
                       ? "Loading..."
@@ -481,7 +515,7 @@ export function WithdrawFund({
                 )}
                 <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
-                  isFailure={cumulativeRateError}
+                  isFailure={cumulativeRateError || cumulativeRateErrorReceipt}
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
                   heading="Calculating Interest "

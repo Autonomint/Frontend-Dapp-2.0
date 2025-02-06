@@ -20,3 +20,7 @@ export const BorrowStatus = {
 export const DEFAULT_TOAST_POSITION = "top-right";
 
 export const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;
+
+export const DAPP_ADDRESS_NOTIFI = "9xu0e0btkv6g71ypagwo";
+
+export const CARD_ID_NOTIFI = "fb7bcc660ddb4d6e99703595e6eed049";

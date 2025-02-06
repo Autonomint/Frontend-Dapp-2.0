@@ -62,7 +62,7 @@ export const getFontSize = (
      * font-weight: 400
      */
     case "subtitle":
-      return "text-subtitle leading-subtitle tracking-subtitle font-normal";
+      return "text-[20px] md:text-subtitle  leading-subtitle tracking-subtitle font-normal";
 
     /**
      * font-size: 20px

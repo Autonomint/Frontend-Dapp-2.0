@@ -71,7 +71,7 @@ const LoadingBox = ({
             <Typography
               size="subtitle"
               variant="regular"
-              className="text-black dark:text-white"
+              className="text-black dark:text-white text-[20px] md:text-[24px]"
             >
               {heading || "Transaction Pending... 1/3"}
             </Typography>

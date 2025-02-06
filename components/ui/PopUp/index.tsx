@@ -38,15 +38,19 @@ const Popup = ({
               onClick={togglePopup}
             />
             <div
-              style={{ width: popUpWidth }}
-              className={` absolute z-20 top-[44px] right-[-12px] p-8 bg-white  border-[1px] border-solid border-[#7A7A7A] rounded-md shadow-md ${contentClass}`}
+              className={` absolute z-20 top-[44px] right-[-12px] p-8 bg-white  border-[1px] border-solid border-[#7A7A7A] rounded-md shadow-md sm:w-[550px] ${contentClass}`}
             >
               <div className="flex flex-row justify-between items-center">
                 <Typography size="subtitle" variant="regular">
                   {title || "Popup Title"}
                 </Typography>
                 <span className="cursor-pointer" onClick={togglePopup}>
-                  <X />
+                  <X
+                    style={{ width: "24px", height: "24px" }}
+                    size={50}
+                    width={50}
+                    height={50}
+                  />
                 </span>
               </div>
               {children}

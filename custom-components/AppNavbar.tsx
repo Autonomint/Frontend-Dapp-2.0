@@ -5,6 +5,7 @@ import Image from "next/image";
 import arrowLeft from "../app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 interface AppNavbarProps {
   tabOptions?: TabOption[];
   activeBack?: boolean;
@@ -64,30 +65,33 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             router.back();
           }}
           className={
-            "bg-black h-full px-8 py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
+            "bg-black h-full px-3  sm:px-8  p-[8px] md:py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
           }
         >
           <Image src={arrowLeft} width={42} height={42} alt="arrow" />
         </Button>
       )}
 
-      <div className="hidden md:flex w-full border-b border-grayLight">
+      <div className="hidden lg:flex w-full border-b border-grayLight">
         {navList?.map(({ nameA, path, isActive }) => (
-          <div
+          <Link
+            prefetch={true}
+            href={path}
             key={nameA}
-            className={`flex-1 px-5 py-2 cursor-pointer text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
-              isActive ? "bg-[#ABFFDE] dark:text-black" : ""
+            className={`flex-1 px-5  py-[8px] md:py-[13px] cursor-pointer text-2xl sm:text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
+              isActive && navList.length > 1
+                ? "bg-[#ABFFDE] dark:text-black"
+                : ""
             }`}
             // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
-            onClick={() => router.push(path)}
           >
             {nameA}
-          </div>
+          </Link>
         ))}
       </div>
 
       <div
-        className="flex md:hidden  w-full px-5 py-2 text-[32px]  font-medium border-b border-grayLight"
+        className="flex lg:hidden justify-start items-center  w-full px-5 py-2  text-2xl sm:text-[32px]  font-medium border-b border-grayLight"
         onClick={() => router.push(activeTab?.path || "/")}
       >
         {activeTab?.nameA || "Select Tab"}
