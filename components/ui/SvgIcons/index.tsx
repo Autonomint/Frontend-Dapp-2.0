@@ -272,8 +272,8 @@ export const RingLoadingIcon: React.FC<SvgIconProps> = (props) => {
       width="246"
       height="246"
       style={{
-        width: 46,
-        height: 46,
+        width: props.width || 46,
+        height: props.height || 46,
         shapeRendering: "auto",
         display: "block",
         background: "transparent",

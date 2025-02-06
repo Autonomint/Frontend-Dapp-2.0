@@ -82,7 +82,7 @@ function AdditionalDCDSMetrics({
   depositing: string;
 }) {
   return (
-    <div className="p-5 flex flex-col gap-3">
+    <div className=" flex flex-col gap-3">
       <div className="flex justify-between">
         <span className="text-grayLight text-[18px] font-medium">APY</span>
         <span className="text-black w-[60%] 2xl:w-[80%] text-end dark:text-white text-[18px] font-medium">
@@ -771,7 +771,7 @@ function DCDSTemplate() {
 
         <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
-            <div className="2xl:w-[600px] 3xl:w-[650px] 3xl:h-[650px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[600px] h-[400px] flex items-center justify-center relative">
+            <div className="2xl:w-[600px] 3xl:w-[550px] 3xl:h-[550px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[600px] h-[400px] flex items-center justify-center relative">
               <Image
                 className="hidden dark:block w-full h-full"
                 src={dcdsDark}
@@ -906,18 +906,18 @@ function DCDSTemplate() {
                 className="text-[#FF0000] dark:text-[#FF1A1A] !text-[14px] 2xl:!text-[18px] font-medium"
                 variant="regular"
               >
-                This fund will be exposed to liquidation risks
+                dCDS will be exposed to ETH volatility risks.
               </Typography>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-2 xl:col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
-          <div className=" p-5 md:px-16 md:py-5  lg:p-5 ">
+          <div className=" p-5 md:px-16 md:py-5  lg:p-5 lg:pb-0">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <div className="h-[200px] 2xl:h-[300px] overflow-y-auto no-scrollbar">
+            <div className="h-[200px] 2xl:h-[250px] overflow-y-auto no-scrollbar">
               {selectedTokens.map((token, key) => (
                 <div key={key} className="mt-4">
                   <Label
@@ -975,7 +975,7 @@ function DCDSTemplate() {
           </div>
 
           <div>
-            <div className=" px-5 md:px-16 md:py-5  lg:px-5">
+            <div className=" px-5 md:px-16 md:py-5  lg:px-5 md:pb-0 ">
               <GenericDropdownMenu
                 buttonText={
                   formik.values.lockInPeriod
@@ -984,7 +984,7 @@ function DCDSTemplate() {
                 }
                 items={dropdownItems}
                 className="w-full text-[20px] 2xl:text-[24px] border border-grayLight"
-                iconWrapBg="bg-white "
+                iconWrapBg="bg-white dark:bg-black"
               />
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.lockInPeriod && formik.touched.lockInPeriod
@@ -992,7 +992,7 @@ function DCDSTemplate() {
                   : ""}
               </Typography>
             </div>
-            <div className="p-5 md:px-16 md:py-5  lg:p-5 flex   items-center justify-between w-full">
+            <div className="p-5 md:px-16 md:py-5 md:pb-0 lg:pb-0 lg:p-5 flex   items-center justify-between w-full">
               <span className="text-grayLight font-normal text-[18px]">
                 Opt for liquidity gains?
               </span>
@@ -1007,7 +1007,7 @@ function DCDSTemplate() {
                 className="h-6 w-6  cursor-pointer data-[state=checked]:bg-black data-[state=checked]:text-white dark:data-[state=checked]:bg-white dark:data-[state=checked]:text-black"
               />
             </div>
-            <div className=" md:px-16 md:py-5  px-5 lg:px-5">
+            <div className=" md:px-16 md:py-5  md:pb-0 px-5 lg:px-5">
               <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800] max-w-full">
                 Note: Your amount will be used to offer protection to borrowers
                 & protocol in return for fixed yields.

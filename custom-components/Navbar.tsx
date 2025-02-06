@@ -192,7 +192,6 @@ function Navbar() {
               <Moon style={{ width: "24px", height: "24px" }} />
             )}
           </Button>
-          <NotificationPopupMobile />
           <ReferPopupMobile />
         </div>
       </div>

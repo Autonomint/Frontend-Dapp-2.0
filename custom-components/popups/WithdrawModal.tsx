@@ -219,6 +219,7 @@ export function DcdsWithdrawModal({
     data: cdsLogdataReceipt,
     isError: isCdserrorReceipt,
     isSuccess: isCdsSuccessReceipt,
+    error: cdsLogdataReceiptError,
   } = useWaitForTransactionReceipt({
     hash: dcdsFundWithdrawData, // The transaction hash to wait for
     confirmations: 2, // Number of confirmations required for success
@@ -253,7 +254,12 @@ export function DcdsWithdrawModal({
       setWithdrawMethodLoading(false);
       toast.custom((t) => (
         <ToastNotificationError
-          title="Transaction failed, Please try again"
+          title={
+            String(
+              (cdsLogdataReceiptError?.cause as { shortMessage: string })
+                .shortMessage as string
+            ) || "Transaction failed, Please try again"
+          }
           onClose={() => toast.dismiss(t)}
         />
       ));

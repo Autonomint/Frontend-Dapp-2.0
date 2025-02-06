@@ -1,269 +1,19 @@
 "use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import bannerMobileImage from "@/app/assets/mobile banner background Image.svg";
-
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IoMdInformationCircleOutline } from "react-icons/io";
-import PriceComparison from "@/custom-components/PriceComparison";
-import PriceGraph from "@/app/assets/Chart.png";
-import DCDSHover from "@/app/assets/Chart.svg";
-import LTVDark from "@/app/assets/LTV Details.svg";
-import LTV from "@/app/assets/LTV-range-image.svg";
-import arrow from "@/app/assets/arrow-right-02.png";
-import ModeImage from "@/app/assets/mode.png";
-import OptimismImage from "@/app/assets/optimism.png";
-
-import {
-  DotIcon,
-  LeftArrowIcon,
-  RightArrowIcon,
-} from "@/components/ui/SvgIcons";
-import { Typography } from "@/components/ui/Typography";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { LeftArrowIcon } from "@/components/ui/SvgIcons";
+import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
+import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
+import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
+import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import { useTheme } from "next-themes";
-import infinityImage from "@/app/assets/infinity.svg";
 import useDeviceType from "@/hookes/useDeviceType";
+import { useTheme } from "next-themes";
 
-function TransferBetweeHoverElement() {
-  const { theme } = useTheme();
-  const router = useRouter();
-  return (
-    <div
-      onClick={() => {
-        router.push("/bridge");
-      }}
-      className="flex  border-[1px] border-top border-grayLight flex-col  gap-4 lg:gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-2 lg:p-8 relative  dark:bg-custom-gradient-to-top"
-    >
-      <div className=" text-textBlack text-[24px] lg:text-[38px] font-medium dark:text-white bg-none">
-        Transfer Between
-      </div>
-      <div className="flex-col gap-6 lg:gap-0 flex xl:flex-row justify-between items-start lg:items-start xl:items-end bg-none">
-        <div className="flex gap-3 bg-none">
-          <div className="flex flex-col bg-none">
-            <Image
-              src={ModeImage}
-              alt="Price Graph"
-              className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
-              style={{
-                backgroundColor: theme == "dark" ? "unset !important" : "",
-              }}
-            />
-            <div className=" text-grayLight text-center text-[18px] lg:text-[32px] font-light bg-none dark:text-white">
-              From
-            </div>
-          </div>
-          <div className="flex items-center pb-6 lg:pb-9  justify-center gap-3 bg-none">
-            <RightArrowIcon className="w-7 h-7" />
-
-            <DotIcon className="w-2  h-2" />
-            <LeftArrowIcon
-              className="w-7 h-7"
-              style={{
-                backgroundColor: theme == "dark" ? "unset !important" : "",
-              }}
-            />
-          </div>
-          <div className="flex flex-col bg-none">
-            <Image
-              className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
-              src={OptimismImage}
-              alt="Price Graph"
-              style={{
-                backgroundColor: theme == "dark" ? "unset !important" : "",
-              }}
-            />
-            <div className=" text-center text-grayLight text-[18px] lg:text-[32px] font-light bg-none dark:text-white">
-              To
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2 mt-3 items-center bg-none">
-          <Image
-            className="mb-3"
-            src={infinityImage}
-            alt="alt"
-            style={{
-              backgroundColor: theme == "dark" ? "unset !important" : "",
-            }}
-          />
-          <Typography
-            variant="regular"
-            size="subtitle"
-            className="text-center mb-3  text-grayLight  font-light bg-none"
-          >
-            Layer Zero Integration
-          </Typography>
-        </div>
-      </div>
-      <Button className="absolute bottom-0 lg:px-6 px-3  left-0 w-full mt-13 bg-textBlack text-white text-[24px] lg:text-[32px] flex justify-between h-[60px] lg:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
-        Bridge
-        <Image
-          src={arrow}
-          width={42}
-          height={42}
-          alt="arrow"
-          className="bg-none"
-        />
-      </Button>
-    </div>
-  );
-}
-
-function FarmYourLuckHoverElement() {
-  return (
-    <div className="flex flex-col border-x border-y border-[1px] border-grayLight overflow-y-hidden animateDCDS gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-2 lg:p-8 relative dark:bg-custom-gradient-to-top">
-      <div className="text-textBlack text-[26px] sm:text-[32px] lg:text-[38px] font-medium dark:text-white bg-none">
-        Explore incentives from our partners
-      </div>
-      <div className="lg:text-[24px] text-[20px] text-grayLight font-medium bg-none">
-        Claim back 100% of your Option fees
-      </div>
-      <Button className="absolute lg:px-6 px-3 bottom-0 left-0 w-full mt-13 bg-textBlack text-white  text-[24px] lg:text-[32px] flex justify-between h-[60px] lg:h-[108px] hover:bg-textBlack dark:bg-home-btn-bg">
-        Farm your luck
-        <Image src={arrow} width={42} height={42} alt="arrow" />
-      </Button>
-    </div>
-  );
-}
-
-function DCDSHoverElement() {
-  const router = useRouter();
-  return (
-    <div
-      onClick={() => {
-        router.push("/dcds");
-      }}
-      className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS 2xl:gap-8 gap-2 lg:gap-10 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-3 lg:p-8 relative  dark:bg-custom-gradient-to-top"
-    >
-      <div className=" text-textBlack text-[20px] lg:text-[32px] 2xl:text-[38px] font-medium dark:text-white">
-        Earn high yields by offering dCDS protection
-      </div>
-      <Image
-        src={PriceGraph}
-        alt="Price Graph"
-        className="2xl:w-[900px] w-[900px] object-fit block dark:hidden"
-      />
-      <Image
-        src={DCDSHover}
-        alt="Price Graph"
-        className="2xl:w-[900px] w-[900px] object-fit hidden dark:block"
-      />
-      <div className=" text-textBlack text-[18px] lg:text-[32px] 2xl:text-[38px] 2xl:pb-12 pb-8 font-medium dark:text-white flex items-center gap-4">
-        Get up to 200% APY
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <IoMdInformationCircleOutline
-                height={32}
-                width={32}
-                className="cursor-pointer"
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Exposed to volatility risk</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      <Button className="absolute lg:px-6 px-2 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[24px]  lg:text-[32px] flex justify-between h-[60px] lg:h-[108px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
-        Earn
-        <Image src={arrow} width={42} height={42} alt="arrow" />
-      </Button>
-    </div>
-  );
-}
-interface FeeDetail {
-  orgName: string;
-  amount: string;
-  tag: string;
-  tagColor: string;
-  tagBg: string;
-  textColor: string;
-  borderColor: string;
-}
-function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
-  const router = useRouter();
-  return (
-    <div
-      onClick={() => {
-        router.push("/mintusdalist");
-      }}
-      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-2 lg:gap-4 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top p-3 lg:p-6 relative"
-    >
-      <div className="text-textBlack text-[28px] lg:text-[38px] font-medium dark:text-white bg-none">
-        100% Synthetic LTV
-      </div>
-      <div>
-        <Image
-          className="hidden dark:block w-full"
-          src={LTVDark}
-          alt="dark-mode-image"
-        />
-        <Image
-          className="block dark:hidden w-full"
-          src={LTV}
-          alt="light-mode-image"
-        />
-      </div>
-      <div className="flex justify-between bg-none">
-        <span className=" font-medium text-sm lg:text-lg text-grayLight bg-none">
-          80% Stablecoin
-        </span>
-        <span className=" font-medium text-sm lg:text-lg text-grayLight bg-none">
-          20% Downside Protection
-        </span>
-      </div>
-      <div className=" hidden xl:block text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">
-        Fee Comparison
-      </div>
-      <div className="  xl:hidden text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">
-        Fee
-      </div>
-      <div className=" hidden xl:flex  lg:flex-wrap gap-2 sm:gap-3 lg:gap-3 lg:justify-around  2xl:gap-8 xl:ml-6  xl:mb-20 bg-none">
-        {feesList.map((feeCom, idx) => {
-          return (
-            <PriceComparison
-              key={idx}
-              orgName={feeCom.orgName}
-              tag={feeCom.tag}
-              amount={feeCom.amount}
-              tagColor={feeCom.tagColor}
-              textColor={feeCom.textColor}
-              tagBg={feeCom.tagBg}
-              borderColor={feeCom.borderColor}
-            />
-          );
-        })}
-      </div>
-      <div className="  xl:hidden gap-6 2xl:gap-8 lg:ml-6 mb-20 bg-none">
-        <PriceComparison
-          orgName={feesList[0].orgName}
-          tag={""}
-          amount={feesList[0].amount}
-          tagColor={feesList[0].tagColor}
-          textColor={feesList[0].textColor}
-          tagBg={feesList[0].tagBg}
-          borderColor={feesList[0].borderColor}
-        />
-      </div>
-      <Button className="absolute px-2 lg:px-6 bottom-0 left-0 w-full lg:mt-13 bg-textBlack text-white text-[20px] lg:text-[32px] flex justify-between  h-[60px] lg:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
-        Mint USDa
-        <Image src={arrow} width={42} height={42} alt="arrow" />
-      </Button>
-    </div>
-  );
-}
 export default function HomeTemplate() {
   const items = [
     { title: "Mint USDA", subtitle: "TVL - $100,000" },
@@ -389,9 +139,9 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[550px]"
+                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[550px] 3xl:!h-[620px]"
                 : hoveredIndex === 1
-                ? "lg:w-[40%] lg:!h-[550px]"
+                ? "lg:w-[40%] lg:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               hoveredIndex === null || hoveredIndex === 2
@@ -430,9 +180,9 @@ export default function HomeTemplate() {
           <div
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
-                ? "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[550px]"
+                ? "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[550px]  3xl:!h-[620px]"
                 : hoveredIndex === 0
-                ? " w-full lg:w-[30%] lg:!h-[550px]"
+                ? " w-full lg:w-[30%] lg:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               hoveredIndex === null
@@ -536,7 +286,7 @@ export default function HomeTemplate() {
               setCurrentIndex(null);
             }}
             onClick={() => {
-              // router.push("/farmyourluck");
+              router.push("/farmyourluck");
             }}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",

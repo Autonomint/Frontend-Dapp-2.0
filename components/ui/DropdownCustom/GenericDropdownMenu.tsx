@@ -53,7 +53,7 @@ export function GenericDropdownMenu({
         >
           <span className="flex-1 text-left overflow-hidden">{buttonText}</span>
           <div
-            className={`h-full w-[30%]  bg-transparent flex justify-center items-center border-l border-[1px] border-grayLight border-y-0 border-r-0 absolute right-0 ${iconWrapBg}`}
+            className={`h-full w-[50px]  bg-transparent flex justify-center items-center border-l border-[1px] border-grayLight border-y-0 border-r-0 absolute right-0 ${iconWrapBg}`}
           >
             {icon}
           </div>

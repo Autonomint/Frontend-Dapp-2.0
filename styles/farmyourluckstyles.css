@@ -56,7 +56,6 @@
   transform: translateY(100px);
   transition: opacity 0.5s ease, transform 0.5s ease;
   color: #00ac67;
-  padding: 36px;
 }
 
 .selected-for-reward-amount {
@@ -64,7 +63,6 @@
   transform: translateY(0);
   transition: opacity 0.5s ease, transform 0.5s ease;
   color: #00ac67;
-  padding: 36px;
 }
 
 .dark .card-front {
