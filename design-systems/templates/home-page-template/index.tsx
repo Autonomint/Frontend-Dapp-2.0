@@ -139,9 +139,9 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[550px] 3xl:!h-[620px]"
+                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[480px]  xl:!h-[550px] 3xl:!h-[620px]"
                 : hoveredIndex === 1
-                ? "lg:w-[40%] lg:!h-[550px]  3xl:!h-[620px]"
+                ? "lg:w-[40%]  lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               hoveredIndex === null || hoveredIndex === 2
@@ -180,9 +180,9 @@ export default function HomeTemplate() {
           <div
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
-                ? "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[550px]  3xl:!h-[620px]"
+                ? "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : hoveredIndex === 0
-                ? " w-full lg:w-[30%] lg:!h-[550px]  3xl:!h-[620px]"
+                ? " w-full lg:w-[30%] lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               hoveredIndex === null

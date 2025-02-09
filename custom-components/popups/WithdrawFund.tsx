@@ -265,7 +265,9 @@ export function WithdrawFund({
     isFetching: isCumulativeFetching,
     isError: cumulativeRateErrorReceipt,
   } = useWaitForTransactionReceipt({
-    hash: (cumulativeRate || "0x") as `0x${string}`, // Transaction hash to wait for
+    hash: (cumulativeRate
+      ? cumulativeRate.toString()
+      : undefined) as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
     query: {
       enabled: cumulativeRateSuccess,
@@ -337,7 +339,7 @@ export function WithdrawFund({
     isError: withdrawErrorReceipt,
     error: withdrawError,
   } = useWaitForTransactionReceipt({
-    hash: (borrowWithdrawData || "0x") as `0x${string}`, // Transaction hash to wait for
+    hash: (borrowWithdrawData || undefined) as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
   });
 
@@ -533,6 +535,7 @@ export function WithdrawFund({
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
                   heading="Calculating Interest "
+                  loadingCount="1/3"
                 />
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
@@ -540,6 +543,7 @@ export function WithdrawFund({
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
                   heading="Approving USDa "
+                  loadingCount="2/3"
                 />
                 <LoadingBox
                   isLoading={withdrawLoadingLocal}
@@ -547,6 +551,7 @@ export function WithdrawFund({
                   isSuccess={isSuccessWithdrawReceipt}
                   setSuccessLoading={() => console.log()}
                   heading="Withdrawing"
+                  loadingCount="3/3"
                 />
               </div>
             </>

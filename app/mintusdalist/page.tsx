@@ -10,6 +10,7 @@ import AppNavbar from "@/custom-components/AppNavbar";
 import { motion } from "framer-motion";
 import useDeviceType from "@/hookes/useDeviceType";
 import Link from "next/link";
+import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -77,25 +78,26 @@ function SingleListItem({
   const metrics: Metric[] = [
     { label: "Borrow Rate", value: item.BorrowRate },
     {
-      label: "Downside Protection Given",
+      label: "LTV",
+      value: item.ltv,
+    },
+    {
+      label: "Downside Protection",
       value: item.DownsideProtectionGiven,
     },
   ];
-
-  const router = useRouter();
 
   return (
     <div className="flex  lg:h-auto flex-col lg:flex-row w-full items-start border-b border-solid border-grayLight gap-6 relative">
       <motion.div
         className="p-6 w-full pb-0 lg:pb-6"
-        style={{ borderTopWidth: indexVal === 0 ? 1 : 0 }}
         initial="hidden"
         animate="visible"
         variants={listItemVariants}
       >
         <div className="flex lg:w-[75%]   flex-col lg:flex-row w-full">
           <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-          <div className="flex flex-grow flex-col md:flex-row w-full max-w-screen-md h-[120px] lg:h-[160px]">
+          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-md h-[120px] lg:h-[160px]">
             {metrics.map((metric, index) => (
               <div key={index} className="md:flex-1">
                 <ListItemMetric {...metric} />
@@ -104,45 +106,53 @@ function SingleListItem({
           </div>
         </div>
         <div className="hidden lg:block">
-          <Button className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
-            <Link
-              prefetch={true}
-              href={`/mintUSDaWithCollateral/${item.token}`}
-            >
+          <Link prefetch={true} href={`/mintUSDaWithCollateral/${item.token}`}>
+            <Button className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
               <Image src={arrow} width={42} height={42} alt="arrow" />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </motion.div>
-      <Button className="lg:hidden  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
-        <Link prefetch={true} href={`/mintUSDaWithCollateral/${item.token}`}>
+      <Link
+        className="w-full lg:hidden"
+        prefetch={true}
+        href={`/mintUSDaWithCollateral/${item.token}`}
+      >
+        <Button className="  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
           <Image src={arrow} width={42} height={42} alt="arrow" />
-        </Link>
-      </Button>
+        </Button>
+      </Link>
     </div>
   );
 }
 
 function MintUSDaList() {
-  //@ts-ignore
-  const list: ListItem[] = [
+  const { isTvlPending, tvlValue: ltv } = useGetTvl();
+
+  // Calculate the downside protection amount
+  const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
+
+  const list = [
     {
       token: "ETH",
       tokenImage: cryptoEth,
       BorrowRate: "5%",
-      DownsideProtectionGiven: "32.67%",
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
     },
     {
       token: "wrETH",
       tokenImage: cryptoEth,
       BorrowRate: "5%",
-      DownsideProtectionGiven: "32.67%",
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
     },
     {
       token: "eETH",
       tokenImage: cryptoEth,
       BorrowRate: "5%",
-      DownsideProtectionGiven: "32.67%",
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
     },
   ];
 

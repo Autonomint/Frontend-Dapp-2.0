@@ -68,7 +68,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
           );
         })}
       </div>
-      <div className="  xl:hidden gap-6 2xl:gap-8 lg:ml-6 mb-20 bg-none">
+      <div className="  xl:hidden gap-6 2xl:gap-8 ml-4 lg:ml-6 mb-20 bg-none">
         <PriceComparison
           orgName={feesList[0].orgName}
           tag={""}

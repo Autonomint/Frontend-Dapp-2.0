@@ -9,15 +9,21 @@ import { Moon, Sun, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationPopup from "./popups/NotificationPopUp";
 import ReferPopup from "./popups/ReferPopUp";
 import WalletPopup from "./popups/WalletPopUp";
 import NotificationPopupMobile from "./popups/NotificationPopUpMobile";
 import ReferPopupMobile from "./popups/ReferPopUpMobile";
+import { usePathname } from "next/navigation";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -26,6 +32,10 @@ function Navbar() {
   const closeMenu = () => {
     setIsOpen(false);
   };
+
+  const pathName = usePathname();
+
+  const isPolicyPage = pathName == "/terms-policy";
 
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
@@ -71,25 +81,28 @@ function Navbar() {
         </Link>
       </div>
 
-      <div className="flex md:gap-6 sm:gap-2 mr-4">
-        <WalletPopup />
-        <Button
-          variant={"shadowOutline"}
-          className="border-[#041A50] hidden lg:block h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-          onClick={() =>
-            theme == "dark" ? setTheme("light") : setTheme("dark")
-          }
-        >
-          {theme == "dark" ? (
-            <Sun style={{ width: "24px", height: "24px" }} />
-          ) : (
-            <Moon style={{ width: "24px", height: "24px" }} />
-          )}
-        </Button>
+      {!isPolicyPage && isClient && (
+        <div className="flex md:gap-6 sm:gap-2 mr-4">
+          <WalletPopup />
+          <Button
+            variant={"shadowOutline"}
+            className="border-[#041A50] hidden lg:block h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+            onClick={() =>
+              theme == "dark" ? setTheme("light") : setTheme("dark")
+            }
+          >
+            {theme == "dark" ? (
+              <Sun style={{ width: "24px", height: "24px" }} />
+            ) : (
+              <Moon style={{ width: "24px", height: "24px" }} />
+            )}
+          </Button>
 
-        <NotificationPopup wrapperClassName={"hidden lg:block"} />
-        <ReferPopup wrapperClassName={"hidden lg:block"} />
-      </div>
+          <NotificationPopup wrapperClassName={"hidden lg:block"} />
+          <ReferPopup wrapperClassName={"hidden lg:block"} />
+        </div>
+      )}
+
       {/* Backdrop */}
       {isOpen && (
         <div
@@ -100,12 +113,12 @@ function Navbar() {
 
       {/* Menu Links */}
       <div
-        className={`w-[100%] overflow-y-scroll no-scrollbar    h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`w-[100%]      h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
         style={{ top: 94, left: 0 }}
       >
-        <ul className=" mb-10 flex w-full h-full  justify-start   items-start flex-col  ">
+        <ul className="  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
             <Link onClick={closeMenu} href="/mintusdalist">
               <Typography
@@ -178,20 +191,22 @@ function Navbar() {
           </li>
         </ul>
 
-        <div className="mt-6 gap-6 p-3 w-full border-t flex-row flex justify-center items-center border-grayLight border-[1px]">
-          <Button
-            variant={"shadowOutline"}
-            className="border-[#041A50]  lg:hidden h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-            onClick={() =>
-              theme == "dark" ? setTheme("light") : setTheme("dark")
-            }
-          >
-            {theme == "dark" ? (
-              <Sun style={{ width: "24px", height: "24px" }} />
-            ) : (
-              <Moon style={{ width: "24px", height: "24px" }} />
-            )}
-          </Button>
+        <div className=" gap-6 p-3 w-full border-t flex-row flex justify-center items-center border-grayLight border-[1px]">
+          {isClient && (
+            <Button
+              variant={"shadowOutline"}
+              className="border-[#041A50]  lg:hidden h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+              onClick={() =>
+                theme == "dark" ? setTheme("light") : setTheme("dark")
+              }
+            >
+              {theme == "dark" ? (
+                <Sun style={{ width: "24px", height: "24px" }} />
+              ) : (
+                <Moon style={{ width: "24px", height: "24px" }} />
+              )}
+            </Button>
+          )}
           <ReferPopupMobile />
         </div>
       </div>

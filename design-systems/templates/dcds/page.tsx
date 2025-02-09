@@ -1013,7 +1013,7 @@ function DCDSTemplate() {
                 & protocol in return for fixed yields.
               </div>
             </div>
-            <div className="  md:px-16 md:py-5  lg:px-5">
+            <div className=" px-5 py-3 md:px-16 md:py-5  lg:px-5">
               <AdditionalDCDSMetrics
                 apy="Expected range 5% to 200%"
                 depositing={
@@ -1042,6 +1042,7 @@ function DCDSTemplate() {
                 isSuccess={Boolean(UsdtApprovalSuccessReceipt)}
                 setSuccessLoading={() => console.log(true)}
                 heading="Approving USDT"
+                loadingCount={selectedTokens.length == 2 ? "2/3" : "1/3"}
               />
               <LoadingBox
                 isLoading={usdaApproveLoadingLocal}
@@ -1049,6 +1050,7 @@ function DCDSTemplate() {
                 isSuccess={Boolean(usdaApprovalReceiptReceipt)}
                 setSuccessLoading={() => console.log(true)}
                 heading="Approving USDa"
+                loadingCount={selectedTokens.length == 2 ? "1/3" : "1/3"}
               />
               <LoadingBox
                 isLoading={dcdsDepositLoadingLocal}
@@ -1056,6 +1058,7 @@ function DCDSTemplate() {
                 isSuccess={Boolean(DepositdataReceipt)}
                 setSuccessLoading={() => console.log(true)}
                 heading="Depositing"
+                loadingCount="3/3"
               />
             </div>
           </div>

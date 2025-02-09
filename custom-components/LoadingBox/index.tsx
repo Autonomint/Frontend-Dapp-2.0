@@ -10,7 +10,9 @@ const LoadingBox = ({
   isSuccess,
   isFailure,
   setSuccessLoading,
+  loadingCount,
 }: {
+  loadingCount?: string;
   isLoading: boolean;
   heading?: string;
   isSuccess?: boolean;
@@ -75,7 +77,8 @@ const LoadingBox = ({
             >
               {heading || "Transaction Pending... 1/3"}
             </Typography>
-            <div>
+            <div className="flex items-center gap-2 ">
+              <span>{loadingCount}</span>
               {showSuccess ? (
                 <div className="h-8 w-8 flex items-center justify-center rounded-full bg-[#ABFFDE]">
                   <CheckIcon

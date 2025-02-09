@@ -1,18 +1,18 @@
-import QueryProvider from "@/providers/QueryProvider";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Toaster } from "sonner";
-import Footer from "../custom-components/Footer";
 
-import Navbar from "@/custom-components/Navbar";
-import { ThemeProvider } from "next-themes";
-import Provider from "../contexts";
+const ToasterContainerWrapper = dynamic(
+  () => import("@/design-systems/organisms/toaster-container-wrapper")
+);
+
 import "./globals.css";
-
-const WalletProvider = dynamic(() => import("@/providers/WalletProvider"), {
-  // ssr: false,
-});
+import QueryProvider from "@/providers/QueryProvider";
+import WalletProvider from "@/providers/WalletProvider";
+import Provider from "@/contexts";
+import { ThemeProvider } from "@/providers/theme-provider";
+import Navbar from "@/custom-components/Navbar";
+import Footer from "@/custom-components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,12 +62,8 @@ export default function RootLayout({
             </WalletProvider>
           </QueryProvider>
         </div>
+        <ToasterContainerWrapper />
       </body>
-      <Toaster
-        richColors
-        position="top-right"
-        className="dark:bg-custom-gradient-to-top"
-      />
     </html>
   );
 }

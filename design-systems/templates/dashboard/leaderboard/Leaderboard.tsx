@@ -1,34 +1,28 @@
 "use client";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetLeaderboard, {
   LeaderboardDetails,
 } from "@/hookes/api-hooks/useGetLeaderboard";
+import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import { formatNumber, sortWalletAddress } from "@/utils/helpers";
 import { formatEther } from "viem";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
-
 function PortolioTable({
   leaderboardData,
 }: {
   leaderboardData: LeaderboardDetails[];
 }) {
   return (
-    <div className="overflow-x-auto min-h-[500px]">
-      <table className="table-auto w-full border-collapse text-[20px]">
+    <div className="overflow-x-auto min-h-[500px] ">
+      <table className="table-auto w-[700px]  sm:w-full  border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/2 lg:w-auto">Rank</th>
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
-            <th className="pl-5 hidden md:table-cell font-normal">Borrowed</th>
-            <th className="pl-5 hidden md:table-cell font-normal">Deposited</th>
-            <th className="pl-5 hidden md:table-cell font-normal">
-              LTV Ration
-            </th>
-            <th className="pl-5 hidden md:table-cell font-normal">Type</th>
-            <th className="pr-5 hidden md:table-cell text-right font-normal">
-              Points
-            </th>
+            <th className="pl-5  table-cell font-normal">Borrowed</th>
+            <th className="pl-5  table-cell font-normal">Deposited</th>
+            <th className="pl-5  table-cell font-normal">LTV Ration</th>
+            <th className="pl-5  table-cell font-normal">Type</th>
+            <th className="pr-5  table-cell text-right font-normal">Points</th>
           </tr>
         </thead>
         <tbody className="font-normal ">
@@ -37,18 +31,18 @@ function PortolioTable({
               <tr key={index} className="border border-grayLight">
                 <td className="px-5 py-6">{index + 1}</td>
                 <td className="px-5 py-6">{sortWalletAddress(item.address)}</td>
-                <td className="px-5 py-6 hidden md:table-cell">
+                <td className="px-5 py-6  table-cell">
                   {item.totalAmint ? Number(item.totalAmint).toFixed(4) : "--"}
                 </td>
-                <td className="px-5 py-6 hidden md:table-cell">
+                <td className="px-5 py-6  table-cell">
                   {item.totalDepositedAmount
                     ? Number(item.totalDepositedAmount).toFixed(2)
                     : "--"}
                 </td>
-                <td className="px-5 py-6 hidden md:table-cell">
+                <td className="px-5 py-6  table-cell">
                   {item.totalLTV ? item.totalLTV : "--"}
                 </td>
-                <td className="px-5 py-6 hidden md:table-cell font-normal">
+                <td className="px-5 py-6  table-cell font-normal">
                   {!!item.totalAmint ? (
                     <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
                       Borrower
@@ -59,7 +53,7 @@ function PortolioTable({
                     </span>
                   )}
                 </td>
-                <td className="px-5 py-6 hidden md:table-cell font-normal text-right">
+                <td className="px-5 py-6  table-cell font-normal text-right">
                   {item.points ? item.points : "--"}
                 </td>
               </tr>

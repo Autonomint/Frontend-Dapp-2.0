@@ -221,7 +221,7 @@ export function DcdsWithdrawModal({
     isSuccess: isCdsSuccessReceipt,
     error: cdsLogdataReceiptError,
   } = useWaitForTransactionReceipt({
-    hash: dcdsFundWithdrawData, // The transaction hash to wait for
+    hash: dcdsFundWithdrawData || undefined, // The transaction hash to wait for
     confirmations: 2, // Number of confirmations required for success
   });
 
