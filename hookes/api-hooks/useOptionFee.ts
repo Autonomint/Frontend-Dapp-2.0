@@ -51,6 +51,7 @@ const useFetchOptionFees = (
     // Optional configurations
     enabled: !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided
     refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const optionFees = (data as number[])?.[1]

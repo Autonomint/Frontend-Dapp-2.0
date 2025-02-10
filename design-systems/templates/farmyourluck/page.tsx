@@ -155,7 +155,7 @@ function FarmYourLuckTemplate() {
     <div className="min-h-full lg:h-full w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
-        <div className="grid col-span-1 lg:col-span-3">
+        <div className="grid col-span-1 lg:col-span-4 ">
           <div className="grid grid-cols-3 gap-6 md:p-8 p-5">
             {Array.from({ length: 9 }).map((_, index) => (
               <div
@@ -196,7 +196,7 @@ function FarmYourLuckTemplate() {
                         isRevealed
                           ? "selected-for-reward-amount "
                           : "selected-for-reward-amount-hidden"
-                      } text-[28px] 2xl:text-[32px] 3xl:text-[42px]`}
+                      } text-[14px] sm:text-[24px] lg:text-[28px] xl:text-[32px] 2xl:text-[38px]  3xl:text-[42px] p-2 xl:p-8`}
                     >
                       {rewardAmount}
                     </div>
@@ -206,7 +206,7 @@ function FarmYourLuckTemplate() {
             ))}
           </div>
         </div>
-        <div className="grid col-span-1 lg:col-span-3 lg:p-6 border border-grayLight relative">
+        <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
           <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
             <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">
@@ -228,7 +228,7 @@ function FarmYourLuckTemplate() {
                   animate="visible"
                   exit="exit"
                   variants={rewardAmountVariants}
-                  className="block dark:text-white text-[42px] lg:text-left"
+                  className="block dark:text-white text-[32px] xl:text-[42px] lg:text-left"
                 >
                   {rewardAmount}
                 </motion.span>

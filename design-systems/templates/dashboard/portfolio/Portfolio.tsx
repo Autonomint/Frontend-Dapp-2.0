@@ -20,7 +20,10 @@ import displayNumberWithPrecision, {
   formatTimestamp,
   handleWheel,
 } from "@/utils/helpers";
+import { BACKEND_API_URL } from "@/utils/urls";
+import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useAccount } from "wagmi";
 
 const PositionTableRow = ({
   position,
@@ -520,6 +523,7 @@ function PortfolioMetrics({
 }
 
 function Portfolio() {
+  const { address, chainId } = useAccount();
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"
   );
@@ -556,6 +560,33 @@ function Portfolio() {
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
+
+  const RefreshTableData = async () => {
+    const res = await fetch(
+      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
+      {
+        method: "POST",
+      }
+    );
+    return res;
+  };
+
+  const RefreshTableDataCds = async () => {
+    const res = await fetch(
+      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
+      {
+        method: "POST",
+      }
+    );
+    return res;
+  };
+
+  const handleRefresh = async () => {
+    await RefreshTableData();
+    await RefreshTableDataCds();
+    positionListRefetech();
+    dcdsPositionListRefetech();
+  };
 
   return (
     <div className="flex flex-col">
@@ -615,8 +646,14 @@ function Portfolio() {
         >
           Deposited Position
         </div>
-        <div className="lg:block w-[4%] hidden px-5 py-3  text-[32px] font-medium border-grayLight border  border-r-0 border-solid"></div>
-        <div className=" w-[42%] hidden lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
+        <div
+          onClick={handleRefresh}
+          className=" w-[15%] cursor-pointer text-center justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center   text-[32px] font-medium border-grayLight border  border-r-0 border-solid"
+        >
+          Refresh
+          <RefreshCcw />
+        </div>
+        <div className=" w-[39%] hidden lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}

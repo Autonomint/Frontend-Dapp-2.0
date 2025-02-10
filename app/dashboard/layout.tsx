@@ -9,9 +9,9 @@ export default function DashboardLayoutPage({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <div>
       <DashboardLayout />
       {children}
-    </section>
+    </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import NotificationContainer from "@/design-systems/organisms/notifiaction-card";
 import { NetworkId } from "@/utils/constants";
 import { sortWalletAddress } from "@/utils/helpers";
 import {
@@ -28,15 +29,18 @@ import {
 } from "@reown/appkit/react";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
+import TermAndCondition from "../TermAndCondition";
+import Link from "next/link";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
 }
 
 const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
 
   const { open, close } = useAppKit();
   const { address, isConnected, caipAddress, status } = useAppKitAccount();
@@ -57,6 +61,162 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
+  };
+  const handleClosePolicyDialog = () => {
+    setIsPolicyDialogOpen(false);
+  };
+
+  const MobileNavOption = () => {
+    return (
+      <>
+        {/* Mobile Button */}
+        <Button
+          variant={"shadowOutline"}
+          className="border-[#041A50] lg:hidden  p-0 gap-0 shadow-outlined-none lg:shadow-outlined   h-fit dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] "
+        >
+          <div className="relative flex p-[13px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
+            <Popover>
+              <PopoverTrigger className="" asChild>
+                <div className="relative flex items-center gap-1">
+                  {chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon
+                      className="dark:stroke-white stroke-black  "
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon
+                      className=" stroke-black  dark:stroke-white"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : (
+                    <OptimismIcon
+                      className="dark:stroke-white fill-black "
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  )}
+                  <DownArrowIcon className="w-2 h-2 dark:stroke-white stroke-black  " />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                align="center"
+                className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
+              >
+                <div className=" flex flex-col gap-4">
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 11155111,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <EthereumIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className="fill-black dark:fill-white"
+                    />
+                    <Typography className="text-[24px] dark:text-white font-medium">
+                      Ethereum{" "}
+                    </Typography>{" "}
+                    {chainId == NetworkId.EthereumSepolia ? (
+                      <Check width={18} height={18} />
+                    ) : null}
+                  </div>
+                  <div
+                    onClick={() =>
+                      switchChain({
+                        chainId: 84532,
+                      })
+                    }
+                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                  >
+                    <BaseIcon
+                      style={{
+                        width: "24px",
+                        height: "24px",
+                      }}
+                      className="fill-black dark:fill-white"
+                    />
+                    <Typography className="text-[24px] font-medium">
+                      Base{" "}
+                    </Typography>
+                    {chainId == NetworkId.BaseSepolia && (
+                      <Check width={18} height={18} />
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <div onClick={() => setIsDialogOpen(true)}>
+              <Typography size="body" className="">
+                {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
+              </Typography>
+            </div>
+          </div>
+        </Button>
+        {/* Mobile Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
+          <DialogContent className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+            <div className="text-2xl  font-semibold mb-4">Wallet Info</div>
+
+            <div className="flex  flex-row justify-between items-center">
+              <Typography size="lg" className="" variant="regular">
+                USDa Balance
+              </Typography>
+              <div className="flex justify-end items-center gap-2">
+                <Typography variant="regular" size="subtitle"></Typography>$
+                {data?.formatted.slice(0, 8)}
+                <span className="text-[#7A7A7A] text-[14px]">
+                  {chainId === NetworkId.EthereumSepolia
+                    ? "ETH Sepolia"
+                    : "Base Sepolia"}
+                </span>
+              </div>
+            </div>
+
+            {/* Notification Section */}
+            <NotificationContainer />
+            <Button
+              onClick={() => disconnect()}
+              variant={"default"}
+              className="border-[#041A50]  h-fit text-[18px]  font-normal  w-full p-[10px]"
+            >
+              Disconnect
+            </Button>
+
+            <div className="flex-col md:flex-row md:justify-between flex mt-8 flex- justify-center gap-2 items-center">
+              <a
+                href={`https://sepolia.${
+                  chainId == NetworkId.EthereumSepolia
+                    ? "etherscan.io"
+                    : "basescan.org"
+                }/address/${address}`}
+                target="__blank"
+              >
+                <Typography
+                  size="sm"
+                  className="text-[#111111] dark:text-white underline-offset-2 underline"
+                  variant="regular"
+                >
+                  View All Wallet Transactions
+                </Typography>
+              </a>
+              <div onClick={() => setIsPolicyDialogOpen(true)}>
+                <Typography
+                  size="sm"
+                  className="text-[#7A7A7A] underline-offset-2 underline"
+                  variant="regular"
+                >
+                  Terms & Privacy Policy
+                </Typography>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
   };
 
   return (
@@ -294,158 +454,27 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A] underline-offset-2 underline"
                   variant="regular"
                 >
-                  Terms & Privacy Policy
+                  <Link
+                    target="__blank"
+                    onClick={handleBtnClick}
+                    href="/terms-policy"
+                  >
+                    Terms & Privacy Policy
+                  </Link>
                 </Typography>
               </div>
             </Popup>
           </Button>
 
-          {/* Mobile Button */}
-          <Button
-            variant={"shadowOutline"}
-            className="border-[#041A50] lg:hidden  p-0 gap-0 shadow-outlined-none lg:shadow-outlined   h-fit dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] "
-          >
-            <div className="relative flex p-[13px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
-              <Popover>
-                <PopoverTrigger className="" asChild>
-                  <div className="relative flex items-center gap-1">
-                    {chainId == NetworkId.EthereumSepolia ? (
-                      <EthereumIcon
-                        className="dark:stroke-white stroke-black  "
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    ) : chainId == NetworkId.BaseSepolia ? (
-                      <BaseIcon
-                        className=" stroke-black  dark:stroke-white"
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    ) : (
-                      <OptimismIcon
-                        className="dark:stroke-white fill-black "
-                        style={{ width: "20px", height: "20px" }}
-                      />
-                    )}
-                    <DownArrowIcon className="w-2 h-2 dark:stroke-white stroke-black  " />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="center"
-                  className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
-                >
-                  <div className=" flex flex-col gap-4">
-                    <div
-                      onClick={() =>
-                        switchChain({
-                          chainId: 11155111,
-                        })
-                      }
-                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                    >
-                      <EthereumIcon
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                        className="fill-black dark:fill-white"
-                      />
-                      <Typography className="text-[24px] dark:text-white font-medium">
-                        Ethereum{" "}
-                      </Typography>{" "}
-                      {chainId == NetworkId.EthereumSepolia ? (
-                        <Check width={18} height={18} />
-                      ) : null}
-                    </div>
-                    <div
-                      onClick={() =>
-                        switchChain({
-                          chainId: 84532,
-                        })
-                      }
-                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                    >
-                      <BaseIcon
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                        className="fill-black dark:fill-white"
-                      />
-                      <Typography className="text-[24px] font-medium">
-                        Base{" "}
-                      </Typography>
-                      {chainId == NetworkId.BaseSepolia && (
-                        <Check width={18} height={18} />
-                      )}
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              <div onClick={() => setIsDialogOpen(true)}>
-                <Typography size="body" className="">
-                  {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
-                </Typography>
-              </div>
-            </div>
-          </Button>
-          <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-            <DialogContent className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-              <div className="text-2xl  font-semibold mb-4">Wallet Info</div>
-
-              <div className="flex mt-4 flex-row justify-between items-center">
-                <Typography size="lg" className="" variant="regular">
-                  USDa Balance
-                </Typography>
-                <Typography
-                  size="lg"
-                  className="text-[#7A7A7A]"
-                  variant="regular"
-                >
-                  {chainId === NetworkId.EthereumSepolia
-                    ? "ETH Sepolia"
-                    : "Base Sepolia"}
-                </Typography>
-              </div>
-              <div className="flex mt-3 flex-row justify-start items-center">
-                <Typography variant="regular" size="subtitle">
-                  ${data?.formatted.slice(0, 8)}
-                </Typography>
-              </div>
-              <Button
-                onClick={() => disconnect()}
-                variant={"default"}
-                className="border-[#041A50] mt-8 h-fit text-[18px]  font-normal  w-full p-[10px]"
-              >
-                Disconnect
-              </Button>
-
-              <div className="flex-col flex mt-8 flex- justify-center gap-2 items-center">
-                <a
-                  href={`https://sepolia.${
-                    chainId == NetworkId.EthereumSepolia
-                      ? "etherscan.io"
-                      : "basescan.org"
-                  }/${address}`}
-                >
-                  <Typography
-                    size="sm"
-                    className="text-[#111111] dark:text-white underline-offset-2 underline"
-                    variant="regular"
-                  >
-                    View All Wallet Transactions
-                  </Typography>
-                </a>
-                <Typography
-                  size="sm"
-                  className="text-[#7A7A7A] underline-offset-2 underline"
-                  variant="regular"
-                >
-                  Terms & Privacy Policy
-                </Typography>
-              </div>
-            </DialogContent>
-          </Dialog>
+          {/* Mobile Nav */}
+          {MobileNavOption()}
         </>
       )}
+
+      {/* <TermAndCondition
+        handleCloseDialog={handleClosePolicyDialog}
+        isDialogOpen={isPolicyDialogOpen}
+      /> */}
     </div>
   );
 };

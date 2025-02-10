@@ -139,6 +139,8 @@ function StatsTemplate() {
       fetch(
         `${BACKEND_API_URL}/borrows/ratio/${chainId}/${ethPrice ?? 0}`
       ).then((res) => res.json()),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: feeOptions, refetch } = useQuery({
@@ -149,6 +151,7 @@ function StatsTemplate() {
           ethPrice ?? 0
         }/0`
       ).then((res) => res.json()),
+    staleTime: 0,
   });
 
   useEffect(() => {

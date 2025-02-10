@@ -288,6 +288,7 @@ function RatioOfCollaterals({
           {RatioValuesBottom.map((item, index) => {
             return (
               <StatsMetrics
+                key={index}
                 value={item.value}
                 metricVal={item.headline}
                 classNameValue={` ${

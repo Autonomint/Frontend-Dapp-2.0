@@ -16,6 +16,8 @@ const useGetUserPoint = () => {
         (res) => res.json()
       ),
     staleTime: 5000,
+    enabled: !!chainId && !!address,
+    retry: 1,
   });
 
   const { data: referralPoints, refetch: refetchReferalPoints } = useQuery({

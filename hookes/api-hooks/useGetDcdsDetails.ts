@@ -69,6 +69,7 @@ const useGetDcdsDepositList = () => {
     queryFn: (): Promise<any> =>
       getDeposits(address ? address : undefined, chainId),
     enabled: !!address,
+    retry: 1,
   });
 
   return {

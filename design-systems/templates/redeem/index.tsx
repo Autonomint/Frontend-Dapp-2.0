@@ -574,6 +574,7 @@ const RedeemContainer = () => {
               isSuccess={Boolean(usdaApproveSuccess)}
               setSuccessLoading={() => console.log()}
               heading="Approving USDa"
+              loadingCount="1/2"
             />
             <LoadingBox
               isLoading={abondApproveLoadingLocal}
@@ -581,6 +582,7 @@ const RedeemContainer = () => {
               isSuccess={Boolean(abondApproveSuccess)}
               setSuccessLoading={() => console.log()}
               heading="Approving Abond"
+              loadingCount="1/2"
             />
 
             <LoadingBox
@@ -591,6 +593,7 @@ const RedeemContainer = () => {
               isSuccess={Boolean(redeemUsdtSuccess)}
               setSuccessLoading={() => console.log()}
               heading={"Redeeming " + formik.values.inputCollateral}
+              loadingCount="2/2"
             />
 
             <LoadingBox
@@ -602,6 +605,7 @@ const RedeemContainer = () => {
               isSuccess={Boolean(redeemEthSuccess)}
               setSuccessLoading={() => console.log()}
               heading={"Redeeming " + formik.values.inputCollateral}
+              loadingCount="2/2"
             />
           </div>
         </div>

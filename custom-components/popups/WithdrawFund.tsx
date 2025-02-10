@@ -18,6 +18,7 @@ import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
+import { WaitForTransactionReceiptErrorType } from "viem";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -143,7 +144,7 @@ export function WithdrawFund({
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
       updatedData[0].value = `${Number(position.depositedAmount).toFixed(
-        2
+        4
       )} ETH`;
       updatedData[1].value = `${Number(position.ethPrice) / 100} ETH`;
       updatedData[2].value = `${Number(position.noOfAmintMinted).toFixed(
@@ -264,7 +265,9 @@ export function WithdrawFund({
     isFetching: isCumulativeFetching,
     isError: cumulativeRateErrorReceipt,
   } = useWaitForTransactionReceipt({
-    hash: (cumulativeRate || "0x") as `0x${string}`, // Transaction hash to wait for
+    hash: (cumulativeRate
+      ? cumulativeRate.toString()
+      : undefined) as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
     query: {
       enabled: cumulativeRateSuccess,
@@ -334,12 +337,14 @@ export function WithdrawFund({
     isSuccess: isSuccessWithdrawReceipt,
     data: withdrawReceipt,
     isError: withdrawErrorReceipt,
+    error: withdrawError,
   } = useWaitForTransactionReceipt({
-    hash: (borrowWithdrawData || "0x") as `0x${string}`, // Transaction hash to wait for
+    hash: (borrowWithdrawData || undefined) as `0x${string}`, // Transaction hash to wait for
     confirmations: 1, // Number of confirmations required
   });
 
   useEffect(() => {
+    console.log(withdrawError, "withdrawError");
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
@@ -368,12 +373,23 @@ export function WithdrawFund({
     } else if (withdrawErrorReceipt) {
       toast.custom((t) => (
         <ToastNotificationError
-          title="Transaction failed, Please try again"
+          title={
+            String(
+              (withdrawError?.cause as { shortMessage: string })
+                .shortMessage as string
+            ) || "Transaction failed, Please try again"
+          }
           onClose={() => toast.dismiss(t)}
         />
       ));
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
+      setTimeout(() => {
+        setRepayLoading(false);
+      }, 1000);
     }
-  }, [isSuccessWithdrawReceipt, withdrawReceipt]);
+  }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async () => {
     setIsLoadingCumulativeLocal(true);
@@ -519,20 +535,23 @@ export function WithdrawFund({
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
                   heading="Calculating Interest "
+                  loadingCount="1/3"
                 />
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
-                  isFailure={usdaApproveError}
+                  isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
                   heading="Approving USDa "
+                  loadingCount="2/3"
                 />
                 <LoadingBox
                   isLoading={withdrawLoadingLocal}
-                  isFailure={borrowWithdrawError}
+                  isFailure={borrowWithdrawError || withdrawErrorReceipt}
                   isSuccess={isSuccessWithdrawReceipt}
                   setSuccessLoading={() => console.log()}
                   heading="Withdrawing"
+                  loadingCount="3/3"
                 />
               </div>
             </>

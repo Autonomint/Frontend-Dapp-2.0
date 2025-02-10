@@ -765,6 +765,7 @@ function BridgeTemplate() {
             isSuccess={Boolean(usdaApproveSuccess)}
             setSuccessLoading={() => console.log()}
             heading="Approving USDa"
+            loadingCount="1/2"
           />
 
           <LoadingBox
@@ -773,6 +774,7 @@ function BridgeTemplate() {
             isSuccess={Boolean(tusDTApproveSuccess)}
             setSuccessLoading={() => console.log()}
             heading="Approving USDT"
+            loadingCount="1/2"
           />
           <LoadingBox
             isLoading={sendLoading && sendToken === "USDa"}
@@ -780,6 +782,7 @@ function BridgeTemplate() {
             isSuccess={Boolean(usdaIsSuccess)}
             setSuccessLoading={() => console.log()}
             heading={"Transferring " + sendToken}
+            loadingCount="2/2"
           />
           <LoadingBox
             isLoading={sendLoading && sendToken === "TUSDT"}
@@ -787,6 +790,7 @@ function BridgeTemplate() {
             isSuccess={Boolean(tusdtIsSuccess)}
             setSuccessLoading={() => console.log()}
             heading={"Transferring " + sendToken}
+            loadingCount="2/2"
           />
         </div>
       </div>
