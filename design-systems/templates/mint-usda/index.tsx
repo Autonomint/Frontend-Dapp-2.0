@@ -34,21 +34,28 @@ function MintUSDa() {
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
               <li className="mb-3 text-lg">
-                Select cards to view potential rewards.
+                Deposit ETH as collateral and mint USDa (up to 80% of collateral
+                value).
               </li>
               <li className="mb-3 text-lg">
-                Confirm your selection to reveal rewards.
+                Get 20% downside price fall protection on collateral with 1
+                month expiry, with option to renew every month.
               </li>
               <li className="mb-3 text-lg">
-                Earn prizes or reclaim your option fees!
+                Pay a closing option fee, ~50% lower than charged in any
+                derivative platform.
               </li>
-              <li className="text-base">
-                Earn prizes or reclaim your option fees!
+              <li className="mb-3 text-lg">
+                Track and manage positions under ‘Borrowed Position’ in
+                Portfolio.
+              </li>
+              <li className="mb-3 text-lg">
+                Earn yield-bearing ABOND tokens when closing your position.
               </li>
             </ol>
           </div>
         </div>
-        <div className="col-span-1 border border-solid border-grayLight p-8">
+        <div className=" cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] col-span-1 border border-solid border-grayLight p-8">
           <div
             onClick={() => {
               router.push("/farmyourluck");
@@ -57,7 +64,7 @@ function MintUSDa() {
           >
             <Button
               variant={"shadowOutline"}
-              className="w-[50px] hidden  lg:flex !h-[50px] !py-4 !shadow-none"
+              className="w-[50px] hidden  lg:flex !h-[50px] !py-4 !shadow-none hover:bg-none"
             >
               <FormYourLuckIcon
                 style={{

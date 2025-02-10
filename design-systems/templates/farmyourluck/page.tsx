@@ -240,17 +240,15 @@ function FarmYourLuckTemplate() {
               </div>
               <ol className="list-decimal list-inside mt-3 text-grayLight">
                 <li className="mb-3 text-lg">
-                  Select cards to view potential rewards.
+                  Pay $5 to pick a card for a chance to win $75 in option fees.
                 </li>
                 <li className="mb-3 text-lg">
-                  Confirm your selection to reveal rewards.
+                  Click ‘Reveal Reward’ to see if you chose correctly.
                 </li>
                 <li className="mb-3 text-lg">
-                  Earn prizes or reclaim your option fees!
+                  Win Option Fee or Partner Fee rewards on a correct pick.
                 </li>
-                <li className="text-lg">
-                  Earn prizes or reclaim your option fees!
-                </li>
+                <li className="text-lg">Missed? Try again with another $5!</li>
               </ol>
             </div>
             <button

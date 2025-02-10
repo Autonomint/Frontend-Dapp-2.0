@@ -339,7 +339,7 @@ function PortolioTable({
   return (
     <div
       ref={scrollRef}
-      className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
+      // className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
     >
       <table className="table-auto w-[530px]  sm:w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
@@ -452,7 +452,7 @@ function DcdsDepositTable({
   return (
     <div
       ref={scrollRef}
-      className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
+      // className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
     >
       <table className="table-auto w-[900px] sm:w-full border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight ">
@@ -527,6 +527,7 @@ function Portfolio() {
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"
   );
+  const [refreshLoading, setRefreshLoading] = useState(false);
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
     null
@@ -582,11 +583,55 @@ function Portfolio() {
   };
 
   const handleRefresh = async () => {
-    await RefreshTableData();
-    await RefreshTableDataCds();
-    positionListRefetech();
-    dcdsPositionListRefetech();
+    try {
+      setRefreshLoading(true);
+      if (tabPosition == "Borrowed") {
+        await RefreshTableData();
+        await positionListRefetech();
+      }
+      if (tabPosition == "Deposited") {
+        await RefreshTableDataCds();
+        await dcdsPositionListRefetech();
+      }
+    } catch (error) {
+    } finally {
+      setTimeout(() => {
+        setRefreshLoading(false);
+      }, 1000);
+    }
   };
+
+  const [isSticky, setIsSticky] = useState(false);
+  const navbarRef = useRef(null);
+
+  // Function to check the scroll position
+  const handleScroll = () => {
+    const navbarElement = document.getElementById("dashboard-nav");
+    // Get the element's position relative to the viewport
+    const rect = navbarElement?.getBoundingClientRect();
+
+    // Get the position relative to the document
+    const navBarLocal = (rect?.top || 0) + window.pageYOffset;
+
+    const bodyElement = document.getElementById("body-scroll-container");
+    const mainHeaderTop = bodyElement?.offsetTop || 0;
+
+    // Check if we've scrolled past the navbar's original position
+    if (navBarLocal < mainHeaderTop) {
+      setIsSticky(true);
+    } else if (navBarLocal > mainHeaderTop) {
+      setIsSticky(false);
+    }
+  };
+
+  useEffect(() => {
+    const element = document.getElementById("body-scroll-container");
+    element?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -615,13 +660,18 @@ function Portfolio() {
           />
         </div>
       </div>
-      <div className="flex sm:mt-5">
+      <div
+        id="dashboard-nav"
+        className={`flex  bg-white dark:bg-black sm:mt-5 ${
+          isSticky ? "sticky top-0" : ""
+        }`}
+      >
         <div
           onClick={() => {
             setTabPosition("Borrowed");
           }}
           className={
-            "lg:w-[24%] flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
+            "lg:w-[24%]  flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -651,7 +701,9 @@ function Portfolio() {
           className=" w-[15%] cursor-pointer text-center justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center   text-[32px] font-medium border-grayLight border  border-r-0 border-solid"
         >
           Refresh
-          <RefreshCcw />
+          <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>
+            <RefreshCcw />
+          </div>
         </div>
         <div className=" w-[39%] hidden lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
