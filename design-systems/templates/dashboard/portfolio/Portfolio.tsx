@@ -148,26 +148,26 @@ const PositionTableRow = ({
           : ""
       } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
     >
-      <td className="px-5 py-6">{idx}</td>
-      <td className="px-5 py-6">{position.depositedAmount}</td>
-      <td className="px-5 py-6">
+      <td className="px-5 py-4 2xl:py-6">{idx}</td>
+      <td className="px-5 py-4 2xl:py-6">{position.depositedAmount}</td>
+      <td className="px-5 py-4 2xl:py-6">
         ${Number(position.noOfAmintMinted).toFixed(2)}
       </td>
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-4 2xl:py-6 hidden md:table-cell">
         {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
       </td>
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-4 2xl:py-6 hidden md:table-cell">
         {" "}
         {position.noOfAbondMinted === null
           ? "-"
           : `$${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
       </td>
 
-      <td className="px-5 py-6 hidden md:table-cell">
+      <td className="px-5 py-4 2xl:py-6 hidden md:table-cell">
         {position.status === "LIQUIDATED" ? "Yes" : "No"}
       </td>
       <td
-        className={`px-5 py-6 ${
+        className={`px-5 py-4 2xl:py-6 ${
           tabPosition === "Borrowed" ? "block" : "none"
         } md:text-right md:table-cell md:space-x-12`}
         style={{
@@ -195,7 +195,7 @@ const PositionTableRow = ({
       </td>
 
       <td
-        className={`px-5 py-6 ${
+        className={`px-5 py-4 2xl:py-6 ${
           tabPosition === "Deposited" ? "block" : "none"
         } md:text-right md:table-cell md:space-x-12`}
         style={{
@@ -255,20 +255,20 @@ const DcdsPositionTableRow = ({
           : ""
       } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
     >
-      <td className="px-5 py-6 ">{position.index}</td>
-      <td className="px-5 py-6 text-center sm:text-left">
+      <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
+      <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">
         {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
         {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt}
       </td>
-      <td className="px-5 py-6 ">
+      <td className="px-5 py-4 2xl:py-6 ">
         {formatTimestamp(Number(position.depositedTime))}
       </td>
 
-      <td className="px-5 py-6 ">
+      <td className="px-5 py-4 2xl:py-6 ">
         {(Number(position.lockingPeriod) / 86400000).toFixed(0)} days
       </td>
 
-      <td className={`px-5 py-6  md:text-right md:space-x-12`}>
+      <td className={`px-5 py-4 2xl:py-6  md:text-right md:space-x-12`}>
         <span
           onClick={handleRowClick}
           className="font-bold cursor-pointer text-[20px] underline "
@@ -341,7 +341,9 @@ function PortolioTable({
       <table className="table-auto w-[530px]   sm:w-full border-collapse text-[20px]">
         <thead className="text-left border-x border-grayLight sm:birder-y-0 font-normal text-grayLight ">
           <tr>
-            <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
+            <th className="pl-5 font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
+              ID
+            </th>
             <th className="pl-5 font-normal w-4/5 lg:w-auto">ETH Deposited</th>
             <th className="pl-5 hidden md:table-cell font-normal">
               USDa Minted
@@ -452,7 +454,7 @@ function DcdsDepositTable({
       <table className="table-auto w-[900px] sm:w-full border-collapse text-[20px]">
         <thead className="text-left font-normal sm:border-y-0 sm:border-x border-grayLight text-grayLight ">
           <tr>
-            <th className="pl-5 font-normal py-5 ">ID</th>
+            <th className="pl-5 font-normal py-3 2xl:py-5 ">ID</th>
             <th className="pl-5 font-normal ">USDa / Usdt Deposited</th>
             <th className="pl-5  font-normal">Deposited Time</th>
             <th className="pl-5  font-normal">Lock In period</th>
@@ -507,7 +509,7 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col px-4  py-4 gap-2 border-grayLight  border border-solid">
-      <span className="text-textBlack md:text-[32px] text-[24px] font-medium dark:text-white">
+      <span className="text-textBlack 2xl:text-[32px] text-[24px] font-medium dark:text-white">
         {value}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] ">
@@ -666,7 +668,7 @@ function Portfolio() {
             setTabPosition("Borrowed");
           }}
           className={
-            "xl:w-[24%] w-1/2 xl:flex-1 lg:px-5 lg:py-3 p-3 text-center xl:text-left  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
+            "xl:w-[24%] w-1/2 xl:flex-1 lg:px-5 lg:py-3 p-3 text-center xl:text-left  2xl:text-[32px] text-[18px] font-medium md:text-[24px] border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -681,7 +683,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "xl:w-[24%] w-1/2 xl:flex-1 text-center xl:text-left  lg:px-5 lg:py-3 p-2 sm:p-3   md:text-[32px] text-[18px] font-medium border xl:border-r-0 border-grayLight border-r  border-solid hover:cursor-pointer flex items-center justify-center" +
+            "xl:w-[24%] w-1/2 xl:flex-1 text-center xl:text-left  lg:px-5 lg:py-3 p-2 sm:p-3   2xl:text-[32px] text-[18px] md:text-[24px] font-medium border xl:border-r-0 border-grayLight border-r  border-solid hover:cursor-pointer flex items-center justify-center" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -693,7 +695,7 @@ function Portfolio() {
         </div>
         <div
           onClick={handleRefresh}
-          className="w-1/2 xl:w-[15%] text-center xl:text-left cursor-pointer  justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center   text-[32px] font-medium border-grayLight border  border-r-0 border-solid"
+          className="w-1/2 xl:w-[15%] text-center xl:text-left cursor-pointer  justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid"
         >
           Refresh
           <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>
@@ -704,7 +706,7 @@ function Portfolio() {
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}
-            className="border-0 md:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
+            className="border-0 md:!text-[24px] 2xl:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
             placeholder="Search Transactions"
           />
         </div>

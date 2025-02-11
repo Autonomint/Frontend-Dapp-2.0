@@ -16,7 +16,9 @@ function PortolioTable({
       <table className="table-auto w-[700px]  sm:w-full  border-collapse text-[20px]">
         <thead className="text-left font-normal text-grayLight  border-y-0 border-x border-grayLight">
           <tr>
-            <th className="pl-5 font-normal py-5 w-1/2 lg:w-auto">Rank</th>
+            <th className="pl-5 font-normal py-3 2xl:py-5 w-1/2 lg:w-auto">
+              Rank
+            </th>
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
             <th className="pl-5  table-cell font-normal">Borrowed</th>
             <th className="pl-5  table-cell font-normal">Deposited</th>
@@ -34,20 +36,22 @@ function PortolioTable({
                   leaderboardData.length === index + 1 ? "" : ""
                 }`}
               >
-                <td className="px-5 py-6">{index + 1}</td>
-                <td className="px-5 py-6">{sortWalletAddress(item.address)}</td>
-                <td className="px-5 py-6  table-cell">
+                <td className="px-5 py-4 2xl:py-6">{index + 1}</td>
+                <td className="px-5 py-4 2xl:py-6">
+                  {sortWalletAddress(item.address)}
+                </td>
+                <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalAmint ? Number(item.totalAmint).toFixed(4) : "--"}
                 </td>
-                <td className="px-5 py-6  table-cell">
+                <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalDepositedAmount
                     ? Number(item.totalDepositedAmount).toFixed(2)
                     : "--"}
                 </td>
-                <td className="px-5 py-6  table-cell">
+                <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalLTV ? item.totalLTV : "--"}
                 </td>
-                <td className="px-5 py-6  table-cell font-normal">
+                <td className="px-5 py-4 2xl:py-6  table-cell font-normal">
                   {!!item.totalAmint ? (
                     <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
                       Borrower
@@ -58,7 +62,7 @@ function PortolioTable({
                     </span>
                   )}
                 </td>
-                <td className="px-5 py-6  table-cell font-normal text-right">
+                <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
                   {item.points ? item.points : "--"}
                 </td>
               </tr>
@@ -79,7 +83,7 @@ function PortfolioMetrics({
 }) {
   return (
     <div className="flex-1 flex flex-col p-5 gap-4 border border-grayLight">
-      <span className="text-textBlack text-[32px] font-medium dark:text-white">
+      <span className="text-textBlack text-[24px] 2xl:text-[32px] font-medium dark:text-white">
         {value}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] ">
