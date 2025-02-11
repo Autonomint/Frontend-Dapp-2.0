@@ -27,6 +27,8 @@ const useGetUserPoint = () => {
         method: "GET",
       }).then((res) => res.text()),
     staleTime: Infinity,
+    enabled: !!address,
+    retry: 1,
   });
 
   return {

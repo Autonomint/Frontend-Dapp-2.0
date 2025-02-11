@@ -14,6 +14,10 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import useEthOptionFees, {
+  useDeribitExpirations,
+} from "@/hookes/api-hooks/useDeribitFees";
+import { generateEthOptionName } from "@/utils/helpers";
 
 export default function HomeTemplate() {
   const items = [
@@ -39,6 +43,12 @@ export default function HomeTemplate() {
     (ethPrice || 0) as number,
     0
   );
+
+  // const expirations = useDeribitExpirations("ETH", "option");
+  // const { data } = useEthOptionFees(
+  //   `ETH-${expirations?.eth?.option?.[5]}-2800-P`
+  // );
+  // console.log(expirations, expirations?.eth?.option?.[0], "expirations");
 
   const feesList = [
     {

@@ -43,6 +43,7 @@ const ReferralTemplate = () => {
     queryKey: ["referralcode", address],
     queryFn: () => fetchReferralCode(address),
     staleTime: Infinity,
+    enabled: !!address,
   });
   const referralLink = `https://www.dev.testnet.app.autonomint.com?ref=${referral}`;
 

@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatNumber } from "@/utils/helpers";
 import { formatEther } from "viem";
 import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 const amintValues = [
   {
     headline: "Total Supply",
@@ -141,22 +142,17 @@ function StatsTemplate() {
       ).then((res) => res.json()),
     staleTime: 0,
     refetchOnWindowFocus: true,
+    enabled: !!chainId && !!ethPrice,
   });
 
-  const { data: feeOptions, refetch } = useQuery({
-    queryKey: ["optionFees"],
-    queryFn: () =>
-      fetch(
-        `${BACKEND_API_URL}/borrows/optionFees/${chainId}/1000000000000000000/${
-          ethPrice ?? 0
-        }/0`
-      ).then((res) => res.json()),
-    staleTime: 0,
-  });
+  const { optionFees: feeOptions, refetchOptionFee: refetch } =
+    useFetchOptionFees(1, (ethPrice || 0) as number, 0);
+
+  console.log(!!chainId && !!ethPrice, "ethPrice");
 
   useEffect(() => {
     handleStatsItem();
-    refetch();
+    // refetch();
   }, [
     omniChainData,
     ethPrice,
@@ -257,9 +253,9 @@ function StatsTemplate() {
 
       // fees values
       OptionFeesValues[0].value = `$${
-        feeOptions[1] == undefined
+        feeOptions == undefined
           ? 0
-          : (parseFloat(feeOptions[1]) / 10 ** 6).toFixed(2)
+          : (parseFloat(feeOptions.toString()) / 10 ** 6).toFixed(2)
       }`;
       // FeesValues[1].value = `${
       //   feeOptions[1] == undefined

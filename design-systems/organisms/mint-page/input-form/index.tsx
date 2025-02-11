@@ -28,6 +28,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -48,7 +49,6 @@ function InputForm({ currency }: { currency: string }) {
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
-  const [optionFees, setOptionFees] = useState(0);
   const { address } = useAccount();
   const ethBalance = useBalance({ address: address });
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -154,6 +154,22 @@ function InputForm({ currency }: { currency: string }) {
     reset();
   };
 
+  const { optionFees, refetchOptionFee } = useFetchOptionFees(
+    formik.values.collateralAmount,
+    (ethPrice || 0) as number,
+    formik.values.strikePrice == 5
+      ? 0
+      : formik.values.strikePrice == 10
+      ? 1
+      : formik.values.strikePrice == 15
+      ? 2
+      : formik.values.strikePrice == 20
+      ? 3
+      : 4
+  );
+
+  console.log(optionFees, "optionFees");
+
   async function handleMint(values: any) {
     if (!address) {
       toast.custom((t) => (
@@ -191,10 +207,8 @@ function InputForm({ currency }: { currency: string }) {
         : strikePrice == 20
         ? 3
         : 4;
-    const data = await fetch(
-      `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${colateralamount}/${ethPrice}/${strikePercent}`
-    ).then((res) => res.json());
-    if (data[0] != undefined && nativeFee != undefined) {
+    const data = optionFees;
+    if (data != undefined && nativeFee != undefined) {
       mintUSDa?.({
         strikePercent,
         strikePrice: BigInt(
@@ -203,7 +217,7 @@ function InputForm({ currency }: { currency: string }) {
               Number(ethPrice ? ethPrice : 0)
           )
         ),
-        volatility: BigInt(data[0]),
+        volatility: BigInt(data),
         depositingAmount: parseEther(formik.values.collateralAmount.toString()),
         value:
           parseEther(formik.values.collateralAmount.toString()) +
@@ -213,58 +227,32 @@ function InputForm({ currency }: { currency: string }) {
   }
 
   /**
-   * Retrieves the option fees for a given address.
-   *
-   * @return {Promise<any>} A promise that resolves to the option fees.
-   */
-  async function getOptionFees() {
-    const strikePrice = formik.values.strikePrice;
-    const response = await fetch(
-      `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${parseUnits(
-        formik.values.collateralAmount.toString(),
-        18
-      )}/${ethPrice ?? 0}/${
-        strikePrice == 5
-          ? 0
-          : strikePrice == 10
-          ? 1
-          : strikePrice == 15
-          ? 2
-          : strikePrice == 20
-          ? 3
-          : 4
-      }`
-    );
-    const data = await response.json();
-    return data[1] ? data[1] / 10 ** 6 : 0;
-  }
-
-  /**
    * Handles the calculation and setting of the amint to be minted and downside protection amounts.
    */
   const CalculateAmtToBeMinted = async () => {
     try {
       // Calculate the amint to be minted
-      const optionf = await getOptionFees();
-      setOptionFees(optionf);
+      const optionf = optionFees || 0;
       const amintToMint =
-        (Number(formik.values.collateralAmount) * Number(ethPrice) * 80) /
+        (Number(formik.values.collateralAmount || 0) *
+          Number(ethPrice || 0) *
+          80) /
         10000;
       const amint2Decimal = displayNumberWithPrecision(amintToMint.toString());
       setAmintToBeMinted((Number(amint2Decimal) - optionf).toFixed(2));
 
       // Calculate the downside protection amount
       const downsideProtection =
-        (Number(formik.values.collateralAmount) *
-          Number(ethPrice) *
+        (Number(formik.values.collateralAmount || 0) *
+          Number(ethPrice || 0) *
           (100 - (ltv ? ltv : 0))) /
         10000;
       const downsideProtection2Decimal = displayNumberWithPrecision(
         downsideProtection.toString()
       );
       const upsideCollateral =
-        (Number(formik.values.collateralAmount) *
-          Number(ethPrice) *
+        (Number(formik.values.collateralAmount || 0) *
+          Number(ethPrice || 0) *
           formik.values.strikePrice) /
         10000;
       setUpsideCollateral(upsideCollateral);
@@ -285,7 +273,6 @@ function InputForm({ currency }: { currency: string }) {
     } else if (formik.values.collateralAmount == 0) {
       setAmintToBeMinted("0");
       setDownsideProtectionAmnt("0");
-      setOptionFees(0);
       setUpsideCollateral(0);
       CalculateAmtToBeMinted();
     } else if (formik.values.collateralAmount != 0) {
@@ -301,7 +288,7 @@ function InputForm({ currency }: { currency: string }) {
         collateralAmount: "value should be greater than 0.02 ETH",
       });
     }
-  }, [formik.values.collateralAmount, formik.values.strikePrice]);
+  }, [formik.values.collateralAmount, formik.values.strikePrice, optionFees]);
 
   const handleSetMaxBal = () => {
     formik.setFieldValue(
