@@ -13,6 +13,7 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 
 export default function HomeTemplate() {
   const items = [
@@ -26,6 +27,8 @@ export default function HomeTemplate() {
 
   const router = useRouter();
   const { theme } = useTheme();
+
+  const [isScrollBottom, setIsScrollBottom] = useState<boolean>(false);
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
@@ -113,6 +116,43 @@ export default function HomeTemplate() {
     }
   }, [hoveredIndex]);
 
+  const handleScroll = () => {
+    const bodyElement = document.getElementById("body-scroll-container");
+
+    // Check if the element exists and call scrollIntoView()
+    if (bodyElement) {
+      bodyElement.scroll({
+        behavior: "smooth", // Optional: Add smooth scrolling effect
+        top: bodyElement.scrollHeight,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const bodyElement = document.getElementById("body-scroll-container");
+    bodyElement?.addEventListener("scroll", checkScrollBottom);
+  }, []);
+
+  const checkScrollBottom = () => {
+    const bodyElement = document.getElementById("body-scroll-container");
+
+    if (bodyElement) {
+      // Calculate if the user has scrolled to the bottom
+      const isAtBottom =
+        bodyElement.scrollTop + bodyElement.clientHeight >=
+        bodyElement.scrollHeight;
+
+      if (isAtBottom) {
+        console.log("User has scrolled to the bottom");
+        setIsScrollBottom(true);
+        // Perform any action you want when the user reaches the bottom
+      } else {
+        setIsScrollBottom(false);
+        console.log("User has NOT scrolled to the bottom yet");
+      }
+    }
+  };
+
   return (
     <div className="w-full">
       <Image
@@ -133,9 +173,9 @@ export default function HomeTemplate() {
         }`}
       ></div>
 
-      <div className="border-[1px] overflow-hidden  border-t-grayLight ">
+      <div className="border-[1px] overflow-hidden  border-t-grayLight">
         {/* 1st row */}
-        <div className={`flex-col lg:flex lg:flex-row closeAnimateTop  `}>
+        <div className={`flex-col lg:flex lg:flex-row closeAnimateTop    `}>
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
@@ -318,6 +358,7 @@ export default function HomeTemplate() {
           </div>
         </div>
 
+        {/* 3nd row */}
         <div>
           <div
             className={`flex flex-col lg:flex-row mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
@@ -390,6 +431,12 @@ export default function HomeTemplate() {
           </div>
         </div>
       </div>
+      {!isScrollBottom && (
+        <ScrollDownArrow
+          handleClick={() => handleScroll()}
+          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+        />
+      )}
     </div>
   );
 }

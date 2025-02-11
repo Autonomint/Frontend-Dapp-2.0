@@ -284,3 +284,12 @@ input[type="number"]:-webkit-autofill {
   align-items: center;
   padding: 20px;
 }
+
+@keyframes spinRefresh {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.animate-spin-Refresh {
+  animation: spinRefresh 1s linear infinite;
+}

@@ -93,7 +93,9 @@ function BridgeComponentRight({
           </div>
         </div>
         <div className="border border-solid border-grayLight p-5">
-          <div className="flex justify-between h-[27px]"></div>
+          <div className="flex justify-between h-[27px] text-grayLight text-[14px] lg:text-lg">
+            You Receive
+          </div>
           <div className="text-[42px] text-textBlack  mt-4 lg:mt-8 dark:text-white">
             ${receiveAmount.toFixed(2)}
           </div>

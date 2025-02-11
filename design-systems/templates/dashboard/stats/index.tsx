@@ -285,7 +285,7 @@ function StatsTemplate() {
   };
 
   return (
-    <div className="md:mt-[-20px]">
+    <div className="md:mt-[-20px] sm:mx-4 border-x sm:border-grayLight">
       <div className="grid lg:grid-cols-2 grid-cols-1 ">
         <div>
           <ChartComponent
@@ -303,6 +303,7 @@ function StatsTemplate() {
             timeFrame="1Y"
             hideElements={false}
             chartApiFlag=""
+            isBorderRight={false}
           />
         </div>
         <div>
@@ -321,6 +322,7 @@ function StatsTemplate() {
             timeFrame="1M"
             chartApiFlag=""
             hideElements={false}
+            isBorderRight={false}
           />
         </div>
       </div>

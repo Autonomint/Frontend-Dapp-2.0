@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
-import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,15 +13,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import AppNavbar from "@/custom-components/AppNavbar";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast, Toaster } from "sonner";
 import dcdsDark from "@/app/assets/Frame 350 (1).svg";
 import dcdsFrame from "@/app/assets/Frame 350.png";
-import centerImage1 from "@/app/assets/Vector (1).svg";
+import USDaIcon from "@/app/assets/logo.svg";
+import OPIcon from "@/app/assets/optimism.png";
+import ModeIcon from "@/app/assets/mode.png";
 import tokenImage from "@/app/assets/Vector (6).png";
 import add from "@/app/assets/add-01.png";
-import centerImage2 from "@/app/assets/cryptocurrency-color_usdt.svg";
+import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import minus from "@/app/assets/minus-sign.png";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -42,27 +43,41 @@ import { Typography } from "@/components/ui/Typography";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useRouter } from "next/navigation";
-import { handleWheel } from "@/utils/helpers";
+import { formatNumber, handleWheel } from "@/utils/helpers";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import useDeviceType from "@/hookes/useDeviceType";
+import Spinner from "@/components/ui/Spinner";
+import { RingLoadingIcon } from "@/components/ui/SvgIcons";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import HowItWorksPopUp from "@/design-systems/organisms/dcds/how-it-works";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import HowItWorksButton from "@/design-systems/organisms/dcds/how-it-works-button";
 
 function TokenTvlDetails({
   tokenName,
   tvl,
+  icon,
 }: {
+  icon: any;
   tokenName: string;
   tvl: string;
 }) {
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
-      <div className="flex flex-col gap-8">
-        <Image src={tokenImage} alt="token" width={32} height={32} />
+      <div className="flex flex-row lg:flex-col gap-8">
+        <Image src={icon} alt="token" width={32} height={32} />
         <span className="text-[24px] text-textBlack dark:text-white">
           {tokenName}
         </span>
       </div>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-row-reverse items-center lg:flex-col gap-8">
         <span className="text-[18px] font-normal text-right text-grayLight dark:text-white">
           TVL
         </span>
@@ -177,28 +192,41 @@ function AddToken({
   };
 
   return (
-    <div className="border border-solid border-grayLight p-5 flex justify-start items-center h-full relative">
-      <div className="flex flex-col gap-4">
-        <Image
-          src={tokenDetails.tokenImage}
-          alt="token"
-          width={30}
-          height={30}
-        />
-        <span className="text-[24px] text-textBlack dark:text-white">
-          {tokenDetails.tokenName}
-        </span>
-      </div>
-      <Button
-        onClick={toggleToken}
-        className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient-to-bottom"
+    <div
+      className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
+    >
+      <div
+        className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        {isSelected ? (
-          <Image src={minus} alt="minus" />
-        ) : (
-          <Image src={add} alt="add" />
-        )}
-      </Button>
+        <div className="flex flex-row items-center lg:items-start lg:flex-col gap-4">
+          <div>
+            <Image
+              src={tokenDetails.tokenImage}
+              alt="token"
+              width={30}
+              height={30}
+            />
+          </div>
+          <span className="text-[24px] text-textBlack dark:text-white">
+            {tokenDetails.tokenName}
+          </span>
+        </div>
+        <Button
+          onClick={toggleToken}
+          className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient-to-bottom"
+        >
+          {isSelected ? (
+            <Image src={minus} alt="minus" />
+          ) : (
+            <Image src={add} alt="add" />
+          )}
+        </Button>
+      </div>
+      {tokenDetails.isLoading && (
+        <div className="top-0 text-white left-0 absolute w-full h-full bg-[#00000080] dark:bg-[#ffffff52] flex items-center justify-center ">
+          <RingLoadingIcon width={50} height={50} />
+        </div>
+      )}
     </div>
   );
 }
@@ -221,6 +249,7 @@ interface TokenDetails {
   errorMessage?: string;
   active?: boolean;
   tokenImage: any;
+  isLoading: boolean;
   tokenName: string;
   minTokenAmount: number;
   balanceAvailable: number | string;
@@ -313,6 +342,8 @@ function DCDSTemplate() {
   const [dcdsDepositLoadingLocal, setDcdsDepositLoadingLocal] =
     useState<boolean>(false);
 
+  const [isOptionHowItWork, setIsOpenHowItWork] = useState(false);
+
   const { chainId } = useAccount();
 
   const formik = useFormik<FormValues>({
@@ -367,38 +398,6 @@ function DCDSTemplate() {
     ));
   };
 
-  const showNormal = () => {
-    const customLoaderId = toast.loading(
-      <div className="flex justify-between items-center w-full">
-        <span style={{ marginLeft: "8px" }}>Transaction #1</span>
-        <Image src={Spinner} alt="token" width={30} height={30} />
-      </div>,
-      { position: "top-right", duration: Infinity }
-    );
-
-    const promise = new Promise((resolve) =>
-      setTimeout(() => resolve({ name: "Transaction #1" }), 2000)
-    );
-
-    promise
-      .then((data: any) => {
-        toast.dismiss(customLoaderId);
-        toast.success(`${data.name}`, {
-          position: "top-right",
-          className: "dark:bg-custom-gradient-to-top",
-        });
-      })
-      .catch(() => {
-        toast.dismiss(customLoaderId);
-        toast.custom((t) => (
-          <ToastNotificationError
-            title={"An error occurred!"}
-            onClose={() => toast.dismiss(t)}
-          />
-        ));
-      });
-  };
-
   // get usdt limit from CDS contract and store it in usdtLimit and setting default value to 0n
 
   // Define the initial state for the options variable
@@ -409,7 +408,7 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
 
-  const { omniChainData: GlobalContractData } =
+  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
 
   const usdtBalance = useGetBalance("TUSDT");
@@ -418,8 +417,9 @@ function DCDSTemplate() {
   const tokenList: TokenDetails[] = useMemo(() => {
     return [
       {
-        tokenImage: centerImage2,
+        tokenImage: USDaIcon,
         tokenName: "USDa",
+        isLoading: isOmniChainDataPending,
         active:
           (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
           USDT_DEPOSIT_LIMIT_IN_DCDS,
@@ -428,23 +428,26 @@ function DCDSTemplate() {
         minTokenAmount: 500,
       },
       {
-        tokenImage: centerImage1,
+        tokenImage: UsdtIcon,
         tokenName: "USDT",
+        isLoading: false,
         minTokenAmount: 500,
         active: true,
         balanceAvailable: usdtBalance,
       },
       {
-        tokenImage: centerImage1,
-        tokenName: "USDc",
+        tokenImage: OPIcon,
+        tokenName: "OP",
+        isLoading: false,
         minTokenAmount: 500,
         active: true,
         balanceAvailable: 0,
       },
       {
-        tokenImage: centerImage2,
-        tokenName: "USDe",
+        tokenImage: ModeIcon,
+        tokenName: "Mode",
         minTokenAmount: 500,
+        isLoading: false,
         balanceAvailable: 0,
         active: true,
       },
@@ -753,6 +756,16 @@ function DCDSTemplate() {
 
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollDown = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scroll({
+        top: 400,
+        behavior: "smooth",
+      });
+    }
+  };
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -893,13 +906,15 @@ function DCDSTemplate() {
           </div>
           <div className=" flex px-4 my-3 justify-center items-center w-full gap-14">
             {" "}
-            <Typography
-              className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
-              size="lg"
-              variant="regular"
-            >
-              How it works?
-            </Typography>
+            <div onClick={() => setIsOpenHowItWork(true)}>
+              <Typography
+                className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
+                size="lg"
+                variant="regular"
+              >
+                How it works?
+              </Typography>
+            </div>
             <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-1 2xl:p-2">
               <Typography
                 size="lg"
@@ -917,7 +932,10 @@ function DCDSTemplate() {
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
-            <div className="h-[200px] 2xl:h-[250px] overflow-y-auto no-scrollbar">
+            <div
+              ref={scrollRef}
+              className="h-[200px]  2xl:h-[250px] overflow-y-auto no-scrollbar"
+            >
               {selectedTokens.map((token, key) => (
                 <div key={key} className="mt-4">
                   <Label
@@ -974,7 +992,13 @@ function DCDSTemplate() {
             </div>
           </div>
 
-          <div>
+          <div className="pt-[30px] lg:pt-0 relative">
+            {selectedTokens.length > 2 && (
+              <ScrollDownArrow
+                handleClick={handleScrollDown}
+                classNames="top-[-26px]"
+              />
+            )}
             <div className=" px-5 md:px-16 md:py-5  lg:px-5 md:pb-0 ">
               <GenericDropdownMenu
                 buttonText={
@@ -993,8 +1017,16 @@ function DCDSTemplate() {
               </Typography>
             </div>
             <div className="p-5 md:px-16 md:py-5 md:pb-0 lg:pb-0 lg:p-5 flex   items-center justify-between w-full">
-              <span className="text-grayLight font-normal text-[18px]">
-                Opt for liquidity gains?
+              <span className="text-grayLight flex flex-row items-center justify-start font-normal text-[18px]">
+                Opt for liquidation gains?
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info width={24} height={24} className="ml-2" />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white dark:bg-black">
+                    <p>this is tooltip</p>
+                  </TooltipContent>
+                </Tooltip>
               </span>
               <Checkbox
                 type="button"
@@ -1010,7 +1042,7 @@ function DCDSTemplate() {
             <div className=" md:px-16 md:py-5  md:pb-0 px-5 lg:px-5">
               <div className="p-3 bg-[#FFF0CA] text-[12px] text-grayLight font-medium dark:text-[#D6A100] dark:bg-[#4F3800] max-w-full">
                 Note: Your amount will be used to offer protection to borrowers
-                & protocol in return for fixed yields.
+                & protocol in return for fixed option fees.
               </div>
             </div>
             <div className=" px-5 py-3 md:px-16 md:py-5  lg:px-5">
@@ -1065,16 +1097,24 @@ function DCDSTemplate() {
         </div>
       </div>
       <TokenTvlDetails
+        icon={UsdtIcon}
         tokenName="USDT"
-        tvl={`${formatUnits(
-          GlobalContractData?.usdtAmountDepositedTillNow || 0n,
-          6
+        tvl={`${formatNumber(
+          Number(
+            formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
+          )
         )}`}
       />
       <TokenTvlDetails
+        icon={USDaIcon}
         tokenName="USDa"
         tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} `}
       />
+      <HowItWorksPopUp
+        isDialogOpen={isOptionHowItWork}
+        setIsDialogOpen={() => setIsOpenHowItWork(false)}
+      />
+      <HowItWorksButton handleClick={() => setIsOpenHowItWork(true)} />
     </div>
   );
 }

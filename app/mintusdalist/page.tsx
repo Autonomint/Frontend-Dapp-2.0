@@ -1,16 +1,23 @@
 "use client";
 
-import Image from "next/image";
-import React from "react";
-import cryptoEth from "../assets/eth.png";
 import { Button } from "@/components/ui/button";
-import arrow from "../assets/arrow-right-02.png";
-import { useRouter, useSearchParams } from "next/navigation";
 import AppNavbar from "@/custom-components/AppNavbar";
-import { motion } from "framer-motion";
-import useDeviceType from "@/hookes/useDeviceType";
-import Link from "next/link";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
+import useDeviceType from "@/hookes/useDeviceType";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import arrow from "../assets/arrow-right-02.png";
+import WrsETH from "../assets/WrsETH-icon.png";
+import WeETH from "../assets/weETH-icoon.webp";
+import cryptoEth from "../assets/eth.png";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -29,11 +36,18 @@ const farmTextVariants = {
 };
 
 //@ts-ignore
-function ListItemMetric({ label, value, color }: Metric) {
+function ListItemMetric({ label, value, color, tooltipText }: Metric) {
   return (
     <div className="flex md:flex-col md:mt-3 lg:mt-0 justify-between w-full md:h-[80%]  text-left md:text-center items-start lg:items-center mt-4 ">
       <div className="text-grayLight font-normal text-lg w-[220px] md:w-auto">
-        {label}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div>{label}</div>
+          </TooltipTrigger>
+          <TooltipContent className="bg-white dark:bg-black">
+            <p>{tooltipText}</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
       <div
         className="text-textBlack font-medium md:text-[32px] text-lg dark:text-white"
@@ -74,16 +88,23 @@ function SingleListItem({
   item: ListItem;
   indexVal: number;
 }) {
-  //@ts-ignore
-  const metrics: Metric[] = [
-    { label: "Borrow Rate", value: item.BorrowRate },
+  const metrics = [
+    {
+      label: "Borrow Rate",
+      value: item.BorrowRate,
+      tooltipText:
+        "The current yearly interest rate charged on stablecoin USDa loan",
+    },
     {
       label: "LTV",
       value: item.ltv,
+      tooltipText: "USDa borrowing limit per unit of collateral",
     },
     {
       label: "Downside Protection",
       value: item.DownsideProtectionGiven,
+      tooltipText:
+        "Current %age of price fall protection provided on collaterals",
     },
   ];
 
@@ -141,15 +162,15 @@ function MintUSDaList() {
       ltv: `${ltv || 0}%`,
     },
     {
-      token: "wrETH",
-      tokenImage: cryptoEth,
+      token: "wrsETH",
+      tokenImage: WrsETH,
       BorrowRate: "5%",
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
     },
     {
-      token: "eETH",
-      tokenImage: cryptoEth,
+      token: "weETH",
+      tokenImage: WeETH,
       BorrowRate: "5%",
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
@@ -168,17 +189,18 @@ function MintUSDaList() {
             <SingleListItem key={index} item={item} indexVal={index} />
           ))}
         </motion.div>
-
-        <motion.div
-          className="absolute right-0 top-0  h-full lg:max-w-[7%] border-x-0 border-y-0 border-b border-grayLight border-[1px]  hidden lg:flex items-center justify-center"
-          initial="hidden"
-          animate="visible"
-          variants={farmTextVariants}
-        >
-          <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
-            Farm Your Luck
-          </div>
-        </motion.div>
+        <Link prefetch={true} href="/farmyourluck" className="">
+          <motion.div
+            className="absolute dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] right-0 top-0  h-full lg:max-w-[7%] border-x-0 border-y-0 border-b border-grayLight border-[1px]  hidden lg:flex items-center justify-center"
+            initial="hidden"
+            animate="visible"
+            variants={farmTextVariants}
+          >
+            <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
+              Farm Your Luck
+            </div>
+          </motion.div>
+        </Link>
       </div>
     </div>
   );
