@@ -34,14 +34,14 @@ const PositionTableRow = ({
   setIsWithdrawDialogOpen,
   isViewPositionOpen,
   setViewPosition,
-  isRenewRepayOpen,
+  isLast,
   setRenewRepay,
   highlight = false,
 }: {
   highlight: boolean;
   isViewPositionOpen: boolean;
   setViewPosition: (isOpen: boolean) => void;
-  isRenewRepayOpen: boolean;
+  isLast: boolean;
   setRenewRepay: (isOpen: boolean) => void;
   setIsRebalanceDialogOpen: (isOpen: boolean) => void;
   setIsWithdrawDialogOpen: (isOpen: boolean) => void;
@@ -146,7 +146,7 @@ const PositionTableRow = ({
         highlight
           ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : ""
-      } border-solid border-grayLight`}
+      } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
     >
       <td className="px-5 py-6">{idx}</td>
       <td className="px-5 py-6">{position.depositedAmount}</td>
@@ -227,14 +227,14 @@ const DcdsPositionTableRow = ({
   setIsWithdrawDialogOpen,
   isViewPositionOpen,
   setViewPosition,
-  isRenewRepayOpen,
+  isLast,
   setRenewRepay,
   highlight = false,
 }: {
   highlight: boolean;
   isViewPositionOpen: boolean;
   setViewPosition: (isOpen: boolean) => void;
-  isRenewRepayOpen: boolean;
+  isLast: boolean;
   setRenewRepay: (isOpen: boolean) => void;
   setIsRebalanceDialogOpen: (isOpen: boolean) => void;
   setIsWithdrawDialogOpen: (isOpen: boolean) => void;
@@ -253,7 +253,7 @@ const DcdsPositionTableRow = ({
         highlight
           ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : ""
-      } border-solid border-grayLight`}
+      } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
     >
       <td className="px-5 py-6 ">{position.index}</td>
       <td className="px-5 py-6 text-center sm:text-left">
@@ -337,12 +337,9 @@ function PortolioTable({
     }
   }, [positionList]);
   return (
-    <div
-      ref={scrollRef}
-      // className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
-    >
-      <table className="table-auto w-[530px]  sm:w-full border-collapse text-[20px]">
-        <thead className="text-left font-normal text-grayLight ">
+    <div ref={scrollRef} className="sm:my-4 overflow-x-auto   no-scrollbar">
+      <table className="table-auto w-[530px]   sm:w-full border-collapse text-[20px]">
+        <thead className="text-left border-x border-grayLight sm:birder-y-0 font-normal text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/5 lg:w-auto">ID</th>
             <th className="pl-5 font-normal w-4/5 lg:w-auto">ETH Deposited</th>
@@ -374,7 +371,7 @@ function PortolioTable({
                 setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
                 isViewPositionOpen={isViewPositionOpen}
                 setViewPosition={setViewPosition}
-                isRenewRepayOpen={isRenewRepayOpen}
+                isLast={key === positionList.length - 1}
                 setRenewRepay={setRenewRepay}
                 highlight={key + 1 === positionList.length && isScroll}
               />
@@ -449,13 +446,11 @@ function DcdsDepositTable({
       }, 10000);
     }
   }, [positionList]);
+
   return (
-    <div
-      ref={scrollRef}
-      // className="overflow-x-auto min-h-[500px] max-h-[600px] no-scrollbar"
-    >
+    <div ref={scrollRef} className="sm:my-4 overflow-x-auto   no-scrollbar">
       <table className="table-auto w-[900px] sm:w-full border-collapse text-[20px]">
-        <thead className="text-left font-normal text-grayLight ">
+        <thead className="text-left font-normal sm:border-y-0 sm:border-x border-grayLight text-grayLight ">
           <tr>
             <th className="pl-5 font-normal py-5 ">ID</th>
             <th className="pl-5 font-normal ">USDa / Usdt Deposited</th>
@@ -477,7 +472,7 @@ function DcdsDepositTable({
                 setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
                 isViewPositionOpen={isViewPositionOpen}
                 setViewPosition={setViewPosition}
-                isRenewRepayOpen={isRenewRepayOpen}
+                isLast={key === positionList.length - 1}
                 setRenewRepay={setRenewRepay}
                 highlight={key + 1 === positionList.length && isScroll}
               />
@@ -511,7 +506,7 @@ function PortfolioMetrics({
   value: string;
 }) {
   return (
-    <div className="flex-1 flex flex-col px-4  py-4 gap-2 border-grayLight border-r-0 border border-solid">
+    <div className="flex-1 flex flex-col px-4  py-4 gap-2 border-grayLight  border border-solid">
       <span className="text-textBlack md:text-[32px] text-[24px] font-medium dark:text-white">
         {value}
       </span>
@@ -634,7 +629,7 @@ function Portfolio() {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics
@@ -662,7 +657,7 @@ function Portfolio() {
       </div>
       <div
         id="dashboard-nav"
-        className={`flex  bg-white dark:bg-black sm:mt-5 ${
+        className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
           isSticky ? "sticky top-0" : ""
         }`}
       >
@@ -671,7 +666,7 @@ function Portfolio() {
             setTabPosition("Borrowed");
           }}
           className={
-            "lg:w-[24%]  flex-1 lg:px-5 lg:py-3 p-3  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
+            "xl:w-[24%] w-1/2 xl:flex-1 lg:px-5 lg:py-3 p-3 text-center xl:text-left  md:text-[32px] text-[18px] font-medium border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
             `${
               tabPosition == "Borrowed"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -686,7 +681,7 @@ function Portfolio() {
             setTabPosition("Deposited");
           }}
           className={
-            "lg:w-[24%] flex-1  lg:px-5 lg:py-3 p-2 sm:p-3   md:text-[32px] text-[18px] font-medium border border-r-0 border-grayLight border-solid hover:cursor-pointer flex items-center justify-center" +
+            "xl:w-[24%] w-1/2 xl:flex-1 text-center xl:text-left  lg:px-5 lg:py-3 p-2 sm:p-3   md:text-[32px] text-[18px] font-medium border xl:border-r-0 border-grayLight border-r  border-solid hover:cursor-pointer flex items-center justify-center" +
             `${
               tabPosition == "Deposited"
                 ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
@@ -698,14 +693,14 @@ function Portfolio() {
         </div>
         <div
           onClick={handleRefresh}
-          className=" w-[15%] cursor-pointer text-center justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center   text-[32px] font-medium border-grayLight border  border-r-0 border-solid"
+          className="w-1/2 xl:w-[15%] text-center xl:text-left cursor-pointer  justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center   text-[32px] font-medium border-grayLight border  border-r-0 border-solid"
         >
           Refresh
           <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>
             <RefreshCcw />
           </div>
         </div>
-        <div className=" w-[39%] hidden lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border border-r-0 border-solid">
+        <div className=" w-1/2 xl:w-[39%] hidden text-center xl:text-left lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border  border-solid">
           <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}

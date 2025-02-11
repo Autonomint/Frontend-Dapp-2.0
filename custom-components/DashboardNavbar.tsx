@@ -27,8 +27,8 @@ function DashboardNavbar() {
   const activeTab = navList.find((nav) => nav.isActive);
 
   return (
-    <div className="flex dashboard-nav-scroll">
-      <div className="flex w-full border border-grayLight border-r-0 border-l-0 sm:my-5">
+    <div className="flex dashboard-nav-scroll sm:px-4">
+      <div className="flex w-full border border-grayLight  sm:my-5">
         {navList.map(({ nameA, path, isActive }) => (
           <Link
             prefetch={true}

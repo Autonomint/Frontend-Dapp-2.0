@@ -12,9 +12,9 @@ function PortolioTable({
   leaderboardData: LeaderboardDetails[];
 }) {
   return (
-    <div className="overflow-x-auto min-h-[500px] ">
+    <div className="overflow-x-auto min-h-[500px]  ">
       <table className="table-auto w-[700px]  sm:w-full  border-collapse text-[20px]">
-        <thead className="text-left font-normal text-grayLight ">
+        <thead className="text-left font-normal text-grayLight  border-y-0 border-x border-grayLight">
           <tr>
             <th className="pl-5 font-normal py-5 w-1/2 lg:w-auto">Rank</th>
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
@@ -28,7 +28,12 @@ function PortolioTable({
         <tbody className="font-normal ">
           {leaderboardData.map((item, index) => {
             return (
-              <tr key={index} className="border border-grayLight">
+              <tr
+                key={index}
+                className={`border border-grayLight ${
+                  leaderboardData.length === index + 1 ? "" : ""
+                }`}
+              >
                 <td className="px-5 py-6">{index + 1}</td>
                 <td className="px-5 py-6">{sortWalletAddress(item.address)}</td>
                 <td className="px-5 py-6  table-cell">
@@ -98,7 +103,7 @@ function Leaderboard() {
   const { points, referralPoints } = useGetUserPoint();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics

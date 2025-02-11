@@ -434,7 +434,7 @@ export default function HomeTemplate() {
       {!isScrollBottom && (
         <ScrollDownArrow
           handleClick={() => handleScroll()}
-          classNames="bottom-10 top-[unset] w-[42px] left-1/2 transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
         />
       )}
     </div>

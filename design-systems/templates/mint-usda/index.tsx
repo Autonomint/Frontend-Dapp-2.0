@@ -27,29 +27,29 @@ function MintUSDa() {
           <ChartComponent />
         </div>
 
-        <div className="col-span-2 border border-solid border-grayLight p-6 lg:p-8">
+        <div className="col-span-2 border border-solid border-grayLight p-4 lg:p-6">
           <div className="flex flex-col justify-start">
             <div className=" text-textBlack text-3xl font-medium dark:text-white">
               How it works?
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
-              <li className="mb-3 text-lg">
+              <li className="mb-2 text-lg">
                 Deposit ETH as collateral and mint USDa (up to 80% of collateral
                 value).
               </li>
-              <li className="mb-3 text-lg">
+              <li className="mb-2 text-lg">
                 Get 20% downside price fall protection on collateral with 1
                 month expiry, with option to renew every month.
               </li>
-              <li className="mb-3 text-lg">
+              <li className="mb-2 text-lg">
                 Pay a closing option fee, ~50% lower than charged in any
                 derivative platform.
               </li>
-              <li className="mb-3 text-lg">
+              <li className="mb-2 text-lg">
                 Track and manage positions under ‘Borrowed Position’ in
                 Portfolio.
               </li>
-              <li className="mb-3 text-lg">
+              <li className=" text-lg">
                 Earn yield-bearing ABOND tokens when closing your position.
               </li>
             </ol>

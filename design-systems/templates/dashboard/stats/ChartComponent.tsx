@@ -133,7 +133,9 @@ export function ChartComponent({
   hideElements = false,
   stats,
   chartApiFlag = "",
+  isBorderRight = true,
 }: {
+  isBorderRight?: boolean;
   chartApiFlag: string;
   stats: { value: string | number; headline: string }[];
   title?: string;
@@ -211,7 +213,9 @@ export function ChartComponent({
 
   return (
     <div
-      className="p-5 border border-solid border-[#7A7A7A]"
+      className={`p-5 border ${
+        !isBorderRight && "sm:border-r-0"
+      } border-solid border-[#7A7A7A]`}
       style={{
         borderLeft: "none",
         borderTop: "none",

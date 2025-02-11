@@ -43,7 +43,7 @@ import { Typography } from "@/components/ui/Typography";
 import { useScroll } from "@/contexts/scroll";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useRouter } from "next/navigation";
-import { handleWheel } from "@/utils/helpers";
+import { formatNumber, handleWheel } from "@/utils/helpers";
 import ToastNotification from "@/custom-components/toasts/ToastNotification";
 import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
 import useDeviceType from "@/hookes/useDeviceType";
@@ -58,6 +58,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import HowItWorksButton from "@/design-systems/organisms/dcds/how-it-works-button";
 
 function TokenTvlDetails({
   tokenName,
@@ -70,13 +71,13 @@ function TokenTvlDetails({
 }) {
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-row lg:flex-col gap-8">
         <Image src={icon} alt="token" width={32} height={32} />
         <span className="text-[24px] text-textBlack dark:text-white">
           {tokenName}
         </span>
       </div>
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-row-reverse items-center lg:flex-col gap-8">
         <span className="text-[18px] font-normal text-right text-grayLight dark:text-white">
           TVL
         </span>
@@ -197,13 +198,15 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        <div className="flex flex-col gap-4">
-          <Image
-            src={tokenDetails.tokenImage}
-            alt="token"
-            width={30}
-            height={30}
-          />
+        <div className="flex flex-row items-center lg:items-start lg:flex-col gap-4">
+          <div>
+            <Image
+              src={tokenDetails.tokenImage}
+              alt="token"
+              width={30}
+              height={30}
+            />
+          </div>
           <span className="text-[24px] text-textBlack dark:text-white">
             {tokenDetails.tokenName}
           </span>
@@ -1096,9 +1099,10 @@ function DCDSTemplate() {
       <TokenTvlDetails
         icon={UsdtIcon}
         tokenName="USDT"
-        tvl={`${formatUnits(
-          GlobalContractData?.usdtAmountDepositedTillNow || 0n,
-          6
+        tvl={`${formatNumber(
+          Number(
+            formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
+          )
         )}`}
       />
       <TokenTvlDetails
@@ -1110,6 +1114,7 @@ function DCDSTemplate() {
         isDialogOpen={isOptionHowItWork}
         setIsDialogOpen={() => setIsOpenHowItWork(false)}
       />
+      <HowItWorksButton handleClick={() => setIsOpenHowItWork(true)} />
     </div>
   );
 }
