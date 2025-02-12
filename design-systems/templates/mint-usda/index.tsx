@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { FormYourLuckIcon } from "@/components/ui/SvgIcons";
-import AppNavbar from "@/custom-components/AppNavbar";
+import { Button } from "@/design-systems/atoms/button";
+import { FormYourLuckIcon } from "@/design-systems/atoms/SvgIcons";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import ChartComponent from "@/design-systems/organisms/mint-page/chart-wrapper";
 import InputForm from "@/design-systems/organisms/mint-page/input-form";
 import { useRouter } from "next/navigation";

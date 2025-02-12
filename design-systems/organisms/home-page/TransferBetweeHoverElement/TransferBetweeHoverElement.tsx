@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/design-systems/atoms/button";
 import {
   DotIcon,
   LeftArrowIcon,
   RightArrowIcon,
-} from "@/components/ui/SvgIcons";
-import { Typography } from "@/components/ui/Typography";
+} from "@/design-systems/atoms/SvgIcons";
+import { Typography } from "@/design-systems/atoms/Typography";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import arrow from "@/app/assets/arrow-right-02.png";

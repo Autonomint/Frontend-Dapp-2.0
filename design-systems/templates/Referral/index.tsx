@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/Typography";
-import AppNavbar from "@/custom-components/AppNavbar";
+import { Button } from "@/design-systems/atoms/button";
+import { Input } from "@/design-systems/atoms/input";
+import { Typography } from "@/design-systems/atoms/Typography";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";

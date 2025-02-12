@@ -29,7 +29,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/mintUSDaWithCollateral/[currency]",
-    "custom-components/toasts/ToastNotificationErrortsx"
+    "design-systems/molecule/toasts/ToastNotificationErrortsx"
   ],
   "exclude": ["node_modules"]
 }

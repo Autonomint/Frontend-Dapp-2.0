@@ -1,6 +1,6 @@
 "use client";
-import AppNavbar from "@/custom-components/AppNavbar";
-import DashboardNavbar from "@/custom-components/DashboardNavbar";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import DashboardNavbar from "@/design-systems/organisms/dashboard/DashboardNavbar";
 import useDeviceType from "@/hookes/useDeviceType";
 
 const DashboardLayout = () => {

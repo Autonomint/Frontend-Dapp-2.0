@@ -6,10 +6,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/design-systems/atoms/tooltip";
 import arrow from "@/app/assets/arrow-right-02.png";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/design-systems/atoms/button";
 import { useRouter } from "next/navigation";
 
 function DCDSHoverElement() {

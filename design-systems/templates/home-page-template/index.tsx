@@ -1,10 +1,8 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LeftArrowIcon } from "@/components/ui/SvgIcons";
+import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
 import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
 import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
@@ -13,11 +11,9 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
-import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
-import useEthOptionFees, {
-  useDeribitExpirations,
-} from "@/hookes/api-hooks/useDeribitFees";
-import { generateEthOptionName } from "@/utils/helpers";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function HomeTemplate() {
   const items = [

@@ -1,65 +1,95 @@
+import { PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
+import { useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "wagmi/query";
-export interface PositionData {
-  id: string;
-  address: string;
-  index: number;
-  collateralType: string;
-  depositedAmount: string;
-  depositedTime: number;
-  ethPrice: number;
-  noOfAmintMinted: string;
-  strikePrice: number;
-  strikePricePercent: string;
-  downsideProtectionPercentage: number;
-  aprAtDeposit: number;
-  optionFees: number;
-  withdrawTime1: string;
-  withdrawTime2: string;
-  withdrawAmount1: string;
-  withdrawAmount2: string;
-  normalizedAmount: string;
-  amountYetToWithdraw: string;
-  noOfAbondMinted: string;
-  status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
-}
 
 /**
  * Retrieves deposits for a given address.
  * @param {`0x${string}` | undefined} address - The address to retrieve deposits for.
  * @return {Promise} A promise that resolves to the JSON response from the server.
  */
-function getDeposits(address: `0x${string}` | undefined, chainId: Number) {
+const getDeposits = (
+  address: `0x${string}` | undefined,
+  chainId: Number
+): Promise<PositionData[]> => {
   return fetch(`${BACKEND_API_URL}/borrows/${chainId}/${address}`).then(
     (response) =>
       response
         .json()
         .then((data) => data.sort((a: any, b: any) => a.index - b.index))
   );
-}
+};
 
 const useGetPositionList = () => {
-  // Use the useQuery hook to fetch the data
+  // Use the useAccount and useChainId hooks
   const { address } = useAccount();
   const chainId = useChainId();
+
+  // State for pagination
+  const [pageSize, setPageSize] = useState<number>(15); // Default page size
+  const [currentPage, setCurrentPage] = useState<number>(1); // Default to first page
+  const [pagedPositionList, setPagedPositionList] = useState<PositionData[]>(
+    []
+  );
+  const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
+
+  // Query to fetch data
   const {
     data: positionList,
     error: positionListError,
-    refetch: positionListRefetech,
+    refetch: positionListRefetch,
     isLoading: positionListLoading,
   } = useQuery({
     queryKey: ["deposits", chainId, address],
-    queryFn: (): Promise<any> =>
-      getDeposits(address ? address : undefined, chainId),
+    queryFn: () => getDeposits(address, chainId),
+    select: (data) => data,
     enabled: !!address,
   });
 
+  // Calculate the current page data and total pages
+  const updatePagedData = () => {
+    if (positionList) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setPagedPositionList(positionList.slice(startIndex, endIndex));
+
+      // Calculate total pages based on pageSize and positionList length
+      setTotalPages(Math.ceil(positionList.length / pageSize));
+    }
+  };
+
+  // Update the paged data and total pages whenever the position list, page size, or current page changes
+  useEffect(() => {
+    updatePagedData();
+  }, [positionList, pageSize, currentPage]);
+
+  // Function to go to the next page
+  const handleNextPage = () => {
+    if (positionList && currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  // Function to go to the previous page
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   return {
-    positionList: (positionList || []) as PositionData[],
-    positionListError,
-    positionListRefetech,
-    positionListLoading,
+    positionList: (positionList || []) as PositionData[], // Complete list of positions
+    pagedPositionList, // Current page's data
+    positionListError, // Error in fetching
+    positionListRefetch, // Function to refetch the data
+    positionListLoading, // Loading state
+    currentPage, // Current page number
+    pageSize, // Page size
+    setPageSize, // Function to change page size
+    totalPages, // Total number of pages
+    handleNextPage, // Function to go to next page
+    handlePrevPage, // Function to go to previous page
   };
 };
 

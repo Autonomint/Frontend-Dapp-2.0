@@ -1,5 +1,5 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Typography } from "@/components/ui/Typography";
+import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Typography } from "@/design-systems/atoms/Typography";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
 

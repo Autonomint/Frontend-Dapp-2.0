@@ -1,4 +1,4 @@
-import { Typography } from "@/components/ui/Typography";
+import { Typography } from "@/design-systems/atoms/Typography";
 import useMarketChart from "@/hookes/api-hooks/useGetChartData";
 import { useTheme } from "next-themes";
 import Image from "next/image";

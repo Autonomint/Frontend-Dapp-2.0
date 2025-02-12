@@ -9,14 +9,14 @@ import {
   cdsAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
-import { Button } from "@/components/ui/button";
-import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
-import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/Typography";
-import AppNavbar from "@/custom-components/AppNavbar";
-import LoadingBox from "@/custom-components/LoadingBox";
-import ToastNotification from "@/custom-components/toasts/ToastNotification";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import { Button } from "@/design-systems/atoms/button";
+import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
+import { Input } from "@/design-systems/atoms/input";
+import { Typography } from "@/design-systems/atoms/Typography";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useDeviceType from "@/hookes/useDeviceType";
 import { handleWheel } from "@/utils/helpers";
@@ -58,6 +58,7 @@ const initialValues = {
   outputCollateralAmount: 0,
   usdaBalance: 0,
 };
+
 const RedeemContainer = () => {
   const [redeemLoadingLocal, setRedeemLoadingLocal] = useState<boolean>(false);
   const [redeemFnLoadingLocal, setRedeemFnLoadingLocal] =

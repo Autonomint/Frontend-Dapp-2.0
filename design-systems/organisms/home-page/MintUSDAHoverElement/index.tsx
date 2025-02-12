@@ -1,6 +1,6 @@
 import Image from "next/image";
 import PriceComparison from "./PriceComparison";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/design-systems/atoms/button";
 import arrow from "@/app/assets/arrow-right-02.png";
 import LTVDark from "@/app/assets/LTV Details.svg";
 import LTV from "@/app/assets/LTV-range-image.svg";

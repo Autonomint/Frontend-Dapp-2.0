@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const ToasterContainerWrapper = dynamic(
-  () => import("@/design-systems/organisms/toaster-container-wrapper")
+  () => import("@/design-systems/molecule/toaster-container-wrapper")
 );
 
 import "./globals.css";
@@ -11,8 +11,8 @@ import QueryProvider from "@/providers/QueryProvider";
 import WalletProvider from "@/providers/WalletProvider";
 import Provider from "@/contexts";
 import { ThemeProvider } from "@/providers/theme-provider";
-import Navbar from "@/custom-components/Navbar";
-import Footer from "@/custom-components/Footer";
+import Navbar from "@/design-systems/organisms/navbar/Navbar";
+import Footer from "@/design-systems/organisms/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

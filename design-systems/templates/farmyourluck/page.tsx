@@ -1,5 +1,5 @@
 "use client";
-import AppNavbar from "@/custom-components/AppNavbar";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import "../../../styles/farmyourluckstyles.css";
 import { useTheme } from "next-themes";
 import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
 import { toast } from "sonner";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 
 function FarmYourLuckTemplate() {
   const [selectedIndex, setSelectedIndex] = useState(-1);

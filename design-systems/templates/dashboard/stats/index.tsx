@@ -1,126 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { ChartComponent, options } from "./ChartComponent";
-import RatioOfCollaterals, { StatsMetrics } from "./RatioOfCollaterals";
-import { Line } from "react-chartjs-2";
-import RatioOfCollateralAdditional from "./RatioOfCollateralAdditional";
-import { useAccount, useChainId } from "wagmi";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useGetTotalSupplyUsda from "@/hookes/contract-hooks/useGetTotalSupplyUSDa";
-import useGetTotalSupplyAbond from "@/hookes/contract-hooks/useGetAbondTotalSupply";
-import useGetomniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import { BACKEND_API_URL } from "@/utils/urls";
-import { useQuery } from "@tanstack/react-query";
-import { formatNumber } from "@/utils/helpers";
-import { formatEther } from "viem";
+import { ChartComponent } from "@/design-systems/organisms/dashboard/state/chart";
 import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
-const amintValues = [
-  {
-    headline: "Total Supply",
-    value: "0",
-  },
-  {
-    headline: "Total Market Cap",
-    value: "0",
-  },
-];
-const amintPrice = [
-  {
-    headline: "USDa Minted",
-    value: "0",
-  },
-  {
-    headline: "USDa price",
-    value: "$1",
-  },
-];
-const lockedValues = [
-  {
-    headline: "Total Value Locked",
-    value: "$0",
-  },
-  {
-    headline: "Total Stablecoins Locked",
-    value: "0 USDa",
-  },
-];
-const RatioValues = [
-  {
-    value: "0",
-    headline: "Current Ratio",
-  },
-  {
-    value: "0 USDa",
-    headline: "Total dCDS Pool value",
-  },
-  {
-    value: "0 USDa",
-    headline: "Net dCDS Pool Value",
-  },
-  {
-    value: "+0%",
-    headline: "dCDS Profit/Loss",
-  },
-];
-const RatioValuesBottom = [
-  {
-    headline: "Collateral",
-    value: "+0%",
-  },
-  {
-    headline: "dCDS",
-    value: "+0%",
-  },
-];
-
-const abondValues = [
-  {
-    headline: "ABOND Price",
-    value: "$4",
-  },
-  {
-    headline: "ABOND Total Supply",
-    value: "0",
-  },
-  {
-    headline: "ABOND  Market Cap",
-    value: "-",
-    lastElement: true,
-  },
-];
-
-const BorrowFeesValues = [
-  { headline: "Borrowing Fees", value: "5%" },
-
-  {
-    headline: "Total Collateral Protected",
-    value: "0 USDa",
-  },
-
-  {
-    headline: "Total ABOND Yield",
-    value: "-",
-  },
-];
-const OptionFeesValues = [
-  {
-    headline: "Option Fee",
-    value: "0",
-  },
-
-  {
-    headline: "Total Upside Gained",
-    value: "15%",
-  },
-  {
-    headline: "",
-    value: "",
-  },
-];
+import useGetTotalSupplyAbond from "@/hookes/contract-hooks/useGetAbondTotalSupply";
+import useGetTotalSupplyUsda from "@/hookes/contract-hooks/useGetTotalSupplyUSDa";
+import useGetomniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { formatNumber } from "@/utils/helpers";
+import { BACKEND_API_URL } from "@/utils/urls";
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { formatEther } from "viem";
+import { useChainId } from "wagmi";
+import RatioOfCollaterals, {
+  StatsMetrics,
+} from "../../../organisms/dashboard/state/RatioOfCollaterals";
+import {
+  abondValues,
+  amintPrice,
+  amintValues,
+  BorrowFeesValues,
+  lockedValues,
+  OptionFeesValues,
+  RatioValues,
+  RatioValuesBottom,
+} from "./data";
 
 function StatsTemplate() {
-  const { isConnected } = useAccount();
   const chainId = useChainId();
   const [loading, setLoading] = React.useState(true);
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import AppNavbar from "@/custom-components/AppNavbar";
+import { Button } from "@/design-systems/atoms/button";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useDeviceType from "@/hookes/useDeviceType";
 import { motion } from "framer-motion";
@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/design-systems/atoms/tooltip";
 import { Info } from "lucide-react";
 
 const listItemVariants = {

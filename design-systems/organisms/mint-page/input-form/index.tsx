@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/Typography";
+import { Button } from "@/design-systems/atoms/button";
+import { Input } from "@/design-systems/atoms/input";
+import { Typography } from "@/design-systems/atoms/Typography";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useScroll } from "@/contexts/scroll";
-import LoadingBox from "@/custom-components/LoadingBox";
-import ToastNotification from "@/custom-components/toasts/ToastNotification";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";

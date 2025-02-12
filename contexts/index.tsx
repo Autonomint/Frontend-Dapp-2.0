@@ -1,4 +1,4 @@
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/design-systems/atoms/tooltip";
 import { NetworkProvider } from "./network";
 import { PortfolioTabProvider } from "./portfolio-tab";
 import { ScrollProvider } from "./scroll";
