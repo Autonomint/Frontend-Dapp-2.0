@@ -8,6 +8,9 @@ import { useTheme } from "next-themes";
 import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
 import { toast } from "sonner";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import { useAccount } from "wagmi";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { Typography } from "@/design-systems/atoms/Typography";
 
 function FarmYourLuckTemplate() {
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -16,10 +19,11 @@ function FarmYourLuckTemplate() {
   const [supportingText, setSupportingText] = useState(
     "Tap a card to view details"
   );
+
+  const { chainId, address } = useAccount();
   const [rewardAmount, setRewardAmount] = useState("");
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
-  const { theme } = useTheme();
   const [isPayed, setIsPayed] = useState(false);
 
   const [gotReward, setGotReward] = useState(false);
@@ -27,12 +31,11 @@ function FarmYourLuckTemplate() {
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
 
   const { data: luckData, mutateAsync: getLuckAsync } = useBorrowGame();
-
-  useEffect(() => {}, [isFlipped, selectedIndexForReward]);
+  const { data: farmLuckDetails, isLoading } = useFarmLuckDetails(address);
 
   useEffect(() => {
     if (buttonText === "Claim Reward" && isPayed && gotReward) {
-      setRewardAmount("+0.001 ETH");
+      setRewardAmount("$50");
     }
   }, [buttonText]);
 
@@ -69,18 +72,22 @@ function FarmYourLuckTemplate() {
   ];
 
   const handleCheckLuck = async () => {
-    const res = await getLuckAsync({
-      numberOfBoxes: 9,
-      userChosenBoxIndex: selectedIndexForReward,
-    });
+    let res;
+    if (address && chainId) {
+      res = await getLuckAsync({
+        numberOfBoxes: 9,
+        userChosenBoxIndex: selectedIndexForReward,
+        address,
+        chainId,
+        Manuel: true,
+      });
+    }
 
     if (selectedIndexForReward !== -1 && res) {
       setSupportingText("Congratulations! You have earned");
       setButtonText("Congratulations!");
-      setRewardAmount("0.01 ETH");
-
+      setRewardAmount("$50");
       setIsRevealed(true);
-
       return;
     } else if (selectedIndexForReward !== -1 && !res) {
       setRewardAmount("Better Luck Next Time");
@@ -234,6 +241,7 @@ function FarmYourLuckTemplate() {
                 </motion.span>
               </AnimatePresence>
             </span>
+
             <div className="flex flex-col text-left mb-28 lg:mb-0">
               <div className="text-textBlack lg:text-3xl text-[20px] font-medium dark:text-white">
                 How it works?
@@ -250,7 +258,28 @@ function FarmYourLuckTemplate() {
                 </li>
                 <li className="text-lg">Missed? Try again with another $5!</li>
               </ol>
+
+              <div className="border border-grayLight flex  mt-4">
+                <div className="p-4 w-1/2 border border-grayLight border-l-0 border-y-0">
+                  <Typography variant="regular" size="h4">
+                    ${farmLuckDetails?.TotalReward || 0}
+                  </Typography>
+                  <Typography className="text-grayLight mt-3 " size="lg">
+                    Reward
+                  </Typography>
+                </div>
+                <div className="p-4  w-1/2">
+                  <Typography variant="regular" size="h4">
+                    {farmLuckDetails?.totalLuck || 0}
+                  </Typography>
+                  <Typography className="text-grayLight mt-3 " size="lg">
+                    Luck
+                  </Typography>
+                </div>
+                <div className="p-3"></div>
+              </div>
             </div>
+
             <button
               disabled={isPayed && selectedIndex == -1}
               onClick={() => handleButtonClick()}
