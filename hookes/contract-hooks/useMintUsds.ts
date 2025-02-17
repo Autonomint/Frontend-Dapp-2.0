@@ -1,6 +1,7 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
+import { AssetNames, MintAssets } from "@/utils/constants";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:
@@ -9,12 +10,16 @@ enum StrikePrice {
   OPTION_THREE,
 }
 
-interface FunctionInputs {
+interface BorrowInputs {
   strikePercent: number; // uint8 can be mapped to the enum
   strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint; // uint256 can be represented by bigint
+  assetName: AssetNames;
+  deadline: bigint;
+  signature: string;
+  nonce: bigint;
 }
 
 const useDepositTokens = (mutation: any) => {
@@ -38,8 +43,23 @@ const useDepositTokens = (mutation: any) => {
     volatility,
     depositingAmount,
     value,
-  }: FunctionInputs) => {
+    assetName,
+    deadline,
+    signature,
+    nonce,
+  }: BorrowInputs) => {
     // Call the `writeContract` function to deposit tokens
+    //   writeContract?.({
+    //     abi: borrowingContractAbi,
+    //     address:
+    //       borrowingContractAddress[
+    //         chainId as keyof typeof borrowingContractAddress
+    //       ],
+    //     functionName: "depositTokens",
+    //     args: [strikePercent, strikePrice, volatility, depositingAmount],
+    //     value,
+    //   });
+    // };
     writeContract?.({
       abi: borrowingContractAbi,
       address:
@@ -47,8 +67,13 @@ const useDepositTokens = (mutation: any) => {
           chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "depositTokens",
-      args: [strikePercent, strikePrice, volatility, depositingAmount],
-      value,
+      args: [
+        { strikePercent, volatility, assetName, depositingAmount },
+        nonce,
+        value,
+        deadline,
+        signature,
+      ],
     });
   };
 

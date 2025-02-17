@@ -30,6 +30,7 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import { MintAssets } from "@/utils/constants";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -223,6 +224,10 @@ function InputForm({ currency }: { currency: string }) {
         value:
           parseEther(formik.values.collateralAmount.toString()) +
           nativeFee.nativeFee,
+        assetName: MintAssets[currency as keyof typeof MintAssets],
+        deadline: 0n,
+        nonce: 0n,
+        signature: "0x",
       });
     }
   }

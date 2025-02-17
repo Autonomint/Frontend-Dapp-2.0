@@ -36,6 +36,7 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { RedeemAssets } from "@/utils/constants";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -146,11 +147,12 @@ const RedeemContainer = () => {
       redeemUsdt?.({
         abi: cdsAbi,
         address: cdsAddress[chainId as keyof typeof cdsAddress],
-        functionName: "redeemUSDT",
+        functionName: "redeemAssets",
         args: [
           BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
-          BigInt(1000000),
-          BigInt(1000000),
+          RedeemAssets[
+            formik.values.inputCollateral as keyof typeof RedeemAssets
+          ],
         ],
         value: nativeFee1.nativeFee,
       });
@@ -355,10 +357,7 @@ const RedeemContainer = () => {
             chainId as keyof typeof borrowingContractAddress
           ],
         functionName: "redeemYields",
-        args: [
-          accountAddress as `0x${string}`,
-          BigInt(Number(formik.values.collateralAmount) * 10 ** 18),
-        ],
+        args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
       });
     }
     if (abondApproveError) {

@@ -42,7 +42,7 @@ const PopupDropdown = () => {
             {networks.map((network) => (
               <button
                 key={network}
-                className="w-full px-3 py-2 text-left hover:bg-gray-100"
+                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600"
                 onClick={() => setSelected(network)}
               >
                 {network}
