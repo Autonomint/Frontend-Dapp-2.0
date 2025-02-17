@@ -10,8 +10,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import twitter from "@/app/assets/new-twitter.svg";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 
 const ReferralTemplate = () => {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");

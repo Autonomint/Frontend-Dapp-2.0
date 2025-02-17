@@ -225,7 +225,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         <Button
           onClick={handleBtnClick}
           variant={"shadowOutline"}
-          className="  p-0 gap-0  shadow-outlined-none sm:shadow  h-fit dark:hover:bg-custom-gradient-to-top  hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          className="  p-0 gap-0  shadow-outlined-none lg:shadow-outlined sm:shadow  h-fit dark:hover:bg-custom-gradient-to-top  hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
         >
           <div className="hidden lg:block ">
             <Popover>
@@ -426,7 +426,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 </Typography>
               </div>
               <Button
-                onClick={() => disconnect()}
+                onClick={async () => {
+                  await disconnect();
+                  open();
+                }}
                 variant={"default"}
                 className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"
               >

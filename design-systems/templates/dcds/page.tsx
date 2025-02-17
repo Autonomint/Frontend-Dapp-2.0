@@ -50,6 +50,9 @@ import { formatUnits, parseUnits } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
+import PageLoader from "@/design-systems/molecule/page-loader";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -127,7 +130,9 @@ const formSchema = Yup.object().shape({
 });
 
 function DCDSTemplate() {
-  const { theme } = useTheme();
+  const { isConnected: isWalletConnected, openWalletPopup } =
+    useCheckWalletConnection();
+
   const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
   const router = useRouter();
   const [dcdsLoadingLocal, setDcdsLoadingLocal] = useState<boolean>(false);
@@ -140,7 +145,10 @@ function DCDSTemplate() {
 
   const [isOptionHowItWork, setIsOpenHowItWork] = useState(false);
 
-  const { chainId } = useAccount();
+  const { chainId, isConnected, address } = useAccount();
+
+  const { isScroll, setIsScroll } = useScroll();
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -215,7 +223,7 @@ function DCDSTemplate() {
       {
         tokenImage: USDaIcon,
         tokenName: "USDa",
-        isLoading: isOmniChainDataPending,
+        isLoading: false,
         active:
           (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
           USDT_DEPOSIT_LIMIT_IN_DCDS,
@@ -427,6 +435,9 @@ function DCDSTemplate() {
   }, [usdaApprovalReceiptReceipt]);
 
   const handleDeposit = () => {
+    if (!isConnected || !address) {
+      openWalletPopup();
+    }
     if (selectedTokens.length === 0) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -474,9 +485,6 @@ function DCDSTemplate() {
   const resetFunctionState = () => {
     resetUsdtApprove();
   };
-
-  const { isScroll, setIsScroll } = useScroll();
-  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   const handleDepositSuccess = () => {
     setIsScroll(true);
@@ -567,15 +575,23 @@ function DCDSTemplate() {
       <AppNavbar activeBack={showBack} />
       <div className="grid h-[97%] lg:grid-cols-4 grid-cols-1">
         <div className="lg:col-span-2 xl:col-span-1 flex flex-col p-5 md:px-16 md:py-5 lg:p-5 gap-8 border border-t-0 border-grayLight border-solid">
-          {tokenList.map((token: TokenDetails, key: number) => (
-            <AddToken
-              formik={formik}
-              key={key}
-              tokenDetails={token}
-              setSelectedTokens={setSelectedTokens}
-              selectedTokens={selectedTokens}
-            />
-          ))}
+          {!isConnected && !address ? (
+            <div className="flex w-full h-full text-lg dark:text-white text-center text-black justify-center items-center ">
+              Please connect wallet
+            </div>
+          ) : isOmniChainDataPending ? (
+            <PageLoader />
+          ) : (
+            tokenList.map((token: TokenDetails, key: number) => (
+              <AddToken
+                formik={formik}
+                key={key}
+                tokenDetails={token}
+                setSelectedTokens={setSelectedTokens}
+                selectedTokens={selectedTokens}
+              />
+            ))
+          )}
         </div>
 
         <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
@@ -665,7 +681,7 @@ function DCDSTemplate() {
             </div>
 
             {selectedTokens.length > 0 && (
-              <div className="w-[200px] z-30 h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+              <div className="w-[200px] z-[9] h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
                 {selectedTokens.slice(0, 2).map((token, index) => {
                   const totalTokens = selectedTokens.length;
 
@@ -854,14 +870,18 @@ function DCDSTemplate() {
               />
             </div>
             <div className=" h-[86px]">
-              {!dcdsLoadingLocal && (
-                <Button
-                  type="submit"
-                  onClick={() => formik.handleSubmit()}
-                  className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
-                >
-                  Deposit
-                </Button>
+              {isConnected && address ? (
+                !dcdsLoadingLocal && (
+                  <Button
+                    type="submit"
+                    onClick={() => formik.handleSubmit()}
+                    className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
+                  >
+                    Deposit
+                  </Button>
+                )
+              ) : (
+                <WalletConnectButton />
               )}
 
               <LoadingBox

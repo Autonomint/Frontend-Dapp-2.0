@@ -19,8 +19,11 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 
 function PortfolioTemplate() {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const { address, chainId } = useAccount();
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"

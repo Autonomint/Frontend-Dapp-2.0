@@ -4,18 +4,21 @@ import { FormYourLuckIcon } from "@/design-systems/atoms/SvgIcons";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import ChartComponent from "@/design-systems/organisms/mint-page/chart-wrapper";
 import InputForm from "@/design-systems/organisms/mint-page/input-form";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { useRouter } from "next/navigation";
 
-function MintUSDa() {
+function MintUSDa({ currency }: { currency: string }) {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
   const router = useRouter();
-  const currency = "eth";
+  // const currency = "eth";
+  console.log(currency, "currency");
 
   return (
     <>
       <AppNavbar />
       <div className="grid lg:grid-cols-3 grid-cols-1">
         <div className="col-span-2 hidden lg:block border border-solid border-grayLight">
-          <ChartComponent />
+          <ChartComponent currency={currency} />
         </div>
         <div className="col-span-1 hidden lg:block border border-solid border-grayLight">
           <InputForm currency={currency} />
@@ -24,7 +27,7 @@ function MintUSDa() {
           <InputForm currency={currency} />
         </div>
         <div className="col-span-2 block lg:hidden border border-solid border-grayLight">
-          <ChartComponent />
+          <ChartComponent currency={currency} />
         </div>
 
         <div className="col-span-2 border border-solid border-grayLight p-4 lg:p-6">

@@ -35,6 +35,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import * as Yup from "yup";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -60,6 +61,8 @@ const initialValues = {
 };
 
 const RedeemContainer = () => {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const [redeemLoadingLocal, setRedeemLoadingLocal] = useState<boolean>(false);
   const [redeemFnLoadingLocal, setRedeemFnLoadingLocal] =
     useState<boolean>(false);

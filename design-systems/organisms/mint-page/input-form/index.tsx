@@ -29,6 +29,7 @@ import {
 } from "wagmi";
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -49,7 +50,7 @@ function InputForm({ currency }: { currency: string }) {
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const ethBalance = useBalance({ address: address });
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
@@ -308,6 +309,7 @@ function InputForm({ currency }: { currency: string }) {
             <div className="flex-col gap-1 justify-start">
               <div className="flex">
                 <Input
+                  disabled={!isConnected || !address}
                   onWheel={handleWheel}
                   type="number"
                   onChange={formik.handleChange}
@@ -383,15 +385,19 @@ function InputForm({ currency }: { currency: string }) {
         />
       </div>
       <div className="col-span-1 h-[85px]">
-        {!mintBtnLoading && (
-          <Button
-            type="submit"
-            className={`
+        {address && isConnected ? (
+          !mintBtnLoading && (
+            <Button
+              type="submit"
+              className={`
                bg-black dark:bg-custom-gradient-to-top py-6
              text-white  font-semibold text-[24px] w-full h-full rounded-md `}
-          >
-            {!mintBtnLoading && "Mint USDa"}
-          </Button>
+            >
+              {!mintBtnLoading && "Mint USDa"}
+            </Button>
+          )
+        ) : (
+          <WalletConnectButton />
         )}
         <LoadingBox
           isLoading={mintLoading}

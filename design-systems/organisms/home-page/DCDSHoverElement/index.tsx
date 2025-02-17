@@ -45,7 +45,7 @@ function DCDSHoverElement() {
                 className="cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent className="bg-white">
+            <TooltipContent className="bg-white text-black dark:bg-black dark:text-white">
               <p>Exposed to volatility risk</p>
             </TooltipContent>
           </Tooltip>

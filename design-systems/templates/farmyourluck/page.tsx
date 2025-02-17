@@ -11,8 +11,12 @@ import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotifi
 import { useAccount } from "wagmi";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { Typography } from "@/design-systems/atoms/Typography";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 function FarmYourLuckTemplate() {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [selectedIndexForReward, setSelectedIndexForReward] = useState(-1);
   const [isFlipped, setIsFlipped] = useState(Array.from({ length: 9 }).fill(0));
@@ -280,32 +284,38 @@ function FarmYourLuckTemplate() {
               </div>
             </div>
 
-            <button
-              disabled={isPayed && selectedIndex == -1}
-              onClick={() => handleButtonClick()}
-              className={`  absolute w-full  left-0 bottom-0 text-white h-[90px] font-bold text-[32px]  ${
-                isPayed && selectedIndex == -1
-                  ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
-                  : " bg-black  dark:bg-custom-gradient-to-top"
-              }`}
-            >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={buttonText}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={
-                    selectedIndexForReward !== -1
-                      ? textVariantsButtonCliked
-                      : textVariants
-                  }
-                  className="block h-full flex items-center justify-center"
+            <div className="absolute w-full   left-0 bottom-0 h-[90px]">
+              {isWalletConnected && address ? (
+                <button
+                  disabled={isPayed && selectedIndex == -1}
+                  onClick={() => handleButtonClick()}
+                  className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
+                    isPayed && selectedIndex == -1
+                      ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
+                      : " bg-black  dark:bg-custom-gradient-to-top"
+                  }`}
                 >
-                  {buttonText}
-                </motion.span>
-              </AnimatePresence>
-            </button>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={buttonText}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={
+                        selectedIndexForReward !== -1
+                          ? textVariantsButtonCliked
+                          : textVariants
+                      }
+                      className="block h-full flex items-center justify-center"
+                    >
+                      {buttonText}
+                    </motion.span>
+                  </AnimatePresence>
+                </button>
+              ) : (
+                <WalletConnectButton />
+              )}
+            </div>
           </div>
         </div>
       </div>

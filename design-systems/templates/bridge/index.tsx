@@ -29,6 +29,8 @@ import {
   useWriteContract,
 } from "wagmi";
 import { TransactionParams } from "./interfaces";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
@@ -44,6 +46,9 @@ function BridgeTemplate() {
   const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
     useState<boolean>(false);
   const [usdtApproveLoading, setUsdtApproveLoading] = useState<boolean>(false);
+
+  const { isConnected: isWalletConnected, address } =
+    useCheckWalletConnection();
 
   const [sendLoading, setSendLoading] = useState<boolean>(false);
 
@@ -532,13 +537,17 @@ function BridgeTemplate() {
           />
         </div>
         <div className=" w-full">
-          {!transferLoadingLocal && (
-            <Button
-              onClick={onSubmit}
-              className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight"
-            >
-              Bridge
-            </Button>
+          {isConnected && address ? (
+            !transferLoadingLocal && (
+              <Button
+                onClick={onSubmit}
+                className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight"
+              >
+                Bridge
+              </Button>
+            )
+          ) : (
+            <WalletConnectButton />
           )}
 
           <LoadingBox

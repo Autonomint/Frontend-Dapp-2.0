@@ -25,8 +25,10 @@ import {
   RatioValues,
   RatioValuesBottom,
 } from "./data";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 
 function StatsTemplate() {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
   const chainId = useChainId();
   const [loading, setLoading] = React.useState(true);
 

@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import DepositTableRow from "./table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
+import { useAccount } from "wagmi";
 
 function DepositTable({
   tabPosition,
@@ -41,6 +42,7 @@ function DepositTable({
   positionList: PositionData[];
   setSelectedPosition: (position: PositionData) => void;
 }) {
+  const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isScroll, setIsScroll } = useScroll();
   const scrollToElement = () => {
@@ -139,7 +141,9 @@ function DepositTable({
       {!positionListLoading && positionList.length === 0 ? (
         <div className="border-t flex justify-center items-center  h-[400px] border-x-0 border-b-0 border border-grayLight">
           <Typography size="lg" variant="regular" className="mt-3">
-            No Data Available
+            {address && isConnected
+              ? "No Data Available"
+              : "Please Connect Wallet"}
           </Typography>
         </div>
       ) : null}

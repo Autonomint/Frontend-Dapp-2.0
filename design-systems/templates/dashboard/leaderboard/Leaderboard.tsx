@@ -4,10 +4,13 @@ import PortfolioMetrics from "@/design-systems/organisms/dashboard/leaderboard/p
 import useGetLeaderboard from "@/hookes/api-hooks/useGetLeaderboard";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { formatNumber } from "@/utils/helpers";
 import { formatEther } from "viem";
 
 function Leaderboard() {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   // Fetch the total volume of borrowers amount in USD
   const { omniChainData } = useGetOmniChainData();
   const {

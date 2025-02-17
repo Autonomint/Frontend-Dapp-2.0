@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import DcdsPositionTableRow from "./dcds-position-table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { dcdsDepositDetails } from "@/utils/interface";
+import { useAccount } from "wagmi";
 
 function DcdsDepositTable({
   tabPosition,
@@ -41,6 +42,7 @@ function DcdsDepositTable({
   positionList: dcdsDepositDetails[];
   setSelectedPosition: (position: dcdsDepositDetails) => void;
 }) {
+  const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isScroll, setIsScroll } = useScroll();
   const scrollToElement = () => {
@@ -136,7 +138,9 @@ function DcdsDepositTable({
       {!positionListLoading && positionList.length === 0 ? (
         <div className="border-t flex justify-center h-[400px] items-center  border-x-0 border-b-0 border border-grayLight">
           <Typography size="lg" variant="regular" className="mt-3">
-            No Data Available
+            {address && isConnected
+              ? "No Data Available"
+              : "Please Connect Wallet"}
           </Typography>
         </div>
       ) : null}

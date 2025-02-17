@@ -16,10 +16,12 @@ import WalletPopup from "../../molecule/popups/WalletPopUp";
 import NotificationPopupMobile from "../../molecule/popups/NotificationPopUpMobile";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import { usePathname } from "next/navigation";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const { isConnected } = useCheckWalletConnection();
 
   useEffect(() => {
     setIsClient(true);
