@@ -146,7 +146,7 @@ export function WithdrawFund({
       updatedData[0].value = `${Number(position.depositedAmount).toFixed(
         4
       )} ETH`;
-      updatedData[1].value = `${Number(position.ethPrice) / 100} ETH`;
+      updatedData[1].value = `$${Number(position.ethPrice) / 100}`;
       updatedData[2].value = `${Number(position.noOfAmintMinted).toFixed(
         2
       )} USDa`;
@@ -441,6 +441,8 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
+  // const;
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -451,15 +453,15 @@ export function WithdrawFund({
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
-                  htmlFor="html"
+                  htmlFor="repay"
                 >
                   <input
-                    name="framework"
+                    name="repay"
                     type="radio"
                     checked={toggleView === "repay"}
                     onChange={() => setToggleView("repay")}
                     className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
-                    id="html"
+                    id="repay"
                   />
                   <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>
@@ -476,15 +478,15 @@ export function WithdrawFund({
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
-                  htmlFor="html"
+                  htmlFor="renew"
                 >
                   <input
-                    name="framework"
+                    name="renew"
                     type="radio"
                     onChange={() => setToggleView("renew")}
                     checked={toggleView === "renew"}
                     className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
-                    id="html"
+                    id="renew"
                   />
                   <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
                 </label>

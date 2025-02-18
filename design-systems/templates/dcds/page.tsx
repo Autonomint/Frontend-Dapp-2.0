@@ -718,16 +718,19 @@ function DCDSTemplate() {
           </div>
           <div className=" flex px-4 my-3 justify-center items-center w-full gap-14">
             {" "}
-            <div onClick={() => setIsOpenHowItWork(true)}>
+            <div
+              className="absolute left-[2%] bottom-[2%]"
+              onClick={() => setIsOpenHowItWork(true)}
+            >
               <Typography
-                className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
+                className="text-black   cursor-pointer text-[18px] font-medium dark:text-white underline"
                 size="lg"
                 variant="regular"
               >
                 How it works?
               </Typography>
             </div>
-            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-1 2xl:p-2">
+            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 xl:ml-0 p-1 2xl:p-2">
               <Typography
                 size="lg"
                 className="text-[#FF0000] dark:text-[#FF1A1A] !text-[14px] 2xl:!text-[18px] font-medium"
@@ -829,14 +832,14 @@ function DCDSTemplate() {
               </Typography>
             </div>
             <div className="p-5 md:px-16 md:py-5 md:pb-0 lg:pb-0 lg:p-5 flex   items-center justify-between w-full">
-              <span className="text-grayLight flex flex-row items-center justify-start font-normal text-[18px]">
+              <span className="text-grayLight flex flex-row items-center justify-start font-normal text-[16px]  2xl:text-[18px]">
                 Opt for liquidation gains?
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info width={24} height={24} className="ml-2" />
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black">
-                    <p>this is tooltip</p>
+                    <p>liquidation gains</p>
                   </TooltipContent>
                 </Tooltip>
               </span>
