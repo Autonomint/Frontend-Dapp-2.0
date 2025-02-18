@@ -18,6 +18,7 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
+import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 
 export function DcdsWithdrawModal({
   position,
@@ -266,11 +267,23 @@ export function DcdsWithdrawModal({
     }
   }, [cdsLogdataReceipt, isCdserrorReceipt]);
 
-  const handleWithdrawFund = () => {
+  const { refetchBorrowWithDrawSignedData } = useGetDcdsWithdrawSignedData();
+
+  const handleWithdrawFund = async () => {
     setDcdsFundWithdrawLoadingLocal(true);
     if (nativeFee) {
       setWithdrawMethodLoading(true);
-      handleDcdsFundWithdraw?.([BigInt(position.index)], nativeFee.nativeFee);
+      const res = await refetchBorrowWithDrawSignedData();
+      handleDcdsFundWithdraw?.(
+        [
+          BigInt(position.index),
+          res.data?.excessProfitCumulativeValue,
+          res.data?.nonce,
+          res.data?.deadline,
+          res.data?.signature,
+        ],
+        nativeFee.nativeFee
+      );
     }
   };
   const handleCloseDialog = () => {

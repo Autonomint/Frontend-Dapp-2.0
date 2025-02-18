@@ -9,7 +9,10 @@ import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotifi
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
-import displayNumberWithPrecision, { handleWheel } from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  getStrikePercent,
+  handleWheel,
+} from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -30,13 +33,16 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { MintAssets } from "@/utils/constants";
+import { BorrowAssetsEnum } from "@/utils/constants";
+import { borrowAssetsAddress } from "@/blockchain/contracts";
+import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
+import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
     .max(Yup.ref("balance"), `Amont must be less than or equal to balance`)
     .required("Collateral amount is required"),
-  strikePrice: Yup.number()
+  strikePricePercent: Yup.number()
     .min(5, "Minimum is 5")
     .max(25, "Maximum is 25")
     .required("Strike price is required"),
@@ -47,12 +53,30 @@ function InputForm({ currency }: { currency: string }) {
   const chainId = useChainId();
   const router = useRouter();
   const [mintLoading, setMintLoading] = useState<boolean>(false);
-  const { isUsdValuePending, usdValue: ethPrice } = useGetUsdValue();
+  const {
+    isUsdValuePending,
+    usdValue: ethPrice,
+    assetPrice,
+  } = useGetUsdValue(
+    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
+  );
+  const selectedAssetPrice =
+    currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
   const { address, isConnected } = useAccount();
-  const ethBalance = useBalance({ address: address });
+
+  const { refetchBorrowSignedData } = useGetBorrowSignedData();
+
+  const ethBalance = useBalance({
+    address: address,
+    token:
+      currency.toLocaleLowerCase() !== "eth"
+        ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
+        : undefined,
+  });
+
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
 
@@ -60,7 +84,7 @@ function InputForm({ currency }: { currency: string }) {
     initialValues: {
       collateral: currency || "eth",
       collateralAmount: 0,
-      strikePrice: 5,
+      strikePricePercent: 5,
       balance: 0,
     },
     validationSchema: formSchema,
@@ -76,11 +100,11 @@ function InputForm({ currency }: { currency: string }) {
 
   // Create the options for the contract
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(250000, 0)
+    .addExecutorLzReceiveOption(400000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
   const { depositDatahash, isDepositsLoading, mintUSDa, reset, depositError } =
@@ -158,16 +182,8 @@ function InputForm({ currency }: { currency: string }) {
 
   const { optionFees, refetchOptionFee } = useFetchOptionFees(
     formik.values.collateralAmount,
-    (ethPrice || 0) as number,
-    formik.values.strikePrice == 5
-      ? 0
-      : formik.values.strikePrice == 10
-      ? 1
-      : formik.values.strikePrice == 15
-      ? 2
-      : formik.values.strikePrice == 20
-      ? 3
-      : 4
+    (selectedAssetPrice || 0) as number,
+    getStrikePercent(formik.values.strikePricePercent)
   );
 
   console.log(optionFees, "optionFees");
@@ -194,40 +210,36 @@ function InputForm({ currency }: { currency: string }) {
     setMintLoading(true);
     setMintBtnLoading(true);
     reset();
-    const strikePrice = values.strikePrice;
-    const colateralamount = parseUnits(
-      formik.values.collateralAmount.toString(),
-      18
-    );
-    const strikePercent =
-      strikePrice == 5
-        ? 0
-        : strikePrice == 10
-        ? 1
-        : strikePrice == 15
-        ? 2
-        : strikePrice == 20
-        ? 3
-        : 4;
+
+    // const colateralamount = parseUnits(
+    //   formik.values.collateralAmount.toString(),
+    //   18
+    // );
+    const strikePercent = getStrikePercent(values.strikePricePercent);
+
+    const borrowSignedData = await refetchBorrowSignedData();
+
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
       mintUSDa?.({
         strikePercent,
         strikePrice: BigInt(
           Math.floor(
-            (1 + Number(formik.values.strikePrice) / 100) *
-              Number(ethPrice ? ethPrice : 0)
+            (1 + Number(formik.values.strikePricePercent) / 100) *
+              Number(selectedAssetPrice ? selectedAssetPrice : 0)
           )
         ),
-        volatility: BigInt(data),
+        volatility: BigInt(borrowSignedData.data?.volatility || 0),
         depositingAmount: parseEther(formik.values.collateralAmount.toString()),
+        assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+        deadline: BigInt(borrowSignedData.data?.deadline || 0),
+        nonce: BigInt(borrowSignedData.data?.nonce || 0),
+        signature: borrowSignedData.data?.signature || "",
         value:
-          parseEther(formik.values.collateralAmount.toString()) +
-          nativeFee.nativeFee,
-        assetName: MintAssets[currency as keyof typeof MintAssets],
-        deadline: 0n,
-        nonce: 0n,
-        signature: "0x",
+          currency.toLocaleLowerCase() == "eth"
+            ? parseEther(formik.values.collateralAmount.toString()) +
+              nativeFee.nativeFee
+            : nativeFee.nativeFee,
       });
     }
   }
@@ -241,7 +253,7 @@ function InputForm({ currency }: { currency: string }) {
       const optionf = optionFees || 0;
       const amintToMint =
         (Number(formik.values.collateralAmount || 0) *
-          Number(ethPrice || 0) *
+          Number(selectedAssetPrice || 0) *
           80) /
         10000;
       const amint2Decimal = displayNumberWithPrecision(amintToMint.toString());
@@ -250,7 +262,7 @@ function InputForm({ currency }: { currency: string }) {
       // Calculate the downside protection amount
       const downsideProtection =
         (Number(formik.values.collateralAmount || 0) *
-          Number(ethPrice || 0) *
+          Number(selectedAssetPrice || 0) *
           (100 - (ltv ? ltv : 0))) /
         10000;
       const downsideProtection2Decimal = displayNumberWithPrecision(
@@ -258,8 +270,8 @@ function InputForm({ currency }: { currency: string }) {
       );
       const upsideCollateral =
         (Number(formik.values.collateralAmount || 0) *
-          Number(ethPrice || 0) *
-          formik.values.strikePrice) /
+          Number(selectedAssetPrice || 0) *
+          formik.values.strikePricePercent) /
         10000;
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
@@ -294,7 +306,11 @@ function InputForm({ currency }: { currency: string }) {
         collateralAmount: "value should be greater than 0.02 ETH",
       });
     }
-  }, [formik.values.collateralAmount, formik.values.strikePrice, optionFees]);
+  }, [
+    formik.values.collateralAmount,
+    formik.values.strikePricePercent,
+    optionFees,
+  ]);
 
   const handleSetMaxBal = () => {
     formik.setFieldValue(
@@ -346,7 +362,7 @@ function InputForm({ currency }: { currency: string }) {
                 Min: 0.05 ETH
               </span>
               <span className=" font-medium text-lg text-grayLight">
-                Bal: {Number(ethBalance.data?.formatted || 0).toFixed(4)} ETH
+                Bal: {formattedBalance} ETH
               </span>
             </div>
           </div>
@@ -381,7 +397,7 @@ function InputForm({ currency }: { currency: string }) {
         </div>
         <InputMetics
           deposit={(
-            (Number(ethPrice || 0) / 100) *
+            (Number(selectedAssetPrice || 0) / 100) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={optionFees.toFixed(2)}

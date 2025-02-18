@@ -10,10 +10,6 @@ enum StrikePrice {
   OPTION_THREE,
 }
 
-interface BorrowRenewInputs {
-  index: number;
-}
-
 const useBorrowRenew = (mutation: any) => {
   const { chainId } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
@@ -21,15 +17,15 @@ const useBorrowRenew = (mutation: any) => {
     isPending: isRenewBorrowLoading,
     data: renewBorrowHash, // Data received from the `useBorrowingContractDepositTokens` hook
     writeContract, // Function to initiate a write operation
-    reset, // Function to reset the state of the hook
-    isError: depositError, // Error state
+    reset: resetBorrowRenew, // Function to reset the state of the hook
+    isError: renewError, // Error state
   } = useWriteContract({
     mutation: {
       ...mutation,
     },
   });
 
-  const renewBorrow = async ({ index }: BorrowRenewInputs) => {
+  const renewBorrow = async (index: number) => {
     writeContract?.({
       abi: borrowingContractAbi,
       address:
@@ -45,8 +41,8 @@ const useBorrowRenew = (mutation: any) => {
     isRenewBorrowLoading,
     renewBorrowHash,
     renewBorrow,
-    reset,
-    depositError,
+    resetBorrowRenew,
+    renewError,
   };
 };
 

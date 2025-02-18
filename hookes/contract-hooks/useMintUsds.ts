@@ -1,7 +1,7 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
-import { AssetNames, MintAssets } from "@/utils/constants";
+import { AssetNames } from "@/utils/constants";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:

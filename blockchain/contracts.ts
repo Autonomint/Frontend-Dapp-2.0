@@ -24,3 +24,9 @@ export const abondAddress = {
 } as const;
 
 export const hegicETHAddress = "0xEfC0eEAdC1132A12c9487d800112693bf49EcfA2";
+
+export const borrowAssetsAddress = {
+  ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  wrsETH: "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+  weETH: "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+} as const;

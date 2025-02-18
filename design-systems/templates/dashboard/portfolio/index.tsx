@@ -149,6 +149,8 @@ function PortfolioTemplate() {
     };
   }, []);
 
+  console.log(pagedPositionList, "pagedPositionList");
+
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">

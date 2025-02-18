@@ -202,15 +202,13 @@ function DCDSTemplate() {
     ));
   };
 
-  // get usdt limit from CDS contract and store it in usdtLimit and setting default value to 0n
-
   // Define the initial state for the options variable
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(250000, 0)
+    .addExecutorLzReceiveOption(400000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();

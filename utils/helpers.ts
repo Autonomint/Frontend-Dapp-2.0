@@ -263,3 +263,45 @@ export function generateEthOptionName(
 
   return `ETH-${expiryDate}-${strikePrice}-${optionType}`;
 }
+// get strikePercent flag for smart contract
+export function getStrikePercent(strikePrice: number): number {
+  switch (strikePrice) {
+    case 5:
+      return 0;
+    case 10:
+      return 1;
+    case 15:
+      return 2;
+    case 20:
+      return 3;
+    default:
+      return 4;
+  }
+}
+
+export function calculateRemainingDays(timestamp: number): number {
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate the difference in seconds
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Convert the difference to days
+  const remainingDays = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+
+  return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
+}
+
+export function isFifteenDaysCompleted(timestamp: number): boolean {
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate the difference in seconds
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Convert 15 days to seconds (15 days * 24 hours * 60 minutes * 60 seconds)
+  const secondsIn15Days = 15 * 24 * 60 * 60;
+
+  // Check if 15 days have passed
+  return timeDifferenceInSeconds <= secondsIn15Days;
+}

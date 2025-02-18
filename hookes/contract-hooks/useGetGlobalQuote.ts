@@ -2,7 +2,7 @@ import { globalAbi } from "@/blockchain/abis/global";
 import { globalAddress } from "@/utils/constants";
 import { useAccount, useReadContract } from "wagmi";
 
-const useGetGlobalQuote = (options: any) => {
+const useGetGlobalQuote = (options: any, todoFlag: number) => {
   const { address, chainId } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
 
@@ -15,7 +15,7 @@ const useGetGlobalQuote = (options: any) => {
     address: globalAddress[chainId as keyof typeof globalAddress],
     functionName: "quote",
     query: { enabled: !!address },
-    args: [1, options, false],
+    args: [todoFlag, options, false],
   });
 
   return {

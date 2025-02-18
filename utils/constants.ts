@@ -45,9 +45,9 @@ export enum AssetNames {
   USDC,
   sUSD,
 }
-export const MintAssets = {
-  eth: AssetNames.ETH,
-  weeth: AssetNames.WeETH,
+export const BorrowAssetsEnum = {
+  ETH: AssetNames.ETH,
+  weETH: AssetNames.WeETH,
   wrsETH: AssetNames.WrsETH,
   rsETH: AssetNames.rsETH,
 };
