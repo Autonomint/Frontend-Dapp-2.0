@@ -33,7 +33,7 @@ import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
-    .max(Yup.ref("balance"), `Amont must be less than or equal to balance`)
+    .max(Yup.ref("balance"), `Amount must be less than or equal to balance`)
     .required("Collateral amount is required"),
   strikePrice: Yup.number()
     .min(5, "Minimum is 5")

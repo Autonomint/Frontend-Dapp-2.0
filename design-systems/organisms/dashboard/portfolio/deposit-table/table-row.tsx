@@ -124,7 +124,7 @@ const DepositTableRow = ({
         highlight
           ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : ""
-      } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
+      } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
       <td className="px-5 py-4 2xl:py-6">{position.depositedAmount}</td>
