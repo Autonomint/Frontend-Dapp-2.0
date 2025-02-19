@@ -1,10 +1,8 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LeftArrowIcon } from "@/components/ui/SvgIcons";
+import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
 import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
 import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
@@ -13,7 +11,9 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
-import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function HomeTemplate() {
   const items = [
@@ -39,6 +39,12 @@ export default function HomeTemplate() {
     (ethPrice || 0) as number,
     0
   );
+
+  // const expirations = useDeribitExpirations("ETH", "option");
+  // const { data } = useEthOptionFees(
+  //   `ETH-${expirations?.eth?.option?.[5]}-2800-P`
+  // );
+  // console.log(expirations, expirations?.eth?.option?.[0], "expirations");
 
   const feesList = [
     {
@@ -434,7 +440,7 @@ export default function HomeTemplate() {
       {!isScrollBottom && (
         <ScrollDownArrow
           handleClick={() => handleScroll()}
-          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border-grayLight border"
         />
       )}
     </div>

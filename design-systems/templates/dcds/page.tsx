@@ -1,259 +1,58 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/design-systems/atoms/button";
+import { Input } from "@/design-systems/atoms/input";
+import { Label } from "@/design-systems/atoms/label";
 import Image from "next/image";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-
-import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import AppNavbar from "@/custom-components/AppNavbar";
-import { ChevronDownIcon, Info } from "lucide-react";
-import { useTheme } from "next-themes";
-import { toast, Toaster } from "sonner";
+import { useEffect, useMemo, useRef, useState } from "react";
+import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import dcdsDark from "@/app/assets/Frame 350 (1).svg";
 import dcdsFrame from "@/app/assets/Frame 350.png";
 import USDaIcon from "@/app/assets/logo.svg";
-import OPIcon from "@/app/assets/optimism.png";
 import ModeIcon from "@/app/assets/mode.png";
-import tokenImage from "@/app/assets/Vector (6).png";
-import add from "@/app/assets/add-01.png";
-import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
-import minus from "@/app/assets/minus-sign.png";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
+import OPIcon from "@/app/assets/optimism.png";
 import { cdsAddress } from "@/blockchain/contracts";
-import { formatUnits, parseUnits } from "viem";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
-import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
-import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
-import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
-import LoadingBox from "@/custom-components/LoadingBox";
-import { Typography } from "@/components/ui/Typography";
-import { useScroll } from "@/contexts/scroll";
-import { usePortfolioTab } from "@/contexts/portfolio-tab";
-import { useRouter } from "next/navigation";
-import { formatNumber, handleWheel } from "@/utils/helpers";
-import ToastNotification from "@/custom-components/toasts/ToastNotification";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
-import useDeviceType from "@/hookes/useDeviceType";
-import Spinner from "@/components/ui/Spinner";
-import { RingLoadingIcon } from "@/components/ui/SvgIcons";
-import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
-import HowItWorksPopUp from "@/design-systems/organisms/dcds/how-it-works";
+import { Checkbox } from "@/design-systems/atoms/checkbox";
+import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { IoMdInformationCircleOutline } from "react-icons/io";
+} from "@/design-systems/atoms/tooltip";
+import { Typography } from "@/design-systems/atoms/Typography";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { useScroll } from "@/contexts/scroll";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import AddToken from "@/design-systems/organisms/dcds/add-token";
+import DepositSummary from "@/design-systems/organisms/dcds/deposit-summary";
+import HowItWorksPopUp from "@/design-systems/organisms/dcds/how-it-works";
 import HowItWorksButton from "@/design-systems/organisms/dcds/how-it-works-button";
-
-function TokenTvlDetails({
-  tokenName,
-  tvl,
-  icon,
-}: {
-  icon: any;
-  tokenName: string;
-  tvl: string;
-}) {
-  return (
-    <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
-      <div className="flex flex-row lg:flex-col gap-8">
-        <Image src={icon} alt="token" width={32} height={32} />
-        <span className="text-[24px] text-textBlack dark:text-white">
-          {tokenName}
-        </span>
-      </div>
-      <div className="flex flex-row-reverse items-center lg:flex-col gap-8">
-        <span className="text-[18px] font-normal text-right text-grayLight dark:text-white">
-          TVL
-        </span>
-        <span className="text-[24px] font-medium text-textBlack dark:text-white">
-          {tvl}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function AdditionalDCDSMetrics({
-  apy,
-  depositing,
-}: {
-  apy: string;
-  depositing: string;
-}) {
-  return (
-    <div className=" flex flex-col gap-3">
-      <div className="flex justify-between">
-        <span className="text-grayLight text-[18px] font-medium">APY</span>
-        <span className="text-black w-[60%] 2xl:w-[80%] text-end dark:text-white text-[18px] font-medium">
-          {apy}
-        </span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-grayLight text-[18px] font-medium">
-          Depositing
-        </span>
-        <span className="text-black text-[18px] dark:text-white font-medium">
-          {depositing}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function SelectToken() {
-  return (
-    <div className="flex flex-col mt-4">
-      <Label htmlFor="network" className="text-grayLight text-lg font-medium">
-        Select Token
-      </Label>
-      <Input
-        onWheel={handleWheel}
-        type="number"
-        className="rounded-none border border-grayLight font-medium"
-        placeholder="Amount"
-      />
-      <div className="mt-5">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="flex justify-between w-full h-17 px-3 border border-grayLight rounded-md text-textBlack text-[24px] dark:text-white"
-            >
-              3 months
-              <ChevronDownIcon className="w-4 h-4 ml-2" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="start"
-            className="w-full border border-gray-200 rounded-md shadow-md"
-          >
-            <div className="flex flex-col"></div>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </div>
-  );
-}
-
-function AddToken({
-  tokenDetails,
-  setSelectedTokens,
-  selectedTokens,
-  formik,
-}: {
-  formik: any;
-  tokenDetails: TokenDetails;
-  setSelectedTokens: any;
-  selectedTokens: { tokenImage: any; tokenName: string }[];
-}) {
-  const isSelected = selectedTokens.some(
-    (token) => token.tokenName === tokenDetails.tokenName
-  );
-
-  const toggleToken = () => {
-    if (!tokenDetails.active) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title={tokenDetails?.errorMessage || ""}
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-      return;
-    }
-    formik.setFieldValue(
-      `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
-      isSelected ? false : true
-    );
-    setSelectedTokens?.((prev: TokenDetails[]) => {
-      if (isSelected) {
-        return prev.filter(
-          (token) => token.tokenName !== tokenDetails.tokenName
-        );
-      } else {
-        return [...prev, tokenDetails];
-      }
-    });
-  };
-
-  return (
-    <div
-      className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
-    >
-      <div
-        className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
-      >
-        <div className="flex flex-row items-center lg:items-start lg:flex-col gap-4">
-          <div>
-            <Image
-              src={tokenDetails.tokenImage}
-              alt="token"
-              width={30}
-              height={30}
-            />
-          </div>
-          <span className="text-[24px] text-textBlack dark:text-white">
-            {tokenDetails.tokenName}
-          </span>
-        </div>
-        <Button
-          onClick={toggleToken}
-          className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient-to-bottom"
-        >
-          {isSelected ? (
-            <Image src={minus} alt="minus" />
-          ) : (
-            <Image src={add} alt="add" />
-          )}
-        </Button>
-      </div>
-      {tokenDetails.isLoading && (
-        <div className="top-0 text-white left-0 absolute w-full h-full bg-[#00000080] dark:bg-[#ffffff52] flex items-center justify-center ">
-          <RingLoadingIcon width={50} height={50} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Define the form values type using TypeScript
-interface FormValues {
-  usdaFlag: boolean;
-  usdtFlag: boolean;
-  usdcFlag: boolean;
-  usdeFlag: boolean;
-  usdaAmount: string | number | null;
-  usdtAmount: string | number | null;
-  usdcAmount: string | number | null;
-  usdeAmount: string | number | null;
-  lockInPeriod: string | null;
-  liquidationGains: boolean;
-}
-
-interface TokenDetails {
-  errorMessage?: string;
-  active?: boolean;
-  tokenImage: any;
-  isLoading: boolean;
-  tokenName: string;
-  minTokenAmount: number;
-  balanceAvailable: number | string;
-}
+import TokenTvlDetails from "@/design-systems/organisms/dcds/TokenTvlDetails";
+import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
+import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useDeviceType from "@/hookes/useDeviceType";
+import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
+import { formatNumber, handleWheel } from "@/utils/helpers";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { useFormik } from "formik";
+import { Info } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { formatUnits, parseUnits } from "viem";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import * as Yup from "yup";
+import { FormValues, TokenDetails } from "./interface";
+import PageLoader from "@/design-systems/molecule/page-loader";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -331,7 +130,9 @@ const formSchema = Yup.object().shape({
 });
 
 function DCDSTemplate() {
-  const { theme } = useTheme();
+  const { isConnected: isWalletConnected, openWalletPopup } =
+    useCheckWalletConnection();
+
   const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
   const router = useRouter();
   const [dcdsLoadingLocal, setDcdsLoadingLocal] = useState<boolean>(false);
@@ -344,7 +145,10 @@ function DCDSTemplate() {
 
   const [isOptionHowItWork, setIsOpenHowItWork] = useState(false);
 
-  const { chainId } = useAccount();
+  const { chainId, isConnected, address } = useAccount();
+
+  const { isScroll, setIsScroll } = useScroll();
+  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -419,7 +223,7 @@ function DCDSTemplate() {
       {
         tokenImage: USDaIcon,
         tokenName: "USDa",
-        isLoading: isOmniChainDataPending,
+        isLoading: false,
         active:
           (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
           USDT_DEPOSIT_LIMIT_IN_DCDS,
@@ -631,6 +435,9 @@ function DCDSTemplate() {
   }, [usdaApprovalReceiptReceipt]);
 
   const handleDeposit = () => {
+    if (!isConnected || !address) {
+      openWalletPopup();
+    }
     if (selectedTokens.length === 0) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -678,9 +485,6 @@ function DCDSTemplate() {
   const resetFunctionState = () => {
     resetUsdtApprove();
   };
-
-  const { isScroll, setIsScroll } = useScroll();
-  const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
   const handleDepositSuccess = () => {
     setIsScroll(true);
@@ -771,15 +575,23 @@ function DCDSTemplate() {
       <AppNavbar activeBack={showBack} />
       <div className="grid h-[97%] lg:grid-cols-4 grid-cols-1">
         <div className="lg:col-span-2 xl:col-span-1 flex flex-col p-5 md:px-16 md:py-5 lg:p-5 gap-8 border border-t-0 border-grayLight border-solid">
-          {tokenList.map((token: TokenDetails, key: number) => (
-            <AddToken
-              formik={formik}
-              key={key}
-              tokenDetails={token}
-              setSelectedTokens={setSelectedTokens}
-              selectedTokens={selectedTokens}
-            />
-          ))}
+          {!isConnected && !address ? (
+            <div className="flex w-full h-full text-lg dark:text-white text-center text-black justify-center items-center ">
+              Please connect wallet
+            </div>
+          ) : isOmniChainDataPending ? (
+            <PageLoader />
+          ) : (
+            tokenList.map((token: TokenDetails, key: number) => (
+              <AddToken
+                formik={formik}
+                key={key}
+                tokenDetails={token}
+                setSelectedTokens={setSelectedTokens}
+                selectedTokens={selectedTokens}
+              />
+            ))
+          )}
         </div>
 
         <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
@@ -869,7 +681,7 @@ function DCDSTemplate() {
             </div>
 
             {selectedTokens.length > 0 && (
-              <div className="w-[200px] z-30 h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+              <div className="w-[200px] z-[9] h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
                 {selectedTokens.slice(0, 2).map((token, index) => {
                   const totalTokens = selectedTokens.length;
 
@@ -906,16 +718,19 @@ function DCDSTemplate() {
           </div>
           <div className=" flex px-4 my-3 justify-center items-center w-full gap-14">
             {" "}
-            <div onClick={() => setIsOpenHowItWork(true)}>
+            <div
+              className="absolute left-[2%] bottom-[2%]"
+              onClick={() => setIsOpenHowItWork(true)}
+            >
               <Typography
-                className="text-black absolute left-[2%] bottom-[2%]  cursor-pointer text-[18px] font-medium dark:text-white underline"
+                className="text-black   cursor-pointer text-[18px] font-medium dark:text-white underline"
                 size="lg"
                 variant="regular"
               >
                 How it works?
               </Typography>
             </div>
-            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 p-1 2xl:p-2">
+            <div className="bg-[#FFE0E0] dark:bg-[#380000]  ml-4 xl:ml-0 p-1 2xl:p-2">
               <Typography
                 size="lg"
                 className="text-[#FF0000] dark:text-[#FF1A1A] !text-[14px] 2xl:!text-[18px] font-medium"
@@ -1017,14 +832,14 @@ function DCDSTemplate() {
               </Typography>
             </div>
             <div className="p-5 md:px-16 md:py-5 md:pb-0 lg:pb-0 lg:p-5 flex   items-center justify-between w-full">
-              <span className="text-grayLight flex flex-row items-center justify-start font-normal text-[18px]">
+              <span className="text-grayLight flex flex-row items-center justify-start font-normal text-[16px]  2xl:text-[18px]">
                 Opt for liquidation gains?
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info width={24} height={24} className="ml-2" />
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black">
-                    <p>this is tooltip</p>
+                    <p>liquidation gains</p>
                   </TooltipContent>
                 </Tooltip>
               </span>
@@ -1046,7 +861,7 @@ function DCDSTemplate() {
               </div>
             </div>
             <div className=" px-5 py-3 md:px-16 md:py-5  lg:px-5">
-              <AdditionalDCDSMetrics
+              <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={
                   formik.values.usdaAmount
@@ -1058,14 +873,18 @@ function DCDSTemplate() {
               />
             </div>
             <div className=" h-[86px]">
-              {!dcdsLoadingLocal && (
-                <Button
-                  type="submit"
-                  onClick={() => formik.handleSubmit()}
-                  className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
-                >
-                  Deposit
-                </Button>
+              {isConnected && address ? (
+                !dcdsLoadingLocal && (
+                  <Button
+                    type="submit"
+                    onClick={() => formik.handleSubmit()}
+                    className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
+                  >
+                    Deposit
+                  </Button>
+                )
+              ) : (
+                <WalletConnectButton />
               )}
 
               <LoadingBox

@@ -6,10 +6,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/design-systems/atoms/tooltip";
 import arrow from "@/app/assets/arrow-right-02.png";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/design-systems/atoms/button";
 import { useRouter } from "next/navigation";
 
 function DCDSHoverElement() {
@@ -45,7 +45,7 @@ function DCDSHoverElement() {
                 className="cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent className="bg-white">
+            <TooltipContent className="bg-white text-black dark:bg-black dark:text-white">
               <p>Exposed to volatility risk</p>
             </TooltipContent>
           </Tooltip>

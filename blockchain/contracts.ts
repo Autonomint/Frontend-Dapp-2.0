@@ -22,3 +22,5 @@ export const abondAddress = {
   84532: "0xEb8A1381078500311D84Ae8673fcbd098D82Fc83",
   11155111: "0x0EbAbA5970E10Cf96Ab515852620dC016C6a6A4b",
 } as const;
+
+export const hegicETHAddress = "0xEfC0eEAdC1132A12c9487d800112693bf49EcfA2";

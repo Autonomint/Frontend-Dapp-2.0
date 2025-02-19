@@ -1,5 +1,5 @@
 "use client";
-import AppNavbar from "@/custom-components/AppNavbar";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,19 +7,27 @@ import "../../../styles/farmyourluckstyles.css";
 import { useTheme } from "next-themes";
 import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
 import { toast } from "sonner";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import { useAccount } from "wagmi";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { Typography } from "@/design-systems/atoms/Typography";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 function FarmYourLuckTemplate() {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [selectedIndexForReward, setSelectedIndexForReward] = useState(-1);
   const [isFlipped, setIsFlipped] = useState(Array.from({ length: 9 }).fill(0));
   const [supportingText, setSupportingText] = useState(
     "Tap a card to view details"
   );
+
+  const { chainId, address } = useAccount();
   const [rewardAmount, setRewardAmount] = useState("");
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
-  const { theme } = useTheme();
   const [isPayed, setIsPayed] = useState(false);
 
   const [gotReward, setGotReward] = useState(false);
@@ -27,12 +35,11 @@ function FarmYourLuckTemplate() {
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
 
   const { data: luckData, mutateAsync: getLuckAsync } = useBorrowGame();
-
-  useEffect(() => {}, [isFlipped, selectedIndexForReward]);
+  const { data: farmLuckDetails, isLoading } = useFarmLuckDetails(address);
 
   useEffect(() => {
     if (buttonText === "Claim Reward" && isPayed && gotReward) {
-      setRewardAmount("+0.001 ETH");
+      setRewardAmount("$50");
     }
   }, [buttonText]);
 
@@ -69,18 +76,22 @@ function FarmYourLuckTemplate() {
   ];
 
   const handleCheckLuck = async () => {
-    const res = await getLuckAsync({
-      numberOfBoxes: 9,
-      userChosenBoxIndex: selectedIndexForReward,
-    });
+    let res;
+    if (address && chainId) {
+      res = await getLuckAsync({
+        numberOfBoxes: 9,
+        userChosenBoxIndex: selectedIndexForReward,
+        address,
+        chainId,
+        Manuel: true,
+      });
+    }
 
     if (selectedIndexForReward !== -1 && res) {
       setSupportingText("Congratulations! You have earned");
       setButtonText("Congratulations!");
-      setRewardAmount("0.01 ETH");
-
+      setRewardAmount("$50");
       setIsRevealed(true);
-
       return;
     } else if (selectedIndexForReward !== -1 && !res) {
       setRewardAmount("Better Luck Next Time");
@@ -234,6 +245,7 @@ function FarmYourLuckTemplate() {
                 </motion.span>
               </AnimatePresence>
             </span>
+
             <div className="flex flex-col text-left mb-28 lg:mb-0">
               <div className="text-textBlack lg:text-3xl text-[20px] font-medium dark:text-white">
                 How it works?
@@ -250,33 +262,60 @@ function FarmYourLuckTemplate() {
                 </li>
                 <li className="text-lg">Missed? Try again with another $5!</li>
               </ol>
+
+              <div className="border border-grayLight flex  mt-4">
+                <div className="p-4 w-1/2 border border-grayLight border-l-0 border-y-0">
+                  <Typography variant="regular" size="h4">
+                    ${farmLuckDetails?.TotalReward || 0}
+                  </Typography>
+                  <Typography className="text-grayLight mt-3 " size="lg">
+                    Reward
+                  </Typography>
+                </div>
+                <div className="p-4  w-1/2">
+                  <Typography variant="regular" size="h4">
+                    {farmLuckDetails?.totalLuck || 0}
+                  </Typography>
+                  <Typography className="text-grayLight mt-3 " size="lg">
+                    Luck
+                  </Typography>
+                </div>
+                <div className="p-3"></div>
+              </div>
             </div>
-            <button
-              disabled={isPayed && selectedIndex == -1}
-              onClick={() => handleButtonClick()}
-              className={`  absolute w-full  left-0 bottom-0 text-white h-[90px] font-bold text-[32px]  ${
-                isPayed && selectedIndex == -1
-                  ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
-                  : " bg-black  dark:bg-custom-gradient-to-top"
-              }`}
-            >
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={buttonText}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={
-                    selectedIndexForReward !== -1
-                      ? textVariantsButtonCliked
-                      : textVariants
-                  }
-                  className="block h-full flex items-center justify-center"
+
+            <div className="absolute w-full   left-0 bottom-0 h-[90px]">
+              {isWalletConnected && address ? (
+                <button
+                  disabled={isPayed && selectedIndex == -1}
+                  onClick={() => handleButtonClick()}
+                  className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
+                    isPayed && selectedIndex == -1
+                      ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
+                      : " bg-black  dark:bg-custom-gradient-to-top"
+                  }`}
                 >
-                  {buttonText}
-                </motion.span>
-              </AnimatePresence>
-            </button>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={buttonText}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={
+                        selectedIndexForReward !== -1
+                          ? textVariantsButtonCliked
+                          : textVariants
+                      }
+                      className="block h-full flex items-center justify-center"
+                    >
+                      {buttonText}
+                    </motion.span>
+                  </AnimatePresence>
+                </button>
+              ) : (
+                <WalletConnectButton />
+              )}
+            </div>
           </div>
         </div>
       </div>

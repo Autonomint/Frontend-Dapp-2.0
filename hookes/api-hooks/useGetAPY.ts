@@ -35,6 +35,7 @@ const useGetAPY = (index: number) => {
     queryKey: ["APY", index],
     queryFn: () =>
       getAPY(address ? address : undefined, chainId as number, index),
+    enabled: !!address && !!chainId && !!index,
   });
   return {
     apy,

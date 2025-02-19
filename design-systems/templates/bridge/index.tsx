@@ -2,26 +2,20 @@
 import { usDaAbi } from "@/blockchain/abis/usda";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
 import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
-import { Button } from "@/components/ui/button";
-import { GenericDropdownMenu } from "@/components/ui/DropdownCustom/GenericDropdownMenu";
-import { Typography } from "@/components/ui/Typography";
-import AppNavbar from "@/custom-components/AppNavbar";
-import LoadingBox from "@/custom-components/LoadingBox";
-import ToastNotification from "@/custom-components/toasts/ToastNotification";
-import ToastNotificationError from "@/custom-components/toasts/ToastNotificationError";
+import { Button } from "@/design-systems/atoms/button";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import BridgeComponentLeft from "@/design-systems/organisms/bridge/BridgeComponentLeft";
+import BridgeComponentRight from "@/design-systems/organisms/bridge/BridgeComponentRight";
+import BridgeMetricFields from "@/design-systems/organisms/bridge/BridgeMetricFields";
 import { useGetBridgeFeeUsda } from "@/hookes/contract-hooks/useGetBridgeFeeUsda";
 import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt";
 import useDeviceType from "@/hookes/useDeviceType";
-import { handleWheel, secondsToMinutes } from "@/utils/helpers";
+import { secondsToMinutes } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { usePathname } from "next/navigation";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, padHex, parseEther, parseUnits } from "viem";
 import {
@@ -34,221 +28,9 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-
-function BridgeComponentRight({
-  heading,
-  network,
-  token,
-  totalAmount,
-  receiveAmount,
-}: {
-  receiveAmount: number;
-  heading: string;
-  network: string;
-  token: string;
-  totalAmount: string;
-}) {
-  return (
-    <div
-      className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
-        heading === "To"
-          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
-          : "bg-none dark:bg-none"
-      }`}
-    >
-      <div className=" text-[24px] md:text-[28px] lg:text-[32px] font-medium mb-4">
-        {heading}
-      </div>
-      <div className="flex flex-col gap-7">
-        <div className="flex gap-6">
-          <div className="flex flex-col gap-3 flex-1">
-            <span className="text-[18px] font-medium text-grayLight">
-              Network
-            </span>
-            <GenericDropdownMenu
-              buttonText="Mode"
-              items={[
-                {
-                  label: "Mode",
-                  onClick: () => {},
-                },
-              ]}
-              className="w-full text-[18px] lg:text-[24px] border border-grayLight  h-[60px] lg:h-[65px]"
-            />
-          </div>
-          <div className="flex flex-col gap-3 flex-1">
-            <span className="text-[18px] font-medium text-grayLight">
-              Token
-            </span>
-            <GenericDropdownMenu
-              buttonText={token}
-              items={[
-                {
-                  label: "USDa",
-                  onClick: () => {},
-                },
-              ]}
-              className="w-full text-[18px] lg:text-[24px] border border-grayLight h-[60px] lg:h-[65px]"
-            />
-          </div>
-        </div>
-        <div className="border border-solid border-grayLight p-5">
-          <div className="flex justify-between h-[27px] text-grayLight text-[14px] lg:text-lg">
-            You Receive
-          </div>
-          <div className="text-[42px] text-textBlack  mt-4 lg:mt-8 dark:text-white">
-            ${receiveAmount.toFixed(2)}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-function BridgeComponentLeft({
-  heading,
-  network,
-  token,
-  totalAmount,
-  setSendToken,
-  setSendNetwork,
-  setSendAmount,
-  sendAmount,
-  balance,
-  amountError,
-}: {
-  balance: number;
-  amountError: string;
-  setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
-  setSendAmount: Dispatch<SetStateAction<number | null>>;
-  sendAmount: number | null;
-  setSendNetwork: Dispatch<React.SetStateAction<"Base" | "Sepolia">>;
-  heading: string;
-  network: string;
-  token: string;
-  totalAmount: string;
-}) {
-  const { switchChain } = useSwitchChain();
-
-  const { chainId } = useAccount();
-
-  return (
-    <div
-      className={`flex flex-col md:p-6 p-5 justify-between border border-y-0 border-r-0 border-grayLight border-solid rounded-none ${
-        heading === "To"
-          ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top"
-          : "bg-none dark:bg-none"
-      }`}
-    >
-      <div className=" text-[24px] md:text-[28px] lg:text-[32px] font-medium mb-4">
-        {heading}
-      </div>
-      <div className="flex flex-col gap-7">
-        <div className="flex gap-6">
-          <div className="flex flex-col gap-3 flex-1">
-            <span className="text-[18px] font-medium text-grayLight">
-              Network
-            </span>
-            <GenericDropdownMenu
-              buttonText={network}
-              items={[
-                {
-                  label: "Sepolia",
-                  onClick: () => {
-                    switchChain({ chainId: 11155111 });
-                    setSendNetwork("Sepolia");
-                  },
-                },
-                {
-                  label: "Base",
-                  onClick: () => {
-                    switchChain({ chainId: 84532 });
-                    setSendNetwork("Base");
-                  },
-                },
-              ]}
-              className="w-full  text-[20px] lg:text-[24px] border border-grayLight h-[60px] lg:h-[65px]"
-            />
-          </div>
-          <div className="flex flex-col gap-3 flex-1">
-            <span className="text-[18px] font-medium text-grayLight">
-              Token
-            </span>
-            <GenericDropdownMenu
-              buttonText={token}
-              items={[
-                {
-                  label: "USDa",
-                  onClick: () => setSendToken("USDa"),
-                },
-              ]}
-              className="w-full text-[20px] lg:text-[24px] border border-grayLight h-[60px] lg:h-[65px]"
-            />
-          </div>
-        </div>
-        <div className="border border-solid border-grayLight p-5">
-          <div className="flex justify-between">
-            <div
-              className={
-                `${heading == "From" ? "" : "dark:text-white"}` +
-                "text-grayLight text-[14px] lg:text-lg "
-              }
-            >
-              You {heading == "From" ? "Send" : "Receive"}
-            </div>
-            <div className="text-grayLight  text-[14px] lg:text-lg flex gap-3 ">
-              Available Bal: {balance}
-              <span
-                onClick={() => setSendAmount(balance)}
-                className="text-textBlack text-[14px] lg:text-lg cursor-pointer dark:text-white"
-              >
-                Max
-              </span>
-            </div>
-          </div>
-          <input
-            onWheel={handleWheel}
-            value={sendAmount || undefined}
-            onChange={(e) => setSendAmount(Number(e.target.value))}
-            type="number"
-            placeholder="0"
-            className="text-[42px] w-full bg-transparent border-0 outline-0 text-textBlack  mt-4 lg:mt-8 dark:text-white"
-          />
-
-          <Typography size="sm" variant="regular" className="text-red-500">
-            {amountError}
-          </Typography>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BridgeMetricFields({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex flex-col justify-between mb-3">
-      <div className=" text-gray-500 font-medium text-[18px]">{label}</div>
-      <div className="font-medium text-[20px] text-black dark:text-white">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-interface TransactionParams {
-  dstEid: number; // Assuming Eid is a string, adjust the type if it's different
-  to: `0x${string}`; // Account address padded to 32 characters
-  amountLD: bigint; // Amount in Ether, parsed from a string
-  minAmountLD: bigint; // Minimum amount in Ether, parsed from a string
-  extraOptions: any; // Assuming options is of a generic type, adjust as necessary
-  composeMsg: `0x${string}`; // A hexadecimal string
-  oftCmd: `0x${string}`; // Another hexadecimal string
-}
+import { TransactionParams } from "./interfaces";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
@@ -264,6 +46,9 @@ function BridgeTemplate() {
   const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
     useState<boolean>(false);
   const [usdtApproveLoading, setUsdtApproveLoading] = useState<boolean>(false);
+
+  const { isConnected: isWalletConnected, address } =
+    useCheckWalletConnection();
 
   const [sendLoading, setSendLoading] = useState<boolean>(false);
 
@@ -752,13 +537,17 @@ function BridgeTemplate() {
           />
         </div>
         <div className=" w-full">
-          {!transferLoadingLocal && (
-            <Button
-              onClick={onSubmit}
-              className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight"
-            >
-              Bridge
-            </Button>
+          {isConnected && address ? (
+            !transferLoadingLocal && (
+              <Button
+                onClick={onSubmit}
+                className="bg-textBlack text-white py-4 font-semibold text-[24px] w-full h-full rounded-md dark:bg-custom-gradient-to-bottom border border-grayLight"
+              >
+                Bridge
+              </Button>
+            )
+          ) : (
+            <WalletConnectButton />
           )}
 
           <LoadingBox

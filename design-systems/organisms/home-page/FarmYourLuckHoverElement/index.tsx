@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/design-systems/atoms/button";
 import Image from "next/image";
 import arrow from "@/app/assets/arrow-right-02.png";
 

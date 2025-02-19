@@ -1,4 +1,4 @@
-import { RingLoadingIcon } from "@/components/ui/SvgIcons";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 
 const PageLoader = () => {
   return (

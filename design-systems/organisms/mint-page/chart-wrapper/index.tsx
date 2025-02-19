@@ -1,13 +1,28 @@
-import { Typography } from "@/components/ui/Typography";
+import { Typography } from "@/design-systems/atoms/Typography";
 import useMarketChart from "@/hookes/api-hooks/useGetChartData";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import EthImage from "@/app/assets/eth-icon.svg";
-
-function TradingViewWidget() {
+import cryptoEth from "@/app/assets/eth.png";
+import WeETH from "@/app/assets/weETH-icoon.webp";
+import WrsETH from "@/app/assets/WrsETH-icon.png";
+function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+
+  const getTokenSymbol = () => {
+    switch (currency) {
+      case "ETH":
+        return ["BINANCE:ETHUSD|1D"];
+      case "wrsETH":
+        return ["UNISWAP:RSETHWETH_94B78E.USD|1D"];
+      case "weETH":
+        return ["CRYPTO:WEETHUSD|1D"];
+
+      default:
+        return ["BINANCE:ETHUSD|1D"];
+    }
+  };
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -15,10 +30,11 @@ function TradingViewWidget() {
       "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
+    console.log(getTokenSymbol(), "getTokenSymbol()");
 
     // Define the widget configuration
     const widgetConfig = {
-      symbols: [["BINANCE:ETHUSD|1D"]],
+      symbols: [getTokenSymbol()],
       chartOnly: true,
       width: "100%",
       height: "100%",
@@ -78,17 +94,30 @@ function TradingViewWidget() {
   return <div className="tradingview-widget-container " ref={container}></div>;
 }
 
-function ChartComponent() {
+function ChartComponent({ currency }: { currency: string }) {
+  const getTokenSymbolIcon = () => {
+    switch (currency) {
+      case "ETH":
+        return cryptoEth;
+      case "wrsETH":
+        return WrsETH;
+      case "weETH":
+        return WeETH;
+
+      default:
+        return cryptoEth;
+    }
+  };
   return (
     <div className="lg:p-6 p-2 h-full">
       <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
-        <Image src={EthImage} width={40} height={40} alt="eth" />
+        <Image src={getTokenSymbolIcon()} width={40} height={40} alt="eth" />
         <Typography className="text-[32px] dark:text-white font-medium text-black ">
-          ETH
+          {currency}
         </Typography>
       </div>
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
-        <TradingViewWidget />
+        <TradingViewWidget currency={currency} />
       </div>
     </div>
   );

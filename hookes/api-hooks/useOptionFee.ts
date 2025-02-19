@@ -32,15 +32,21 @@ const useFetchOptionFees = (
   ethPrice: number,
   strikePercent: number
 ) => {
-  const { chainId } = useAccount();
+  const { chainId, isConnected } = useAccount();
 
   const {
-    data,
+    data: Fees,
     isPending: isOptionFeePending,
     isError: isOptionFeeError,
     refetch: refetchOptionFee,
   } = useQuery({
-    queryKey: ["optionFee", chainId, collateralAmount, ethPrice, strikePercent], // Query key
+    queryKey: [
+      "optionFeeAPI",
+      chainId,
+      collateralAmount,
+      ethPrice,
+      strikePercent,
+    ], // Query key
     queryFn: () =>
       fetchOptionFees({
         chainId: chainId as number,
@@ -49,17 +55,27 @@ const useFetchOptionFees = (
         strikePercent,
       }), // Query function
     // Optional configurations
-    enabled: !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided
-    refetchOnWindowFocus: false,
-    staleTime: 0,
+    enabled: !!isConnected && !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided
+    refetchOnWindowFocus: true,
+    retry: 1,
   });
 
-  const optionFees = (data as number[])?.[1]
-    ? (data as number[])?.[1] / 10 ** 6
+  console.log(
+    chainId,
+    !!isConnected && !!chainId && !!collateralAmount && !!ethPrice,
+    ">>"
+  );
+
+  const optionFees = (Fees as number[])?.[1]
+    ? (Fees as number[])?.[1] / 10 ** 6
     : 0;
 
   return {
     optionFees,
+    Fees,
+    refetchOptionFee,
+    isOptionFeeError,
+    isOptionFeePending,
   };
 };
 

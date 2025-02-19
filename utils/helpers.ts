@@ -245,3 +245,21 @@ export const handleWheel = (
 ): void => {
   event.currentTarget.blur(); // Prevents changing the number value on scroll
 };
+
+export function generateEthOptionName(
+  strikePrice: number,
+  isCall: boolean
+): string {
+  const currentDate = new Date();
+  const day = currentDate.getDate().toString().padStart(2, "0");
+
+  const month = currentDate
+    .toLocaleDateString("en-US", { month: "short" })
+    .toUpperCase(); // Correct way
+
+  const year = currentDate.getFullYear().toString().slice(-2);
+  const expiryDate = `${day}${month}${year}`;
+  const optionType = isCall ? "C" : "P";
+
+  return `ETH-${expiryDate}-${strikePrice}-${optionType}`;
+}

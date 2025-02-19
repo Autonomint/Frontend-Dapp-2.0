@@ -1,82 +1,92 @@
+import { dcdsDepositDetails, DcdsDetailsResponse } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
+import { useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "wagmi/query";
-export interface dcdsDepositDetails {
-  id: string;
-  address: string;
-  collateralType: string;
-  chainId: number;
-  index: number;
-  depositedAmint: string;
-  depositedUsdt: string;
-  totalDepositedAmount: string;
-  depositedTime: string;
-  ethPriceAtDeposit: string;
-  aprAtDeposit: string;
-  lockingPeriod: string;
-  ethPriceAtWithdraw: string | null;
-  initialLiquidationAmount: string;
-  liquidationAmount: string;
-  liquidationIndex: string | null;
-  optedForLiquidation: boolean;
-  depositVal: string;
-  withdrawTime: string | null;
-  withdrawAmount: string | null;
-  withdrawEthAmount: string | null;
-  withdrawWeEthAmount: string | null;
-  withdrawRsEthAmount: string | null;
-  fees: string | null;
-  status: string;
-}
-
-export interface dcdsDetailsResponse {
-  id: string;
-  address: string;
-  chainId: number;
-  totalIndex: number;
-  totalDepositedAmint: string;
-  totalDepositedUsdt: string;
-  totalDepositedAmount: string;
-  totalFees: string | null;
-  totalFeesWithdrawn: string | null;
-  points: string | null;
-  totalYields: string | null;
-  deposits: dcdsDepositDetails[];
-}
 
 /**
  * Retrieves deposits for a given address.
  * @param {`0x${string}` | undefined} address - The address to retrieve deposits for.
  * @return {Promise} A promise that resolves to the JSON response from the server.
  */
-function getDeposits(address: `0x${string}` | undefined, chainId: Number) {
+function getDeposits(
+  address: `0x${string}` | undefined,
+  chainId: Number
+): Promise<DcdsDetailsResponse> {
   return fetch(
     `${BACKEND_API_URL}/cds/totalDeposits/${chainId}/${address}`
   ).then((response) => response.json());
 }
-
 const useGetDcdsDepositList = () => {
-  // Use the useQuery hook to fetch the data
+  // Use the useAccount and useChainId hooks
   const { address } = useAccount();
   const chainId = useChainId();
+
+  // State for pagination
+  const [pageSize, setPageSize] = useState<number>(15); // Default page size
+  const [currentPage, setCurrentPage] = useState<number>(1); // Default to first page
+  const [pagedDcdsPositionList, setPagedDcdsPositionList] = useState<
+    dcdsDepositDetails[]
+  >([]);
+  const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
+
+  // Query to fetch data
   const {
     data: dcdsPositionList,
     error: dcdsPositionListError,
-    refetch: dcdsPositionListRefetech,
+    refetch: dcdsPositionListRefetch,
     isLoading: dcdsPositionListLoading,
   } = useQuery({
     queryKey: ["dcdsDepositsDetails", chainId, address],
-    queryFn: (): Promise<any> =>
-      getDeposits(address ? address : undefined, chainId),
+    queryFn: () => getDeposits(address ? address : undefined, chainId),
     enabled: !!address,
+    select: (data) => data.deposits,
     retry: 1,
   });
 
+  // Calculate the current page data and total pages
+  const updatePagedData = () => {
+    if (dcdsPositionList) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setPagedDcdsPositionList(dcdsPositionList.slice(startIndex, endIndex));
+
+      // Calculate total pages based on pageSize and positionList length
+      setTotalPages(Math.ceil(dcdsPositionList.length / pageSize));
+    }
+  };
+
+  // Update the paged data and total pages whenever the position list, page size, or current page changes
+  useEffect(() => {
+    updatePagedData();
+  }, [dcdsPositionList, pageSize, currentPage]);
+
+  // Function to go to the next page
+  const handleNextPage = () => {
+    if (dcdsPositionList && currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  // Function to go to the previous page
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   return {
-    dcdsPositionList: (dcdsPositionList || []) as dcdsDetailsResponse,
-    dcdsPositionListError,
-    dcdsPositionListRefetech,
-    dcdsPositionListLoading,
+    dcdsPositionList: (dcdsPositionList || []) as dcdsDepositDetails[], // Complete list of positions
+    pagedDcdsPositionList, // Current page's data
+    dcdsPositionListError, // Error in fetching
+    dcdsPositionListRefetch, // Function to refetch the data
+    dcdsPositionListLoading, // Loading state
+    currentPage, // Current page number
+    pageSize, // Page size
+    setPageSize, // Function to change page size
+    totalPages, // Total number of pages
+    handleNextPage, // Function to go to next page
+    handlePrevPage, // Function to go to previous page
   };
 };
 

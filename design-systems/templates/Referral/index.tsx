@@ -1,17 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Typography } from "@/components/ui/Typography";
-import AppNavbar from "@/custom-components/AppNavbar";
+import { Button } from "@/design-systems/atoms/button";
+import { Input } from "@/design-systems/atoms/input";
+import { Typography } from "@/design-systems/atoms/Typography";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import twitter from "@/app/assets/new-twitter.svg";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 
 const ReferralTemplate = () => {
+  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+
   const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");
@@ -43,6 +46,7 @@ const ReferralTemplate = () => {
     queryKey: ["referralcode", address],
     queryFn: () => fetchReferralCode(address),
     staleTime: Infinity,
+    enabled: !!address,
   });
   const referralLink = `https://www.dev.testnet.app.autonomint.com?ref=${referral}`;
 

@@ -11,7 +11,7 @@ const ScrollDownArrow = ({
   return (
     <motion.div
       onClick={handleClick}
-      className={`absolute cursor-pointer inset-x-0 top-0 flex justify-center ${classNames}`}
+      className={`absolute cursor-pointer inset-x-0 top-0  flex justify-center ${classNames}`}
       animate={{
         y: [0, 10, 0], // Up and down movement
       }}

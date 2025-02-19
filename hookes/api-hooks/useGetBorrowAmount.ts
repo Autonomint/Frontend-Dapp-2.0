@@ -52,7 +52,8 @@ const useGetTotalBorrow = () => {
   });
 
   const userTotalBorrowAmount = formatNumber(
-    Number(ethSepoliaData?.totalAmint) + Number(baseSepoliaData?.totalAmint)
+    Number(ethSepoliaData?.totalAmint || 0) +
+      Number(baseSepoliaData?.totalAmint || 0)
   );
 
   return { userTotalBorrowAmount, ethSepoliaData, baseSepoliaData };

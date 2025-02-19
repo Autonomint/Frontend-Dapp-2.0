@@ -1,20 +1,10 @@
+import { LeaderboardDetails } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { it } from "node:test";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "wagmi/query";
 
-export interface LeaderboardDetails {
-  rank: string;
-  address: string;
-  totalDepositedAmount?: string;
-  cdsdeposit?: number;
-  totalAmint?: string;
-  points: string;
-  totalLTV?: number;
-  yield: number;
-  chainId: number;
-}
 // Fetch the total number of borrowers
 async function getBorrowLeaderboard(): Promise<LeaderboardDetails[]> {
   const response = await fetch(`${BACKEND_API_URL}/borrows/leaderboard`);
@@ -25,39 +15,56 @@ async function getCdsLeaderboard(): Promise<LeaderboardDetails[]> {
   const response = await fetch(`${BACKEND_API_URL}/cds/cds/leaderboard`);
   return await response.json();
 }
+
 const useGetLeaderboard = () => {
   const { chainId } = useAccount();
 
-  //   Fetch and store deposits using react-query
-  const { data: borrowdeposits, error: borrowdepositsError } = useQuery({
+  // State for pagination
+  const [pageSize, setPageSize] = useState<number>(15); // Default page size
+  const [currentPage, setCurrentPage] = useState<number>(1); // Default to first page
+  const [pagedLeaderboardData, setPagedLeaderboardData] = useState<
+    LeaderboardDetails[]
+  >([]);
+  const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
+
+  // Fetch and store borrow deposits using react-query
+  const {
+    data: borrowdeposits,
+    error: borrowdepositsError,
+    isPending: borrowdepositsPending,
+  } = useQuery({
     queryKey: ["borrowDeposits", chainId],
     queryFn: () => getBorrowLeaderboard(),
   });
 
-  //   Fetch and store cds deposits using react-query
-  const { data: cdsdeposits, error: cdsdepositsError } = useQuery({
+  // Fetch and store cds deposits using react-query
+  const {
+    data: cdsdeposits,
+    error: cdsdepositsError,
+    isPending: cdsdepositsPending,
+  } = useQuery({
     queryKey: ["Cdsdeposits", chainId],
     queryFn: () => getCdsLeaderboard(),
   });
 
+  const isLeaderboardPending = borrowdepositsPending || cdsdepositsPending;
+
+  // Sorting function for the leaderboard details
   function sortLeaderboardDetails(
     items: LeaderboardDetails[]
   ): LeaderboardDetails[] {
     return items
-      .map((item) => {
-        return {
-          ...item,
-          sortByValue: item.totalDepositedAmount || item.totalAmint || 0,
-        };
-      })
+      .map((item) => ({
+        ...item,
+        sortByValue: item.totalDepositedAmount || item.totalAmint || 0,
+      }))
       .sort((a, b) => {
-        // First, compare by totalDepositedAmount
-        if (Number(a?.sortByValue) > Number(b.sortByValue)) {
+        // First, compare by totalDepositedAmount or totalAmint
+        if (Number(a?.sortByValue) > Number(b?.sortByValue)) {
           return -1;
-        } else if (Number(a?.sortByValue) < Number(b.sortByValue)) {
+        } else if (Number(a?.sortByValue) < Number(b?.sortByValue)) {
           return 1;
         }
-
         // If both are equal, maintain the original order
         return 0;
       });
@@ -78,12 +85,52 @@ const useGetLeaderboard = () => {
     ]);
   }, [borrowdeposits, cdsdeposits, borrowdepositsError, cdsdepositsError]);
 
+  // Calculate the current page data and total pages
+  const updatePagedData = () => {
+    if (leaderboardData) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setPagedLeaderboardData(leaderboardData.slice(startIndex, endIndex));
+
+      // Calculate total pages based on pageSize and leaderboardData length
+      setTotalPages(Math.ceil(leaderboardData.length / pageSize));
+    }
+  };
+
+  // Update the paged data and total pages whenever leaderboardData, pageSize, or currentPage changes
+  useEffect(() => {
+    updatePagedData();
+  }, [leaderboardData, pageSize, currentPage]);
+
+  // Function to go to the next page
+  const handleNextPage = () => {
+    if (leaderboardData && currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  // Function to go to the previous page
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   return {
-    leaderboardData,
-    borrowdepositsError,
-    cdsdepositsError,
-    totalBorrowCount,
-    totalDepositedCount,
+    leaderboardData: leaderboardData as LeaderboardDetails[], // Complete list of positions
+    pagedLeaderboardData, // Current page's data
+    borrowdepositsError, // Error in fetching borrow deposits
+    cdsdepositsError, // Error in fetching cds deposits
+    totalBorrowCount, // Total count of borrow deposits
+    totalDepositedCount, // Total count of cds deposits
+    currentPage, // Current page number
+    pageSize, // Page size
+    setPageSize, // Function to change page size
+    totalPages, // Total number of pages
+    handleNextPage, // Function to go to next page
+    handlePrevPage, // Function to go to previous page
+    isLeaderboardPending,
   };
 };
+
 export default useGetLeaderboard;
