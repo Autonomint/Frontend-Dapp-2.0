@@ -305,3 +305,24 @@ export function isFifteenDaysCompleted(timestamp: number): boolean {
   // Check if 15 days have passed
   return timeDifferenceInSeconds <= secondsIn15Days;
 }
+
+export function getDownsideProtectionTillNow(
+  depositEthPrice: number,
+  depositedAmount: number,
+  currentEthPrice: number
+): string {
+  // Calculate the first part
+  const result = (
+    (depositEthPrice / 100) * depositedAmount -
+    currentEthPrice
+  ).toFixed(2);
+
+  // Calculate the percentage
+  const percentage = (
+    ((depositEthPrice * depositedAmount - currentEthPrice) / currentEthPrice) *
+    100
+  ).toFixed(2);
+
+  // Return the formatted string
+  return `$${result} (${percentage}%)`;
+}

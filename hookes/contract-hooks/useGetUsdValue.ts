@@ -22,7 +22,7 @@ const useGetUsdValue = (assetAddress: ValueOf<typeof borrowAssetsAddress>) => {
 
   return {
     isUsdValuePending,
-    usdValue: usdValue?.[0],
+    usdValue: usdValue?.[0] || 0,
     assetPrice: usdValue?.[0] + (usdValue?.[0] * usdValue?.[1]) / 100,
   };
 };

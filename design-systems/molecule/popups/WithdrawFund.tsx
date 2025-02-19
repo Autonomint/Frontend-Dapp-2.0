@@ -15,6 +15,7 @@ import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
+  getDownsideProtectionTillNow,
   isFifteenDaysCompleted,
 } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
@@ -117,6 +118,8 @@ export function WithdrawFund({
   const { usdValue: ethPrice } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
+  console.log(ethPrice, "ethPrice");
+
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
@@ -705,11 +708,24 @@ export function WithdrawFund({
                     { heading: "Current ETH price", value: "$0" },
                     {
                       heading: "Downside Protection till now",
-                      value: "$90 (10%)",
+                      // value: `$${(
+                      //   (Number(position.ethPrice) / 100) *
+                      //     Number(position.depositedAmount) -
+                      //   Number(ethPrice)
+                      // ).toFixed(2)} (${
+                      //   (Number(position.ethPrice) / 100) *
+                      //     Number(position.depositedAmount) -
+                      //   (Number(ethPrice) / ethPrice) * 100
+                      // }%)`,
+                      value: getDownsideProtectionTillNow(
+                        Number(position.ethPrice),
+                        Number(position.depositedAmount),
+                        Number(ethPrice)
+                      ),
                     },
                     {
                       heading: "Option Fees paid",
-                      value: `$${position?.optionFees}`,
+                      value: `$${Number(position?.optionFees).toFixed(2)}`,
                     },
                   ].map((item) => (
                     <div
@@ -735,9 +751,10 @@ export function WithdrawFund({
                     { label: "Option Fees", value: "$0" },
                     {
                       label: "Downside Protection",
-                      value: `Up to $${
-                        (Number(position.noOfAmintMinted) * 20) / 100
-                      } (20%)`,
+                      value: `Up to $${(
+                        (Number(position.noOfAmintMinted) * 20) /
+                        100
+                      ).toFixed(2)} (20%)`,
                     },
                   ].map((item, index) => (
                     <div
