@@ -136,7 +136,7 @@ function InputForm({ currency }: { currency: string }) {
       });
       setMintLoading(false);
       handleResetPage();
-      router.push("/dashboard/portfolio");
+      router.push("/farmyourluck");
     } else if (depositHashError) {
       setMintLoading(false);
       toast.custom((t) => {
@@ -155,7 +155,7 @@ function InputForm({ currency }: { currency: string }) {
     reset();
   };
 
-  const { optionFees, refetchOptionFee } = useFetchOptionFees(
+  const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     formik.values.collateralAmount,
     (ethPrice || 0) as number,
     formik.values.strikePrice == 5
@@ -168,8 +168,6 @@ function InputForm({ currency }: { currency: string }) {
       ? 3
       : 4
   );
-
-  console.log(optionFees, "optionFees");
 
   async function handleMint(values: any) {
     if (!address) {
@@ -194,10 +192,7 @@ function InputForm({ currency }: { currency: string }) {
     setMintBtnLoading(true);
     reset();
     const strikePrice = values.strikePrice;
-    const colateralamount = parseUnits(
-      formik.values.collateralAmount.toString(),
-      18
-    );
+
     const strikePercent =
       strikePrice == 5
         ? 0
@@ -208,8 +203,8 @@ function InputForm({ currency }: { currency: string }) {
         : strikePrice == 20
         ? 3
         : 4;
-    const data = optionFees;
-    if (data != undefined && nativeFee != undefined) {
+
+    if ((Fees as number[])[0] != undefined && nativeFee != undefined) {
       mintUSDa?.({
         strikePercent,
         strikePrice: BigInt(
@@ -218,7 +213,7 @@ function InputForm({ currency }: { currency: string }) {
               Number(ethPrice ? ethPrice : 0)
           )
         ),
-        volatility: BigInt(data),
+        volatility: BigInt((Fees as number[])[0]),
         depositingAmount: parseEther(formik.values.collateralAmount.toString()),
         value:
           parseEther(formik.values.collateralAmount.toString()) +
@@ -384,7 +379,7 @@ function InputForm({ currency }: { currency: string }) {
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
       </div>
-      <div className="col-span-1 h-[85px]">
+      <div className="col-span-1 overflow-hidden h-[85px]">
         {address && isConnected ? (
           !mintBtnLoading && (
             <Button

@@ -24,3 +24,6 @@ export const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;
 export const DAPP_ADDRESS_NOTIFI = "9xu0e0btkv6g71ypagwo";
 
 export const CARD_ID_NOTIFI = "fb7bcc660ddb4d6e99703595e6eed049";
+
+export const FarmYourLuckWalletAddress =
+  "0x555c74B09A29e083EA6F661c2dD78617d8Fd906E";
