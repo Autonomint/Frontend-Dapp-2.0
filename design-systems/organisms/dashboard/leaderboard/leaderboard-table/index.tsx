@@ -3,6 +3,7 @@ import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails } from "@/utils/interface";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function LeaderboardTable({
   leaderboardData,
@@ -86,13 +87,14 @@ function LeaderboardTable({
       </table>
 
       {leaderboardData.length > 0 && (
-        <div className="flex justify-around my-4 items-center">
+        <div className="flex w-1/3 mx-auto justify-around my-4 items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"
             variant={"shadowOutline"}
             onClick={handlePrevPage}
           >
+            <ArrowLeft />
             Prev
           </Button>
           <div>
@@ -105,6 +107,7 @@ function LeaderboardTable({
             onClick={handleNextPage}
           >
             Next
+            <ArrowRight />
           </Button>
         </div>
       )}

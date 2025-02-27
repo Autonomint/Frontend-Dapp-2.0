@@ -11,7 +11,6 @@ function MintUSDa({ currency }: { currency: string }) {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
   const router = useRouter();
   // const currency = "eth";
-  console.log(currency, "currency");
 
   return (
     <>

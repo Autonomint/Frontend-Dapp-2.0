@@ -263,3 +263,25 @@ export function generateEthOptionName(
 
   return `ETH-${expiryDate}-${strikePrice}-${optionType}`;
 }
+
+export function calculateEthAmount(
+  currentEthPrice: number,
+  usdAmount: number
+): number {
+  // Calculate the ETH amount based on the current price
+  const ethAmount = usdAmount / currentEthPrice;
+  return ethAmount;
+}
+
+export function calculateRemainingDays(timestamp: number): number {
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate the difference in seconds
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Convert the difference to days
+  const remainingDays = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+
+  return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
+}

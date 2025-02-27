@@ -30,7 +30,6 @@ function TradingViewWidget({ currency }: { currency: string }) {
       "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
-    console.log(getTokenSymbol(), "getTokenSymbol()");
 
     // Define the widget configuration
     const widgetConfig = {

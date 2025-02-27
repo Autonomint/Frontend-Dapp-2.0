@@ -407,7 +407,6 @@ const RedeemContainer = () => {
     }
   }, [redeemdataEth]);
 
-  console.log(formik.errors, "w");
 
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {

@@ -6,6 +6,7 @@ import DepositTableRow from "./table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function DepositTable({
   tabPosition,
@@ -115,13 +116,14 @@ function DepositTable({
       </table>
 
       {positionList.length > 0 && (
-        <div className="flex my-4 md:my-4 justify-around items-center">
+        <div className="flex w-1/3 mx-auto my-4 md:my-4 justify-around items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"
             variant={"shadowOutline"}
             onClick={handlePrevPage}
           >
+            <ArrowLeft />
             Prev
           </Button>
           <div>
@@ -134,6 +136,7 @@ function DepositTable({
             onClick={handleNextPage}
           >
             Next
+            <ArrowRight />
           </Button>
         </div>
       )}

@@ -7,14 +7,17 @@ interface BorrowGameRequest {
   chainId: number;
   userChosenBoxIndex: number;
   numberOfBoxes: number;
-  Manuel: boolean;
+  txHash?: string;
 }
 
 // Define the type for the response data (if you know the structure)
-interface BorrowGameResponse {
-  success: boolean;
-  message?: string;
-  // Add other fields based on your API response
+type BorrowGameResponse = 0 | 1 | 2 | 3;
+
+export enum CreateGame {
+  NOT_A_WINNER,
+  FIXED_50_DOLLARS,
+  MULTIPLY_5X,
+  MULTIPLY_10X,
 }
 
 // Define the mutation function
@@ -23,7 +26,7 @@ const borrowGame = async ({
   chainId,
   userChosenBoxIndex,
   numberOfBoxes,
-  Manuel,
+  txHash,
 }: BorrowGameRequest): Promise<BorrowGameResponse> => {
   const response = await axios.post<BorrowGameResponse>(
     `${BACKEND_API_URL}/borrows/play`, // Adjusted to match the API endpoint
@@ -32,7 +35,7 @@ const borrowGame = async ({
       chainId,
       userChosenBoxIndex,
       numberOfBoxes,
-      Manuel,
+      txHash,
     }, // Pass the payload as JSON in the request body
     {
       headers: {

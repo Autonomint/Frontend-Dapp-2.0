@@ -62,7 +62,6 @@ const useEthOptionFees = (instrumentName: string) => {
     retry: 1,
   });
 
-  console.log(data, "deribit data");
 
   return { data };
 };

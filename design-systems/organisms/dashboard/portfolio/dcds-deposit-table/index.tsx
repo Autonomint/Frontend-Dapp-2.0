@@ -6,6 +6,7 @@ import DcdsPositionTableRow from "./dcds-position-table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { useAccount } from "wagmi";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function DcdsDepositTable({
   tabPosition,
@@ -113,13 +114,14 @@ function DcdsDepositTable({
         </tbody>
       </table>
       {positionList.length > 0 && (
-        <div className="flex my-4 md:my-0 justify-around items-center">
+        <div className="flex w-1/3 mx-auto my-4 md:my-0 justify-around items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"
             variant={"shadowOutline"}
             onClick={handlePrevPage}
           >
+            <ArrowLeft />
             Prev
           </Button>
           <div>
@@ -132,6 +134,7 @@ function DcdsDepositTable({
             onClick={handleNextPage}
           >
             Next
+            <ArrowRight />
           </Button>
         </div>
       )}

@@ -179,7 +179,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             {/* Notification Section */}
             <NotificationContainer />
             <Button
-              onClick={() => disconnect()}
+              onClick={() => {
+                disconnect();
+              }}
               variant={"default"}
               className="border-[#041A50]  h-fit text-[18px]  font-normal  w-full p-[10px]"
             >
@@ -415,7 +417,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {chainId === NetworkId.EthereumSepolia
+                  {Number(chainId) === Number(NetworkId.EthereumSepolia)
                     ? "ETH Sepolia"
                     : "Base Sepolia"}
                 </Typography>
@@ -442,7 +444,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     chainId == NetworkId.EthereumSepolia
                       ? "etherscan.io"
                       : "basescan.org"
-                  }/${address}`}
+                  }/address/${address}`}
+                  target="__blank"
                 >
                   <Typography
                     size="lg"
