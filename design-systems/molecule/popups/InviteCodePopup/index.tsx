@@ -8,7 +8,7 @@ import { useInviteCodeMutation } from "@/hookes/api-hooks/useInvite";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 interface InviteCodePopup {}
 
 const InviteCodePopup = ({}: InviteCodePopup) => {
@@ -18,6 +18,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   const { address, isConnected } = useAccount();
   const [inputError, setInputError] = useState("");
   const [isMounted, setIsMounted] = useState(false);
+  const { disconnect } = useDisconnect();
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputsRef = useRef<HTMLInputElement[]>([]);
@@ -60,7 +61,6 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
       } else {
         setInputError("");
       }
-
       if (address) {
         const res = await assignInviteCodeAsync({
           address,
@@ -70,12 +70,16 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
         if (!!res) {
           setIsInviteCodePopupOpen(false);
           localStorage.setItem("verified", "true");
+          setOtp(Array(6).fill(""));
         } else {
+          disconnect();
           localStorage.setItem("verified", "false");
           setInputError("Please enter a valid invite code");
         }
       }
     } catch (error) {
+      disconnect();
+      localStorage.setItem("verified", "false");
       // setIsInviteCodePopupOpen(false);
       setInputError("Please enter a valid invite code");
     }
@@ -96,6 +100,25 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasteData = e.clipboardData.getData("text");
+    const pasteOtp = pasteData.slice(0, 6).split(""); // Take only first 6 characters and split them into an array
+
+    // Ensure only digits are pasted
+    const newOtp = [...otp];
+
+    // Loop through the pasted OTP and fill the inputs
+    pasteOtp.forEach((char, idx) => {
+      newOtp[idx] = char;
+    });
+
+    setOtp(newOtp);
+
+    // Focus on the last filled input field
+    const nextInputIndex = pasteOtp.length < 6 ? pasteOtp.length : 5;
+    inputsRef.current[nextInputIndex].focus();
+  };
 
   return (
     <Dialog
@@ -122,6 +145,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
                   className="rounded-none md:text-subtitle placeholder:text-subtitle h-12 px-4 w-[15%]"
                   key={index}
                   type="text"
+                  onPaste={handlePaste}
                   maxLength={1}
                   value={value}
                   onChange={(e) => handleChange(e.target.value, index)}

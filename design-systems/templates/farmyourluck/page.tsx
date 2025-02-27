@@ -1,31 +1,31 @@
 "use client";
 import { Typography } from "@/design-systems/atoms/Typography";
+import LoadingBox from "@/design-systems/molecule/LoadingBox";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
+import useVerifyGamePay from "@/hookes/api-hooks/useVerifyGamePay";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { FarmYourLuckWalletAddress } from "@/utils/constants";
+import {
+  calculateEthAmount,
+  calculateRemainingTimeDate,
+} from "@/utils/helpers";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { parseEther } from "viem";
 import {
   useAccount,
   useSendTransaction,
   useWaitForTransactionReceipt,
 } from "wagmi";
 import "../../../styles/farmyourluckstyles.css";
-import { parseEther } from "viem";
-import {
-  calculateEthAmount,
-  calculateRemainingDays,
-  calculateTimeDifference,
-} from "@/utils/helpers";
-import { FarmYourLuckWalletAddress } from "@/utils/constants";
-import LoadingBox from "@/design-systems/molecule/LoadingBox";
-import useVerifyGamePay from "@/hookes/api-hooks/useVerifyGamePay";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -42,12 +42,14 @@ function FarmYourLuckTemplate() {
   const [buttonText, setButtonText] = useState("Pay $5");
   const pathname = usePathname();
   const [isPayed, setIsPayed] = useState(false);
+  const [isPaymentConformed, setPaymentConformed] = useState(false);
 
   const [gotReward, setGotReward] = useState(false);
 
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
 
   const { data: luckData, mutateAsync: getLuckAsync } = useBorrowGame();
+
   const {
     data: farmLuckDetails,
     isLoading,
@@ -110,6 +112,7 @@ function FarmYourLuckTemplate() {
     data: hash,
     isError: payHashError,
     reset: resetSendTransaction,
+    sendTransactionAsync,
   } = useSendTransaction({
     mutation: {
       onError: () => {
@@ -129,6 +132,7 @@ function FarmYourLuckTemplate() {
   const handleCheckLuck = async () => {
     let res;
     if (address && chainId) {
+      // res = 3;
       res = await getLuckAsync({
         numberOfBoxes: 9,
         userChosenBoxIndex: selectedIndexForReward,
@@ -137,7 +141,7 @@ function FarmYourLuckTemplate() {
       });
     }
     if (selectedIndexForReward !== -1 && (res || 0) > 0) {
-      setSupportingText("Congratulations! You have earned");
+      setSupportingText("Congratulations!");
       setButtonText("Congratulations!");
       if (res == 1) setRewardAmount("$50");
       if (res == 2) setRewardAmount("5x Reward Points");
@@ -202,17 +206,18 @@ function FarmYourLuckTemplate() {
     }
   };
 
-  useEffect(() => {
-    setPayment();
-  }, [result]);
+  // useEffect(() => {
+  //   setPayment(hash);
+  // }, [result]);
 
-  const setPayment = async () => {
-    if (result.isSuccess && result.data) {
-      await verifyGamePayment({
-        address: address,
-        chainId: chainId,
-        txHash: hash,
-      });
+  const setPayment = async (hash?: string) => {
+    const verifyData = await verifyGamePayment({
+      address: address,
+      chainId: chainId,
+      txHash: hash,
+    });
+    if (verifyData) {
+      setPaymentConformed(true);
 
       if (!isPayed) setButtonText("Select Card");
       resetSendTransaction();
@@ -222,12 +227,13 @@ function FarmYourLuckTemplate() {
       setTimeout(() => {
         setPayLoading(false);
       }, 400);
-    } else if (result.isError) {
+    } else if (verifyData) {
       setTimeout(() => {
         setPayLoading(false);
       }, 400);
       setIsPayed(false);
       refetchFarmLuckDetails();
+      handleReset();
     }
   };
 
@@ -235,12 +241,12 @@ function FarmYourLuckTemplate() {
     if ((farmLuckDetails?.totalLuck || 0) === 0 && !isPayed) {
       setPayLoading(true);
       const amountToPay = calculateEthAmount(Number(ethPrice || 0) / 100, 0.5);
-      await sendTransaction({
+      const txHash = await sendTransactionAsync({
         to: FarmYourLuckWalletAddress,
         value: parseEther(amountToPay.toString()),
       });
+      setPayment(txHash);
     }
-
     if (isRevealed) {
       handleReset();
       return;
@@ -260,7 +266,7 @@ function FarmYourLuckTemplate() {
   };
 
   return (
-    <div className="min-h-full lg:h-full w-full flex flex-col">
+    <div className="min-h-fit 3xl:h-[calc(100vh-160px)] w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
         <div className="grid col-span-1 lg:col-span-4 ">
@@ -314,9 +320,9 @@ function FarmYourLuckTemplate() {
             ))}
           </div>
         </div>
-        <div className="grid col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
-          <div className="flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
-            <span className="text-grayLight font-medium lg:text-[32px] text-[24px] lg:text-left">
+        <div className="grid pb-[112px] lg:pb-[112px] col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
+          <div className="pb-0 lg:pb-[80px] xl:pb-0 flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
+            <span className="text-grayLight font-medium lg:text-[28px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={buttonText}
@@ -327,6 +333,11 @@ function FarmYourLuckTemplate() {
                   className="block"
                 >
                   {supportingText}
+                  {supportingText === "Congratulations!" && (
+                    <div className="text-[#7A7A7A] text-lg font-normal">
+                      You have earned
+                    </div>
+                  )}
                 </motion.span>
               </AnimatePresence>
               <AnimatePresence mode="wait">
@@ -336,28 +347,30 @@ function FarmYourLuckTemplate() {
                   animate="visible"
                   exit="exit"
                   variants={rewardAmountVariants}
-                  className="block dark:text-white text-[32px] xl:text-[42px] lg:text-left"
+                  className="block text-[#111111] h-[65px] xl:my-2 dark:text-white text-[24px]  2xl:text-[42px] lg:text-left"
                 >
-                  {rewardAmount}
+                  {rewardAmount && <div className="">{rewardAmount}</div>}
                 </motion.span>
               </AnimatePresence>
             </span>
 
             <div className="flex flex-col text-left mb-28 lg:mb-0">
-              <div className="text-textBlack lg:text-3xl text-[20px] font-medium dark:text-white">
+              <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
                 How it works?
               </div>
-              <ol className="list-decimal list-inside mt-3 text-grayLight">
-                <li className="mb-3 text-lg">
+              <ol className="list-decimal list-inside mt-2 text-grayLight">
+                <li className="mb-3 text-sm 2xl:text-lg">
                   Pick a card for $5 and you could win $75 in option fees.
                 </li>
-                <li className="mb-3 text-lg">
+                <li className="mb-2 text-sm 2xl:text-lg">
                   Click ‘Reveal Reward’ to see if you chose correctly.
                 </li>
-                <li className="mb-3 text-lg">
+                <li className="mb-2 text-sm 2xl:text-lg">
                   Win Option Fee or Partner Fee rewards on a correct pick.
                 </li>
-                <li className="text-lg">Missed? Try again with another $5!</li>
+                <li className="2xl:text-lg text-sm">
+                  Missed? Try again with another $5!
+                </li>
               </ol>
 
               <div className="border border-grayLight flex  mt-4">
@@ -378,33 +391,30 @@ function FarmYourLuckTemplate() {
                   </Typography>
                 </div>
               </div>
-
               <div className="border border-grayLight flex border-t-0">
-                <div className="p-4 py-8  gap-4 w-full flex items-center">
+                <div className="p-4 w-1/2 border border-grayLight border-l-0 border-y-0">
                   <Typography variant="regular" size="h4">
-                    {farmLuckDetails?.multiply10x
-                      ? "10"
-                      : farmLuckDetails?.multiply5x
-                      ? "5"
-                      : 0}
-                    x Points
+                    10x point
                   </Typography>
-                  {(farmLuckDetails?.multiply10x
-                    ? "10"
-                    : farmLuckDetails?.multiply5x
-                    ? "5"
-                    : 0) !== 0 && (
-                    <Typography className="text-grayLight  " size="lg">
-                      {"valid till  "}
-                      {calculateRemainingDays(
-                        farmLuckDetails?.multiply10x
-                          ? farmLuckDetails?.deadLine10xTimestamp
-                          : farmLuckDetails?.multiply5x
-                          ? farmLuckDetails?.deadLine5xTimestamp
-                          : 0
-                      )}
-                    </Typography>
-                  )}
+                  <Typography className="text-grayLight mt-3 " size="md">
+                    {
+                      calculateRemainingTimeDate(
+                        farmLuckDetails?.deadLine10xTimestamp || ""
+                      ).formattedTime
+                    }
+                  </Typography>
+                </div>
+                <div className="p-4  w-1/2">
+                  <Typography variant="regular" size="h4">
+                    5x point
+                  </Typography>
+                  <Typography className="text-grayLight mt-3 " size="md">
+                    {
+                      calculateRemainingTimeDate(
+                        farmLuckDetails?.deadLine5xTimestamp || ""
+                      ).formattedTime
+                    }
+                  </Typography>
                 </div>
               </div>
             </div>
@@ -460,4 +470,4 @@ function FarmYourLuckTemplate() {
   );
 }
 
-export default FarmYourLuckTemplate;
+export default WithPrivateRoute(FarmYourLuckTemplate);

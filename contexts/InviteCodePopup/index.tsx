@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { useAccount } from "wagmi";
 
 interface InviteCodePopupContextType {
   isInviteCodePopupOpen: boolean;
@@ -23,15 +24,15 @@ export const InviteCodePopupProvider = ({
   children: ReactNode;
 }) => {
   const [isInviteCodePopupOpen, setIsInviteCodePopupOpen] = useState(false); // Initial state
-
+  const { isConnected, address } = useAccount();
   useEffect(() => {
     const value = localStorage.getItem("verified");
-    if (value === "true") {
-      setIsInviteCodePopupOpen(false);
-    } else {
+    if (value === "false" || value === null || !isConnected) {
       setIsInviteCodePopupOpen(true);
+    } else {
+      setIsInviteCodePopupOpen(false);
     }
-  }, []);
+  }, [isConnected && address]);
   return (
     <InviteCodePopupContext.Provider
       value={{ isInviteCodePopupOpen, setIsInviteCodePopupOpen }}

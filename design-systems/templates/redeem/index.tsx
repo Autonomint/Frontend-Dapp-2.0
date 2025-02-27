@@ -36,6 +36,7 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -407,7 +408,6 @@ const RedeemContainer = () => {
     }
   }, [redeemdataEth]);
 
-
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
@@ -617,4 +617,4 @@ const RedeemContainer = () => {
   );
 };
 
-export default RedeemContainer;
+export default WithPrivateRoute(RedeemContainer);

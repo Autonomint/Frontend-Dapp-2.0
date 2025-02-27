@@ -17,11 +17,48 @@ import NotificationPopupMobile from "../../molecule/popups/NotificationPopUpMobi
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import { usePathname } from "next/navigation";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { watchAccount } from "@wagmi/core";
+import { config } from "@/blockchain/WalletConfigs/iindex";
+import { useDisconnect } from "@reown/appkit/react";
+import { useAccount, useAccountEffect } from "wagmi";
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const { isConnected } = useCheckWalletConnection();
+  const { disconnect } = useDisconnect();
+
+  const { address } = useAccount();
+
+  useAccountEffect({
+    onConnect(data) {
+      localStorage.setItem("currentAddress", data.address as string);
+    },
+    onDisconnect() {
+      localStorage.removeItem("currentAddress");
+    },
+  });
+  useEffect(() => {}, [address]);
+
+  useEffect(() => {
+    const unwatch = watchAccount(config, {
+      onChange(data) {
+        const currentAddress = localStorage.getItem("currentAddress");
+        if (
+          data.address &&
+          currentAddress != null &&
+          currentAddress?.toLocaleLowerCase() !=
+            data.address.toLocaleLowerCase()
+        ) {
+          localStorage.removeItem("verified");
+          disconnect();
+        }
+        console.log(data, ">>>>");
+      },
+    });
+
+    // unwatch();
+  }, []);
 
   useEffect(() => {
     setIsClient(true);

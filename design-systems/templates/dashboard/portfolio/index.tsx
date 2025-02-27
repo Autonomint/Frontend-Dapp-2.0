@@ -20,6 +20,7 @@ import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -289,4 +290,4 @@ function PortfolioTemplate() {
   );
 }
 
-export default PortfolioTemplate;
+export default WithPrivateRoute(PortfolioTemplate);

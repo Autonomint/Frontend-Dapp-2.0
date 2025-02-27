@@ -285,3 +285,66 @@ export function calculateRemainingDays(timestamp: number): number {
 
   return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
 }
+
+export function calculateRemainingTime(dateString: string) {
+  // Convert the ISO date string to a timestamp in seconds
+  const timestamp = Math.floor(new Date(dateString).getTime() / 1000);
+
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate the difference in seconds
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Calculate remaining days, hours, minutes, and seconds
+  const days = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+  const hours = Math.floor(
+    (timeDifferenceInSeconds % (24 * 60 * 60)) / (60 * 60)
+  );
+  const minutes = Math.floor((timeDifferenceInSeconds % (60 * 60)) / 60);
+  const seconds = timeDifferenceInSeconds % 60;
+
+  // Build the formatted time string
+  let formattedTime = "";
+  if (days > 0) formattedTime += `${days} day${days > 1 ? "s" : ""} `;
+  if (hours > 0) formattedTime += `${hours} hour${hours > 1 ? "s" : ""} `;
+  if (minutes > 0) formattedTime += `${minutes} min${minutes > 1 ? "s" : ""} `;
+  if (seconds > 0 && days === 0)
+    formattedTime += `${seconds} sec${seconds > 1 ? "s" : ""}`;
+
+  // Return 0 for all values if the date has already passed
+  return timeDifferenceInSeconds > 0
+    ? { days, hours, minutes, seconds, formattedTime: formattedTime.trim() }
+    : { days: 0, hours: 0, minutes: 0, seconds: 0, formattedTime: "0 sec" };
+}
+export function calculateRemainingTimeDate(dateString: string) {
+  // Convert the ISO date string to a timestamp in seconds
+  const timestamp = Math.floor(new Date(dateString).getTime() / 1000);
+
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate the difference in seconds
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Calculate remaining days, hours, minutes, and seconds
+  const days = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+  const hours = Math.floor(
+    (timeDifferenceInSeconds % (24 * 60 * 60)) / (60 * 60)
+  );
+  const minutes = Math.floor((timeDifferenceInSeconds % (60 * 60)) / 60);
+  const seconds = timeDifferenceInSeconds % 60;
+
+  // Build the formatted time string
+  let formattedTime = "Valid till ";
+  if (days > 0) formattedTime += `${days} day${days > 1 ? "s" : ""} `;
+  if (hours > 0) formattedTime += `${hours} hour${hours > 1 ? "s" : ""} `;
+  if (minutes > 0) formattedTime += `${minutes} min${minutes > 1 ? "s" : ""} `;
+  if (seconds > 0 && days === 0)
+    formattedTime += `${seconds} sec${seconds > 1 ? "s" : ""}`;
+
+  // Return 0 for all values if the date has already passed
+  return timeDifferenceInSeconds > 0
+    ? { days, hours, minutes, seconds, formattedTime: formattedTime.trim() }
+    : { days: 0, hours: 0, minutes: 0, seconds: 0, formattedTime: "0 days" };
+}

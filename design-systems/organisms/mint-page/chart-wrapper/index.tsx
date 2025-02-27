@@ -15,7 +15,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
       case "ETH":
         return ["BINANCE:ETHUSD|1D"];
       case "wrsETH":
-        return ["UNISWAP:RSETHWETH_94B78E.USD|1D"];
+        return ["CRYPTO:RSETHUSD|1D"];
       case "weETH":
         return ["CRYPTO:WEETHUSD|1D"];
 
