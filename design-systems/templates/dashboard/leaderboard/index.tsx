@@ -1,3 +1,4 @@
+"use client";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import Leaderboard from "./Leaderboard";
 
