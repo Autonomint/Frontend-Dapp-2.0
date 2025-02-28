@@ -27,6 +27,8 @@ import {
 import "../../../styles/farmyourluckstyles.css";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import { DownArrowIcon } from "@/design-systems/atoms/SvgIcons";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -44,6 +46,8 @@ function FarmYourLuckTemplate() {
   const pathname = usePathname();
   const [isPayed, setIsPayed] = useState(false);
   const [isPaymentConformed, setPaymentConformed] = useState(false);
+
+  const [isShowRewardDetails, setIsShowRewardDetails] = useState(false);
 
   const [gotReward, setGotReward] = useState(false);
 
@@ -281,9 +285,9 @@ function FarmYourLuckTemplate() {
   };
 
   return (
-    <div className="min-h-fit 3xl:h-[calc(100vh-160px)] w-full flex flex-col">
+    <div className="min-h-fit xl:min-h-[calc(100vh-160px)] w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
-      <div className="grid grid-cols-1 lg:grid-cols-6 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-6  border-b xl:min-h-[calc(100vh-160px)] border-grayLight">
         <div className="grid col-span-1 lg:col-span-4 ">
           <div className="grid grid-cols-3 gap-6 md:p-8 p-5">
             {Array.from({ length: 9 }).map((_, index) => (
@@ -336,7 +340,9 @@ function FarmYourLuckTemplate() {
           </div>
         </div>
         <div className="grid pb-[112px] lg:pb-[112px] col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
-          <div className="pb-0 lg:pb-[80px] xl:pb-0 flex flex-col md:justify-between md:max-h-[calc(100%-80px)] border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0">
+          <div
+            className={`pb-0 lg:pb-[80px] xl:pb-0 flex flex-col  border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0`}
+          >
             <span className="text-grayLight font-medium lg:text-[28px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -362,14 +368,27 @@ function FarmYourLuckTemplate() {
                   animate="visible"
                   exit="exit"
                   variants={rewardAmountVariants}
-                  className="block text-[#111111] h-[65px] xl:my-2 dark:text-white text-[24px]  2xl:text-[42px] lg:text-left"
+                  className="block text-[#111111] h-[100px] xl:my-2 dark:text-white text-[24px]  2xl:text-[42px] lg:text-left"
                 >
                   {rewardAmount && <div className="">{rewardAmount}</div>}
                 </motion.span>
               </AnimatePresence>
             </span>
-
-            <div className="flex flex-col text-left mb-28 lg:mb-0">
+            <div className="border border-grayLight flex rounded-xl  my-6">
+              <div className="p-4 flex justify-center items-center gap-3 w-full">
+                <Typography variant="regular" size="h4">
+                  {farmLuckDetails?.totalLuck || 0}
+                </Typography>
+                <Typography className="text-grayLight  " size="lg">
+                  Luck
+                </Typography>
+              </div>
+            </div>
+            <div
+              className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left mb-28  ${
+                isShowRewardDetails ? "h-[0px] mb-0 " : "h-[180px] lg:mb-6"
+              }`}
+            >
               <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
                 How it works?
               </div>
@@ -387,50 +406,57 @@ function FarmYourLuckTemplate() {
                   Missed? Try again with another $5!
                 </li>
               </ol>
-
-              <div className="border border-grayLight flex  mt-4">
-                <div className="p-4 w-1/2 border border-grayLight border-l-0 border-y-0">
-                  <Typography variant="regular" size="h4">
-                    ${farmLuckDetails?.fixed50Dollar || 0}
-                  </Typography>
-                  <Typography className="text-grayLight mt-3 " size="lg">
-                    Reward
-                  </Typography>
-                </div>
-                <div className="p-4  w-1/2">
-                  <Typography variant="regular" size="h4">
-                    {farmLuckDetails?.totalLuck || 0}
-                  </Typography>
-                  <Typography className="text-grayLight mt-3 " size="lg">
-                    Luck
-                  </Typography>
+            </div>
+            <div
+              className={` border bg-[#E5F3FF] overflow-hidden dark:bg-[#171B21] border-grayLight text-lg font-medium flex flex-col mb-4 rounded-[10px]  transition-all delay-150 duration-300 ease-in-out  ${
+                isShowRewardDetails ? "h-[228px]" : "h-[59px]"
+              } `}
+            >
+              <div
+                onClick={() => setIsShowRewardDetails(!isShowRewardDetails)}
+                className={`cursor-pointer px-4 py-4 bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top border-grayLight  border-b flex  flex-row justify-between `}
+              >
+                <div>Reward Details</div>
+                <div>
+                  {isShowRewardDetails ? <ChevronUp /> : <ChevronDown />}
                 </div>
               </div>
-              <div className="border border-grayLight flex border-t-0">
-                <div className="p-4 w-1/2 border border-grayLight border-l-0 border-y-0">
-                  <Typography variant="regular" size="h4">
-                    10x point
-                  </Typography>
-                  <Typography className="text-grayLight mt-3 " size="md">
-                    {
-                      calculateRemainingTimeDate(
-                        farmLuckDetails?.deadLine10xTimestamp || ""
-                      ).formattedTime
-                    }
-                  </Typography>
-                </div>
-                <div className="p-4  w-1/2">
-                  <Typography variant="regular" size="h4">
-                    5x point
-                  </Typography>
-                  <Typography className="text-grayLight mt-3 " size="md">
-                    {
-                      calculateRemainingTimeDate(
-                        farmLuckDetails?.deadLine5xTimestamp || ""
-                      ).formattedTime
-                    }
-                  </Typography>
-                </div>
+              <div>
+                <table className="w-full ">
+                  <tbody>
+                    <tr className="border-b text-[#7A7A7A] text-left border-grayLight ">
+                      <th className="py-2 px-4">Type</th>
+                      <th className="py-2 px-4">Details</th>
+                    </tr>
+                    <tr className="border-b border-grayLight text-base ">
+                      <td className="py-2 px-4 ">Reward</td>
+                      <td className="py-2 px-4">
+                        ${farmLuckDetails?.fixed50Dollar || 0}
+                      </td>
+                    </tr>
+                    <tr className="border-b border-grayLight  text-base">
+                      <td className="py-2 px-4">5x Point</td>
+                      <td className="py-2 px-4">
+                        {
+                          calculateRemainingTimeDate(
+                            farmLuckDetails?.deadLine5xTimestamp || ""
+                          ).formattedTime
+                        }
+                      </td>
+                    </tr>
+                    <tr className=" text-base ">
+                      <td className="py-2 px-4">10x Point</td>
+                      <td className="py-2 px-4">
+                        {" "}
+                        {
+                          calculateRemainingTimeDate(
+                            farmLuckDetails?.deadLine10xTimestamp || ""
+                          ).formattedTime
+                        }
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
