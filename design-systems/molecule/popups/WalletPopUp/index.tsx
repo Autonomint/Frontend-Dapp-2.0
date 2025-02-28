@@ -1,5 +1,4 @@
 "use client";
-import ethereumIcon from "@/app/assets/ethereum-icon.svg";
 
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
@@ -28,11 +27,9 @@ import {
   useDisconnect,
 } from "@reown/appkit/react";
 import { Check } from "lucide-react";
-import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
-import TermAndCondition from "../TermAndCondition";
-import Link from "next/link";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -181,6 +178,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Button
               onClick={() => {
                 disconnect();
+                localStorage.removeItem("verified");
               }}
               variant={"default"}
               className="border-[#041A50]  h-fit text-[18px]  font-normal  w-full p-[10px]"
@@ -430,7 +428,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <Button
                 onClick={async () => {
                   await disconnect();
-                  open();
+                  localStorage.removeItem("verified");
                 }}
                 variant={"default"}
                 className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"

@@ -53,6 +53,7 @@ import { FormValues, TokenDetails } from "./interface";
 import PageLoader from "@/design-systems/molecule/page-loader";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -938,4 +939,4 @@ function DCDSTemplate() {
   );
 }
 
-export default DCDSTemplate;
+export default WithPrivateRoute(DCDSTemplate);

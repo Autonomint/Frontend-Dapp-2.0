@@ -10,6 +10,7 @@ import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -83,4 +84,4 @@ function MintEthListTemplate() {
   );
 }
 
-export default MintEthListTemplate;
+export default WithPrivateRoute(MintEthListTemplate);

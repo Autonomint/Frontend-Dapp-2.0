@@ -8,8 +8,8 @@ interface RewardResponse {
   fixed50Dollar: number;
   multiply5x: boolean;
   multiply10x: boolean;
-  deadLine5xTimestamp: number;
-  deadLine10xTimestamp: number;
+  deadLine5xTimestamp: string;
+  deadLine10xTimestamp: string;
 }
 
 // Define the function to fetch the reward data
