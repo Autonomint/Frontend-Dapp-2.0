@@ -26,6 +26,7 @@ import {
 } from "wagmi";
 import "../../../styles/farmyourluckstyles.css";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -197,6 +198,7 @@ function FarmYourLuckTemplate() {
     setGotReward(false);
     setSupportingText("Tap a card to view details");
     setRewardAmount("");
+    setPayLoading(false);
     if ((farmLuckDetails?.totalLuck || 0) > 0) {
       setIsPayed(true);
       setButtonText("Select Card");
@@ -227,6 +229,13 @@ function FarmYourLuckTemplate() {
       setTimeout(() => {
         setPayLoading(false);
       }, 400);
+      toast.custom((t) => (
+        <ToastNotification
+          message=""
+          title="Payment successful"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     } else if (verifyData) {
       setTimeout(() => {
         setPayLoading(false);
@@ -234,6 +243,12 @@ function FarmYourLuckTemplate() {
       setIsPayed(false);
       refetchFarmLuckDetails();
       handleReset();
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Payment failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
     }
   };
 
