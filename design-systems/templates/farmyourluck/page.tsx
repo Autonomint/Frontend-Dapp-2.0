@@ -288,7 +288,7 @@ function FarmYourLuckTemplate() {
   };
 
   return (
-    <div className="min-h-fit xl:min-h-[calc(100vh-160px)] w-full flex flex-col">
+    <div className="min-h-fit xl:min-h-[calc(100vh-160px)] 3xl:min-h-[calc(100vh-268px)]xl:min-h-[calc(100vh-160px)] w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6  border-b xl:min-h-[calc(100vh-160px)] border-grayLight">
         <div className="grid col-span-1 lg:col-span-4 ">
@@ -344,7 +344,7 @@ function FarmYourLuckTemplate() {
         </div>
         <div className="grid pb-[112px] lg:pb-[112px] col-span-1 lg:col-span-2 lg:p-6 border border-grayLight relative">
           <div
-            className={`pb-0 lg:pb-[80px] xl:pb-0 flex flex-col  border border-solid border-grayLight lg:border-0 p-5 lg:p-0 gap-20 lg:gap-0`}
+            className={`pb-0 lg:pb-[25px]  xl:pb-0 flex flex-col  justify-between border border-solid border-grayLight lg:border-0 p-5 lg:p-0 2xl:gap-0 lg:gap-0`}
           >
             <span className="text-grayLight font-medium lg:text-[28px] text-[24px] lg:text-left">
               <AnimatePresence mode="wait">
@@ -371,142 +371,151 @@ function FarmYourLuckTemplate() {
                   animate="visible"
                   exit="exit"
                   variants={rewardAmountVariants}
-                  className="block text-[#111111] h-[100px] xl:my-2 dark:text-white text-[24px]  2xl:text-[42px] lg:text-left"
+                  className="block text-[#111111] lg:h-[30px] xl:h-[80px] h-[80px] 2xl:h-[100px] xl:my-2 dark:text-white text-[24px]  2xl:text-[42px] lg:text-left"
                 >
                   {rewardAmount && <div className="">{rewardAmount}</div>}
                 </motion.span>
               </AnimatePresence>
             </span>
-            <div className="border border-grayLight flex rounded-xl  my-6">
-              <div className="p-4 flex justify-center items-center gap-3 w-full">
-                <Typography variant="regular" size="h4">
-                  {farmLuckDetails?.totalLuck || 0}
-                </Typography>
-                <Typography className="text-grayLight  " size="lg">
-                  Luck
-                </Typography>
-              </div>
-            </div>
-            <div
-              className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left   ${
-                isShowRewardDetails
-                  ? "h-[0px] mb-0 "
-                  : "h-[180px] hxl:h-[243px] 2xl:h-[180px] lg:mb-6 mb-28"
-              }`}
-            >
-              <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
-                How it works?
-              </div>
-              <ol className="list-decimal list-inside mt-2 text-grayLight">
-                <li className="mb-3 text-sm 2xl:text-lg">
-                  Pick a card for $5 and you could win $75 in option fees.
-                </li>
-                <li className="mb-2 text-sm 2xl:text-lg">
-                  Click ‘Reveal Reward’ to see if you chose correctly.
-                </li>
-                <li className="mb-2 text-sm 2xl:text-lg">
-                  Win Option Fee or Partner Fee rewards on a correct pick.
-                </li>
-                <li className="2xl:text-lg text-sm">
-                  Missed? Try again with another $5!
-                </li>
-              </ol>
-            </div>
-            <div
-              className={` border bg-[#E5F3FF] overflow-hidden dark:bg-[#171B21] border-grayLight text-lg font-medium flex flex-col mb-4 rounded-[10px]  transition-all delay-150 duration-300 ease-in-out  ${
-                isShowRewardDetails ? "h-[228px]" : "h-[59px]"
-              } `}
-            >
-              <div
-                onClick={() => setIsShowRewardDetails(!isShowRewardDetails)}
-                className={`cursor-pointer px-4 py-4 bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top border-grayLight  border-b flex  flex-row justify-between `}
-              >
-                <div>Reward Details</div>
-                <div>
-                  {isShowRewardDetails ? <ChevronUp /> : <ChevronDown />}
+            <div>
+              <div className="border border-grayLight flex rounded-xl  my-6">
+                <div className="p-4 flex justify-center items-center gap-3 w-full">
+                  <Typography variant="regular" size="h4">
+                    {farmLuckDetails?.totalLuck || 0}
+                  </Typography>
+                  <Typography className="text-grayLight  " size="lg">
+                    Luck
+                  </Typography>
                 </div>
               </div>
-              <div>
-                <table className="w-full ">
-                  <tbody>
-                    <tr className="border-b text-[#7A7A7A] text-left border-grayLight ">
-                      <th className="py-2 px-4">Type</th>
-                      <th className="py-2 px-4">Details</th>
-                    </tr>
-                    <tr className="border-b border-grayLight text-base ">
-                      <td className="py-2 px-4 ">Reward</td>
-                      <td className="py-2 px-4">
-                        ${farmLuckDetails?.fixed50Dollar || 0}
-                      </td>
-                    </tr>
-                    <tr className="border-b border-grayLight  text-base">
-                      <td className="py-2 px-4">5x Point</td>
-                      <td className="py-2 px-4">
-                        {
-                          calculateRemainingTimeDate(
-                            farmLuckDetails?.deadLine5xTimestamp || ""
-                          ).formattedTime
-                        }
-                      </td>
-                    </tr>
-                    <tr className=" text-base ">
-                      <td className="py-2 px-4">10x Point</td>
-                      <td className="py-2 px-4">
-                        {
-                          calculateRemainingTimeDate(
-                            farmLuckDetails?.deadLine10xTimestamp || ""
-                          ).formattedTime
-                        }
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="md:h-[261px] h-[267px] xl:h-[284px] hxl:h-[250px] 2xl:h-[315px]">
+                <div
+                  className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left   ${
+                    isShowRewardDetails
+                      ? "h-[0px]  mb-0 "
+                      : "h-[180px] lg:h-[205px] xl:h-[220px] md:h-[166px] hxl:h-[175px] 2xl:h-[250px] 3xl:h-[211px] mb-2  2xl:mb-0  "
+                  }`}
+                >
+                  <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
+                    How it works?
+                  </div>
+                  <ol className="list-decimal list-inside mt-2 text-grayLight">
+                    <li className="mb-2 text-sm md:text-md 2xl:text-lg">
+                      Pick a card for $5 and you could win $75 in option fees.
+                    </li>
+                    <li className="mb-2 text-sm md:text-md 2xl:text-lg">
+                      Click ‘Reveal Reward’ to see if you chose correctly.
+                    </li>
+                    <li className="mb-2 text-sm md:text-md 2xl:text-lg">
+                      Win Option Fee or Partner Fee rewards on a correct pick.
+                    </li>
+                    <li className="2xl:text-lg md:text-md text-sm">
+                      Missed? Try again with another $5!
+                    </li>
+                  </ol>
+                </div>
+                <div
+                  className={` border bg-[#E5F3FF] overflow-hidden dark:bg-[#171B21] border-grayLight text-lg font-medium flex flex-col mb-4 rounded-[10px]  transition-all delay-150 duration-300 ease-in-out  ${
+                    isShowRewardDetails
+                      ? "h-[224px] md:h-[228px] lg:h-[272px] xl:h-[233px] mb-20"
+                      : "h-[59px]"
+                  } `}
+                >
+                  <div
+                    onClick={() => setIsShowRewardDetails(!isShowRewardDetails)}
+                    className={`cursor-pointer px-4 py-4 bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top border-grayLight  border-b flex  flex-row justify-between `}
+                  >
+                    <div>Reward Details</div>
+                    <div>
+                      {isShowRewardDetails ? <ChevronUp /> : <ChevronDown />}
+                    </div>
+                  </div>
+                  <div>
+                    <table className="w-full ">
+                      <tbody>
+                        <tr className="border-b text-[#7A7A7A] text-[14px] md:text-base text-left border-grayLight ">
+                          <th className="py-2 px-2 md:py-2 md:px-4">Type</th>
+                          <th className="py-2 px-2 md:py-2 md:px-4">Details</th>
+                        </tr>
+                        <tr className="border-b border-grayLight text-[14px] md:text-base ">
+                          <td className="py-2 px-2 md:py-2 md:px-4 ">Reward</td>
+                          <td className="py-2 px-2 md:py-2 md:px-4">
+                            ${farmLuckDetails?.fixed50Dollar || 0}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-grayLight  text-[14px] md:text-base">
+                          <td className="py-2 px-2 md:py-2 md:px-4">
+                            5x Point
+                          </td>
+                          <td className="py-2 px-2 md:py-2 md:px-4">
+                            {
+                              calculateRemainingTimeDate(
+                                farmLuckDetails?.deadLine5xTimestamp || ""
+                              ).formattedTime
+                            }
+                          </td>
+                        </tr>
+                        <tr className=" text-[14px] md:text-base ">
+                          <td className="py-2 px-2 md:py-2 md:px-4">
+                            10x Point
+                          </td>
+                          <td className="py-2 px-2 md:py-2 md:px-4">
+                            {
+                              calculateRemainingTimeDate(
+                                farmLuckDetails?.deadLine10xTimestamp || ""
+                              ).formattedTime
+                            }
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
+              <div className="absolute w-full  overflow-hidden  left-0 bottom-0 h-[90px]">
+                {isWalletConnected && address ? (
+                  <>
+                    {!payLoading && (
+                      <button
+                        // disabled={isPayed && selectedIndex == -1}
+                        onClick={() => handleButtonClick()}
+                        className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
+                          false
+                            ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
+                            : " bg-black  dark:bg-custom-gradient-to-top"
+                        }`}
+                      >
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={buttonText}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            variants={
+                              selectedIndexForReward !== -1
+                                ? textVariantsButtonCliked
+                                : textVariants
+                            }
+                            className="block h-full flex items-center justify-center"
+                          >
+                            {buttonText}
+                          </motion.span>
+                        </AnimatePresence>
+                      </button>
+                    )}
 
-            <div className="absolute w-full  overflow-hidden  left-0 bottom-0 h-[90px]">
-              {isWalletConnected && address ? (
-                <>
-                  {!payLoading && (
-                    <button
-                      // disabled={isPayed && selectedIndex == -1}
-                      onClick={() => handleButtonClick()}
-                      className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
-                        false
-                          ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
-                          : " bg-black  dark:bg-custom-gradient-to-top"
-                      }`}
-                    >
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={buttonText}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          variants={
-                            selectedIndexForReward !== -1
-                              ? textVariantsButtonCliked
-                              : textVariants
-                          }
-                          className="block h-full flex items-center justify-center"
-                        >
-                          {buttonText}
-                        </motion.span>
-                      </AnimatePresence>
-                    </button>
-                  )}
-
-                  <LoadingBox
-                    isLoading={payLoading}
-                    isFailure={payHashError || result.isError}
-                    isSuccess={result.isSuccess}
-                    setSuccessLoading={() => console.log()}
-                    heading="Transaction Pending"
-                  />
-                </>
-              ) : (
-                <WalletConnectButton />
-              )}
+                    <LoadingBox
+                      isLoading={payLoading}
+                      isFailure={payHashError || result.isError}
+                      isSuccess={result.isSuccess}
+                      setSuccessLoading={() => console.log()}
+                      heading="Transaction Pending"
+                    />
+                  </>
+                ) : (
+                  <WalletConnectButton />
+                )}
+              </div>
             </div>
           </div>
         </div>
