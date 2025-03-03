@@ -20,6 +20,7 @@ import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { RebalancePopup } from "@/design-systems/molecule/popups/Rebalance";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -271,10 +272,10 @@ function PortfolioTemplate() {
           setPageSize={setPageSize}
         />
       )}
-      {/* <RebalancePopup
-        isDialogOpen={false}
+      <RebalancePopup
+        isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
-      /> */}
+      />
       <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
