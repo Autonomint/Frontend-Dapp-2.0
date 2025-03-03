@@ -3,7 +3,8 @@ export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 export enum NetworkId {
   EthereumSepolia = (process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA || 0) as number,
   BaseSepolia = (process.env.NEXT_PUBLIC_BASE_SEPOLIA || 0) as number,
-  OptimismSepolia = (process.env.NEXT_PUBLIC_OPTIMISM_SEPOLIAs || 0) as number,
+  Optimism = 11155420,
+  Mode = 919,
 }
 
 export const globalAddress = {

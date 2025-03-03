@@ -38,11 +38,11 @@ import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useDeviceType from "@/hookes/useDeviceType";
-import { USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
+import { NetworkId, USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
 import { formatNumber, handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
-import { Info } from "lucide-react";
+import { Info, Network } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -237,7 +237,7 @@ function DCDSTemplate() {
         active: true,
         balanceAvailable: usdtBalance,
       },
-      {
+      chainId === Number(NetworkId.Optimism) && {
         tokenImage: OPIcon,
         tokenName: "OP",
         isLoading: false,
@@ -245,7 +245,7 @@ function DCDSTemplate() {
         active: true,
         balanceAvailable: 0,
       },
-      {
+      chainId === Number(NetworkId.Mode) && {
         tokenImage: ModeIcon,
         tokenName: "Mode",
         minTokenAmount: 500,
@@ -258,6 +258,7 @@ function DCDSTemplate() {
     GlobalContractData?.usdtAmountDepositedTillNow,
     usdtBalance,
     usdaBalance,
+    chainId,
   ]);
 
   const {

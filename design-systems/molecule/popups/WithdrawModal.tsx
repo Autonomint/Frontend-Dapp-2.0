@@ -19,6 +19,7 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
+import { NetworkId } from "@/utils/constants";
 
 export function DcdsWithdrawModal({
   position,
@@ -30,6 +31,8 @@ export function DcdsWithdrawModal({
   setIsDialogOpen: (open: boolean) => void;
 }) {
   const [spinner, setSpinner] = useState(false);
+
+  const { address, chainId } = useAccount();
 
   // kept this inside because every row is going to have different state
   const depositDetails = [
@@ -94,6 +97,48 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
   ];
+
+  const NewDetails = [
+    {
+      headline: `${
+        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+      } Tokens deposited`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `${
+        Number(NetworkId.Mode) == chainId ? "Mode" : "op"
+      } Token Price and Deposit`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `${
+        Number(NetworkId.Mode) == chainId ? "Mode" : "Op"
+      } Token Liquidation Price`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Total Extended Indexes`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Total Extended Indexes`,
+      value: "Yes",
+      tooltip: false,
+      tooltipText: `${
+        Number(NetworkId.Mode) == chainId ? "Mode" : "Op"
+      } Status`,
+    },
+  ];
+
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
@@ -104,7 +149,6 @@ export function DcdsWithdrawModal({
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
-  const { address, chainId } = useAccount();
   const [dcdsFundWithdrawLoadingLocal, setDcdsFundWithdrawLoadingLocal] =
     useState<boolean>(false);
   const [withdrawMethodLoading, setWithdrawMethodLoading] =
@@ -316,6 +360,19 @@ export function DcdsWithdrawModal({
           </span>
         </div> */}
         <div className="h-[250px] overflow-auto no-scrollbar">
+          {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
+            return (
+              <div key={idx} className="flex justify-between mb-2">
+                <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                  {" "}
+                  {dcdsWidthDrawMetricsObj.headline}
+                </span>
+                <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                  {dcdsWidthDrawMetricsObj.value}
+                </span>
+              </div>
+            );
+          })}
           {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
             return (
               <div key={idx} className="flex justify-between mb-2">
@@ -332,7 +389,7 @@ export function DcdsWithdrawModal({
         </div>
         <div className="flex w-full">
           <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-            <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
+            {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
               Price Gains
             </Label>
             <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
@@ -340,11 +397,11 @@ export function DcdsWithdrawModal({
                 Number(apy == undefined ? 0 : apy[1]) +
                 Number(apy == undefined ? 0 : apy[2])
               ).toFixed(2)}
-            </Label>
-            <Label className=" text-[12px] font-normal text-[#777777]">
+            </Label> */}
+            <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
               Option Fee + Liquidation Gains
             </Label>
-            <Label className="text-[14px] font-medium dark:text-white">
+            <Label className="text-[24px] font-medium dark:text-white">
               {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
             </Label>
           </div>
