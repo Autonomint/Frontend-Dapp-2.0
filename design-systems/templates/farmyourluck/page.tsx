@@ -222,6 +222,7 @@ function FarmYourLuckTemplate() {
       chainId: chainId,
       txHash: hash,
     });
+
     if (verifyData) {
       setPaymentConformed(true);
 
@@ -240,7 +241,7 @@ function FarmYourLuckTemplate() {
           onClose={() => toast.dismiss(t)}
         />
       ));
-    } else if (verifyData) {
+    } else if (!verifyData) {
       setTimeout(() => {
         setPayLoading(false);
       }, 400);
@@ -264,7 +265,9 @@ function FarmYourLuckTemplate() {
         to: FarmYourLuckWalletAddress,
         value: parseEther(amountToPay.toString()),
       });
-      setPayment(txHash);
+      setTimeout(() => {
+        setPayment(txHash);
+      }, 5000);
     }
     if (isRevealed) {
       handleReset();
@@ -385,8 +388,10 @@ function FarmYourLuckTemplate() {
               </div>
             </div>
             <div
-              className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left mb-28  ${
-                isShowRewardDetails ? "h-[0px] mb-0 " : "h-[180px] lg:mb-6"
+              className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left   ${
+                isShowRewardDetails
+                  ? "h-[0px] mb-0 "
+                  : "h-[180px] hxl:h-[243px] 2xl:h-[180px] lg:mb-6 mb-28"
               }`}
             >
               <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
@@ -447,7 +452,6 @@ function FarmYourLuckTemplate() {
                     <tr className=" text-base ">
                       <td className="py-2 px-4">10x Point</td>
                       <td className="py-2 px-4">
-                        {" "}
                         {
                           calculateRemainingTimeDate(
                             farmLuckDetails?.deadLine10xTimestamp || ""
