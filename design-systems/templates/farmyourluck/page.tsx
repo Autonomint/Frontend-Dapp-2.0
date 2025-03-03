@@ -388,12 +388,12 @@ function FarmYourLuckTemplate() {
                   </Typography>
                 </div>
               </div>
-              <div className="md:h-[261px] h-[267px] xl:h-[284px] hxl:h-[250px] 2xl:h-[315px]">
+              <div className="md:h-[261px] h-[267px] xl:h-[284px] hxl:h-[250px] 2xl:h-[260px]">
                 <div
                   className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left   ${
                     isShowRewardDetails
                       ? "h-[0px]  mb-0 "
-                      : "h-[180px] lg:h-[205px] xl:h-[220px] md:h-[166px] hxl:h-[175px] 2xl:h-[250px] 3xl:h-[211px] mb-2  2xl:mb-0  "
+                      : "h-[180px] lg:h-[205px] xl:h-[220px] md:h-[166px] hxl:h-[175px] 2xl:h-[201px] 3xl:h-[211px] mb-2  2xl:mb-0 "
                   }`}
                 >
                   <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">

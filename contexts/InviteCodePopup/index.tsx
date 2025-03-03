@@ -25,6 +25,7 @@ export const InviteCodePopupProvider = ({
 }) => {
   const [isInviteCodePopupOpen, setIsInviteCodePopupOpen] = useState(false); // Initial state
   const { isConnected, address } = useAccount();
+
   useEffect(() => {
     const value = localStorage.getItem("verified");
     if (value === "false" || value === null || !isConnected) {
@@ -33,6 +34,7 @@ export const InviteCodePopupProvider = ({
       setIsInviteCodePopupOpen(false);
     }
   }, [isConnected && address]);
+
   return (
     <InviteCodePopupContext.Provider
       value={{ isInviteCodePopupOpen, setIsInviteCodePopupOpen }}
