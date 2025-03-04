@@ -552,7 +552,7 @@ export function WithdrawFund({
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
+          <div className="text-2xl font-semibold mb-4">Borrow Details</div>
           <div className="flex">
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
               <div className="inline-flex items-center">

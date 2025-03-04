@@ -217,7 +217,7 @@ function DCDSTemplate() {
   const usdaBalance = useGetBalance("USDa");
 
   const tokenList: TokenDetails[] = useMemo(() => {
-    return [
+    const tokenList = [
       {
         tokenImage: USDaIcon,
         tokenName: "USDa",
@@ -237,29 +237,37 @@ function DCDSTemplate() {
         active: true,
         balanceAvailable: usdtBalance,
       },
-      chainId === Number(NetworkId.Optimism) && {
+    ] as TokenDetails[];
+
+    if (chainId == Number(NetworkId.Optimism)) {
+      tokenList.push({
         tokenImage: OPIcon,
         tokenName: "OP",
         isLoading: false,
         minTokenAmount: 500,
         active: true,
         balanceAvailable: 0,
-      },
-      chainId === Number(NetworkId.Mode) && {
+      });
+    }
+    if (chainId == Number(NetworkId.Mode)) {
+      tokenList.push({
         tokenImage: ModeIcon,
         tokenName: "Mode",
         minTokenAmount: 500,
         isLoading: false,
         balanceAvailable: 0,
         active: true,
-      },
-    ] as TokenDetails[];
+      });
+    }
+
+    return tokenList;
   }, [
     GlobalContractData?.usdtAmountDepositedTillNow,
     usdtBalance,
     usdaBalance,
     chainId,
   ]);
+  console.log(tokenList, "tokenList");
 
   const {
     approveUsda,

@@ -272,10 +272,10 @@ function PortfolioTemplate() {
           setPageSize={setPageSize}
         />
       )}
-      <RebalancePopup
+      {/* <RebalancePopup
         isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
-      />
+      /> */}
       <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}

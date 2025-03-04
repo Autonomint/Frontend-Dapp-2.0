@@ -13,7 +13,7 @@ const getDeposits = (
   address: `0x${string}` | undefined,
   chainId: Number
 ): Promise<PositionData[]> => {
-  return fetch(`${BACKEND_API_URL}/borrows/${chainId}/${address}`).then(
+  return fetch(`${BACKEND_API_URL}/borrows/${84532}/${address}`).then(
     (response) =>
       response
         .json()

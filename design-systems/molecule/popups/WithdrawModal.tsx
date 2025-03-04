@@ -34,6 +34,8 @@ export function DcdsWithdrawModal({
 
   const { address, chainId } = useAccount();
 
+  const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
+
   // kept this inside because every row is going to have different state
   const depositDetails = [
     {
@@ -106,10 +108,11 @@ export function DcdsWithdrawModal({
       value: 0,
       tooltip: false,
       tooltipText: "",
+      comment: "Will be converted to USDT at 40% price fall",
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "op"
+        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Token Price and Deposit`,
       value: 0,
       tooltip: false,
@@ -117,7 +120,7 @@ export function DcdsWithdrawModal({
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "Op"
+        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Token Liquidation Price`,
       value: 0,
       tooltip: false,
@@ -129,12 +132,39 @@ export function DcdsWithdrawModal({
       tooltip: false,
       tooltipText: "",
     },
+  ];
+
+  const rebalanceDetails = [
     {
-      headline: `Total Extended Indexes`,
-      value: "Yes",
+      headline: `Token Deposited`,
+      value: "Mode",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Token Price and Deposit`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Amount Deposited`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Current Value`,
+      value: 0,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `Change in Value`,
+      value: "0",
       tooltip: false,
       tooltipText: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "Op"
+        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Status`,
     },
   ];
@@ -340,56 +370,98 @@ export function DcdsWithdrawModal({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
-        <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
-        {/* <div className="flex justify-between mt-8 mb-6 text-textBlack">
-          <span
-            style={{
-              fontSize: "28px",
-              fontWeight: "500",
-            }}
-          >
-            USDa Deposited
-          </span>
-          <span
-            style={{
-              fontSize: "28px",
-              fontWeight: "500",
-            }}
-          >
-            ${position.depositedAmount}
-          </span>
-        </div> */}
-        <div className="h-[250px] overflow-auto no-scrollbar">
-          {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
-            return (
-              <div key={idx} className="flex justify-between mb-2">
-                <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                  {" "}
-                  {dcdsWidthDrawMetricsObj.headline}
-                </span>
-                <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                  {dcdsWidthDrawMetricsObj.value}
-                </span>
-              </div>
-            );
-          })}
-          {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
-            return (
-              <div key={idx} className="flex justify-between mb-2">
-                <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                  {" "}
-                  {dcdsWidthDrawMetricsObj.headline}
-                </span>
-                <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                  {dcdsWidthDrawMetricsObj.value}
-                </span>
-              </div>
-            );
-          })}
+        <div className="text-2xl font-semibold mb-4">Deposit Details</div>
+        <div className="flex">
+          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div className="inline-flex items-center">
+              <label
+                className="relative flex items-center cursor-pointer"
+                htmlFor="withdraw"
+              >
+                <input
+                  name="withdraw"
+                  type="radio"
+                  checked={view === "withdraw"}
+                  onChange={() => setView("withdraw")}
+                  className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
+                  id="withdraw"
+                />
+                <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+              </label>
+            </div>
+            <label
+              htmlFor="bordered-radio-1"
+              className="w-full py-2 ms-2 text-[20px]  sm:text-2xl md:text-[28px] font-medium text-textBlack  dark:text-white"
+            >
+              Withdraw
+            </label>
+          </div>
+
+          <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div className="inline-flex items-center">
+              <label
+                className="relative flex items-center cursor-pointer"
+                htmlFor="rebalance"
+              >
+                <input
+                  name="rebalance"
+                  type="radio"
+                  onChange={() => setView("rebalance")}
+                  checked={view === "rebalance"}
+                  className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
+                  id="rebalance"
+                />
+                <span className="absolute dark:bg-white bg-black w-2 h-2 md:w-3 md:h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+              </label>
+            </div>
+            <label
+              htmlFor="bordered-radio-2"
+              className="w-full py-2 ms-2 text-[20px]  sm:text-2xl md:text-[28px]  text-textBlack font-medium  dark:text-white "
+            >
+              Rebalance
+            </label>
+          </div>
         </div>
-        <div className="flex w-full">
-          <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-            {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
+        {view === "withdraw" ? (
+          <div>
+            <div className="h-[250px] overflow-auto no-scrollbar">
+              {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
+                return (
+                  <div key={idx} className="flex flex-col justify-between mb-2">
+                    <div className="w-full flex justify-between items-center">
+                      <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                        {" "}
+                        {dcdsWidthDrawMetricsObj.headline}
+                      </span>
+                      <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                        {dcdsWidthDrawMetricsObj.value}
+                      </span>
+                    </div>
+                    {dcdsWidthDrawMetricsObj?.comment && (
+                      <div className="p-2 mb-2 mt-1 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                        {dcdsWidthDrawMetricsObj?.comment}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
+                return (
+                  <div key={idx} className="flex justify-between mb-2">
+                    <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                      {" "}
+                      {dcdsWidthDrawMetricsObj.headline}
+                    </span>
+                    <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      {dcdsWidthDrawMetricsObj.value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex w-full pt-4">
+              <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
+                {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
               Price Gains
             </Label>
             <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
@@ -398,50 +470,134 @@ export function DcdsWithdrawModal({
                 Number(apy == undefined ? 0 : apy[2])
               ).toFixed(2)}
             </Label> */}
-            <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-              Option Fee + Liquidation Gains
-            </Label>
-            <Label className="text-[24px] font-medium dark:text-white">
-              {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
-            </Label>
-          </div>
-          <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
-            <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-              Yields
-            </Label>
-            <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
-              {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
-            </Label>
-          </div>
-        </div>
-        <Typography
-          variant="regular"
-          className="text-[14px] md:text-[16px] text-[#777777] "
-        >
-          Note: Your amount will be used to offer protection to borrowers &
-          protocol in return for fixed yields
-        </Typography>
-        <div className="h-[50px] md:h-[86px]">
-          {!dcdsFundWithdrawLoadingLocal && (
-            <Button
-              onClick={handleWithdrawFund}
-              disabled={
-                (position.status === "WITHDREW" ? true : false) ||
-                Number(position.lockingPeriod) * 1000 > Date.now()
-              }
-              className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
+                  Option Fee + Liquidation Gains
+                </Label>
+                <Label className="text-[24px] font-medium dark:text-white">
+                  {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
+                </Label>
+              </div>
+              <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
+                <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
+                  Yields
+                </Label>
+                <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
+                  {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
+                </Label>
+              </div>
+            </div>
+            <Typography
+              variant="regular"
+              className="text-[14px] md:text-[16px] my-3 text-[#777777] "
             >
-              {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
-            </Button>
-          )}
-          <LoadingBox
-            isLoading={withdrawMethodLoading}
-            isFailure={dcdsFundWithdrawError}
-            isSuccess={Boolean(dcdsFundWithdrawData)}
-            setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
-            heading="Withdrawing Funds"
-          />
-        </div>
+              Note: Your amount will be used to offer protection to borrowers &
+              protocol in return for fixed yields
+            </Typography>
+            <div className="h-[50px] md:h-[86px]">
+              {!dcdsFundWithdrawLoadingLocal && (
+                <Button
+                  onClick={handleWithdrawFund}
+                  disabled={
+                    (position.status === "WITHDREW" ? true : false) ||
+                    Number(position.lockingPeriod) * 1000 > Date.now()
+                  }
+                  className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                >
+                  {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
+                </Button>
+              )}
+              <LoadingBox
+                isLoading={withdrawMethodLoading}
+                isFailure={dcdsFundWithdrawError}
+                isSuccess={Boolean(dcdsFundWithdrawData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Withdrawing Funds"
+              />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="h-[390px] overflow-auto no-scrollbar">
+              <div>
+                <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
+                  Current Deposits
+                </div>
+                {rebalanceDetails.map((details, idx) => {
+                  return (
+                    <div key={idx} className="flex justify-between mb-2">
+                      <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                        {" "}
+                        {details.headline}
+                      </span>
+                      <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                        {details.value}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div>
+                <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
+                  Rebalance Eligibility
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                    Eligible for Rebalance
+                  </span>
+                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                    Yes
+                  </span>
+                </div>
+                <div className="p-2 mb-2  bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                  Rebalancing is available when price increases by more than 20%
+                </div>
+                <div className="flex justify-between mb-3">
+                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                    Discount Applied
+                  </span>
+                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                    40%
+                  </span>
+                </div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                    Discounted Value Added to dCDS
+                  </span>
+                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                    35
+                  </span>
+                </div>
+                <div className="p-2 mb-2 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                  Your token is added at a discounted value and earns fixed
+                  yield
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[50px] md:h-[86px] mt-4">
+              {true && (
+                <Button
+                  // onClick={handleWithdrawFund}
+                  // disabled={
+                  //   (position.status === "WITHDREW" ? true : false) ||
+                  //   Number(position.lockingPeriod) * 1000 > Date.now()
+                  // }
+                  className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                >
+                  {"Rebalance Now"}
+                </Button>
+              )}
+              <LoadingBox
+                isLoading={withdrawMethodLoading}
+                isFailure={dcdsFundWithdrawError}
+                isSuccess={Boolean(dcdsFundWithdrawData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Rebalancing"
+              />
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
