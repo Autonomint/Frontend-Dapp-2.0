@@ -116,7 +116,7 @@ function DepositTable({
       </table>
 
       {positionList.length > 0 && (
-        <div className="flex w-1/3 mx-auto my-4 md:my-4 justify-around items-center">
+        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto my-4 md:mb-0 justify-around items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"
