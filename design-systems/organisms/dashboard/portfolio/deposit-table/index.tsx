@@ -25,6 +25,7 @@ function DepositTable({
   totalPages,
   pageSize,
   setPageSize,
+  setCurrentPage,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -42,6 +43,7 @@ function DepositTable({
   tabPosition: "Borrowed" | "Deposited";
   positionList: PositionData[];
   setSelectedPosition: (position: PositionData) => void;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,7 @@ function DepositTable({
 
   useEffect(() => {
     if (isScroll) {
+      setCurrentPage(totalPages);
       const scrollContainer = document.getElementById("body-scroll-container");
       if (scrollContainer) {
         scrollContainer.scroll({
@@ -93,7 +96,7 @@ function DepositTable({
             </th>
           </tr>
         </thead>
-        <tbody className="font-normal ">
+        <tbody className={`font-normal `}>
           {positionList.map((position: PositionData, key: number) => {
             return (
               <DepositTableRow
@@ -108,7 +111,11 @@ function DepositTable({
                 setViewPosition={setViewPosition}
                 isLast={key === positionList.length - 1}
                 setRenewRepay={setRenewRepay}
-                highlight={key + 1 === positionList.length && isScroll}
+                highlight={
+                  key + 1 === positionList.length &&
+                  isScroll &&
+                  totalPages == currentPage
+                }
               />
             );
           })}
@@ -121,7 +128,10 @@ function DepositTable({
             disabled={currentPage === 1}
             className="text-lg"
             variant={"shadowOutline"}
-            onClick={handlePrevPage}
+            onClick={() => {
+              setIsScroll(false);
+              handlePrevPage();
+            }}
           >
             <ArrowLeft />
             Prev

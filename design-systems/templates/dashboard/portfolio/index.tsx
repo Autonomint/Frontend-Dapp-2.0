@@ -58,9 +58,10 @@ function PortfolioTemplate() {
     totalPages,
     pageSize,
     setPageSize,
+    setCurrentPage,
   } = useGetPositionList();
 
-  console.log(pagedPositionList, "pagedPositionList");
+  console.log(pagedPositionList, positionList, "pagedPositionList");
 
   const {
     dcdsPositionList,
@@ -249,6 +250,7 @@ function PortfolioTemplate() {
           totalPages={totalPages}
           pageSize={pageSize}
           setPageSize={setPageSize}
+          setCurrentPage={setCurrentPage}
         />
       ) : (
         <DcdsDepositTable
