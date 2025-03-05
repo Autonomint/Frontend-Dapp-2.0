@@ -319,6 +319,13 @@ export function DcdsWithdrawModal({
         </div>
         <div className="flex w-full">
           <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
+            <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
+              Option Fee + Liquidation Gains
+            </Label>
+            <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
+              {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
+            </Label>
+            <div className="h-2"></div>
             <Label className=" text-[12px] font-normal text-[#777777]">
               Price Gains
             </Label>
@@ -327,13 +334,6 @@ export function DcdsWithdrawModal({
                 Number(apy == undefined ? 0 : apy[1]) +
                 Number(apy == undefined ? 0 : apy[2])
               ).toFixed(2)}
-            </Label>
-            <div className="h-4"></div>
-            <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
-              Option Fee + Liquidation Gains
-            </Label>
-            <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
-              {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
             </Label>
           </div>
           <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
