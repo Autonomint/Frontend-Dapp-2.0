@@ -87,7 +87,7 @@ function LeaderboardTable({
       </table>
 
       {leaderboardData.length > 0 && (
-        <div className="flex w-1/3 mx-auto justify-around my-4 items-center">
+        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto justify-around my-4 items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"

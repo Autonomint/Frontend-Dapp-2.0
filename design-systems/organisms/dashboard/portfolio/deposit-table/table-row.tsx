@@ -90,7 +90,10 @@ const DepositTableRow = ({
   const [openChart, setOpenChart] = useState(false);
 
   const amountProtectedFunction = () => {
-    if (ethPrice === undefined) return;
+    if (ethPrice === undefined) {
+      setAmountProtected(0);
+      return;
+    }
     if (parseFloat(ethPrice.toString()) > position.ethPrice) {
       setAmountProtected(0);
     } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
@@ -98,22 +101,33 @@ const DepositTableRow = ({
         parseFloat(position.depositedAmount) *
         (position.ethPrice - parseFloat(ethPrice.toString()));
       const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision((amountProt / 100).toFixed(2))
+        displayNumberWithPrecision((amountProt / 100).toFixed(8))
       );
       setAmountProtected(amountProtPrecision);
     } else if (parseFloat(ethPrice.toString()) <= 0.8 * position.ethPrice) {
       const amountProt =
         0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
       const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision((amountProt / 100).toFixed(2))
+        displayNumberWithPrecision((amountProt / 100).toFixed(8))
       );
       setAmountProtected(amountProtPrecision);
     }
   };
 
+  console.log(
+    amountProtected,
+    ethPrice,
+    position.ethPrice,
+    position.depositedAmount,
+    position.index
+  );
+
   useEffect(() => {
     amountProtectedFunction();
-  }, [position]);
+    return () => {
+      setAmountProtected(0);
+    };
+  }, [position, ethPrice]);
 
   const handleRowClick = () => {
     setSelectedPosition(position);

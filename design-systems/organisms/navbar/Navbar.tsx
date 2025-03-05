@@ -28,6 +28,8 @@ function Navbar() {
   const { isConnected } = useCheckWalletConnection();
   const { disconnect } = useDisconnect();
 
+  const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
+
   const { address } = useAccount();
 
   useAccountEffect({
@@ -41,6 +43,10 @@ function Navbar() {
   useEffect(() => {}, [address]);
 
   useEffect(() => {
+    const prefersDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setSystemThemeDark(prefersDarkMode);
     const unwatch = watchAccount(config, {
       onChange(data) {
         const currentAddress = localStorage.getItem("currentAddress");
@@ -127,10 +133,20 @@ function Navbar() {
             variant={"shadowOutline"}
             className="border-[#041A50] hidden lg:block h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
             onClick={() =>
-              theme == "dark" ? setTheme("light") : setTheme("dark")
+              theme == "dark"
+                ? setTheme("light")
+                : theme == "light"
+                ? setTheme("dark")
+                : systemThemeDark
+                ? setTheme("light")
+                : setTheme("dark")
             }
           >
             {theme == "dark" ? (
+              <Sun style={{ width: "24px", height: "24px" }} />
+            ) : theme == "light" ? (
+              <Moon style={{ width: "24px", height: "24px" }} />
+            ) : systemThemeDark ? (
               <Sun style={{ width: "24px", height: "24px" }} />
             ) : (
               <Moon style={{ width: "24px", height: "24px" }} />
