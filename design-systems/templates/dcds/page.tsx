@@ -216,7 +216,7 @@ function DCDSTemplate() {
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
 
-  const usdtBalance = useGetBalance("TUSDT");
+  const usdtBalance = useGetBalance("USDT");
   const usdaBalance = useGetBalance("USDa");
 
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -246,14 +246,14 @@ function DCDSTemplate() {
         isLoading: false,
         minTokenAmount: 500,
         active: true,
-        balanceAvailable: 0,
+        balanceAvailable: "0",
       },
       {
         tokenImage: ModeIcon,
         tokenName: "Mode",
         minTokenAmount: 500,
         isLoading: false,
-        balanceAvailable: 0,
+        balanceAvailable: "0",
         active: true,
       },
     ] as TokenDetails[];

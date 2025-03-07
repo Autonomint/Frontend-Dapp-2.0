@@ -5,7 +5,7 @@ export interface TokenDetails {
   isLoading: boolean;
   tokenName: string;
   minTokenAmount: number;
-  balanceAvailable: number | string;
+  balanceAvailable: string;
 }
 
 export interface FormValues {

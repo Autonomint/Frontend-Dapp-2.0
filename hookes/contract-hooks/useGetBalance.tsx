@@ -6,7 +6,7 @@ import {
 import React from "react";
 import { useBalance, useAccount, useChainId } from "wagmi";
 
-const useGetBalance = (token: "USDa" | "TUSDT" | "ABOND") => {
+const useGetBalance = (token: "USDa" | "USDT" | "ABOND"): string => {
   const chainId = useChainId();
   const { address } = useAccount();
   const { data } = useBalance({
@@ -14,7 +14,7 @@ const useGetBalance = (token: "USDa" | "TUSDT" | "ABOND") => {
     token:
       token == "USDa"
         ? usDaAddress[chainId as keyof typeof usDaAddress]
-        : token == "TUSDT"
+        : token == "USDT"
         ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
         : token == "ABOND"
         ? abondAddress[chainId as keyof typeof abondAddress]
