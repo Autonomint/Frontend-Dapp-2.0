@@ -9,7 +9,6 @@ import {
 } from "@aws-sdk/client-secrets-manager";
 
 const getSecretVar = async () => {
-  debugger;
   const client = new SecretsManagerClient({
     region: "eu-north-1",
     credentials: {
