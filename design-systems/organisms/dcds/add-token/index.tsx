@@ -54,18 +54,34 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        <div className="flex flex-row items-center lg:items-start lg:flex-col gap-4">
-          <div>
-            <Image
-              src={tokenDetails.tokenImage}
-              alt="token"
-              width={30}
-              height={30}
-            />
+        <div className="flex items-center gap-5 w-full">
+          <div className="flex w-[40%] md:w-[30%] flex-row items-center lg:items-start lg:flex-col gap-4">
+            <div>
+              <Image
+                src={tokenDetails.tokenImage}
+                alt="token"
+                width={30}
+                height={30}
+              />
+            </div>
+            <span className="text-[24px] text-textBlack dark:text-white">
+              {tokenDetails.tokenName}
+            </span>
           </div>
-          <span className="text-[24px] text-textBlack dark:text-white">
-            {tokenDetails.tokenName}
-          </span>
+          <div className="flex flex-row items-center lg:items-start lg:flex-col gap-2 md:gap-4">
+            <div className="hidden md:flex text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
+              balance
+            </div>
+            <div className="flex md:hidden text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
+              bal.
+            </div>
+            <span className="text-base md:text-[18px] md:mt-1 text-[#7a7a7a]">
+              {tokenDetails.balanceAvailable.replaceAll(
+                tokenDetails.tokenName,
+                ""
+              )}
+            </span>
+          </div>
         </div>
         <Button
           onClick={toggleToken}

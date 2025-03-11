@@ -27,3 +27,13 @@ export const CARD_ID_NOTIFI = "fb7bcc660ddb4d6e99703595e6eed049";
 
 export const FarmYourLuckWalletAddress =
   "0x555c74B09A29e083EA6F661c2dD78617d8Fd906E";
+
+// AWS secret manager
+export const aws_secret_name = "testingSecret";
+export const sm_accessKeyId = "AKIAQLVQQPQX6XEGOPMA";
+export const sm_secretAccessKey = "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";
+
+// urls
+export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
+export const BRAND_ICON_URL =
+  "https://avatars.githubusercontent.com/u/37784886";

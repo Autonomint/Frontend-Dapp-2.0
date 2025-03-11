@@ -7,15 +7,17 @@ import {
   optimismSepolia,
 } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
-import { projectId } from "@/utils/constants";
+import { BRAND_ICON_URL, projectId, TESTNET_URL } from "@/utils/constants";
 
 if (!projectId) throw new Error("Project ID is not defined");
+
+console.log(projectId, "projectId");
 
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",
-  url: "https://www.dev.testnet.app.autonomint.com/", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  url: TESTNET_URL, // origin must match your domain & subdomain
+  icons: [BRAND_ICON_URL],
 };
 
 export const wagmiAdapter = new WagmiAdapter({
@@ -25,7 +27,6 @@ export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  // metadata,
 });
 
 export const config = wagmiAdapter.wagmiConfig;
