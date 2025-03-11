@@ -2,25 +2,26 @@
 import autonomintTxtImage from "@/app/assets/autonomint.svg";
 import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
+import { config } from "@/blockchain/WalletConfigs/iindex";
 import { Button } from "@/design-systems/atoms/button";
 import { CloseIcon, MenuIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { Moon, Sun, X } from "lucide-react";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { useDisconnect } from "@reown/appkit/react";
+import { watchAccount } from "@wagmi/core";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAccount, useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
-import WalletPopup from "../../molecule/popups/WalletPopUp";
-import NotificationPopupMobile from "../../molecule/popups/NotificationPopUpMobile";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
-import { usePathname } from "next/navigation";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { watchAccount } from "@wagmi/core";
-import { config } from "@/blockchain/WalletConfigs/iindex";
-import { useDisconnect } from "@reown/appkit/react";
-import { useAccount, useAccountEffect } from "wagmi";
+import WalletPopup from "../../molecule/popups/WalletPopUp";
+import getSecretVar from "@/services/aws-secret";
+
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +33,10 @@ function Navbar() {
 
   const { address } = useAccount();
 
+  // Use this code snippet in your app.
+  // If you need more information about configurations or implementing the sample code, visit the AWS docs:
+  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
+
   useAccountEffect({
     onConnect(data) {
       localStorage.setItem("currentAddress", data.address as string);
@@ -40,7 +45,9 @@ function Navbar() {
       localStorage.removeItem("currentAddress");
     },
   });
-  useEffect(() => {}, [address]);
+  useEffect(() => {
+    getSecretVar();
+  }, []);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
