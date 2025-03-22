@@ -1,479 +1,1302 @@
 export const borrowingContractAbi = [
-    {
-      type: 'error',
-      inputs: [{ name: 'target', internalType: 'address', type: 'address' }],
-      name: 'AddressEmptyCode',
-    },
-    { type: 'error', inputs: [], name: 'Borrowing_DepositFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_GettingETHPriceFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_LiquidateBurnFailed' },
-    {
-      type: 'error',
-      inputs: [],
-      name: 'Borrowing_LiquidateEthTransferToCdsFailed',
-    },
-    { type: 'error', inputs: [], name: 'Borrowing_WithdrawBurnFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_WithdrawEthTransferFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_WithdrawUSDaTransferFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_abondMintFailed' },
-    { type: 'error', inputs: [], name: 'Borrowing_usdaMintFailed' },
-    {
-      type: 'error',
-      inputs: [
-        { name: 'implementation', internalType: 'address', type: 'address' },
-      ],
-      name: 'ERC1967InvalidImplementation',
-    },
-    { type: 'error', inputs: [], name: 'ERC1967NonPayable' },
-    { type: 'error', inputs: [], name: 'FailedInnerCall' },
-    { type: 'error', inputs: [], name: 'InvalidInitialization' },
-    {
-      type: 'error',
-      inputs: [{ name: 'optionType', internalType: 'uint16', type: 'uint16' }],
-      name: 'InvalidOptionType',
-    },
-    { type: 'error', inputs: [], name: 'NotInitializing' },
-    {
-      type: 'error',
-      inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
-      name: 'OwnableInvalidOwner',
-    },
-    {
-      type: 'error',
-      inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
-      name: 'OwnableUnauthorizedAccount',
-    },
-    { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
-    {
-      type: 'error',
-      inputs: [
-        { name: 'bits', internalType: 'uint8', type: 'uint8' },
-        { name: 'value', internalType: 'uint256', type: 'uint256' },
-      ],
-      name: 'SafeCastOverflowedUintDowncast',
-    },
-    { type: 'error', inputs: [], name: 'UUPSUnauthorizedCallContext' },
-    {
-      type: 'error',
-      inputs: [{ name: 'slot', internalType: 'bytes32', type: 'bytes32' }],
-      name: 'UUPSUnsupportedProxiableUUID',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        {
-          name: 'user',
-          internalType: 'address',
-          type: 'address',
-          indexed: false,
-        },
-        { name: 'index', internalType: 'uint64', type: 'uint64', indexed: false },
-        {
-          name: 'depositedAmount',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'normalizedAmount',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'depositedTime',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'ethPrice',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'borrowAmount',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'strikePrice',
-          internalType: 'uint64',
-          type: 'uint64',
-          indexed: false,
-        },
-        {
-          name: 'optionsFees',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'strikePricePercent',
-          internalType: 'enum IOptions.StrikePrice',
-          type: 'uint8',
-          indexed: false,
-        },
-        { name: 'APR', internalType: 'uint8', type: 'uint8', indexed: false },
-      ],
-      name: 'Deposit',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        {
-          name: 'version',
-          internalType: 'uint64',
-          type: 'uint64',
-          indexed: false,
-        },
-      ],
-      name: 'Initialized',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        { name: 'index', internalType: 'uint64', type: 'uint64', indexed: false },
-        {
-          name: 'liquidationAmount',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'profits',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'ethAmount',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'availableLiquidationAmount',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-      ],
-      name: 'Liquidate',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        {
-          name: 'previousOwner',
-          internalType: 'address',
-          type: 'address',
-          indexed: true,
-        },
-        {
-          name: 'newOwner',
-          internalType: 'address',
-          type: 'address',
-          indexed: true,
-        },
-      ],
-      name: 'OwnershipTransferred',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        {
-          name: 'implementation',
-          internalType: 'address',
-          type: 'address',
-          indexed: true,
-        },
-      ],
-      name: 'Upgraded',
-    },
-    {
-      type: 'event',
-      anonymous: false,
-      inputs: [
-        {
-          name: 'user',
-          internalType: 'address',
-          type: 'address',
-          indexed: false,
-        },
-        { name: 'index', internalType: 'uint64', type: 'uint64', indexed: false },
-        {
-          name: 'withdrawTime',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-        {
-          name: 'withdrawAmount',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'noOfAbond',
-          internalType: 'uint128',
-          type: 'uint128',
-          indexed: false,
-        },
-        {
-          name: 'borrowDebt',
-          internalType: 'uint256',
-          type: 'uint256',
-          indexed: false,
-        },
-      ],
-      name: 'Withdraw',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'UPGRADE_INTERFACE_VERSION',
-      outputs: [{ name: '', internalType: 'string', type: 'string' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'admin',
-      outputs: [{ name: '', internalType: 'address', type: 'address' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'calculateCumulativeRate',
-      outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: '_amount', internalType: 'uint256', type: 'uint256' },
-        { name: 'currentEthPrice', internalType: 'uint256', type: 'uint256' },
-      ],
-      name: 'calculateRatio',
-      outputs: [{ name: '', internalType: 'uint64', type: 'uint64' }],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        {
-          name: '_strikePercent',
-          internalType: 'enum IOptions.StrikePrice',
-          type: 'uint8',
-        },
-        { name: '_strikePrice', internalType: 'uint64', type: 'uint64' },
-        { name: '_volatility', internalType: 'uint256', type: 'uint256' },
-        { name: '_depositingAmount', internalType: 'uint256', type: 'uint256' },
-      ],
-      name: 'depositTokens',
-      outputs: [],
-      stateMutability: 'payable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: 'user', internalType: 'address', type: 'address' },
-        { name: 'aBondAmount', internalType: 'uint128', type: 'uint128' },
-      ],
-      name: 'getAbondYields',
-      outputs: [
-        { name: '', internalType: 'uint128', type: 'uint128' },
-        { name: '', internalType: 'uint256', type: 'uint256' },
-        { name: '', internalType: 'uint256', type: 'uint256' },
-      ],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'getLTV',
-      outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'getUSDValue',
-      outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: '_tokenAddress', internalType: 'address', type: 'address' },
-        { name: '_cds', internalType: 'address', type: 'address' },
-        { name: '_abondToken', internalType: 'address', type: 'address' },
-        { name: '_multiSign', internalType: 'address', type: 'address' },
-        { name: '_priceFeedAddress', internalType: 'address', type: 'address' },
-        { name: 'chainId', internalType: 'uint64', type: 'uint64' },
-        { name: '_globalVariables', internalType: 'address', type: 'address' },
-      ],
-      name: 'initialize',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'lastCumulativeRate',
-      outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: 'user', internalType: 'address', type: 'address' },
-        { name: 'index', internalType: 'uint64', type: 'uint64' },
-      ],
-      name: 'liquidate',
-      outputs: [],
-      stateMutability: 'payable',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'owner',
-      outputs: [{ name: '', internalType: 'address', type: 'address' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'proxiableUUID',
-      outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: 'user', internalType: 'address', type: 'address' },
-        { name: 'aBondAmount', internalType: 'uint128', type: 'uint128' },
-      ],
-      name: 'redeemYields',
-      outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'renounceOwnership',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: '_APR', internalType: 'uint8', type: 'uint8' },
-        { name: '_ratePerSec', internalType: 'uint128', type: 'uint128' },
-      ],
-      name: 'setAPR',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_admin', internalType: 'address', type: 'address' }],
-      name: 'setAdmin',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_bondRatio', internalType: 'uint64', type: 'uint64' }],
-      name: 'setBondRatio',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: '_borrowLiquidation', internalType: 'address', type: 'address' },
-      ],
-      name: 'setBorrowLiquidation',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_LTV', internalType: 'uint8', type: 'uint8' }],
-      name: 'setLTV',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_options', internalType: 'address', type: 'address' }],
-      name: 'setOptions',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_treasury', internalType: 'address', type: 'address' }],
-      name: 'setTreasury',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-      name: 'transferOwnership',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: '_amount', internalType: 'uint256', type: 'uint256' }],
-      name: 'updateLastEthVaultValue',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [{ name: 'usdaPrice', internalType: 'uint32', type: 'uint32' }],
-      name: 'updateRatePerSecByUSDaPrice',
-      outputs: [],
-      stateMutability: 'nonpayable',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: 'newImplementation', internalType: 'address', type: 'address' },
-        { name: 'data', internalType: 'bytes', type: 'bytes' },
-      ],
-      name: 'upgradeToAndCall',
-      outputs: [],
-      stateMutability: 'payable',
-    },
-    {
-      type: 'function',
-      inputs: [],
-      name: 'usda',
-      outputs: [{ name: '', internalType: 'contract IUSDa', type: 'address' }],
-      stateMutability: 'view',
-    },
-    {
-      type: 'function',
-      inputs: [
-        { name: '_toAddress', internalType: 'address', type: 'address' },
-        { name: '_index', internalType: 'uint64', type: 'uint64' },
-      ],
-      name: 'withDraw',
-      outputs: [],
-      stateMutability: 'payable',
-    },
-  ] as const
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "target",
+        type: "address",
+      },
+    ],
+    name: "AddressEmptyCode",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_AlreadyLiquidated",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_AlreadyWithdrew",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_AlreadyWithdrewOrLiquidated",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_BorrowHealthLow",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_BurnFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_CallerIsNotAnAdmin",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "inputAddress",
+        type: "address",
+      },
+    ],
+    name: "Borrow_CantBeContractOrZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "inputAddress",
+        type: "address",
+      },
+    ],
+    name: "Borrow_CantBeEOAOrZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_CantLiquidateOwnAssets",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_DeadlinePassed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_DepositFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_ETHTransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_EthTransferToCdsFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_GettingETHPriceFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_InvalidIndex",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_LTVIsZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_LiquidationFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_MintFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_MintLimitReached",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+    ],
+    name: "Borrow_MustBeNonZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_NeedsMoreThanZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_NotEnoughFundInCDS",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_NotSignedByEIP712Signer",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_OnlyCoreContractsCancall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_OnlyTreasuryCancall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_Paused",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_RenewFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_RequiredApprovalsNotMetToSet",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_SlippageExceeded",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_TransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_USDaTransferFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_USDa_MintFailed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Borrow_WithdrawTimeNotYetReached",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ECDSAInvalidSignature",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "length",
+        type: "uint256",
+      },
+    ],
+    name: "ECDSAInvalidSignatureLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "s",
+        type: "bytes32",
+      },
+    ],
+    name: "ECDSAInvalidSignatureS",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+    ],
+    name: "ERC1967InvalidImplementation",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ERC1967NonPayable",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "FailedInnerCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidInitialization",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "optionType",
+        type: "uint16",
+      },
+    ],
+    name: "InvalidOptionType",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotInitializing",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "bits",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "SafeCastOverflowedUintDowncast",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "UUPSUnauthorizedCallContext",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "slot",
+        type: "bytes32",
+      },
+    ],
+    name: "UUPSUnsupportedProxiableUUID",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [],
+    name: "EIP712DomainChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "version",
+        type: "uint64",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "liquidationAmount",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "profits",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "ethAmount",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "availableLiquidationAmount",
+        type: "uint256",
+      },
+    ],
+    name: "Liquidate",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "borrower",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "timestamp",
+        type: "uint256",
+      },
+    ],
+    name: "Renewed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
+    ],
+    name: "Upgraded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "ethPrice",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "withdrawTime",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "withdrawAmount",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint128",
+        name: "noOfAbond",
+        type: "uint128",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalDebtAmount",
+        type: "uint256",
+      },
+    ],
+    name: "Withdraw",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "abondLiqGainsCr",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "admin",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    name: "assetAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "assetAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint128",
+        name: "usdaAmount",
+        type: "uint128",
+      },
+    ],
+    name: "calculateCrForAbondLiqGains",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "calculateCumulativeRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint128",
+        name: "lastETHPrice",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "currentEthPrice",
+        type: "uint128",
+      },
+    ],
+    name: "calculateRatio",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "collateralValueRemainingInWithdraw",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "contractNonce",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "uint128",
+            name: "strikePercent",
+            type: "uint128",
+          },
+          {
+            internalType: "uint256",
+            name: "volatility",
+            type: "uint256",
+          },
+          {
+            internalType: "enum IBorrowing.AssetName",
+            name: "assetName",
+            type: "uint8",
+          },
+          {
+            internalType: "uint256",
+            name: "depositingAmount",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct IBorrowing.BorrowDepositParams",
+        name: "depositParam",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "nonce",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "signature",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct IBorrowing.EIP712VerifyParams",
+        name: "verifyParams",
+        type: "tuple",
+      },
+    ],
+    name: "depositTokens",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "eip712Domain",
+    outputs: [
+      {
+        internalType: "bytes1",
+        name: "fields",
+        type: "bytes1",
+      },
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "version",
+        type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "chainId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "verifyingContract",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "salt",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256[]",
+        name: "extensions",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "uint128",
+        name: "aBondAmount",
+        type: "uint128",
+      },
+    ],
+    name: "getAbondYields",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getLTV",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+    ],
+    name: "getOptionFeesToPay",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "getUSDValue",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "usdaAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cdsAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "abondTokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "multiSignAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "mpoAddress",
+        type: "address",
+      },
+      {
+        internalType: "address[]",
+        name: "collateralAddresses",
+        type: "address[]",
+      },
+      {
+        internalType: "address[]",
+        name: "tokenAddresses",
+        type: "address[]",
+      },
+      {
+        internalType: "uint64",
+        name: "chainId",
+        type: "uint64",
+      },
+      {
+        internalType: "address",
+        name: "globalVariablesAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint64",
+        name: "_minInterval",
+        type: "uint64",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "lastCumulativeRate",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint128",
+        name: "tokenAmountFromOdos",
+        type: "uint128",
+      },
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "user",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "index",
+            type: "uint64",
+          },
+          {
+            internalType: "enum IBorrowing.LiquidationType",
+            name: "liquidationType",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes",
+            name: "odosAssembledData",
+            type: "bytes",
+          },
+          {
+            internalType: "bytes",
+            name: "oneInchSwapData",
+            type: "bytes",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "nonce",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "deadline",
+                type: "uint256",
+              },
+              {
+                internalType: "bytes",
+                name: "signature",
+                type: "bytes",
+              },
+            ],
+            internalType: "struct IBorrowing.EIP712VerifyParams",
+            name: "verifyParams",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "string",
+                name: "name",
+                type: "string",
+              },
+              {
+                internalType: "address",
+                name: "solver",
+                type: "address",
+              },
+              {
+                internalType: "bytes4[]",
+                name: "selectors",
+                type: "bytes4[]",
+              },
+            ],
+            internalType: "struct IBorrowLiquidation.ModeLiquidationParams",
+            name: "modeParams",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IBorrowing.LiquidationParams",
+        name: "params",
+        type: "tuple",
+      },
+    ],
+    name: "liquidate",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "ratePerSec",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint128",
+        name: "aBondAmount",
+        type: "uint128",
+      },
+    ],
+    name: "redeemYields",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+    ],
+    name: "renewOptions",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "_APR",
+        type: "uint8",
+      },
+      {
+        internalType: "uint128",
+        name: "_ratePerSec",
+        type: "uint128",
+      },
+    ],
+    name: "setAPR",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_admin",
+        type: "address",
+      },
+    ],
+    name: "setAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "hashedAddress",
+        type: "bytes32",
+      },
+    ],
+    name: "setAdminTwo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "_bondRatio",
+        type: "uint64",
+      },
+    ],
+    name: "setBondRatio",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_borrowLiquidation",
+        type: "address",
+      },
+    ],
+    name: "setBorrowLiquidation",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "ltv",
+        type: "uint8",
+      },
+    ],
+    name: "setLTV",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_options",
+        type: "address",
+      },
+    ],
+    name: "setOptions",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_treasury",
+        type: "address",
+      },
+    ],
+    name: "setTreasury",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint64",
+        name: "_minInterval",
+        type: "uint64",
+      },
+    ],
+    name: "updateMinInterval",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "usdaPrice",
+        type: "uint32",
+      },
+    ],
+    name: "updateRatePerSecByUSDaPrice",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "usda",
+    outputs: [
+      {
+        internalType: "contract IUSDa",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "toAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+      {
+        internalType: "bytes",
+        name: "odosAssembledData",
+        type: "bytes",
+      },
+      {
+        internalType: "uint128",
+        name: "usdtFromOdos",
+        type: "uint128",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "nonce",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            internalType: "bytes",
+            name: "signature",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct IBorrowing.EIP712VerifyParams",
+        name: "verifyParams",
+        type: "tuple",
+      },
+    ],
+    name: "withDraw",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+] as const;

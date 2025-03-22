@@ -16,14 +16,16 @@ const useGetUsdValue = (assetAddress: ValueOf<typeof borrowAssetsAddress>) => {
         chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getUSDValue",
-    args: [assetAddress],
+    // args: [assetAddress[919]],
     query: { enabled: !!address },
   });
 
   return {
     isUsdValuePending,
     usdValue: usdValue?.[0] || 0,
-    assetPrice: usdValue?.[0] + (usdValue?.[0] * usdValue?.[1]) / 100,
+    assetPrice:
+      Number(usdValue?.[0]) +
+      (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e20,
   };
 };
 

@@ -4,749 +4,1592 @@
  */
 export const globalAbi = [
   {
-    type: "error",
-    inputs: [{ name: "target", internalType: "address", type: "address" }],
-    name: "AddressEmptyCode",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  {
-    type: "error",
     inputs: [
-      { name: "implementation", internalType: "address", type: "address" },
+      {
+        internalType: "address",
+        name: "target",
+        type: "address",
+      },
+    ],
+    name: "AddressEmptyCode",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "AddressInsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
     ],
     name: "ERC1967InvalidImplementation",
-  },
-  { type: "error", inputs: [], name: "ERC1967NonPayable" },
-  { type: "error", inputs: [], name: "EndPointUnavailable" },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
-  { type: "error", inputs: [], name: "InvalidDelegate" },
-  { type: "error", inputs: [], name: "InvalidEndpointCall" },
-  { type: "error", inputs: [], name: "InvalidInitialization" },
-  {
     type: "error",
-    inputs: [{ name: "optionType", internalType: "uint16", type: "uint16" }],
-    name: "InvalidOptionType",
-  },
-  { type: "error", inputs: [], name: "LzTokenUnavailable" },
-  {
-    type: "error",
-    inputs: [{ name: "eid", internalType: "uint32", type: "uint32" }],
-    name: "NoPeer",
   },
   {
+    inputs: [],
+    name: "ERC1967NonPayable",
     type: "error",
-    inputs: [{ name: "msgValue", internalType: "uint256", type: "uint256" }],
-    name: "NotEnoughNative",
-  },
-  { type: "error", inputs: [], name: "NotInitializing" },
-  {
-    type: "error",
-    inputs: [{ name: "addr", internalType: "address", type: "address" }],
-    name: "OnlyEndpoint",
   },
   {
+    inputs: [],
+    name: "FailedInnerCall",
     type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidDelegate",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidEndpointCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "InvalidInitialization",
+    type: "error",
+  },
+  {
     inputs: [
-      { name: "eid", internalType: "uint32", type: "uint32" },
-      { name: "sender", internalType: "bytes32", type: "bytes32" },
+      {
+        internalType: "uint16",
+        name: "optionType",
+        type: "uint16",
+      },
+    ],
+    name: "InvalidOptionType",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "LzTokenUnavailable",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "eid",
+        type: "uint32",
+      },
+    ],
+    name: "NoPeer",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "msgValue",
+        type: "uint256",
+      },
+    ],
+    name: "NotEnoughNative",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NotInitializing",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+    ],
+    name: "OnlyEndpoint",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "eid",
+        type: "uint32",
+      },
+      {
+        internalType: "bytes32",
+        name: "sender",
+        type: "bytes32",
+      },
     ],
     name: "OnlyPeer",
+    type: "error",
   },
   {
-    type: "error",
-    inputs: [{ name: "owner", internalType: "address", type: "address" }],
-    name: "OwnableInvalidOwner",
-  },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "OwnableUnauthorizedAccount",
-  },
-  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
-  {
-    type: "error",
     inputs: [
-      { name: "bits", internalType: "uint8", type: "uint8" },
-      { name: "value", internalType: "uint256", type: "uint256" },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "bits",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
     ],
     name: "SafeCastOverflowedUintDowncast",
+    type: "error",
   },
   {
-    type: "error",
-    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
     name: "SafeERC20FailedOperation",
-  },
-  { type: "error", inputs: [], name: "UUPSUnauthorizedCallContext" },
-  {
     type: "error",
-    inputs: [{ name: "slot", internalType: "bytes32", type: "bytes32" }],
-    name: "UUPSUnsupportedProxiableUUID",
   },
   {
-    type: "event",
+    inputs: [],
+    name: "UUPSUnauthorizedCallContext",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "slot",
+        type: "bytes32",
+      },
+    ],
+    name: "UUPSUnsupportedProxiableUUID",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
-        name: "version",
-        internalType: "uint64",
-        type: "uint64",
         indexed: false,
+        internalType: "uint64",
+        name: "version",
+        type: "uint64",
       },
     ],
     name: "Initialized",
+    type: "event",
   },
   {
-    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: "previousOwner",
-        internalType: "address",
-        type: "address",
         indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
       },
       {
-        name: "newOwner",
-        internalType: "address",
-        type: "address",
         indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
       },
     ],
     name: "OwnershipTransferred",
+    type: "event",
   },
   {
-    type: "event",
     anonymous: false,
     inputs: [
-      { name: "eid", internalType: "uint32", type: "uint32", indexed: false },
       {
-        name: "peer",
-        internalType: "bytes32",
-        type: "bytes32",
         indexed: false,
+        internalType: "uint32",
+        name: "eid",
+        type: "uint32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "peer",
+        type: "bytes32",
       },
     ],
     name: "PeerSet",
+    type: "event",
   },
   {
-    type: "event",
     anonymous: false,
     inputs: [
       {
-        name: "implementation",
-        internalType: "address",
-        type: "address",
         indexed: true,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
       },
     ],
     name: "Upgraded",
+    type: "event",
   },
   {
-    type: "function",
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [{ name: "", internalType: "string", type: "string" }],
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
     stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "origin",
-        internalType: "struct Origin",
-        type: "tuple",
         components: [
-          { name: "srcEid", internalType: "uint32", type: "uint32" },
-          { name: "sender", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
+          {
+            internalType: "uint32",
+            name: "srcEid",
+            type: "uint32",
+          },
+          {
+            internalType: "bytes32",
+            name: "sender",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
         ],
+        internalType: "struct Origin",
+        name: "origin",
+        type: "tuple",
       },
     ],
     name: "allowInitializePath",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
     stateMutability: "view",
+    type: "function",
   },
   {
+    inputs: [],
+    name: "composeMsgSender",
+    outputs: [
+      {
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
+  },
+  {
     inputs: [],
     name: "endpoint",
     outputs: [
       {
-        name: "",
         internalType: "contract ILayerZeroEndpointV2",
+        name: "",
         type: "address",
       },
     ],
     stateMutability: "view",
+    type: "function",
   },
   {
+    inputs: [],
+    name: "getLastETHPrice",
+    outputs: [
+      {
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "assetName",
+        type: "uint8",
+      },
+    ],
+    name: "getOmniChainCollateralData",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "noOfIndices",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalDepositedAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalDepositedAmountInETH",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalLiquidatedAmount",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct IGlobalVariables.CollateralData",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getOmniChainData",
     outputs: [
       {
-        name: "",
-        internalType: "struct IGlobalVariables.OmniChainData",
-        type: "tuple",
         components: [
           {
+            internalType: "uint256",
             name: "normalizedAmount",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "ethVaultValue", internalType: "uint256", type: "uint256" },
-          { name: "cdsPoolValue", internalType: "uint256", type: "uint256" },
-          { name: "totalCDSPool", internalType: "uint256", type: "uint256" },
-          {
-            name: "ethRemainingInWithdraw",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "ethValueRemainingInWithdraw",
             internalType: "uint256",
+            name: "vaultValue",
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "cdsPoolValue",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralValueRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
             name: "noOfLiquidations",
-            internalType: "uint128",
             type: "uint128",
           },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
-          { name: "cdsCount", internalType: "uint64", type: "uint64" },
           {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "cdsCount",
+            type: "uint64",
+          },
+          {
+            internalType: "uint256",
             name: "totalCdsDepositedAmount",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalCdsDepositedAmountWithOptionFees",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalAvailableLiquidationAmount",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "totalAvailableLiquidationAmountForPropCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "usdtAmountDepositedTillNow",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "burnedUSDaInRedeem",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          {
-            name: "lastCumulativeRate",
             internalType: "uint128",
+            name: "lastCumulativeRate",
             type: "uint128",
           },
           {
+            internalType: "uint256",
             name: "totalVolumeOfBorrowersAmountinWei",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalVolumeOfBorrowersAmountinUSD",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "noOfBorrowers", internalType: "uint128", type: "uint128" },
-          { name: "totalInterest", internalType: "uint256", type: "uint256" },
-          { name: "abondUSDaPool", internalType: "uint256", type: "uint256" },
-          {
-            name: "ethProfitsOfLiquidators",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "usdaGainedFromLiquidation",
+            internalType: "uint128",
+            name: "noOfBorrowers",
+            type: "uint128",
+          },
+          {
             internalType: "uint256",
+            name: "collateralProfitsOfLiquidators",
             type: "uint256",
           },
           {
-            name: "totalInterestFromLiquidation",
             internalType: "uint256",
+            name: "totalNoOfDepositIndices",
             type: "uint256",
           },
           {
-            name: "interestFromExternalProtocolDuringLiquidation",
             internalType: "uint256",
+            name: "totalVolumeOfBorrowersAmountLiquidatedInWei",
             type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "cumulativeValue",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "cumulativeValueSign",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "downsideProtected",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "nativeTokenDepositedTillNow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastRealisedUpsideCr",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "firstBorrowDeposited",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "totalCdsDepositedAmountForOpFeesCrCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastETHPrice",
+            type: "uint128",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "liqAmountUsedCV",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "liqCollateralCV",
+                type: "uint256",
+              },
+            ],
+            internalType:
+              "struct IBorrowLiquidation.LiquidationCumulativeValues",
+            name: "liquidationCumulativeValues",
+            type: "tuple",
           },
         ],
+        internalType: "struct IGlobalVariables.OmniChainData",
+        name: "",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
-      { name: "_usda", internalType: "address", type: "address" },
-      { name: "_cds", internalType: "address", type: "address" },
-      { name: "_endpoint", internalType: "address", type: "address" },
-      { name: "_delegate", internalType: "address", type: "address" },
+      {
+        internalType: "address",
+        name: "usdaAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "cdsAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint32",
+        name: "thisChainEid",
+        type: "uint32",
+      },
+      {
+        internalType: "address",
+        name: "lzEndpoint",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "delegate",
+        type: "address",
+      },
     ],
     name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "",
-        internalType: "struct Origin",
-        type: "tuple",
         components: [
-          { name: "srcEid", internalType: "uint32", type: "uint32" },
-          { name: "sender", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
+          {
+            internalType: "uint32",
+            name: "srcEid",
+            type: "uint32",
+          },
+          {
+            internalType: "bytes32",
+            name: "sender",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
         ],
-      },
-      { name: "", internalType: "bytes", type: "bytes" },
-      { name: "_sender", internalType: "address", type: "address" },
-    ],
-    name: "isComposeMsgSender",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      {
+        internalType: "struct Origin",
         name: "_origin",
-        internalType: "struct Origin",
         type: "tuple",
-        components: [
-          { name: "srcEid", internalType: "uint32", type: "uint32" },
-          { name: "sender", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
-        ],
       },
-      { name: "_guid", internalType: "bytes32", type: "bytes32" },
-      { name: "_message", internalType: "bytes", type: "bytes" },
-      { name: "_executor", internalType: "address", type: "address" },
-      { name: "_extraData", internalType: "bytes", type: "bytes" },
+      {
+        internalType: "bytes32",
+        name: "_guid",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "_message",
+        type: "bytes",
+      },
+      {
+        internalType: "address",
+        name: "_executor",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "_extraData",
+        type: "bytes",
+      },
     ],
     name: "lzReceive",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
-      { name: "", internalType: "uint32", type: "uint32" },
-      { name: "", internalType: "bytes32", type: "bytes32" },
+      {
+        internalType: "uint32",
+        name: "",
+        type: "uint32",
+      },
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
     ],
     name: "nextNonce",
-    outputs: [{ name: "nonce", internalType: "uint64", type: "uint64" }],
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "nonce",
+        type: "uint64",
+      },
+    ],
     stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [],
     name: "oAppVersion",
     outputs: [
-      { name: "senderVersion", internalType: "uint64", type: "uint64" },
-      { name: "receiverVersion", internalType: "uint64", type: "uint64" },
+      {
+        internalType: "uint64",
+        name: "senderVersion",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "receiverVersion",
+        type: "uint64",
+      },
     ],
     stateMutability: "pure",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "_functionToDo",
         internalType: "enum IGlobalVariables.FunctionToDo",
+        name: "functionToDo",
         type: "uint8",
       },
       {
-        name: "_oftTransferData",
-        internalType: "struct IGlobalVariables.USDaOftTransferData",
-        type: "tuple",
         components: [
-          { name: "recipient", internalType: "address", type: "address" },
-          { name: "tokensToSend", internalType: "uint256", type: "uint256" },
-        ],
-      },
-      {
-        name: "_nativeTokenTransferData",
-        internalType: "struct IGlobalVariables.NativeTokenTransferData",
-        type: "tuple",
-        components: [
-          { name: "recipient", internalType: "address", type: "address" },
           {
-            name: "nativeTokensToSend",
+            internalType: "address",
+            name: "recipient",
+            type: "address",
+          },
+          {
             internalType: "uint256",
+            name: "tokensToSend",
             type: "uint256",
           },
         ],
-      },
-      { name: "_refundAddress", internalType: "address", type: "address" },
-    ],
-    name: "oftOrNativeReceiveFromOtherChains",
-    outputs: [
-      {
-        name: "receipt",
-        internalType: "struct MessagingReceipt",
+        internalType: "struct IGlobalVariables.USDaOftTransferData",
+        name: "oftTransferData",
         type: "tuple",
+      },
+      {
         components: [
-          { name: "guid", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
           {
-            name: "fee",
-            internalType: "struct MessagingFee",
-            type: "tuple",
-            components: [
-              { name: "nativeFee", internalType: "uint256", type: "uint256" },
-              { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
-            ],
+            internalType: "address",
+            name: "recipient",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "ethToSend",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "weETHToSend",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "rsETHToSend",
+            type: "uint256",
           },
         ],
+        internalType: "struct IGlobalVariables.CollateralTokenTransferData",
+        name: "collateralTokenTransferData",
+        type: "tuple",
+      },
+      {
+        internalType: "enum IGlobalVariables.CallingFunction",
+        name: "callingFunction",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "refundAddress",
+        type: "address",
+      },
+    ],
+    name: "oftOrCollateralReceiveFromOtherChains",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "guid",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "nativeFee",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "lzTokenFee",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct MessagingFee",
+            name: "fee",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct MessagingReceipt",
+        name: "receipt",
+        type: "tuple",
       },
     ],
     stateMutability: "payable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [],
     name: "owner",
-    outputs: [{ name: "", internalType: "address", type: "address" }],
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "eid", internalType: "uint32", type: "uint32" }],
-    name: "peers",
-    outputs: [{ name: "peer", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
       {
-        name: "_functionToDo",
+        internalType: "uint32",
+        name: "_eid",
+        type: "uint32",
+      },
+    ],
+    name: "peers",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "enum IGlobalVariables.FunctionToDo",
+        name: "functionToDo",
         type: "uint8",
       },
-      { name: "_options", internalType: "bytes", type: "bytes" },
-      { name: "_payInLzToken", internalType: "bool", type: "bool" },
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "assetName",
+        type: "uint8",
+      },
+      {
+        internalType: "bytes",
+        name: "options",
+        type: "bytes",
+      },
+      {
+        internalType: "bool",
+        name: "payInLzToken",
+        type: "bool",
+      },
     ],
     name: "quote",
     outputs: [
       {
-        name: "fee",
-        internalType: "struct MessagingFee",
-        type: "tuple",
         components: [
-          { name: "nativeFee", internalType: "uint256", type: "uint256" },
-          { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
+          {
+            internalType: "uint256",
+            name: "nativeFee",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lzTokenFee",
+            type: "uint256",
+          },
         ],
+        internalType: "struct MessagingFee",
+        name: "fee",
+        type: "tuple",
       },
     ],
     stateMutability: "view",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "_functionToDo",
         internalType: "enum IGlobalVariables.FunctionToDo",
+        name: "functionToDo",
         type: "uint8",
       },
       {
-        name: "_fee",
-        internalType: "struct MessagingFee",
-        type: "tuple",
-        components: [
-          { name: "nativeFee", internalType: "uint256", type: "uint256" },
-          { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
-        ],
+        internalType: "enum IBorrowing.AssetName",
+        name: "assetName",
+        type: "uint8",
       },
-      { name: "_options", internalType: "bytes", type: "bytes" },
-      { name: "_refundAddress", internalType: "address", type: "address" },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "nativeFee",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lzTokenFee",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct MessagingFee",
+        name: "fee",
+        type: "tuple",
+      },
+      {
+        internalType: "bytes",
+        name: "options",
+        type: "bytes",
+      },
+      {
+        internalType: "address",
+        name: "refundAddress",
+        type: "address",
+      },
     ],
     name: "send",
     outputs: [
       {
-        name: "receipt",
-        internalType: "struct MessagingReceipt",
-        type: "tuple",
         components: [
-          { name: "guid", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
           {
-            name: "fee",
-            internalType: "struct MessagingFee",
-            type: "tuple",
+            internalType: "bytes32",
+            name: "guid",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
             components: [
-              { name: "nativeFee", internalType: "uint256", type: "uint256" },
-              { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
+              {
+                internalType: "uint256",
+                name: "nativeFee",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "lzTokenFee",
+                type: "uint256",
+              },
             ],
+            internalType: "struct MessagingFee",
+            name: "fee",
+            type: "tuple",
           },
         ],
+        internalType: "struct MessagingReceipt",
+        name: "receipt",
+        type: "tuple",
       },
     ],
     stateMutability: "payable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "_functionToDo",
         internalType: "enum IGlobalVariables.FunctionToDo",
+        name: "functionToDo",
         type: "uint8",
       },
-      { name: "_liqIndex", internalType: "uint128", type: "uint128" },
       {
-        name: "_liquidationInfo",
-        internalType: "struct CDSInterface.LiquidationInfo",
-        type: "tuple",
+        internalType: "enum IBorrowing.AssetName",
+        name: "assetName",
+        type: "uint8",
+      },
+      {
         components: [
           {
-            name: "liquidationAmount",
-            internalType: "uint128",
-            type: "uint128",
-          },
-          { name: "profits", internalType: "uint128", type: "uint128" },
-          { name: "ethAmount", internalType: "uint128", type: "uint128" },
-          {
-            name: "availableLiquidationAmount",
             internalType: "uint256",
+            name: "nativeFee",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lzTokenFee",
             type: "uint256",
           },
         ],
+        internalType: "struct MessagingFee",
+        name: "fee",
+        type: "tuple",
       },
       {
-        name: "_fee",
-        internalType: "struct MessagingFee",
-        type: "tuple",
-        components: [
-          { name: "nativeFee", internalType: "uint256", type: "uint256" },
-          { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
-        ],
+        internalType: "bytes",
+        name: "options",
+        type: "bytes",
       },
-      { name: "_options", internalType: "bytes", type: "bytes" },
-      { name: "_refundAddress", internalType: "address", type: "address" },
+      {
+        internalType: "address",
+        name: "refundAddress",
+        type: "address",
+      },
     ],
     name: "sendForLiquidation",
     outputs: [
       {
-        name: "receipt",
-        internalType: "struct MessagingReceipt",
-        type: "tuple",
         components: [
-          { name: "guid", internalType: "bytes32", type: "bytes32" },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
           {
-            name: "fee",
-            internalType: "struct MessagingFee",
-            type: "tuple",
+            internalType: "bytes32",
+            name: "guid",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
             components: [
-              { name: "nativeFee", internalType: "uint256", type: "uint256" },
-              { name: "lzTokenFee", internalType: "uint256", type: "uint256" },
+              {
+                internalType: "uint256",
+                name: "nativeFee",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "lzTokenFee",
+                type: "uint256",
+              },
             ],
+            internalType: "struct MessagingFee",
+            name: "fee",
+            type: "tuple",
           },
         ],
+        internalType: "struct MessagingReceipt",
+        name: "receipt",
+        type: "tuple",
       },
     ],
     stateMutability: "payable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "_borrowLiq", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_borrowLiq",
+        type: "address",
+      },
+    ],
     name: "setBorrowLiq",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "_borrow", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_borrow",
+        type: "address",
+      },
+    ],
     name: "setBorrowing",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "_delegate", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_delegate",
+        type: "address",
+      },
+    ],
     name: "setDelegate",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "_eid", internalType: "uint32", type: "uint32" }],
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "eid",
+        type: "uint32",
+      },
+    ],
     name: "setDstEid",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
-      { name: "_globalVariables", internalType: "address", type: "address" },
+      {
+        internalType: "address",
+        name: "_globalVariables",
+        type: "address",
+      },
     ],
     name: "setDstGlobalVariablesAddress",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
       {
-        name: "_omniChainData",
-        internalType: "struct IGlobalVariables.OmniChainData",
-        type: "tuple",
         components: [
           {
+            internalType: "uint256",
             name: "normalizedAmount",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "ethVaultValue", internalType: "uint256", type: "uint256" },
-          { name: "cdsPoolValue", internalType: "uint256", type: "uint256" },
-          { name: "totalCDSPool", internalType: "uint256", type: "uint256" },
-          {
-            name: "ethRemainingInWithdraw",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "ethValueRemainingInWithdraw",
             internalType: "uint256",
+            name: "vaultValue",
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "cdsPoolValue",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralValueRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
             name: "noOfLiquidations",
-            internalType: "uint128",
             type: "uint128",
           },
-          { name: "nonce", internalType: "uint64", type: "uint64" },
-          { name: "cdsCount", internalType: "uint64", type: "uint64" },
           {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "cdsCount",
+            type: "uint64",
+          },
+          {
+            internalType: "uint256",
             name: "totalCdsDepositedAmount",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalCdsDepositedAmountWithOptionFees",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalAvailableLiquidationAmount",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "totalAvailableLiquidationAmountForPropCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "usdtAmountDepositedTillNow",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "burnedUSDaInRedeem",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          {
-            name: "lastCumulativeRate",
             internalType: "uint128",
+            name: "lastCumulativeRate",
             type: "uint128",
           },
           {
+            internalType: "uint256",
             name: "totalVolumeOfBorrowersAmountinWei",
-            internalType: "uint256",
             type: "uint256",
           },
           {
+            internalType: "uint256",
             name: "totalVolumeOfBorrowersAmountinUSD",
-            internalType: "uint256",
-            type: "uint256",
-          },
-          { name: "noOfBorrowers", internalType: "uint128", type: "uint128" },
-          { name: "totalInterest", internalType: "uint256", type: "uint256" },
-          { name: "abondUSDaPool", internalType: "uint256", type: "uint256" },
-          {
-            name: "ethProfitsOfLiquidators",
-            internalType: "uint256",
             type: "uint256",
           },
           {
-            name: "usdaGainedFromLiquidation",
+            internalType: "uint128",
+            name: "noOfBorrowers",
+            type: "uint128",
+          },
+          {
             internalType: "uint256",
+            name: "collateralProfitsOfLiquidators",
             type: "uint256",
           },
           {
-            name: "totalInterestFromLiquidation",
             internalType: "uint256",
+            name: "totalNoOfDepositIndices",
             type: "uint256",
           },
           {
-            name: "interestFromExternalProtocolDuringLiquidation",
             internalType: "uint256",
+            name: "totalVolumeOfBorrowersAmountLiquidatedInWei",
             type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "cumulativeValue",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "cumulativeValueSign",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "downsideProtected",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "nativeTokenDepositedTillNow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastRealisedUpsideCr",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "firstBorrowDeposited",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "totalCdsDepositedAmountForOpFeesCrCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastETHPrice",
+            type: "uint128",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "liqAmountUsedCV",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "liqCollateralCV",
+                type: "uint256",
+              },
+            ],
+            internalType:
+              "struct IBorrowLiquidation.LiquidationCumulativeValues",
+            name: "liquidationCumulativeValues",
+            type: "tuple",
           },
         ],
+        internalType: "struct IGlobalVariables.OmniChainData",
+        name: "_omniChainData",
+        type: "tuple",
       },
     ],
     name: "setOmniChainData",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
-      { name: "_eid", internalType: "uint32", type: "uint32" },
-      { name: "_peer", internalType: "bytes32", type: "bytes32" },
+      {
+        internalType: "uint32",
+        name: "_eid",
+        type: "uint32",
+      },
+      {
+        internalType: "bytes32",
+        name: "_peer",
+        type: "bytes32",
+      },
     ],
     name: "setPeer",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "_treasury", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "_treasury",
+        type: "address",
+      },
+    ],
     name: "setTreasury",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
-    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
     name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    type: "function",
     inputs: [
-      { name: "newImplementation", internalType: "address", type: "address" },
-      { name: "data", internalType: "bytes", type: "bytes" },
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "assetName",
+        type: "uint8",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "noOfIndices",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalDepositedAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalDepositedAmountInETH",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalLiquidatedAmount",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct IGlobalVariables.CollateralData",
+        name: "collateralData",
+        type: "tuple",
+      },
+    ],
+    name: "updateCollateralData",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
     ],
     name: "upgradeToAndCall",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
   },
-  { type: "receive", stateMutability: "payable" },
+  {
+    inputs: [],
+    name: "viewOmniChainData",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "normalizedAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "vaultValue",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "cdsPoolValue",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralValueRemainingInWithdraw",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "noOfLiquidations",
+            type: "uint128",
+          },
+          {
+            internalType: "uint64",
+            name: "nonce",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "cdsCount",
+            type: "uint64",
+          },
+          {
+            internalType: "uint256",
+            name: "totalCdsDepositedAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalCdsDepositedAmountWithOptionFees",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalAvailableLiquidationAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalAvailableLiquidationAmountForPropCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "usdtAmountDepositedTillNow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastCumulativeRate",
+            type: "uint128",
+          },
+          {
+            internalType: "uint256",
+            name: "totalVolumeOfBorrowersAmountinWei",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalVolumeOfBorrowersAmountinUSD",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "noOfBorrowers",
+            type: "uint128",
+          },
+          {
+            internalType: "uint256",
+            name: "collateralProfitsOfLiquidators",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalNoOfDepositIndices",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalVolumeOfBorrowersAmountLiquidatedInWei",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "cumulativeValue",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "cumulativeValueSign",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "downsideProtected",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "nativeTokenDepositedTillNow",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastRealisedUpsideCr",
+            type: "uint128",
+          },
+          {
+            internalType: "bool",
+            name: "firstBorrowDeposited",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "totalCdsDepositedAmountForOpFeesCrCalc",
+            type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "lastETHPrice",
+            type: "uint128",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "liqAmountUsedCV",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "liqCollateralCV",
+                type: "uint256",
+              },
+            ],
+            internalType:
+              "struct IBorrowLiquidation.LiquidationCumulativeValues",
+            name: "liquidationCumulativeValues",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IGlobalVariables.OmniChainData",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "toAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "transferAmount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawDustAmounts",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    stateMutability: "payable",
+    type: "receive",
+  },
 ] as const;

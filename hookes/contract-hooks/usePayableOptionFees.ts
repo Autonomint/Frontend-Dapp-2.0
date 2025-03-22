@@ -1,6 +1,5 @@
-import { usDaAbi } from "@/blockchain/abis/usda";
-import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { borrowingContractAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
 const usePayableOptionFees = (index: any) => {
@@ -11,8 +10,11 @@ const usePayableOptionFees = (index: any) => {
     error: payableOptionFeesError,
     refetch: refetchPayableOptionFees,
   } = useReadContract({
-    abi: testusdtAbiAbi,
-    address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
     functionName: "getOptionFeesToPay",
     args: [index],
   });

@@ -10,7 +10,12 @@ import dcdsFrame from "@/app/assets/Frame 350.png";
 import USDaIcon from "@/app/assets/logo.svg";
 import ModeIcon from "@/app/assets/mode.png";
 import OPIcon from "@/app/assets/optimism.png";
-import { cdsAddress } from "@/blockchain/contracts";
+import {
+  cdsAddress,
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import { Checkbox } from "@/design-systems/atoms/checkbox";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import {
@@ -46,13 +51,14 @@ import { Info, Network } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits, parseUnits, zeroAddress } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import PageLoader from "@/design-systems/molecule/page-loader";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -96,37 +102,37 @@ const formSchema = Yup.object().shape({
     })
     .nullable(),
 
-  usdcAmount: Yup.mixed()
-    .test("is-required", "USDC amount is required", function (value) {
-      return this.parent.usdcFlag
-        ? value !== null && value !== undefined
-        : true;
-    })
-    .test("is-valid-number", "Value must be greater than 0", (value) => {
-      if (value === null || value === undefined) {
-        return true;
-      }
-      return Number(value) >= 0;
-    })
-    .nullable(),
+  // opAmount: Yup.mixed()
+  //   .test("is-required"mode amount is required", function (value) {
+  //     return this.parent.usdcFlag
+  //       ? value !== null && value !== undefined
+  //       : true;
+  //   })
+  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
+  //     if (value === null || value === undefined) {
+  //       return true;
+  //     }
+  //     return Number(value) >= 0;
+  //   })
+  //   .nullable(),
 
-  usdeAmount: Yup.mixed()
-    .test("is-required", "USDE amount is required", function (value) {
-      return this.parent.usdeFlag
-        ? value !== null && value !== undefined
-        : true;
-    })
-    .test("is-valid-number", "Value must be greater than 0", (value) => {
-      if (value === null || value === undefined) {
-        return true;
-      }
-      return Number(value) >= 0;
-    })
-    .nullable(),
+  // modeAmount: Yup.mixed()
+  //   .test("is-required", "USDE amount is required", function (value) {
+  //     return this.parent.usdeFlag
+  //       ? value !== null && value !== undefined
+  //       : true;
+  //   })
+  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
+  //     if (value === null || value === undefined) {
+  //       return true;
+  //     }
+  //     return Number(value) >= 0;
+  //   })
+  //   .nullable(),
 
-  lockInPeriod: Yup.string().required("Lock-in period is required"),
+  // lockInPeriod: Yup.string().required("Lock-in period is required"),
 
-  liquidationGains: Yup.boolean(),
+  // liquidationGains: Yup.boolean(),
 });
 
 function DCDSTemplate() {
@@ -154,12 +160,12 @@ function DCDSTemplate() {
     initialValues: {
       usdaFlag: false,
       usdtFlag: false,
-      usdcFlag: false,
-      usdeFlag: false,
+      modeFlag: false,
+      opFlag: false,
       usdaAmount: null,
       usdtAmount: null,
-      usdcAmount: null,
-      usdeAmount: null,
+      opAmount: null,
+      modeAmount: null,
       lockInPeriod: null,
       liquidationGains: false,
     },
@@ -322,8 +328,27 @@ function DCDSTemplate() {
   // useEffect to check the status of the usdt approval transaction
   const usdtAmountLocal = formik.values.usdtAmount;
   const usdaAmountLocal = formik.values.usdaAmount;
+  const opAmountLocal = formik.values.opAmount;
+  const modeAmountLocal = formik.values.modeAmount;
   const liquidationGains = formik.values.liquidationGains;
   const lockInPeriodLocal = formik.values.lockInPeriod;
+  const nativeTokenAmount =
+    chainId == NetworkId.Mode
+      ? formik.values.modeAmount
+      : formik.values.opAmount;
+
+  const nativeTokenAdds =
+    formik.values.opFlag || formik.values.modeFlag
+      ? nativeTokenAddress[chainId || 0]
+      : zeroAddress;
+  const usdaTokenAdds = usDaAddress[chainId as keyof typeof usDaAddress];
+
+  const usdtTokenAdds = formik.values.usdtFlag
+    ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+    : zeroAddress;
+
+  const { getOraclePrice, getOraclePriceRefetch } =
+    useMasterPriceOracle(nativeTokenAdds);
 
   useEffect(() => {
     if (UsdtApprovalSuccessReceipt) {
@@ -332,20 +357,38 @@ function DCDSTemplate() {
         setDcdsDepositLoadingLocal(true);
       }, 600);
 
+      // const price = await deployedMasterPriceOracleA.price(await modeToken.getAddress());
+      const price = getOraclePrice as [number, number];
+
       const liqAmnt =
-        ((Number(usdaAmountLocal ? usdaAmountLocal : 0) +
-          Number(usdtAmountLocal ? usdtAmountLocal : 0)) *
-          80) /
-        100;
+        (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
+          Number(usdtAmountLocal ? usdtAmountLocal : 0) +
+          (Number(nativeTokenAmount) * 0.7 * Number(price[1])) / 1e6) *
+        1e6;
+
+      // const liqAmnt =
+      //   ((Number(usdaAmountLocal ? usdaAmountLocal : 0) +
+      //     Number(usdtAmountLocal ? usdtAmountLocal : 0)) *
+      //     80) /
+      //   100;
+
       if (nativeFee) {
         handleDcdsDeposit?.(
           [
-            BigInt(
-              usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
-            ),
-            BigInt(
-              usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
-            ),
+            [usdaTokenAdds, usdtTokenAdds, nativeTokenAdds],
+            [
+              BigInt(
+                usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
+              ),
+              BigInt(
+                usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
+              ),
+              BigInt(
+                modeAmountLocal
+                  ? parseUnits(nativeTokenAmount?.toString() || "0", 6)
+                  : 0
+              ),
+            ],
             liquidationGains,
             liquidationGains ? parseUnits(liqAmnt.toString(), 6) : 0n,
             BigInt(Number(lockInPeriodLocal || 0) * 86400000),
@@ -415,16 +458,24 @@ function DCDSTemplate() {
         if (nativeFee?.nativeFee) {
           handleDcdsDeposit?.(
             [
-              BigInt(
-                formik.values.usdtAmount
-                  ? parseUnits(formik.values.usdtAmount.toString(), 6)
-                  : 0
-              ),
-              BigInt(
-                formik.values.usdaAmount
-                  ? parseUnits(formik.values.usdaAmount.toString(), 6)
-                  : 0
-              ),
+              [usdaTokenAdds, zeroAddress, zeroAddress],
+              [
+                BigInt(
+                  usdaAmountLocal
+                    ? parseUnits(usdaAmountLocal.toString(), 6)
+                    : 0
+                ),
+                BigInt(
+                  usdtAmountLocal
+                    ? parseUnits(usdtAmountLocal.toString(), 6)
+                    : 0
+                ),
+                BigInt(
+                  modeAmountLocal
+                    ? parseUnits(nativeTokenAmount?.toString() || "0", 6)
+                    : 0
+                ),
+              ],
               formik.values.liquidationGains,
               formik.values.liquidationGains
                 ? parseUnits(liqAmnt.toString(), 6)
@@ -931,11 +982,11 @@ function DCDSTemplate() {
           )
         )}`}
       />
-      <TokenTvlDetails
+      {/* <TokenTvlDetails
         icon={USDaIcon}
         tokenName="USDa"
         tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} `}
-      />
+      /> */}
       <HowItWorksPopUp
         isDialogOpen={isOptionHowItWork}
         setIsDialogOpen={() => setIsOpenHowItWork(false)}

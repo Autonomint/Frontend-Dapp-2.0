@@ -7,6 +7,7 @@ import {
   abondAddress,
   borrowingContractAddress,
   cdsAddress,
+  testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
@@ -49,6 +50,7 @@ const formSchema = Yup.object({
     .nullable(),
   outputCollateralAmount: Yup.number().positive("Value must be positive"),
   outputCollateral: Yup.string(),
+  redeemTokenName: Yup.string(),
   usdaBalance: Yup.number(),
 });
 
@@ -59,6 +61,7 @@ const initialValues = {
   outputCollateral: "",
   outputCollateralAmount: 0,
   usdaBalance: 0,
+  redeemTokenName: "USDT",
 };
 
 const RedeemContainer = () => {
@@ -110,7 +113,7 @@ const RedeemContainer = () => {
     .toHex()
     .toString() as `0x${string}`;
   const Eid = chainId === 11155111 ? 40245 : 40161;
-  const { quoteValue: nativeFee1, quoteError } = useGetGlobalQuote(options);
+  // const { quoteValue: nativeFee1, quoteError } = useGetGlobalQuote(options);
 
   const {
     isPending: amintApproveLoading,
@@ -139,7 +142,7 @@ const RedeemContainer = () => {
   });
 
   useEffect(() => {
-    if (usdaApproveSuccess && nativeFee1) {
+    if (usdaApproveSuccess) {
       setUsdaApproveLocal(false);
       setTimeout(() => {
         setRedeemFnLoadingLocal(true);
@@ -150,11 +153,13 @@ const RedeemContainer = () => {
         functionName: "redeemAssets",
         args: [
           BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
-          RedeemAssets[
-            formik.values.inputCollateral as keyof typeof RedeemAssets
-          ],
+          formik.values.redeemTokenName === "USDT"
+            ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+            : formik.values.redeemTokenName === "USDA"
+            ? usDaAddress[chainId as keyof typeof usDaAddress]
+            : usDaAddress[chainId as keyof typeof usDaAddress],
         ],
-        value: nativeFee1.nativeFee,
+        // value: nativeFee1.nativeFee,
       });
     } else if (usdaErrorApprove) {
     }
@@ -449,6 +454,21 @@ const RedeemContainer = () => {
     },
   ];
 
+  const RedeemTokenDropdownItems = [
+    {
+      label: "USDT",
+      onClick: () => formik.setFieldValue("redeemTokenName", "USDT"),
+    },
+    {
+      label: "USDC",
+      onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
+    },
+    {
+      label: "sUSD",
+      onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
+    },
+  ];
+
   const pathname = usePathname();
 
   return (
@@ -491,19 +511,32 @@ const RedeemContainer = () => {
               <span className="text-medium text-grayLight text-lg ">
                 Select Collateral
               </span>
-              <GenericDropdownMenu
-                buttonText={
-                  formik.values.inputCollateral
-                    ? `${
-                        formik.values.inputCollateral === "amint"
-                          ? "USDa"
-                          : "Abond"
-                      }`
-                    : "Select"
-                }
-                items={dropdownItems}
-                className="w-full text-[24px] border border-grayLight"
-              />
+              <div className="flex gap-4">
+                <GenericDropdownMenu
+                  buttonText={
+                    formik.values.inputCollateral
+                      ? `${
+                          formik.values.inputCollateral === "amint"
+                            ? "USDa"
+                            : "Abond"
+                        }`
+                      : "Select"
+                  }
+                  items={dropdownItems}
+                  className="w-full text-[24px] border border-grayLight"
+                />
+                {formik.values.inputCollateral === "amint" && (
+                  <GenericDropdownMenu
+                    buttonText={
+                      formik.values.redeemTokenName
+                        ? `${formik.values.redeemTokenName}`
+                        : "Select"
+                    }
+                    items={RedeemTokenDropdownItems}
+                    className="w-full text-[24px] border border-grayLight"
+                  />
+                )}
+              </div>
               <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
                 Balance{" "}
                 <span className="text-grayLight">
@@ -528,7 +561,8 @@ const RedeemContainer = () => {
                 {formik.values.inputCollateral === "amint" ? (
                   <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
                     <div className="p-1 text-2xl basis-3/5 text-bold">
-                      {formik.values.collateralAmount} USDT
+                      {formik.values.collateralAmount}{" "}
+                      {formik.values.redeemTokenName}
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (

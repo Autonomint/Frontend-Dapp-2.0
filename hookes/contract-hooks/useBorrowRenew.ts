@@ -1,7 +1,6 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
-import { AssetNames, MintAssets } from "@/utils/constants";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:
@@ -25,7 +24,7 @@ const useBorrowRenew = (mutation: any) => {
     },
   });
 
-  const renewBorrow = async (index: number) => {
+  const renewBorrow = async (index: bigint, nativeFee: bigint) => {
     writeContract?.({
       abi: borrowingContractAbi,
       address:
@@ -34,6 +33,7 @@ const useBorrowRenew = (mutation: any) => {
         ],
       functionName: "renewOptions",
       args: [index],
+      value: nativeFee,
     });
   };
 

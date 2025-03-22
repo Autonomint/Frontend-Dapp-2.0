@@ -73,7 +73,9 @@ function InputForm({ currency }: { currency: string }) {
     address: address,
     token:
       currency.toLocaleLowerCase() !== "eth"
-        ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
+        ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
+            chainId
+          ]
         : undefined,
   });
 
@@ -222,19 +224,13 @@ function InputForm({ currency }: { currency: string }) {
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
       mintUSDa?.({
-        strikePercent,
-        strikePrice: BigInt(
-          Math.floor(
-            (1 + Number(formik.values.strikePricePercent) / 100) *
-              Number(selectedAssetPrice ? selectedAssetPrice : 0)
-          )
-        ),
+        strikePercent: BigInt(strikePercent),
         volatility: BigInt(borrowSignedData.data?.volatility || 0),
         depositingAmount: parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         deadline: BigInt(borrowSignedData.data?.deadline || 0),
         nonce: BigInt(borrowSignedData.data?.nonce || 0),
-        signature: borrowSignedData.data?.signature || "",
+        signature: borrowSignedData.data?.signature || ("" as `0x${string}`),
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +

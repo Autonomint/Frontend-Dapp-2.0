@@ -6,7 +6,7 @@ export interface SignedDataReturn {
   volatility: number;
   odosAssembledData: string;
   oneInchSwapData: string;
-  signature: string;
+  signature: `0x${string}`;
   nonce: number;
   deadline: number;
 }

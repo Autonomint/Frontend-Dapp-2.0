@@ -20,6 +20,7 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 import { NetworkId } from "@/utils/constants";
+import { borrowAssetsAddress } from "@/blockchain/contracts";
 
 export function DcdsWithdrawModal({
   position,
@@ -175,7 +176,7 @@ export function DcdsWithdrawModal({
     useLastCumulativeRate();
   const { interestGained } = useInterestGain(position.index);
   const totalAmintAmount = useRef<Number>(Number(0));
-  const { usdValue: ethPrice } = useGetUsdValue();
+  const { usdValue: ethPrice } = useGetUsdValue(borrowAssetsAddress["ETH"]);
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
@@ -267,7 +268,11 @@ export function DcdsWithdrawModal({
     .addExecutorLzReceiveOption(250000, 0)
     .toHex()
     .toString() as `0x${string}`;
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
+    options,
+    5,
+    0
+  );
 
   const {
     dcdsFundWithdrawData,
@@ -352,6 +357,8 @@ export function DcdsWithdrawModal({
         [
           BigInt(position.index),
           res.data?.excessProfitCumulativeValue,
+          res.data?.odosAssembledData,
+          res.data?.usdtFromOdos,
           res.data?.nonce,
           res.data?.deadline,
           res.data?.signature,

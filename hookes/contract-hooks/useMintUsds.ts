@@ -11,14 +11,14 @@ enum StrikePrice {
 }
 
 interface BorrowInputs {
-  strikePercent: number; // uint8 can be mapped to the enum
-  strikePrice: bigint; // uint64 can be represented by bigint
+  strikePercent: bigint; // uint8 can be mapped to the enum
+  // strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint; // uint256 can be represented by bigint
   assetName: AssetNames;
   deadline: bigint;
-  signature: string;
+  signature: `0x${string}`;
   nonce: bigint;
 }
 
@@ -39,7 +39,6 @@ const useDepositTokens = (mutation: any) => {
 
   const mintUSDa = async ({
     strikePercent,
-    strikePrice,
     volatility,
     depositingAmount,
     value,
@@ -69,11 +68,13 @@ const useDepositTokens = (mutation: any) => {
       functionName: "depositTokens",
       args: [
         { strikePercent, volatility, assetName, depositingAmount },
-        nonce,
-        value,
-        deadline,
-        signature,
+        {
+          nonce,
+          deadline,
+          signature,
+        },
       ],
+      value,
     });
   };
 

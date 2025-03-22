@@ -91,7 +91,7 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
   });
 
   const handleDcdsDeposit = async (
-    args: [bigint, bigint, Widen<boolean>, bigint, bigint],
+    args: [`0x${string}`[], bigint[], Widen<boolean>, bigint, bigint],
     value: bigint
   ) => {
     writeDcdsDeposit({

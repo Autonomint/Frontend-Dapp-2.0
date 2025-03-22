@@ -7,6 +7,8 @@ export interface SignedDataReturn {
   signature: string;
   nonce: number;
   deadline: number;
+  odosAssembledData: string;
+  usdtFromOdos: string;
 }
 
 async function signedDataForDcdsWithDrawDeposit(

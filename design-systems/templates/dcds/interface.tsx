@@ -11,12 +11,12 @@ export interface TokenDetails {
 export interface FormValues {
   usdaFlag: boolean;
   usdtFlag: boolean;
-  usdcFlag: boolean;
-  usdeFlag: boolean;
+  modeFlag: boolean;
+  opFlag: boolean;
   usdaAmount: string | number | null;
   usdtAmount: string | number | null;
-  usdcAmount: string | number | null;
-  usdeAmount: string | number | null;
+  modeAmount: string | number | null;
+  opAmount: string | number | null;
   lockInPeriod: string | null;
   liquidationGains: boolean;
 }

@@ -247,7 +247,11 @@ export function WithdrawFund({
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
+    options,
+    3,
+    1
+  );
 
   const {
     calculateCumulativeRate,
@@ -462,9 +466,10 @@ export function WithdrawFund({
             position.index,
             nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData.data?.odosAssembledData,
+            borrowSignedData.data?.usdtFromOdos,
             BigInt(borrowSignedData.data?.nonce || 0),
             BigInt(borrowSignedData.data?.deadline || 0),
-            borrowSignedData.data?.signature || ""
+            (borrowSignedData.data?.signature || "") as `0x${string}`
           );
         }
         if (toggleView == "renew") {
@@ -472,7 +477,11 @@ export function WithdrawFund({
           setTimeout(() => {
             setRenewLoadingSM(true);
           }, 800);
-          renewBorrow(position.index);
+
+          renewBorrow(
+            BigInt(position.index),
+            nativeFee?.nativeFee || BigInt(0n)
+          );
         }
       } else if (usdaHashError) {
         toast.custom((t) => (

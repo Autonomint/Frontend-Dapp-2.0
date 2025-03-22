@@ -267,15 +267,15 @@ export function generateEthOptionName(
 export function getStrikePercent(strikePrice: number): number {
   switch (strikePrice) {
     case 5:
-      return 0;
+      return 5;
     case 10:
-      return 1;
+      return 10;
     case 15:
-      return 2;
+      return 15;
     case 20:
-      return 3;
+      return 20;
     default:
-      return 4;
+      return 5;
   }
 }
 
