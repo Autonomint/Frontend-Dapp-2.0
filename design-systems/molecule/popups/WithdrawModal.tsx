@@ -471,7 +471,7 @@ export function DcdsWithdrawModal({
                 {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
               Price Gains
             </Label>
-            <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
+            <Label className=" text-[14px] font-medium dark:text-white">
               {(
                 Number(apy == undefined ? 0 : apy[1]) +
                 Number(apy == undefined ? 0 : apy[2])

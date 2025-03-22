@@ -26,6 +26,7 @@ import {
   RatioValuesBottom,
 } from "./data";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 function StatsTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -339,4 +340,4 @@ function StatsTemplate() {
   );
 }
 
-export default StatsTemplate;
+export default WithPrivateRoute(StatsTemplate);

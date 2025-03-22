@@ -15,7 +15,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
       case "ETH":
         return ["BINANCE:ETHUSD|1D"];
       case "wrsETH":
-        return ["UNISWAP:RSETHWETH_94B78E.USD|1D"];
+        return ["CRYPTO:RSETHUSD|1D"];
       case "weETH":
         return ["CRYPTO:WEETHUSD|1D"];
 
@@ -24,13 +24,19 @@ function TradingViewWidget({ currency }: { currency: string }) {
     }
   };
 
+  console.log(theme, "theme");
+
   useEffect(() => {
+    const prefersDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    console.log(prefersDarkMode, "prefersDarkMode");
+
     const script = document.createElement("script");
     script.src =
       "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js";
     script.type = "text/javascript";
     script.async = true;
-    console.log(getTokenSymbol(), "getTokenSymbol()");
 
     // Define the widget configuration
     const widgetConfig = {
@@ -39,7 +45,14 @@ function TradingViewWidget({ currency }: { currency: string }) {
       width: "100%",
       height: "100%",
       locale: "en",
-      colorTheme: theme === "dark" ? "dark" : "light", // Adjust theme here
+      colorTheme:
+        theme === "dark"
+          ? "dark"
+          : theme === "light"
+          ? "light"
+          : prefersDarkMode
+          ? "dark"
+          : "light",
       autosize: true,
       showVolume: false,
       showMA: false,
@@ -49,7 +62,15 @@ function TradingViewWidget({ currency }: { currency: string }) {
       scaleMode: "Normal",
       borderWidth: 0,
       scalePosition: "left",
-      backgroundColor: theme === "dark" ? "black" : "white",
+      backgroundColor:
+        theme === "dark"
+          ? "black"
+          : theme === "light"
+          ? "white"
+          : prefersDarkMode
+          ? "black"
+          : "white",
+
       fontFamily:
         "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
       fontSize: "10",

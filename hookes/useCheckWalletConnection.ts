@@ -18,7 +18,8 @@ const useCheckWalletConnection = () => {
   const { open: openWalletPopup, close: closeWalletPopup } = useAppKit();
   const pathName = usePathname();
   useEffect(() => {
-    if (!isConnected && !address) {
+    const isVerified = localStorage.getItem("verified");
+    if (!isConnected && !address && isVerified) {
       if (PopUpRouteList.includes(pathName)) {
         openWalletPopup({
           view: "Connect",

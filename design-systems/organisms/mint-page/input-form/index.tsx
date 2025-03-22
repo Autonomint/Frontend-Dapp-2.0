@@ -163,7 +163,7 @@ function InputForm({ currency }: { currency: string }) {
       });
       setMintLoading(false);
       handleResetPage();
-      router.push("/dashboard/portfolio");
+      router.push("/farmyourluck");
     } else if (depositHashError) {
       setMintLoading(false);
       toast.custom((t) => {
@@ -182,13 +182,11 @@ function InputForm({ currency }: { currency: string }) {
     reset();
   };
 
-  const { optionFees, refetchOptionFee } = useFetchOptionFees(
+  const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     formik.values.collateralAmount,
     (selectedAssetPrice || 0) as number,
     getStrikePercent(formik.values.strikePricePercent)
   );
-
-  console.log(optionFees, "optionFees");
 
   async function handleMint(values: any) {
     if (!address) {
@@ -401,7 +399,7 @@ function InputForm({ currency }: { currency: string }) {
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
       </div>
-      <div className="col-span-1 h-[85px]">
+      <div className="col-span-1 overflow-hidden h-[85px]">
         {address && isConnected ? (
           !mintBtnLoading && (
             <Button

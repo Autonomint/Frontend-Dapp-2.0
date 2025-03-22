@@ -52,7 +52,6 @@ const useGetTotalUserDeposit = () => {
     enabled: !!address,
   });
 
-  console.log({ ethSepoliaCDSData, baseSepoliaCDSData }, ">");
 
   const totalUserDeposit =
     Number(ethSepoliaCDSData?.totalDepositedAmount || 0) +

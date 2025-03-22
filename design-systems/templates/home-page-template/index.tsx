@@ -58,8 +58,8 @@ export default function HomeTemplate() {
     },
     {
       orgName: "Deribit",
-      amount: "$280",
-      tag: "Lowest Fee",
+      amount: "$220",
+      tag: "Fee",
       tagColor: "#D6A100",
       tagBg: "#FFF7E0",
       textColor: "#D6A100",
@@ -67,8 +67,8 @@ export default function HomeTemplate() {
     },
     {
       orgName: "Hegic",
-      amount: "$272",
-      tag: "Lowest Fee",
+      amount: "$221",
+      tag: "Fee",
       tagColor: "#b42e2e",
       tagBg: "#FEE2E2",
       textColor: "#AA0001",

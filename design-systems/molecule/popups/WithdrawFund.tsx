@@ -365,7 +365,6 @@ export function WithdrawFund({
   });
 
   useEffect(() => {
-    console.log(withdrawError, "withdrawError");
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {

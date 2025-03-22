@@ -1,3 +1,5 @@
+"use client";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import Leaderboard from "./Leaderboard";
 
 function LeaderboardTemplate() {
@@ -8,4 +10,4 @@ function LeaderboardTemplate() {
   );
 }
 
-export default LeaderboardTemplate;
+export default WithPrivateRoute(LeaderboardTemplate);

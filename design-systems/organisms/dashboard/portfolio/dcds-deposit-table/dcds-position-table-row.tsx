@@ -36,7 +36,7 @@ const DcdsPositionTableRow = ({
         highlight
           ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : ""
-      } border-solid border-grayLight ${isLast ? "sm:border-b-0" : ""}`}
+      } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
       <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">

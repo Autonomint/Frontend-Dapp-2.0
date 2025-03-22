@@ -14,6 +14,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import Navbar from "@/design-systems/organisms/navbar/Navbar";
 import Footer from "@/design-systems/organisms/Footer";
 import WalletConnectPopup from "@/design-systems/molecule/popups/WalletConnect";
+import InviteCodePopup from "@/design-systems/molecule/popups/InviteCodePopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default function RootLayout({
                     {children}
                     <Footer />
                     {/* <WalletConnectPopup /> */}
+                    <InviteCodePopup />
                   </div>
                 </ThemeProvider>
               </Provider>

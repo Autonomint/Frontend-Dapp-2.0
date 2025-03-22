@@ -94,6 +94,7 @@ const useGetPositionList = () => {
     totalPages, // Total number of pages
     handleNextPage, // Function to go to next page
     handlePrevPage, // Function to go to previous page
+    setCurrentPage,
   };
 };
 

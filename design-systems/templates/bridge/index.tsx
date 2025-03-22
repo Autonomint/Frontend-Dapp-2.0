@@ -31,6 +31,7 @@ import {
 import { TransactionParams } from "./interfaces";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
@@ -589,4 +590,4 @@ function BridgeTemplate() {
   );
 }
 
-export default BridgeTemplate;
+export default WithPrivateRoute(BridgeTemplate);

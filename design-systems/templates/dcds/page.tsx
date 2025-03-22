@@ -5,8 +5,8 @@ import { Label } from "@/design-systems/atoms/label";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
-import dcdsDark from "@/app/assets/Frame 350 (1).svg";
-import dcdsFrame from "@/app/assets/Frame 350.png";
+import dcdsDark from "@/app/assets/dcds-ring-dark.svg";
+import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
 import USDaIcon from "@/app/assets/logo.svg";
 import ModeIcon from "@/app/assets/mode.png";
 import OPIcon from "@/app/assets/optimism.png";
@@ -59,6 +59,7 @@ import PageLoader from "@/design-systems/molecule/page-loader";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -219,7 +220,7 @@ function DCDSTemplate() {
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
 
-  const usdtBalance = useGetBalance("TUSDT");
+  const usdtBalance = useGetBalance("USDT");
   const usdaBalance = useGetBalance("USDa");
 
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -252,7 +253,7 @@ function DCDSTemplate() {
         isLoading: false,
         minTokenAmount: 500,
         active: true,
-        balanceAvailable: 0,
+        balanceAvailable: "0",
       });
     }
     if (chainId == Number(NetworkId.Mode)) {
@@ -261,7 +262,7 @@ function DCDSTemplate() {
         tokenName: "Mode",
         minTokenAmount: 500,
         isLoading: false,
-        balanceAvailable: 0,
+        balanceAvailable: "0",
         active: true,
       });
     }
@@ -739,7 +740,7 @@ function DCDSTemplate() {
             </div>
 
             {selectedTokens.length > 0 && (
-              <div className="w-[200px] z-[9] h-[200px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+              <div className="w-[235px] z-[9] h-[235px] bg-gradient-to-b dark:bg-custom-gradient-to-top from-[#E5F3FF] to-[#FFFDE4] absolute rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
                 {selectedTokens.slice(0, 2).map((token, index) => {
                   const totalTokens = selectedTokens.length;
 
@@ -996,4 +997,4 @@ function DCDSTemplate() {
   );
 }
 
-export default DCDSTemplate;
+export default WithPrivateRoute(DCDSTemplate);

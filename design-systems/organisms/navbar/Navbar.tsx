@@ -2,26 +2,76 @@
 import autonomintTxtImage from "@/app/assets/autonomint.svg";
 import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
+import { config } from "@/blockchain/WalletConfigs/iindex";
 import { Button } from "@/design-systems/atoms/button";
 import { CloseIcon, MenuIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { Moon, Sun, X } from "lucide-react";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { useDisconnect } from "@reown/appkit/react";
+import { watchAccount } from "@wagmi/core";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAccount, useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
-import WalletPopup from "../../molecule/popups/WalletPopUp";
-import NotificationPopupMobile from "../../molecule/popups/NotificationPopUpMobile";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
-import { usePathname } from "next/navigation";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import WalletPopup from "../../molecule/popups/WalletPopUp";
+import getSecretVar from "@/services/aws-secret";
+
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const { isConnected } = useCheckWalletConnection();
+  const { disconnect } = useDisconnect();
+
+  const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
+
+  const { address } = useAccount();
+
+  // Use this code snippet in your app.
+  // If you need more information about configurations or implementing the sample code, visit the AWS docs:
+  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
+
+  useAccountEffect({
+    onConnect(data) {
+      localStorage.setItem("currentAddress", data.address as string);
+    },
+    onDisconnect() {
+      localStorage.removeItem("currentAddress");
+    },
+  });
+  useEffect(() => {
+    getSecretVar();
+  }, []);
+
+  useEffect(() => {
+    const prefersDarkMode = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setSystemThemeDark(prefersDarkMode);
+    const unwatch = watchAccount(config, {
+      onChange(data) {
+        const currentAddress = localStorage.getItem("currentAddress");
+        if (
+          data.address &&
+          currentAddress != null &&
+          currentAddress?.toLocaleLowerCase() !=
+            data.address.toLocaleLowerCase()
+        ) {
+          localStorage.removeItem("verified");
+          disconnect();
+        }
+        console.log(data, ">>>>");
+      },
+    });
+
+    // unwatch();
+  }, []);
 
   useEffect(() => {
     setIsClient(true);
@@ -90,10 +140,20 @@ function Navbar() {
             variant={"shadowOutline"}
             className="border-[#041A50] hidden lg:block h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
             onClick={() =>
-              theme == "dark" ? setTheme("light") : setTheme("dark")
+              theme == "dark"
+                ? setTheme("light")
+                : theme == "light"
+                ? setTheme("dark")
+                : systemThemeDark
+                ? setTheme("light")
+                : setTheme("dark")
             }
           >
             {theme == "dark" ? (
+              <Sun style={{ width: "24px", height: "24px" }} />
+            ) : theme == "light" ? (
+              <Moon style={{ width: "24px", height: "24px" }} />
+            ) : systemThemeDark ? (
               <Sun style={{ width: "24px", height: "24px" }} />
             ) : (
               <Moon style={{ width: "24px", height: "24px" }} />

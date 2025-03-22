@@ -1,12 +1,12 @@
 "use client";
-import ethereumIcon from "@/app/assets/ethereum-icon.svg";
 
+import modeIconNew from "@/app/assets/mode.svg";
+import opIconNew from "@/app/assets/op.svg";
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
+import Spinner from "@/design-systems/atoms/Spinner";
 import {
-  BaseIcon,
   DownArrowIcon,
-  EthereumIcon,
   OptimismIcon,
   WalletIcon,
 } from "@/design-systems/atoms/SvgIcons";
@@ -29,13 +29,9 @@ import {
 } from "@reown/appkit/react";
 import { Check } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
-import TermAndCondition from "../TermAndCondition";
-import Link from "next/link";
-import modeIconNew from "@/app/assets/mode.svg";
-import opIconNew from "@/app/assets/op.svg";
-import Spinner from "@/design-systems/atoms/Spinner";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -175,7 +171,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             {/* Notification Section */}
             <NotificationContainer />
             <Button
-              onClick={() => disconnect()}
+              onClick={() => {
+                disconnect();
+                localStorage.removeItem("verified");
+              }}
               variant={"default"}
               className="border-[#041A50]  h-fit text-[18px]  font-normal  w-full p-[10px]"
             >
@@ -253,9 +252,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
               >
                 <div className=" flex flex-col gap-4">
-                  {chains.map((chain) => {
+                  {chains.map((chain, idx) => {
                     return (
                       <div
+                        key={idx}
                         onClick={() =>
                           switchChain({
                             chainId: chain.id,
@@ -370,7 +370,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {chainId === NetworkId.EthereumSepolia
+                  {Number(chainId) === Number(NetworkId.EthereumSepolia)
                     ? "ETH Sepolia"
                     : "Base Sepolia"}
                 </Typography>
@@ -383,7 +383,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <Button
                 onClick={async () => {
                   await disconnect();
-                  open();
+                  localStorage.removeItem("verified");
                 }}
                 variant={"default"}
                 className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"
@@ -397,7 +397,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     chainId == NetworkId.EthereumSepolia
                       ? "etherscan.io"
                       : "basescan.org"
-                  }/${address}`}
+                  }/address/${address}`}
+                  target="__blank"
                 >
                   <Typography
                     size="lg"

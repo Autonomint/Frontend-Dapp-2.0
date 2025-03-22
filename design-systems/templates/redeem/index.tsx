@@ -14,12 +14,12 @@ import { Button } from "@/design-systems/atoms/button";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import { Input } from "@/design-systems/atoms/input";
 import { Typography } from "@/design-systems/atoms/Typography";
-import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import useDeviceType from "@/hookes/useDeviceType";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -36,8 +36,6 @@ import {
   useWriteContract,
 } from "wagmi";
 import * as Yup from "yup";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { RedeemAssets } from "@/utils/constants";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -411,8 +409,6 @@ const RedeemContainer = () => {
     }
   }, [redeemdataEth]);
 
-  console.log(formik.errors, "w");
-
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
@@ -651,4 +647,4 @@ const RedeemContainer = () => {
   );
 };
 
-export default RedeemContainer;
+export default WithPrivateRoute(RedeemContainer);
