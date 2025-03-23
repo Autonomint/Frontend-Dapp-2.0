@@ -60,8 +60,11 @@ function InputForm({ currency }: { currency: string }) {
   } = useGetUsdValue(
     borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
   );
+  console.log(ethPrice, assetPrice, "eth");
+
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
+
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
@@ -79,6 +82,11 @@ function InputForm({ currency }: { currency: string }) {
         : undefined,
   });
 
+  console.log(
+    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
+    ethBalance,
+    "bal"
+  );
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
 
@@ -189,6 +197,7 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   async function handleMint(values: any) {
+    debugger;
     if (!address) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -356,7 +365,7 @@ function InputForm({ currency }: { currency: string }) {
                 Min: 0.05 ETH
               </span>
               <span className=" font-medium text-lg text-grayLight">
-                Bal: {formattedBalance} ETH
+                Bal: {formattedBalance} {currency}
               </span>
             </div>
           </div>

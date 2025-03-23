@@ -18,7 +18,7 @@ async function signedDataForBorrowWithDrawDeposit(
   index: number
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/borrows/signedDataForBorrowWithdraw`, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
@@ -37,7 +37,7 @@ const useGetBorrowWithdrawSignedData = (index: number) => {
     isPending: isPendingBorrowWithDrawSignedData,
     refetch: refetchBorrowWithDrawSignedData,
   } = useQuery({
-    queryKey: ["APY", index || 0],
+    queryKey: ["useGetBorrowWithdrawSignedData", index || 0],
     queryFn: () =>
       signedDataForBorrowWithDrawDeposit(
         address ? address : undefined,

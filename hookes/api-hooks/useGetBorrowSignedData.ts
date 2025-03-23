@@ -17,7 +17,7 @@ async function signedDataForBorrowDeposit(
   index: number
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/borrows/signedDataForBorrowDeposit`, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

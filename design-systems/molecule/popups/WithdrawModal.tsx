@@ -21,6 +21,7 @@ import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 import { NetworkId } from "@/utils/constants";
 import { borrowAssetsAddress } from "@/blockchain/contracts";
+import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
 
 export function DcdsWithdrawModal({
   position,
@@ -185,6 +186,9 @@ export function DcdsWithdrawModal({
   const [withdrawMethodLoading, setWithdrawMethodLoading] =
     useState<boolean>(false);
 
+  const [withdrawGainLoading, setWithdrawGainLoading] =
+    useState<boolean>(false);
+
   /**
    * Updates the deposit data based on the provided details.
    * If the details are available, it updates each value in the depositData array.
@@ -275,6 +279,79 @@ export function DcdsWithdrawModal({
   );
 
   const {
+    dcdsFundWithdrawGainAsync,
+    dcdsWithdrawGainData,
+    dcdsWithdrawGainError,
+    handleDcdsWithdrawGain,
+    isDcdsWithdrawGainPending,
+    resetDcdsWithdrawGain,
+  } = useDcdsWithdrawGain({
+    onError: () => {
+      setTimeout(() => {
+        setDcdsFundWithdrawLoadingLocal(false);
+      }, 1000);
+      setWithdrawMethodLoading(false);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    },
+  });
+
+  const {
+    data: cdsWithdrawGainReceipt,
+    isError: cdsWithdrawGainIsErrorReceipt,
+    isSuccess: cdsWithdrawGainReceiptIsSuccess,
+    error: cdsWithdrawGainReceiptError,
+  } = useWaitForTransactionReceipt({
+    hash: dcdsWithdrawGainData || undefined, // The transaction hash to wait for
+    confirmations: 2, // Number of confirmations required for success
+  });
+
+  useEffect(() => {
+    if (cdsWithdrawGainReceiptIsSuccess) {
+      setWithdrawMethodLoading(false);
+      toast.custom((t) => {
+        const link =
+          chainId === 84532
+            ? `https://sepolia.basescan.org/tx/${cdsWithdrawGainReceipt.transactionHash} `
+            : `https://sepolia.etherscan.io/tx/${cdsWithdrawGainReceipt.transactionHash}`;
+
+        return (
+          <ToastNotification
+            title="Withdraw Successful"
+            message=""
+            linkText={
+              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            }
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+    }
+    if (cdsWithdrawGainIsErrorReceipt) {
+      setTimeout(() => {
+        setDcdsFundWithdrawLoadingLocal(false);
+      }, 1000);
+      setWithdrawMethodLoading(false);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title={
+            String(
+              (cdsWithdrawGainReceiptError?.cause as { shortMessage: string })
+                .shortMessage as string
+            ) || "Transaction failed, Please try again"
+          }
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    }
+  }, [cdsWithdrawGainReceipt, cdsWithdrawGainIsErrorReceipt]);
+
+  const {
     dcdsFundWithdrawData,
     dcdsFundWithdrawError,
     handleDcdsFundWithdraw,
@@ -306,55 +383,14 @@ export function DcdsWithdrawModal({
   });
 
   useEffect(() => {
-    if (isCdsSuccessReceipt) {
-      setWithdrawMethodLoading(false);
-      toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${cdsLogdataReceipt.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${cdsLogdataReceipt.transactionHash}`;
-
-        return (
-          <ToastNotification
-            title="Withdraw Successful"
-            message=""
-            linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
-            }
-            linkUrl={link}
-            onClose={() => toast.dismiss(t)}
-          />
-        );
-      });
-    }
-    if (isCdserrorReceipt) {
-      setTimeout(() => {
-        setDcdsFundWithdrawLoadingLocal(false);
-      }, 1000);
-      setWithdrawMethodLoading(false);
-      toast.custom((t) => (
-        <ToastNotificationError
-          title={
-            String(
-              (cdsLogdataReceiptError?.cause as { shortMessage: string })
-                .shortMessage as string
-            ) || "Transaction failed, Please try again"
-          }
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-    }
-  }, [cdsLogdataReceipt, isCdserrorReceipt]);
-
-  const { refetchBorrowWithDrawSignedData } = useGetDcdsWithdrawSignedData();
-
-  const handleWithdrawFund = async () => {
-    setDcdsFundWithdrawLoadingLocal(true);
-    if (nativeFee) {
-      setWithdrawMethodLoading(true);
-      const res = await refetchBorrowWithDrawSignedData();
-      handleDcdsFundWithdraw?.(
-        [
+    const callEffect = async () => {
+      if (isCdsSuccessReceipt) {
+        setWithdrawMethodLoading(false);
+        setTimeout(() => {
+          setWithdrawGainLoading(true);
+        }, 1000);
+        const res = await refetchBorrowWithDrawSignedData();
+        handleDcdsWithdrawGain?.([
           BigInt(position.index),
           res.data?.excessProfitCumulativeValue,
           res.data?.odosAssembledData,
@@ -362,9 +398,64 @@ export function DcdsWithdrawModal({
           res.data?.nonce,
           res.data?.deadline,
           res.data?.signature,
-        ],
-        nativeFee.nativeFee
-      );
+        ]);
+      }
+      if (isCdserrorReceipt) {
+        setTimeout(() => {
+          setDcdsFundWithdrawLoadingLocal(false);
+        }, 1000);
+        setWithdrawMethodLoading(false);
+        toast.custom((t) => (
+          <ToastNotificationError
+            title={
+              String(
+                (cdsLogdataReceiptError?.cause as { shortMessage: string })
+                  .shortMessage as string
+              ) || "Transaction failed, Please try again"
+            }
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+      }
+    };
+    callEffect();
+  }, [cdsLogdataReceipt, isCdserrorReceipt]);
+
+  const { refetchBorrowWithDrawSignedData } = useGetDcdsWithdrawSignedData(
+    position.index
+  );
+
+  const handleWithdrawFund = async () => {
+    setDcdsFundWithdrawLoadingLocal(true);
+    if (position.status == "DEPOSITED") {
+      if (nativeFee) {
+        setWithdrawMethodLoading(true);
+        const res = await refetchBorrowWithDrawSignedData();
+        handleDcdsFundWithdraw?.(
+          [
+            BigInt(position.index),
+            res.data?.excessProfitCumulativeValue,
+            // res.data?.odosAssembledData,
+            // res.data?.usdtFromOdos,
+            res.data?.nonce,
+            res.data?.deadline,
+            res.data?.signature,
+          ],
+          nativeFee.nativeFee
+        );
+      }
+    } else if (position.status == "WITHDREW") {
+      setWithdrawGainLoading(true);
+      const res = await refetchBorrowWithDrawSignedData();
+      handleDcdsWithdrawGain?.([
+        BigInt(position.index),
+        res.data?.excessProfitCumulativeValue,
+        res.data?.odosAssembledData,
+        res.data?.usdtFromOdos,
+        res.data?.nonce,
+        res.data?.deadline,
+        res.data?.signature,
+      ]);
     }
   };
   const handleCloseDialog = () => {
@@ -585,14 +676,22 @@ export function DcdsWithdrawModal({
             <div className="h-[50px] md:h-[86px] mt-4">
               {true && (
                 <Button
-                  // onClick={handleWithdrawFund}
-                  // disabled={
-                  //   (position.status === "WITHDREW" ? true : false) ||
-                  //   Number(position.lockingPeriod) * 1000 > Date.now()
-                  // }
+                  onClick={handleWithdrawFund}
+                  disabled={
+                    (position.status === "WITHDREW" ? true : false) ||
+                    Number(position.lockingPeriod) * 1000 > Date.now()
+                  }
                   className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                 >
-                  {"Rebalance Now"}
+                  {position.status == "DEPOSITED"
+                    ? "Close Position"
+                    : position.status == "WITHDREW"
+                    ? "Withdraw"
+                    : position.status == "WITHDREW_GAINS "
+                    ? "Withdrawn"
+                    : position.status == "LIQUIDATED "
+                    ? "Liquidated"
+                    : "Withdrawn"}
                 </Button>
               )}
               <LoadingBox
@@ -600,7 +699,16 @@ export function DcdsWithdrawModal({
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
                 setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
-                heading="Rebalancing"
+                heading="Closing Position"
+                loadingCount="1/2"
+              />
+              <LoadingBox
+                isLoading={withdrawGainLoading}
+                isFailure={dcdsWithdrawGainError}
+                isSuccess={Boolean(dcdsWithdrawGainData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Withdrawing Gains"
+                loadingCount="2/2"
               />
             </div>
           </div>

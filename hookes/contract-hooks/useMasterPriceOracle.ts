@@ -20,7 +20,11 @@ const useMasterPriceOracle = (tokenAddress: `0x${string}`) => {
     },
   });
 
-  return { getOraclePrice, isLoadingOraclePrice, getOraclePriceRefetch };
+  return {
+    getOraclePrice: (getOraclePrice || [0, 0]) as [number, number],
+    isLoadingOraclePrice,
+    getOraclePriceRefetch,
+  };
 };
 
 export default useMasterPriceOracle;

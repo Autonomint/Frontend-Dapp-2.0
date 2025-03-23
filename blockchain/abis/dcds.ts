@@ -1091,6 +1091,30 @@ export const cdsAbi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+    ],
+    name: "getUsedAmount",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address[]",
         name: "_supportedTokenAddresses",
         type: "address[]",
@@ -1576,16 +1600,6 @@ export const cdsAbi = [
         type: "uint256",
       },
       {
-        internalType: "bytes",
-        name: "odosAssembledData",
-        type: "bytes",
-      },
-      {
-        internalType: "uint128",
-        name: "usdtFromOdos",
-        type: "uint128",
-      },
-      {
         internalType: "uint256",
         name: "nonce",
         type: "uint256",
@@ -1612,6 +1626,31 @@ export const cdsAbi = [
         internalType: "uint64",
         name: "index",
         type: "uint64",
+      },
+      {
+        internalType: "bytes",
+        name: "odosAssembledData",
+        type: "bytes",
+      },
+      {
+        internalType: "uint128",
+        name: "usdtFromOdos",
+        type: "uint128",
+      },
+      {
+        internalType: "uint256",
+        name: "nonce",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signature",
+        type: "bytes",
       },
     ],
     name: "withdrawGains",

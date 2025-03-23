@@ -4,7 +4,8 @@ import {
 } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
-import { ValueOf } from "viem";
+import { ValueOf, zeroAddress } from "viem";
+import { NetworkId } from "@/utils/constants";
 
 const useGetUsdValue = (assetAddress: ValueOf<typeof borrowAssetsAddress>) => {
   const { address, chainId } = useAccount();
@@ -16,16 +17,20 @@ const useGetUsdValue = (assetAddress: ValueOf<typeof borrowAssetsAddress>) => {
         chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getUSDValue",
-    // args: [assetAddress[919]],
-    query: { enabled: !!address },
+    args: [
+      assetAddress
+        ? assetAddress[(chainId || NetworkId.Mode) as keyof typeof assetAddress]
+        : zeroAddress,
+    ],
+    query: { enabled: !!address && !!chainId && !!assetAddress },
   });
+
+  console.log(usdValue, "usdValue");
 
   return {
     isUsdValuePending,
-    usdValue: usdValue?.[0] || 0,
-    assetPrice:
-      Number(usdValue?.[0]) +
-      (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e20,
+    usdValue: usdValue?.[1] || 0,
+    assetPrice: (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e20,
   };
 };
 

@@ -18,8 +18,8 @@ export const cdsAddress = {
 } as const;
 
 export const testusdtAbiAddress = {
-  919: "0x3Ae56Ae6Aa0848EFc6B865341c1C89daE6F54Bd5",
-  11155420: "0x7eAc043A7E4df19EFb31f8b5F37D73BF3a8e9ACd",
+  919: "0xe16C2C9978eD7a16ebc704b704A4d92a9890069a",
+  11155420: "0x6fc38878E82b7EDf83abD419C33bf1c500DdF362",
 } as const;
 
 export const abondAddress = {
@@ -65,8 +65,8 @@ export const globalAddress = {
 } as const;
 
 export const mpoAddress = {
-  919: "0x8a937FEec6Ef75dA8222C5ce44010292C0BDD29E",
-  11155420: "0x739E6a6C4233011D99F68d96D8A3560E690a64A3",
+  919: "0x6f299ED86A652f91814DBe9D9d8397A1FEa39f1C",
+  11155420: "0x61e052DbdD34190F6bD851838391F45022744C19",
 } as const;
 
 export const hegicETHAddress = "0xEfC0eEAdC1132A12c9487d800112693bf49EcfA2";

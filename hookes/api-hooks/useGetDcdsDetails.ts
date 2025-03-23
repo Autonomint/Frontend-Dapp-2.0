@@ -13,9 +13,9 @@ function getDeposits(
   address: `0x${string}` | undefined,
   chainId: Number
 ): Promise<DcdsDetailsResponse> {
-  return fetch(`${BACKEND_API_URL}/cds/totalDeposits/${84532}/${address}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BACKEND_API_URL}/cds/totalDeposits/${chainId}/${address}`
+  ).then((response) => response.json());
 }
 const useGetDcdsDepositList = () => {
   // Use the useAccount and useChainId hooks

@@ -60,8 +60,6 @@ const useFetchOptionFees = (
     retry: 1,
   });
 
-  
-
   const optionFees = (Fees as number[])?.[1]
     ? (Fees as number[])?.[1] / 10 ** 6
     : 0;
