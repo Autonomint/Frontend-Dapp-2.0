@@ -1,5 +1,5 @@
 import { globalAbi } from "@/blockchain/abis/global";
-import { globalAddress } from "@/utils/constants";
+import { globalAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
 const useGetOmniChainData = () => {

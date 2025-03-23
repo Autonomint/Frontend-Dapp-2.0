@@ -1,7 +1,7 @@
 "use client";
-import { SearchIcon } from "@/design-systems/atoms/SvgIcons";
-import { Input } from "@/design-systems/atoms/input";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { Input } from "@/design-systems/atoms/input";
+import { SearchIcon } from "@/design-systems/atoms/SvgIcons";
 import { WithdrawFund } from "@/design-systems/molecule/popups/WithdrawFund";
 import { DcdsWithdrawModal } from "@/design-systems/molecule/popups/WithdrawModal";
 import DcdsDepositTable from "@/design-systems/organisms/dashboard/portfolio/dcds-deposit-table";
@@ -11,16 +11,16 @@ import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
 import useGetDcdsDepositList from "@/hookes/api-hooks/useGetDcdsDetails";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { handleWheel } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -151,6 +151,8 @@ function PortfolioTemplate() {
     };
   }, []);
 
+  console.log(pagedPositionList, "pagedPositionList");
+
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
@@ -273,7 +275,7 @@ function PortfolioTemplate() {
         />
       )}
       {/* <RebalancePopup
-        isDialogOpen={false}
+        isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
       <DcdsWithdrawModal

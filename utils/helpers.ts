@@ -263,7 +263,21 @@ export function generateEthOptionName(
 
   return `ETH-${expiryDate}-${strikePrice}-${optionType}`;
 }
-
+// get strikePercent flag for smart contract
+export function getStrikePercent(strikePrice: number): number {
+  switch (strikePrice) {
+    case 5:
+      return 5;
+    case 10:
+      return 10;
+    case 15:
+      return 15;
+    case 20:
+      return 20;
+    default:
+      return 5;
+  }
+}
 export function calculateEthAmount(
   currentEthPrice: number,
   usdAmount: number
@@ -286,37 +300,41 @@ export function calculateRemainingDays(timestamp: number): number {
   return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
 }
 
-export function calculateRemainingTime(dateString: string) {
-  // Convert the ISO date string to a timestamp in seconds
-  const timestamp = Math.floor(new Date(dateString).getTime() / 1000);
-
+export function isFifteenDaysCompleted(timestamp: number): boolean {
   // Get the current timestamp in seconds
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
   // Calculate the difference in seconds
   const timeDifferenceInSeconds = timestamp - currentTimestamp;
 
-  // Calculate remaining days, hours, minutes, and seconds
-  const days = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
-  const hours = Math.floor(
-    (timeDifferenceInSeconds % (24 * 60 * 60)) / (60 * 60)
-  );
-  const minutes = Math.floor((timeDifferenceInSeconds % (60 * 60)) / 60);
-  const seconds = timeDifferenceInSeconds % 60;
+  // Convert 15 days to seconds (15 days * 24 hours * 60 minutes * 60 seconds)
+  const secondsIn15Days = 15 * 24 * 60 * 60;
 
-  // Build the formatted time string
-  let formattedTime = "";
-  if (days > 0) formattedTime += `${days} day${days > 1 ? "s" : ""} `;
-  if (hours > 0) formattedTime += `${hours} hour${hours > 1 ? "s" : ""} `;
-  if (minutes > 0) formattedTime += `${minutes} min${minutes > 1 ? "s" : ""} `;
-  if (seconds > 0 && days === 0)
-    formattedTime += `${seconds} sec${seconds > 1 ? "s" : ""}`;
-
-  // Return 0 for all values if the date has already passed
-  return timeDifferenceInSeconds > 0
-    ? { days, hours, minutes, seconds, formattedTime: formattedTime.trim() }
-    : { days: 0, hours: 0, minutes: 0, seconds: 0, formattedTime: "0 sec" };
+  // Check if 15 days have passed
+  return timeDifferenceInSeconds <= secondsIn15Days;
 }
+
+export function getDownsideProtectionTillNow(
+  depositEthPrice: number,
+  depositedAmount: number,
+  currentEthPrice: number
+): string {
+  // Calculate the first part
+  const result = (
+    (depositEthPrice / 100) * depositedAmount -
+    currentEthPrice
+  ).toFixed(2);
+
+  // Calculate the percentage
+  const percentage = (
+    ((depositEthPrice * depositedAmount - currentEthPrice) / currentEthPrice) *
+    100
+  ).toFixed(2);
+
+  // Return the formatted string
+  return `$${result} (${percentage}%)`;
+}
+
 export function calculateRemainingTimeDate(dateString: string) {
   // Convert the ISO date string to a timestamp in seconds
   const timestamp = Math.floor(new Date(dateString).getTime() / 1000);

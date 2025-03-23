@@ -44,6 +44,7 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  validTill: number;
   id: string;
   address: string;
   index: number;

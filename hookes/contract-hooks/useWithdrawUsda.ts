@@ -14,7 +14,15 @@ const useWithdrawUsda = (mutation: any) => {
   });
   const { chainId, address } = useAccount();
 
-  const withdrawUsda = async (index: number, nativeFee: bigint) => {
+  const withdrawUsda = async (
+    index: number,
+    nativeFee: bigint,
+    odosAssembledData: any,
+    usdtFromOdos: any,
+    nonce: bigint,
+    deadline: bigint,
+    signature: `0x${string}`
+  ) => {
     try {
       borrowWithdrawAsync({
         abi: borrowingContractAbi,
@@ -23,7 +31,17 @@ const useWithdrawUsda = (mutation: any) => {
             chainId as keyof typeof borrowingContractAddress
           ],
         functionName: "withDraw",
-        args: [address as `0x${string}`, BigInt(index)],
+        args: [
+          address as `0x${string}`,
+          BigInt(index),
+          odosAssembledData,
+          usdtFromOdos,
+          {
+            nonce,
+            deadline,
+            signature,
+          },
+        ],
         value: nativeFee,
       });
     } catch (error) {

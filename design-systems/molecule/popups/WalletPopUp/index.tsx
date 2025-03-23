@@ -1,11 +1,12 @@
 "use client";
 
+import modeIconNew from "@/app/assets/mode.svg";
+import opIconNew from "@/app/assets/op.svg";
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
+import Spinner from "@/design-systems/atoms/Spinner";
 import {
-  BaseIcon,
   DownArrowIcon,
-  EthereumIcon,
   OptimismIcon,
   WalletIcon,
 } from "@/design-systems/atoms/SvgIcons";
@@ -27,6 +28,7 @@ import {
   useDisconnect,
 } from "@reown/appkit/react";
 import { Check } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
@@ -40,11 +42,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
 
   const { open, close } = useAppKit();
-  const { address, isConnected, caipAddress, status } = useAppKitAccount();
+  const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
-  const { caipNetwork, caipNetworkId, chainId, switchNetwork } =
-    useAppKitNetwork();
-  const { switchChain } = useSwitchChain();
+  const { chainId } = useAppKitNetwork();
+  const { switchChain, isPending } = useSwitchChain();
 
   const { data, isError, isLoading } = useBalance({
     address: usDaAddress ? (address as `0x${string}`) : undefined,
@@ -62,6 +63,25 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleClosePolicyDialog = () => {
     setIsPolicyDialogOpen(false);
   };
+  const chains = [
+    {
+      id: Number(NetworkId.Mode),
+      name: "Mode",
+      Icon: () => (
+        <Image src={modeIconNew} alt="modeIconNew" width={24} height={24} />
+      ),
+      loading: chainId != NetworkId.Mode && isPending,
+    },
+    {
+      id: Number(NetworkId.Optimism),
+      name: "Optimism",
+      Icon: () => (
+        <Image src={opIconNew} alt="opIconNew" width={24} height={24} />
+      ),
+      loading: chainId != NetworkId.Optimism && isPending,
+    },
+  ];
+  console.log(chains, "chains");
 
   const MobileNavOption = () => {
     return (
@@ -75,15 +95,19 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Popover>
               <PopoverTrigger className="" asChild>
                 <div className="relative flex items-center gap-1">
-                  {chainId == NetworkId.EthereumSepolia ? (
-                    <EthereumIcon
-                      className="dark:stroke-white stroke-black  "
-                      style={{ width: "20px", height: "20px" }}
+                  {chainId == NetworkId.Mode ? (
+                    <Image
+                      src={modeIconNew}
+                      alt="modeIconNew"
+                      width={24}
+                      height={24}
                     />
-                  ) : chainId == NetworkId.BaseSepolia ? (
-                    <BaseIcon
-                      className=" stroke-black  dark:stroke-white"
-                      style={{ width: "20px", height: "20px" }}
+                  ) : chainId == NetworkId.Optimism ? (
+                    <Image
+                      src={opIconNew}
+                      alt="opIconNew"
+                      width={24}
+                      height={24}
                     />
                   ) : (
                     <OptimismIcon
@@ -99,50 +123,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
               >
                 <div className=" flex flex-col gap-4">
-                  <div
-                    onClick={() =>
-                      switchChain({
-                        chainId: 11155111,
-                      })
-                    }
-                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                  >
-                    <EthereumIcon
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                      }}
-                      className="fill-black dark:fill-white"
-                    />
-                    <Typography className="text-[24px] dark:text-white font-medium">
-                      Ethereum{" "}
-                    </Typography>{" "}
-                    {chainId == NetworkId.EthereumSepolia ? (
-                      <Check width={18} height={18} />
-                    ) : null}
-                  </div>
-                  <div
-                    onClick={() =>
-                      switchChain({
-                        chainId: 84532,
-                      })
-                    }
-                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                  >
-                    <BaseIcon
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                      }}
-                      className="fill-black dark:fill-white"
-                    />
-                    <Typography className="text-[24px] font-medium">
-                      Base{" "}
-                    </Typography>
-                    {chainId == NetworkId.BaseSepolia && (
-                      <Check width={18} height={18} />
-                    )}
-                  </div>
+                  {chains.map((chain) => (
+                    <div
+                      key={chain.id}
+                      onClick={() =>
+                        switchChain({
+                          chainId: chain.id,
+                        })
+                      }
+                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                    >
+                      {chain.Icon()}
+                      <Typography className="text-[24px] dark:text-white font-medium">
+                        {chain.name}
+                      </Typography>
+                      {chainId === chain.id && <Check width={18} height={18} />}
+                    </div>
+                  ))}
                 </div>
               </PopoverContent>
             </Popover>
@@ -166,9 +163,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 <Typography variant="regular" size="subtitle"></Typography>$
                 {data?.formatted.slice(0, 8)}
                 <span className="text-[#7A7A7A] text-[14px]">
-                  {chainId === NetworkId.EthereumSepolia
-                    ? "ETH Sepolia"
-                    : "Base Sepolia"}
+                  {chainId === NetworkId.Optimism ? "OP Sepolia" : "Mode"}
                 </span>
               </div>
             </div>
@@ -231,14 +226,16 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Popover>
               <PopoverTrigger className="py-[14px] px-4 bg-[#ABFFDE]" asChild>
                 <div className="relative flex items-center gap-1">
-                  {chainId == NetworkId.EthereumSepolia ? (
-                    <EthereumIcon
-                      className=" stroke-black  "
-                      style={{ width: "20px", height: "20px" }}
+                  {chainId == NetworkId.Mode ? (
+                    <Image
+                      src={modeIconNew}
+                      alt="modeIconNew"
+                      width={24}
+                      height={24}
                     />
-                  ) : chainId == NetworkId.BaseSepolia ? (
-                    <BaseIcon
-                      className=" stroke-black  "
+                  ) : chainId == NetworkId.Optimism ? (
+                    <OptimismIcon
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
@@ -255,50 +252,27 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
               >
                 <div className=" flex flex-col gap-4">
-                  <div
-                    onClick={() =>
-                      switchChain({
-                        chainId: 11155111,
-                      })
-                    }
-                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                  >
-                    <EthereumIcon
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                      }}
-                      className="fill-black dark:fill-white"
-                    />
-                    <Typography className="text-[24px] dark:text-white font-medium">
-                      Ethereum{" "}
-                    </Typography>{" "}
-                    {chainId == NetworkId.EthereumSepolia ? (
-                      <Check width={18} height={18} />
-                    ) : null}
-                  </div>
-                  <div
-                    onClick={() =>
-                      switchChain({
-                        chainId: 84532,
-                      })
-                    }
-                    className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                  >
-                    <BaseIcon
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                      }}
-                      className="fill-black dark:fill-white"
-                    />
-                    <Typography className="text-[24px] font-medium">
-                      Base{" "}
-                    </Typography>
-                    {chainId == NetworkId.BaseSepolia && (
-                      <Check width={18} height={18} />
-                    )}
-                  </div>
+                  {chains.map((chain, idx) => {
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() =>
+                          switchChain({
+                            chainId: chain.id,
+                          })
+                        }
+                        className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                      >
+                        {chain.Icon()}
+                        <Typography className="text-[24px] dark:text-white font-medium">
+                          {chain.name}
+                        </Typography>{" "}
+                        {chainId == chain.id ? (
+                          <Check width={18} height={18} />
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               </PopoverContent>
             </Popover>
@@ -320,19 +294,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <Popover>
                 <PopoverTrigger className="py-[14px] px-4 bg-[#ABFFDE]" asChild>
                   <div className="relative flex items-center gap-2">
-                    {chainId == NetworkId.EthereumSepolia ? (
-                      <EthereumIcon
-                        className=" stroke-black  "
-                        style={{ width: "20px", height: "20px" }}
+                    {chainId == NetworkId.Mode ? (
+                      <Image
+                        src={modeIconNew}
+                        alt="modeIconNew"
+                        width={24}
+                        height={24}
                       />
-                    ) : chainId == NetworkId.BaseSepolia ? (
-                      <BaseIcon
-                        className=" stroke-black  "
-                        style={{ width: "20px", height: "20px" }}
+                    ) : chainId == NetworkId.Optimism ? (
+                      <Image
+                        src={opIconNew}
+                        alt="opIconNew"
+                        width={24}
+                        height={24}
                       />
                     ) : (
                       <OptimismIcon
-                        className=" fill-black "
+                        className=" fill-black  "
                         style={{ width: "20px", height: "20px" }}
                       />
                     )}
@@ -344,50 +322,27 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
                 >
                   <div className=" flex flex-col gap-4">
-                    <div
-                      onClick={() =>
-                        switchChain({
-                          chainId: 11155111,
-                        })
-                      }
-                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                    >
-                      <EthereumIcon
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                        className="fill-black dark:fill-white"
-                      />
-                      <Typography className="text-[24px] dark:text-white font-medium">
-                        Ethereum{" "}
-                      </Typography>{" "}
-                      {chainId == NetworkId.EthereumSepolia ? (
-                        <Check width={18} height={18} />
-                      ) : null}
-                    </div>
-                    <div
-                      onClick={() =>
-                        switchChain({
-                          chainId: 84532,
-                        })
-                      }
-                      className="flex cursor-pointer flex-row gap-2 justify-start items-center"
-                    >
-                      <BaseIcon
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                        }}
-                        className="fill-black dark:fill-white"
-                      />
-                      <Typography className="text-[24px] font-medium">
-                        Base{" "}
-                      </Typography>
-                      {chainId == NetworkId.BaseSepolia && (
-                        <Check width={18} height={18} />
-                      )}
-                    </div>
+                    {chains.map((chain) => {
+                      return (
+                        <div
+                          onClick={() =>
+                            switchChain({
+                              chainId: chain.id,
+                            })
+                          }
+                          className="flex cursor-pointer flex-row gap-2 justify-start items-center"
+                        >
+                          {chain.Icon()}
+                          <Typography className="text-[24px] dark:text-white font-medium">
+                            {chain.name}
+                          </Typography>{" "}
+                          {chainId == chain.id ? (
+                            <Check width={18} height={18} />
+                          ) : null}
+                          {chain.loading ? <Spinner /> : null}
+                        </div>
+                      );
+                    })}
                   </div>
                 </PopoverContent>
               </Popover>

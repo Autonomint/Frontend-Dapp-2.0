@@ -1,6 +1,7 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
+import { AssetNames } from "@/utils/constants";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:
@@ -9,12 +10,16 @@ enum StrikePrice {
   OPTION_THREE,
 }
 
-interface FunctionInputs {
-  strikePercent: number; // uint8 can be mapped to the enum
-  strikePrice: bigint; // uint64 can be represented by bigint
+interface BorrowInputs {
+  strikePercent: bigint; // uint8 can be mapped to the enum
+  // strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint; // uint256 can be represented by bigint
+  assetName: AssetNames;
+  deadline: bigint;
+  signature: `0x${string}`;
+  nonce: bigint;
 }
 
 const useDepositTokens = (mutation: any) => {
@@ -34,12 +39,26 @@ const useDepositTokens = (mutation: any) => {
 
   const mintUSDa = async ({
     strikePercent,
-    strikePrice,
     volatility,
     depositingAmount,
     value,
-  }: FunctionInputs) => {
+    assetName,
+    deadline,
+    signature,
+    nonce,
+  }: BorrowInputs) => {
     // Call the `writeContract` function to deposit tokens
+    //   writeContract?.({
+    //     abi: borrowingContractAbi,
+    //     address:
+    //       borrowingContractAddress[
+    //         chainId as keyof typeof borrowingContractAddress
+    //       ],
+    //     functionName: "depositTokens",
+    //     args: [strikePercent, strikePrice, volatility, depositingAmount],
+    //     value,
+    //   });
+    // };
     writeContract?.({
       abi: borrowingContractAbi,
       address:
@@ -47,7 +66,14 @@ const useDepositTokens = (mutation: any) => {
           chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "depositTokens",
-      args: [strikePercent, strikePrice, volatility, depositingAmount],
+      args: [
+        { strikePercent, volatility, assetName, depositingAmount },
+        {
+          nonce,
+          deadline,
+          signature,
+        },
+      ],
       value,
     });
   };

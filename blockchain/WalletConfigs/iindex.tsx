@@ -1,13 +1,8 @@
-import { cookieStorage, createStorage } from "wagmi";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import {
-  baseSepolia,
-  mainnet,
-  sepolia,
-  optimismSepolia,
-} from "@reown/appkit/networks";
-import { createAppKit } from "@reown/appkit/react";
 import { BRAND_ICON_URL, projectId, TESTNET_URL } from "@/utils/constants";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { modeTestnet, optimismSepolia } from "@reown/appkit/networks";
+import { createAppKit } from "@reown/appkit/react";
+import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
@@ -21,7 +16,7 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [sepolia, baseSepolia, optimismSepolia],
+  networks: [optimismSepolia, modeTestnet],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -34,8 +29,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [sepolia, baseSepolia],
-  defaultNetwork: baseSepolia,
+  networks: [optimismSepolia, modeTestnet],
+  defaultNetwork: modeTestnet,
   metadata: metadata,
   features: {
     email: false,

@@ -1,5 +1,10 @@
+import {
+  borrowAssetsAddress,
+  borrowingContractAddress,
+} from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
 import useCalculateInterest from "@/hookes/contract-hooks/useCalculateInterest";
@@ -8,17 +13,22 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { BorrowStatus } from "@/utils/constants";
-import displayNumberWithPrecision from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  calculateRemainingDays,
+  getDownsideProtectionTillNow,
+  isFifteenDaysCompleted,
+} from "@/utils/helpers";
+import { PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
-import { WaitForTransactionReceiptErrorType } from "viem";
-import { PositionData } from "@/utils/interface";
+import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
+import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -102,9 +112,14 @@ export function WithdrawFund({
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
     useLastCumulativeRate();
+
   const { interestGained } = useInterestGain(position.index);
   const totalAmintAmount = useRef<Number>(Number(0));
-  const { usdValue: ethPrice } = useGetUsdValue();
+  const { usdValue: ethPrice } = useGetUsdValue(
+    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+  );
+  console.log(ethPrice, "ethPrice");
+
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
@@ -228,11 +243,15 @@ export function WithdrawFund({
 
   // Create the options for the contract
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(250000, 0)
+    .addExecutorLzReceiveOption(400000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options);
+  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
+    options,
+    3,
+    1
+  );
 
   const {
     calculateCumulativeRate,
@@ -280,6 +299,8 @@ export function WithdrawFund({
     usdaApproveHash,
     usdaApproveLoading,
     usdaApproveError,
+    approveUsdaDynamic,
+    usdaApproveSuccess,
   } = useApproveUsda({
     onError: () => {
       setIsLoadingCumulativeLocal(false);
@@ -413,14 +434,95 @@ export function WithdrawFund({
     }
   }, [culmulativeData]);
 
+  const [renewLoading, setRenewLoading] = useState<boolean>(false);
+  const [renewApproveLoading, setRenewApproveLoading] =
+    useState<boolean>(false);
+  const [renewLoadingSM, setRenewLoadingSM] = useState<boolean>(false);
+
+  const { refetchBorrowWithDrawSignedData } = useGetBorrowWithdrawSignedData(
+    position.index
+  );
+  const {
+    renewBorrow,
+    isRenewBorrowLoading,
+    renewBorrowHash,
+    resetBorrowRenew,
+    renewError: renewErrorSm,
+  } = useBorrowRenew({});
+
   useEffect(() => {
-    if (usdaHashData && usdaHashSucces) {
-      setIsApproveLoadingLocal(false);
-      setTimeout(() => {
-        setWithdrawLoadingLocal(true);
-      }, 800);
-      withdrawUsda(position.index, nativeFee?.nativeFee || BigInt(0n));
-    } else if (usdaHashError) {
+    (async () => {
+      if (usdaHashData && usdaHashSucces) {
+        if (toggleView == "repay") {
+          setIsApproveLoadingLocal(false);
+          setTimeout(() => {
+            setWithdrawLoadingLocal(true);
+          }, 800);
+
+          const borrowSignedData = await refetchBorrowWithDrawSignedData();
+
+          withdrawUsda(
+            position.index,
+            nativeFee?.nativeFee || BigInt(0n),
+            borrowSignedData.data?.odosAssembledData,
+            borrowSignedData.data?.usdtFromOdos,
+            BigInt(borrowSignedData.data?.nonce || 0),
+            BigInt(borrowSignedData.data?.deadline || 0),
+            (borrowSignedData.data?.signature || "") as `0x${string}`
+          );
+        }
+        if (toggleView == "renew") {
+          setRenewApproveLoading(false);
+          setTimeout(() => {
+            setRenewLoadingSM(true);
+          }, 800);
+
+          renewBorrow(
+            BigInt(position.index),
+            nativeFee?.nativeFee || BigInt(0n)
+          );
+        }
+      } else if (usdaHashError) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+      }
+    })();
+  }, [usdaHashData]);
+
+  const {
+    isLoading: isLoadingRenewReceipt,
+    isSuccess: isSuccessRenewReceipt,
+    data: renewReceipt,
+    isError: renewReceiptError,
+    error: renewError,
+  } = useWaitForTransactionReceipt({
+    hash: (renewBorrowHash || undefined) as `0x${string}`, // Transaction hash to wait for
+    confirmations: 1, // Number of confirmations required
+  });
+
+  useEffect(() => {
+    if (isSuccessRenewReceipt) {
+      const link =
+        chainId === 84532
+          ? `https://sepolia.basescan.org/tx/${renewReceipt.transactionHash} `
+          : `https://sepolia.etherscan.io/tx/${renewReceipt.transactionHash}`;
+
+      toast.custom((t) => (
+        <ToastNotification
+          title="Repay Successful"
+          message=""
+          linkText={
+            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+          }
+          linkUrl={link}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    } else if (renewReceiptError) {
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
@@ -428,7 +530,7 @@ export function WithdrawFund({
         />
       ));
     }
-  }, [usdaHashData]);
+  }, [renewReceipt, renewReceiptError, isSuccessRenewReceipt]);
 
   const handleCloseDialog = (value: boolean) => {
     cumulativeReset?.();
@@ -440,13 +542,25 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  // const;
+  const { payableOptionFees } = usePayableOptionFees(position.index);
+  const handleRenew = () => {
+    setRenewLoading(true);
+    setRenewApproveLoading(true);
+    approveReset?.();
+    resetBorrowRenew?.();
+    approveUsdaDynamic(
+      payableOptionFees as bigint,
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ] as `0x${string}`
+    );
+  };
 
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="text-2xl font-semibold mb-4">Withdraw Fund</div>
+          <div className="text-2xl font-semibold mb-4">Borrow Details</div>
           <div className="flex">
             <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
               <div className="inline-flex items-center">
@@ -560,10 +674,7 @@ export function WithdrawFund({
 
           {toggleView === "renew" && (
             <>
-              <div className="mb-4 mt-4">
-                <PopupDropdown />
-              </div>
-              <div className="w-full h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+              <div className="w-full mt-4 h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
                 {[
                   {
                     label: "Deposit",
@@ -592,18 +703,38 @@ export function WithdrawFund({
               </div>
               <div className="flex mt-2 items-center gap-2 text-[24px] text-grayLight font-medium">
                 <span className="block w-3 h-3 bg-[#05A552]"></span>
-                20 Days remaining till maturity
+                {calculateRemainingDays(Number(position.validTill))} Days
+                remaining till maturity
               </div>
               <div className="max-h-[250px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
                   {[
-                    { heading: "ETH price at deposit", value: "$3,890" },
-                    { heading: "Current ETH price", value: "$3,000" },
+                    {
+                      heading: "ETH price at deposit",
+                      value: `${depositData[1].value}`,
+                    },
+                    { heading: "Current ETH price", value: "$0" },
                     {
                       heading: "Downside Protection till now",
-                      value: "$90 (10%)",
+                      // value: `$${(
+                      //   (Number(position.ethPrice) / 100) *
+                      //     Number(position.depositedAmount) -
+                      //   Number(ethPrice)
+                      // ).toFixed(2)} (${
+                      //   (Number(position.ethPrice) / 100) *
+                      //     Number(position.depositedAmount) -
+                      //   (Number(ethPrice) / ethPrice) * 100
+                      // }%)`,
+                      value: getDownsideProtectionTillNow(
+                        Number(position.ethPrice),
+                        Number(position.depositedAmount),
+                        Number(ethPrice)
+                      ),
                     },
-                    { heading: "Option Fees paid", value: "$19" },
+                    {
+                      heading: "Option Fees paid",
+                      value: `$${Number(position?.optionFees).toFixed(2)}`,
+                    },
                   ].map((item) => (
                     <div
                       key={item.heading}
@@ -625,8 +756,14 @@ export function WithdrawFund({
 
                   {[
                     { label: "Time Period", value: "30 days" },
-                    { label: "Option Fees", value: "$19" },
-                    { label: "Downside Protection", value: "Up to $180 (20%)" },
+                    { label: "Option Fees", value: "$0" },
+                    {
+                      label: "Downside Protection",
+                      value: `Up to $${(
+                        (Number(position.noOfAmintMinted) * 20) /
+                        100
+                      ).toFixed(2)} (20%)`,
+                    },
                   ].map((item, index) => (
                     <div
                       key={index}
@@ -642,10 +779,34 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-
-              <Button className="w-full mt-6 p-8 bg-black text-white text-[32px]">
-                Pay
-              </Button>
+              {!renewLoading && (
+                <Button
+                  disabled={
+                    position.status == BorrowStatus.WITHDREW ||
+                    isFifteenDaysCompleted(position.validTill)
+                  }
+                  onClick={handleRenew}
+                  className="w-full mt-6 p-8 bg-black text-white text-[32px]"
+                >
+                  Pay
+                </Button>
+              )}
+              <LoadingBox
+                isLoading={renewApproveLoading}
+                isFailure={usdaApproveError || usdaHashError}
+                isSuccess={usdaHashSucces}
+                setSuccessLoading={() => console.log()}
+                heading="Approving USDa"
+                loadingCount="1/2"
+              />
+              <LoadingBox
+                isLoading={renewLoadingSM}
+                isFailure={renewReceiptError || renewErrorSm}
+                isSuccess={isSuccessRenewReceipt}
+                setSuccessLoading={() => console.log()}
+                heading="Renewing"
+                loadingCount="2/2"
+              />
             </>
           )}
         </DialogContent>
