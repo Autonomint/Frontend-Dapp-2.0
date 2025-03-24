@@ -234,10 +234,6 @@ function DCDSTemplate() {
     useGetBalance("MODE");
 
   console.log(
-    usdtBalance,
-    getOraclePrice,
-    nativeTokenAdds,
-    formatUnits(BigInt(getOraclePrice[1]), 6),
     Number(opBalance),
     Number(opBalance) * Number(getOraclePrice[1]),
     "getOraclePrice"
@@ -311,7 +307,11 @@ function DCDSTemplate() {
     usdtBalance,
     usdaBalance,
     chainId,
+    modeBalance,
+    opBalance,
+    getOraclePrice,
   ]);
+
   console.log(tokenList, "tokenList");
 
   const {

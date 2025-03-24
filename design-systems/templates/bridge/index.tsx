@@ -15,7 +15,7 @@ import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt
 import useDeviceType from "@/hookes/useDeviceType";
 import { secondsToMinutes } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, padHex, parseEther, parseUnits } from "viem";
 import {
@@ -32,11 +32,18 @@ import { TransactionParams } from "./interfaces";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import { eId } from "@/utils/constants";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
-  const [receiveToken, setReceiveToken] = useState<"USDa" | "TUSDT">("USDa");
-  const [sendNetwork, setSendNetwork] = useState<"Sepolia" | "Base">("Sepolia");
+  const [receiveToken, setReceiveToken] = useState<"USDa">("USDa");
+  const [sendNetwork, setSendNetwork] = useState<
+    "Sepolia" | "Base" | "Mode" | "OP"
+  >("Sepolia");
+  const [receiveNetwork, setReceiveNetwork] = useState<
+    "Sepolia" | "Base" | "Mode" | "OP"
+  >("Mode");
+
   const [sendAmount, setSendAmount] = useState<number | null>(null);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [estimateTime, setEstimateTime] = useState<number>(0);
@@ -53,7 +60,7 @@ function BridgeTemplate() {
 
   const [sendLoading, setSendLoading] = useState<boolean>(false);
 
-  const { switchChain } = useSwitchChain();
+  const { switchChain, isPending: isChainSwitchPending } = useSwitchChain();
 
   const { address: accountAddress, isConnected } = useAccount();
 
@@ -134,9 +141,16 @@ function BridgeTemplate() {
     }
   };
 
+  console.log(
+    eId[receiveNetwork],
+    usdaBal,
+    usDaAddress[chainId as keyof typeof usDaAddress],
+    "receiveNetwork"
+  );
+
   //  Define the transaction parameters
   const transactionParams: TransactionParams = {
-    dstEid: 40260,
+    dstEid: eId[receiveNetwork],
     to: padHex(accountAddress ?? ("0" as `0x${string}`), {
       size: 32,
     }) as `0x${string}`,
@@ -168,7 +182,6 @@ function BridgeTemplate() {
       onError(error: any) {
         handleTransferFail();
       },
-
       // Handle success and show a custom toast notification
       onSuccess: (data) => {},
     },
@@ -208,6 +221,7 @@ function BridgeTemplate() {
   // };
 
   // If the transaction is confirmed, show a toast notification and call UsdaApprove write call to bridge token
+
   useEffect(() => {
     if (usdaApproveSuccess && accountAddress) {
       setUsdaApproveLoading(false);
@@ -435,20 +449,21 @@ function BridgeTemplate() {
             BigInt((sendAmount || 0) * 10 ** 6),
           ],
         });
-      } else if (sendToken === "TUSDT") {
-        setUsdtApproveLoading(true);
-        tusDTApproveWrite({
-          abi: testusdtAbiAbi,
-          address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
-          functionName: "approve",
-          args: [
-            testusdtAbiAddress[
-              chainId as keyof typeof testusdtAbiAddress
-            ] as `0x${string}`,
-            BigInt((sendAmount || 0) * 10 ** 6),
-          ],
-        });
       }
+      // else if (sendToken === "TUSDT") {
+      //   setUsdtApproveLoading(true);
+      //   tusDTApproveWrite({
+      //     abi: testusdtAbiAbi,
+      //     address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
+      //     functionName: "approve",
+      //     args: [
+      //       testusdtAbiAddress[
+      //         chainId as keyof typeof testusdtAbiAddress
+      //       ] as `0x${string}`,
+      //       BigInt((sendAmount || 0) * 10 ** 6),
+      //     ],
+      //   });
+      // }
     }
   }
 
@@ -504,6 +519,76 @@ function BridgeTemplate() {
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
 
+  const fromNetworkOption = [
+    {
+      label: "Sepolia",
+      onClick: () => {
+        switchChain({ chainId: 11155111 });
+        setSendNetwork("Sepolia");
+      },
+    },
+    {
+      label: "Base",
+      onClick: () => {
+        switchChain({ chainId: 84532 });
+        setSendNetwork("Base");
+      },
+    },
+    {
+      label: "Mode",
+      onClick: () => {
+        switchChain({ chainId: 919 });
+        setSendNetwork("Mode");
+      },
+    },
+    {
+      label: "OP",
+      onClick: () => {
+        switchChain({ chainId: 11155420 });
+        setSendNetwork("OP");
+      },
+    },
+  ];
+
+  const toNetworkOption = useMemo(() => {
+    const option = [];
+
+    if (sendNetwork !== "Sepolia") {
+      option.push({
+        label: "Sepolia",
+        onClick: () => {
+          setReceiveNetwork("Sepolia");
+        },
+      });
+    }
+    if (sendNetwork !== "Base") {
+      option.push({
+        label: "Base",
+        onClick: () => {
+          setReceiveNetwork("Base");
+        },
+      });
+    }
+    if (sendNetwork !== "Mode") {
+      option.push({
+        label: "Mode",
+        onClick: () => {
+          setReceiveNetwork("Mode");
+        },
+      });
+    }
+    if (sendNetwork !== "OP") {
+      option.push({
+        label: "OP",
+        onClick: () => {
+          setReceiveNetwork("OP");
+        },
+      });
+    }
+    setReceiveNetwork(option[0].label as any);
+    return option;
+  }, [sendNetwork]);
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar activeBack={showBack} />
@@ -521,6 +606,8 @@ function BridgeTemplate() {
           sendAmount={sendAmount}
           setSendAmount={setSendAmount}
           amountError={amountError}
+          fromNetworkOption={fromNetworkOption}
+          isChainSwitchPending={isChainSwitchPending}
         />
 
         <BridgeComponentRight
@@ -529,6 +616,8 @@ function BridgeTemplate() {
           token={sendToken}
           totalAmount={"$1,200"}
           receiveAmount={receiveAmount}
+          toNetworkOption={toNetworkOption}
+          receiveNetwork={receiveNetwork}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields label={"Gas"} value={"-"} />

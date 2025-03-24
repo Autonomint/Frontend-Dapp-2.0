@@ -1,6 +1,11 @@
 import { BRAND_ICON_URL, projectId, TESTNET_URL } from "@/utils/constants";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { modeTestnet, optimismSepolia } from "@reown/appkit/networks";
+import {
+  baseSepolia,
+  modeTestnet,
+  optimismSepolia,
+  sepolia,
+} from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { cookieStorage, createStorage } from "wagmi";
 
@@ -16,7 +21,7 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [optimismSepolia, modeTestnet],
+  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -29,7 +34,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [optimismSepolia, modeTestnet],
+  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
   defaultNetwork: modeTestnet,
   metadata: metadata,
   features: {

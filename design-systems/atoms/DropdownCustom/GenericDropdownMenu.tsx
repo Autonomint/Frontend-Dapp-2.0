@@ -11,6 +11,7 @@ import {
 } from "@/design-systems/atoms/dropdown-menu";
 import { ChevronDownIcon } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import Spinner from "../Spinner";
 
 type DropdownItem = {
   label: string;
@@ -25,6 +26,7 @@ type DropdownMenuProps = {
   className?: string;
   icon?: React.ReactNode;
   iconWrapBg?: string;
+  isLoading?: boolean;
 };
 
 export function GenericDropdownMenu({
@@ -33,6 +35,7 @@ export function GenericDropdownMenu({
   className = "",
   icon = <ChevronDownIcon className="w-4 h-4" />,
   iconWrapBg,
+  isLoading = false,
 }: DropdownMenuProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [dropdownWidth, setDropdownWidth] = useState<string | undefined>();
@@ -51,7 +54,11 @@ export function GenericDropdownMenu({
           variant="outline"
           className={`flex items-center justify-between relative h-[50px] ${className}`}
         >
-          <span className="flex-1 text-left overflow-hidden">{buttonText}</span>
+          <span className="flex-1 flex gap-2 items-center justify-start  text-left overflow-hidden">
+            {buttonText}
+
+            {isLoading && <Spinner />}
+          </span>
           <div
             className={`h-full w-[50px]  bg-transparent flex justify-center items-center border-l border-[1px] border-grayLight border-y-0 border-r-0 absolute right-0 ${iconWrapBg}`}
           >
@@ -69,8 +76,10 @@ export function GenericDropdownMenu({
             <DropdownMenuItem
               onClick={item.onClick}
               disabled={item.disabled}
-              className={` text-[18px] ${
-                item.disabled ? "opacity-50 cursor-not-allowed" : "opacity-100"
+              className={` text-[18px]  ${
+                item.disabled
+                  ? "opacity-50 cursor-not-allowed"
+                  : "opacity-100 cursor-pointer"
               }`}
             >
               {item.label}

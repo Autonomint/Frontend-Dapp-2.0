@@ -70,3 +70,15 @@ export const scanUrl = {
   919: "https://explorer.mode.network/search-results?q=",
   11155420: "https: //optimism-sepolia.blockscout.com/tx/",
 } as const;
+
+export const eidOpSepolia = 40232;
+export const eidModeSepolia = 40260;
+export const eidSepolia = 40161;
+export const eidBaseSepolia = 40245;
+
+export const eId = {
+  OP: eidOpSepolia,
+  Mode: eidModeSepolia,
+  Sepolia: eidSepolia,
+  Base: eidBaseSepolia,
+};

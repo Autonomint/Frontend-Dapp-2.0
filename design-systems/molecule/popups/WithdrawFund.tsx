@@ -416,6 +416,12 @@ export function WithdrawFund({
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
+  console.log(
+    lastCumulativeRate,
+    position.normalizedAmount,
+    "lastCumulativeRate"
+  );
+
   const handleRepay = async () => {
     debugger;
     setIsApproveLoadingLocal(true);

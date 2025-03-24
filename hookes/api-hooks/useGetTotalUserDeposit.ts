@@ -24,10 +24,10 @@ const useGetTotalUserDeposit = () => {
     isSuccess: ethSepoliaCDSDataFetched,
     refetch: refetchEthSepoliaCDSDepositorData,
   } = useQuery({
-    queryKey: ["dCDSdepositorsData", NetworkId.EthereumSepolia, address],
+    queryKey: ["dCDSdepositorsData", address],
     queryFn: () =>
       getCDSDepositorData(
-        chainId ? chainId?.toString() : "",
+        NetworkId.Optimism.toString(),
         address ? address : undefined
       ),
     retry: 1,
@@ -41,10 +41,10 @@ const useGetTotalUserDeposit = () => {
     isSuccess: baseSepoliaCDSDataFetched,
     refetch: refetchBaseSepoliaCDSDepositorData,
   } = useQuery({
-    queryKey: ["dCDSdepositorsUserData", NetworkId.BaseSepolia, , address],
+    queryKey: ["dCDSdepositorsUserData", address],
     queryFn: () =>
       getCDSDepositorData(
-        chainId ? chainId?.toString() : "",
+        NetworkId.Mode.toString(),
         address ? address : undefined
       ),
     staleTime: 5000,

@@ -7,8 +7,10 @@ import {
   abondAddress,
   borrowingContractAddress,
   cdsAddress,
+  sUSDAddress,
   testusdtAbiAddress,
   usDaAddress,
+  usdcAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
@@ -20,13 +22,14 @@ import ToastNotification from "@/design-systems/molecule/toasts/ToastNotificatio
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { NetworkId } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { formatEther } from "viem";
+import { formatEther, zeroAddress } from "viem";
 import {
   useAccount,
   useBalance,
@@ -139,6 +142,17 @@ const RedeemContainer = () => {
     hash: amintApproveData,
   });
 
+  console.log(
+    formik.values.redeemTokenName === "USDT"
+      ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+      : formik.values.redeemTokenName === "USDC"
+      ? usdcAddress[chainId as keyof typeof usdcAddress]
+      : formik.values.redeemTokenName === "sUSD"
+      ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+      : zeroAddress,
+    "usd"
+  );
+
   useEffect(() => {
     if (usdaApproveSuccess) {
       setUsdaApproveLocal(false);
@@ -153,13 +167,16 @@ const RedeemContainer = () => {
           BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
           formik.values.redeemTokenName === "USDT"
             ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-            : formik.values.redeemTokenName === "USDA"
-            ? usDaAddress[chainId as keyof typeof usDaAddress]
-            : usDaAddress[chainId as keyof typeof usDaAddress],
+            : formik.values.redeemTokenName === "USDC"
+            ? usdcAddress[chainId as keyof typeof usdcAddress]
+            : formik.values.redeemTokenName === "sUSD"
+            ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+            : zeroAddress,
         ],
         // value: nativeFee1.nativeFee,
       });
     } else if (usdaErrorApprove) {
+      handleFail();
     }
   }, [amintTransactionAllowed]);
 
@@ -450,20 +467,27 @@ const RedeemContainer = () => {
     },
   ];
 
-  const RedeemTokenDropdownItems = [
-    {
-      label: "USDT",
-      onClick: () => formik.setFieldValue("redeemTokenName", "USDT"),
-    },
-    {
-      label: "USDC",
-      onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
-    },
-    {
-      label: "sUSD",
-      onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
-    },
-  ];
+  const RedeemTokenDropdownItems = useMemo(() => {
+    const options = [
+      {
+        label: "USDT",
+        onClick: () => formik.setFieldValue("redeemTokenName", "USDT"),
+      },
+      {
+        label: "USDC",
+        onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
+      },
+    ];
+    if (chainId === NetworkId.Mode) {
+      options.push({
+        label: "sUSD",
+        onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
+      });
+    }
+    return options;
+  }, [chainId]);
+
+  console.log(RedeemTokenDropdownItems, "RedeemTokenDropdownItems");
 
   const pathname = usePathname();
 
@@ -591,7 +615,7 @@ const RedeemContainer = () => {
         <div className="text-grayLight md:text-lg text-center lg:mb-4 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
           Note: A withdrawal Fee of 2% will be applied.
         </div>
-        <div className="flex justify-center items-center lg:mb-20">
+        <div className="flex justify-center items-center overflow-hidden lg:mb-20">
           <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
             {!redeemLoadingLocal && (
               <Button
@@ -617,10 +641,10 @@ const RedeemContainer = () => {
               heading="Approving Abond"
               loadingCount="1/2"
             />
-
             <LoadingBox
               isLoading={
-                redeemFnLoadingLocal && formik.values.inputCollateral === "usda"
+                redeemFnLoadingLocal &&
+                formik.values.inputCollateral === "amint"
               }
               isFailure={redeemUsdtIsError || redeemUsdtError}
               isSuccess={Boolean(redeemUsdtSuccess)}
