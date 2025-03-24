@@ -33,7 +33,7 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum } from "@/utils/constants";
+import { BorrowAssetsEnum, scanUrls } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
@@ -195,10 +195,9 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${Depositdata.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${Depositdata.transactionHash}`;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          Depositdata.transactionHash
+        } `;
 
         return (
           <ToastNotification

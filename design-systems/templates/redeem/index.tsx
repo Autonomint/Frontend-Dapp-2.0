@@ -22,7 +22,7 @@ import ToastNotification from "@/design-systems/molecule/toasts/ToastNotificatio
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -228,19 +228,9 @@ const RedeemContainer = () => {
   };
   const handleSuccess = () => {
     toast.custom((t) => {
-      const link =
-        chainId === 84532
-          ? `https://sepolia.basescan.org/tx/${
-              formik.values.inputCollateral === "amint"
-                ? redeemdataUsdt?.transactionHash
-                : redeemdataEth?.transactionHash
-            } `
-          : `https://sepolia.etherscan.io/tx/${
-              formik.values.inputCollateral === "amint"
-                ? redeemdataUsdt?.transactionHash
-                : redeemdataEth?.transactionHash
-            }`;
-
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        redeemdataEth?.transactionHash
+      } `;
       return (
         <ToastNotification
           title="Redeem Successful"
@@ -613,7 +603,7 @@ const RedeemContainer = () => {
           </div>
         </div>
         <div className="text-grayLight md:text-lg text-center lg:mb-4 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
-          Note: A withdrawal Fee of 2% will be applied.
+          Note: 0% Withdrawal Fee will be applied.
         </div>
         <div className="flex justify-center items-center overflow-hidden lg:mb-20">
           <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
@@ -649,7 +639,7 @@ const RedeemContainer = () => {
               isFailure={redeemUsdtIsError || redeemUsdtError}
               isSuccess={Boolean(redeemUsdtSuccess)}
               setSuccessLoading={() => console.log()}
-              heading={"Redeeming " + formik.values.inputCollateral}
+              heading={"Redeeming " + formik.values.redeemTokenName}
               loadingCount="2/2"
             />
 

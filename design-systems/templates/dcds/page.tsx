@@ -43,7 +43,11 @@ import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useDeviceType from "@/hookes/useDeviceType";
-import { NetworkId, USDT_DEPOSIT_LIMIT_IN_DCDS } from "@/utils/constants";
+import {
+  NetworkId,
+  scanUrls,
+  USDT_DEPOSIT_LIMIT_IN_DCDS,
+} from "@/utils/constants";
 import { formatNumber, handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -691,11 +695,9 @@ function DCDSTemplate() {
     setPortfolioTab("Deposited");
     resetLoadings();
     toast.custom((t) => {
-      const link =
-        chainId === 84532
-          ? `https://sepolia.basescan.org/tx/${DepositdataReceipt?.transactionHash} `
-          : `https://sepolia.etherscan.io/tx/${DepositdataReceipt?.transactionHash}`;
-
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        DepositdataReceipt?.transactionHash
+      } `;
       return (
         <ToastNotification
           title="Deposit Successful"

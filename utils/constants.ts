@@ -66,9 +66,11 @@ export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
 export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
-export const scanUrl = {
+export const scanUrls = {
   919: "https://explorer.mode.network/search-results?q=",
-  11155420: "https: //optimism-sepolia.blockscout.com/tx/",
+  11155420: "https://optimism-sepolia.blockscout.com/tx/",
+  11155111: `https://sepolia.basescan.org/tx/`,
+  84532: `https://sepolia.etherscan.io/tx/`,
 } as const;
 
 export const eidOpSepolia = 40232;

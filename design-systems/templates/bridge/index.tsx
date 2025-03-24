@@ -32,7 +32,7 @@ import { TransactionParams } from "./interfaces";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
-import { eId } from "@/utils/constants";
+import { eId, scanUrls } from "@/utils/constants";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
@@ -272,11 +272,9 @@ function BridgeTemplate() {
         setTransferLoadingLocal(false);
       }, 1000);
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${usdaTransactionConfirmed.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${usdaTransactionConfirmed.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          usdaTransactionConfirmed.transactionHash
+        } `;
         setSendAmount(0);
         refetchUsdaBalance();
         return (

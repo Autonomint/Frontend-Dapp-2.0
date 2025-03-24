@@ -12,7 +12,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus } from "@/utils/constants";
+import { BorrowStatus, scanUrls } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -373,11 +373,9 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${withdrawReceipt.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${withdrawReceipt.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          withdrawReceipt.transactionHash
+        } `;
         return (
           <ToastNotification
             title="Repay Successful"
@@ -518,11 +516,9 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link =
-        chainId === 84532
-          ? `https://sepolia.basescan.org/tx/${renewReceipt.transactionHash} `
-          : `https://sepolia.etherscan.io/tx/${renewReceipt.transactionHash}`;
-
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        renewReceipt.transactionHash
+      } `;
       toast.custom((t) => (
         <ToastNotification
           title="Repay Successful"

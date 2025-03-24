@@ -19,7 +19,7 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import { borrowAssetsAddress } from "@/blockchain/contracts";
 import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
 
@@ -316,11 +316,9 @@ export function DcdsWithdrawModal({
     if (cdsWithdrawGainReceiptIsSuccess) {
       setWithdrawMethodLoading(false);
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${cdsWithdrawGainReceipt.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${cdsWithdrawGainReceipt.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          cdsWithdrawGainReceipt.transactionHash
+        } `;
         return (
           <ToastNotification
             title="Withdraw Successful"
