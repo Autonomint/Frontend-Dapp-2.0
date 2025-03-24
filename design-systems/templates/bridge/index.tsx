@@ -120,14 +120,8 @@ function BridgeTemplate() {
     }
   }, [sendAmount]);
 
-  // Get the tusdt balance of the user
-  const { data: tusdtBal } = useBalance({
-    address: accountAddress,
-    token: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
-  });
-
   // Get the usda balance of the user
-  const { data: usdaBal } = useBalance({
+  const { data: usdaBal, refetch: refetchUsdaBalance } = useBalance({
     address: accountAddress,
     token: usDaAddress[chainId as keyof typeof usDaAddress],
   });
@@ -136,8 +130,6 @@ function BridgeTemplate() {
   const getmax = () => {
     if (sendToken === "USDa") {
       setSendAmount(Number(usdaBal?.formatted.slice(0, 8)));
-    } else if (sendToken === "TUSDT") {
-      setSendAmount(Number(tusdtBal?.formatted.slice(0, 8)));
     }
   };
 
@@ -177,6 +169,7 @@ function BridgeTemplate() {
     isSuccess: amintApproved,
     isError: depositError,
     error: depositHashError,
+    reset: resetAmintApprove,
   } = useWriteContract({
     mutation: {
       onError(error: any) {
@@ -244,14 +237,13 @@ function BridgeTemplate() {
     }
   }, [amintTransactionAllowed]);
 
-  // Approve TUSDT
-
   const {
     isPending: usdaApproveLoading,
     data: usdaApproveData,
     writeContract: usdaApproveWrite,
     isSuccess: usdaApproved,
     isError: usdaErrorApproveFn,
+    reset: resetUsdaApprove,
   } = useWriteContract({
     mutation: {
       onError(error: any) {
@@ -271,6 +263,7 @@ function BridgeTemplate() {
   } = useWaitForTransactionReceipt({
     hash: usdaApproveData,
   });
+
   // If the transaction is confirmed, show a toast notification
   useEffect(() => {
     if (usdaIsSuccess) {
@@ -284,6 +277,8 @@ function BridgeTemplate() {
             ? `https://sepolia.basescan.org/tx/${usdaTransactionConfirmed.transactionHash} `
             : `https://sepolia.etherscan.io/tx/${usdaTransactionConfirmed.transactionHash}`;
 
+        setSendAmount(0);
+        refetchUsdaBalance();
         return (
           <ToastNotification
             title="Transaction Confirmed"
@@ -307,6 +302,7 @@ function BridgeTemplate() {
           onClose={() => toast.dismiss(t)}
         />
       ));
+      handleTransferFail();
     }
   }, [usdaTransactionConfirmed]);
 
@@ -317,98 +313,21 @@ function BridgeTemplate() {
         onClose={() => toast.dismiss(t)}
       />
     ));
-    clearLoading();
+    resetPage();
   };
   const clearLoading = () => {
     setTimeout(() => {
       setTransferLoadingLocal(false);
     }, 1000);
-    setUsdaApproveLoading(false);
-    setUsdtApproveLoading(false);
-    setSendLoading(false);
+    resetPage();
   };
 
-  // Approve TUSDT
-  const {
-    isPending: tusDTApproveLoading,
-    data: tusDTApproveData,
-    writeContract: tusDTApproveWrite,
-    isSuccess: tusDTApproved,
-    isError: tusDTErrorApproveFn,
-  } = useWriteContract({
-    mutation: {
-      onError(error: any) {
-        handleTransferFail();
-      },
-
-      // Handle success and show a custom toast notification
-      onSuccess: (data) => {},
-    },
-  });
-
-  // Wait for the transaction to be confirmed
-  const {
-    data: tusDTTransactionAllowed,
-    isLoading: tusDTTransactionLoading,
-    isError: tusDTErrorApprove,
-    isSuccess: tusDTApproveSuccess,
-  } = useWaitForTransactionReceipt({
-    hash: tusDTApproveData,
-  });
-
-  // If the transaction is confirmed, show a toast notification and call tusdtApprove write call to bridge token
-  useEffect(() => {
-    if (tusDTApproveSuccess && accountAddress) {
-      setUsdtApproveLoading(false);
-      setTimeout(() => {
-        setSendLoading(true);
-      }, 1000);
-      tusdtApproveWrite({
-        abi: testusdtAbiAbi,
-        address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
-        functionName: "send",
-        args: [
-          transactionParams as never,
-          { nativeFee: 37671213890518646n, lzTokenFee: 0n },
-          accountAddress,
-        ],
-        value: nativeFee2?.nativeFee,
-      });
-    } else if (usdaErrorApprove) {
-      handleTransferFail();
-    }
-  }, [tusDTTransactionAllowed]);
-
-  const {
-    isPending: tusdtApproveLoading,
-    data: tusdtApproveData,
-    writeContract: tusdtApproveWrite,
-    isSuccess: tusdtApproved,
-    isError: tusdtErrorApproveFn,
-  } = useWriteContract({});
-
-  // Wait for the transaction to be confirmed
-  const {
-    data: tusdtTransactionConfirmed,
-    isLoading: istusdtTransactionLoading,
-    isError: tusdtIsError,
-    isSuccess: tusdtIsSuccess,
-    error: tusdtError,
-  } = useWaitForTransactionReceipt({
-    hash: tusdtApproveData,
-  });
-  // If the transaction is confirmed, show a toast notification
-  useEffect(() => {
-    if (tusdtIsSuccess) {
-      setSendLoading(false);
-      setTimeout(() => {
-        setTransferLoadingLocal(false);
-      }, 1000);
-      toast.success("Transaction Confirmed");
-    } else if (tusdtIsError) {
-      handleTransferFail();
-    }
-  }, [usdaTransactionConfirmed]);
+  const resetPage = () => {
+    resetUsdaApprove();
+    resetAmintApprove();
+    clearLoading();
+    setSendAmount(0);
+  };
 
   // Handle the form submission
   async function onSubmit() {
@@ -594,9 +513,7 @@ function BridgeTemplate() {
       <AppNavbar activeBack={showBack} />
       <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
         <BridgeComponentLeft
-          balance={Number(
-            sendToken === "USDa" ? usdaBal?.formatted : tusdtBal?.formatted
-          )}
+          balance={Number(Number(usdaBal?.formatted).toFixed(2))}
           heading={"From"}
           network={sendNetwork}
           token={sendToken}
@@ -650,25 +567,9 @@ function BridgeTemplate() {
           />
 
           <LoadingBox
-            isLoading={usdtApproveLoading}
-            isFailure={tusDTErrorApproveFn || tusDTErrorApprove}
-            isSuccess={Boolean(tusDTApproveSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading="Approving USDT"
-            loadingCount="1/2"
-          />
-          <LoadingBox
             isLoading={sendLoading && sendToken === "USDa"}
             isFailure={usdaErrorApproveFn || usdaIsError}
             isSuccess={Boolean(usdaIsSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading={"Transferring " + sendToken}
-            loadingCount="2/2"
-          />
-          <LoadingBox
-            isLoading={sendLoading && sendToken === "TUSDT"}
-            isFailure={tusdtErrorApproveFn || tusdtIsError}
-            isSuccess={Boolean(tusdtIsSuccess)}
             setSuccessLoading={() => console.log()}
             heading={"Transferring " + sendToken}
             loadingCount="2/2"
