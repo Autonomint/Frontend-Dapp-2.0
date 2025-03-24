@@ -102,12 +102,14 @@ export function DcdsWithdrawModal({
     },
   ];
 
+  console.log(position, "position");
+
   const NewDetails = [
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Tokens deposited`,
-      value: 0,
+      value: position?.depositedAmounts?.nativeToken,
       tooltip: false,
       tooltipText: "",
       comment: "Will be converted to USDT at 40% price fall",
@@ -115,8 +117,8 @@ export function DcdsWithdrawModal({
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
-      } Token Price and Deposit`,
-      value: 0,
+      } Token Price at Deposit`,
+      value: position?.nativeTokenPriceAtDeposit,
       tooltip: false,
       tooltipText: "",
     },
@@ -124,16 +126,16 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Token Liquidation Price`,
-      value: 0,
+      value: position?.liquidationPrice,
       tooltip: false,
       tooltipText: "",
     },
-    {
-      headline: `Total Extended Indexes`,
-      value: 0,
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   headline: `Total Extended Indexes`,
+    //   value: 0,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
   ];
 
   const rebalanceDetails = [
@@ -207,14 +209,14 @@ export function DcdsWithdrawModal({
         position.depositedAmint == "undefined" ||
         position.depositedAmint == "NaN"
           ? "0"
-          : position.depositedAmint;
+          : position.depositedAmounts.usda;
       // Update depositedAmint value
       updatedData[1].value =
         position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
           ? "0"
-          : position.depositedUsdt;
+          : position.depositedAmounts.usdt;
       // Update depositedAmint value
-      updatedData[2].value = `${Number(position.ethPriceAtDeposit) / 100}`;
+      updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
       // Update ethPriceAtDeposit value
       updatedData[3].value = new Date(
         Number(position.depositedTime) * 1000
@@ -383,6 +385,7 @@ export function DcdsWithdrawModal({
   });
 
   useEffect(() => {
+    debugger;
     const callEffect = async () => {
       if (isCdsSuccessReceipt) {
         setWithdrawMethodLoading(false);
@@ -426,6 +429,7 @@ export function DcdsWithdrawModal({
   );
 
   const handleWithdrawFund = async () => {
+    debugger;
     setDcdsFundWithdrawLoadingLocal(true);
     if (position.status == "DEPOSITED") {
       if (nativeFee) {
@@ -468,8 +472,10 @@ export function DcdsWithdrawModal({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
-        <div className="text-2xl font-semibold mb-4">Deposit Details</div>
-        <div className="flex">
+        <div className="text-2xl font-semibold mb-2 dark:text-white text-textBlack">
+          Deposit Details
+        </div>
+        {/* <div className="flex">
           <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
             <div className="inline-flex items-center">
               <label
@@ -519,7 +525,7 @@ export function DcdsWithdrawModal({
               Rebalance
             </label>
           </div>
-        </div>
+        </div> */}
         {view === "withdraw" ? (
           <div>
             <div className="h-[250px] overflow-auto no-scrollbar">
@@ -601,15 +607,39 @@ export function DcdsWithdrawModal({
                   }
                   className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                 >
-                  {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
+                  {position.status == "DEPOSITED"
+                    ? "Close Position"
+                    : position.status == "WITHDREW"
+                    ? "Withdraw"
+                    : position.status == "WITHDREW_GAINS "
+                    ? "Withdrawn"
+                    : position.status == "LIQUIDATED "
+                    ? "Liquidated"
+                    : "Withdrawn"}
                 </Button>
               )}
-              <LoadingBox
+              {/* <LoadingBox
                 isLoading={withdrawMethodLoading}
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
                 setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
                 heading="Withdrawing Funds"
+              /> */}
+              <LoadingBox
+                isLoading={withdrawMethodLoading}
+                isFailure={dcdsFundWithdrawError}
+                isSuccess={Boolean(dcdsFundWithdrawData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Closing Position"
+                loadingCount="1/2"
+              />
+              <LoadingBox
+                isLoading={withdrawGainLoading}
+                isFailure={dcdsWithdrawGainError}
+                isSuccess={Boolean(dcdsWithdrawGainData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Withdrawing Gains"
+                loadingCount="2/2"
               />
             </div>
           </div>
@@ -673,14 +703,14 @@ export function DcdsWithdrawModal({
               </div>
             </div>
 
-            <div className="h-[50px] md:h-[86px] mt-4">
+            <div className="h-[50px] overflow-hidden  md:h-[86px] mt-4">
               {true && (
                 <Button
                   onClick={handleWithdrawFund}
-                  disabled={
-                    (position.status === "WITHDREW" ? true : false) ||
-                    Number(position.lockingPeriod) * 1000 > Date.now()
-                  }
+                  // disabled={
+                  //   (position.status === "WITHDREW" ? true : false) ||
+                  //   Number(position.lockingPeriod) * 1000 > Date.now()
+                  // }
                   className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                 >
                   {position.status == "DEPOSITED"

@@ -55,7 +55,7 @@ function StatsTemplate() {
   });
 
   const { optionFees: feeOptions, refetchOptionFee: refetch } =
-    useFetchOptionFees(1, (ethPrice || 0) as number, 0);
+    useFetchOptionFees(1, (ethPrice || 0) as number, 5);
 
   console.log(!!chainId && !!ethPrice, "ethPrice");
 
@@ -69,7 +69,6 @@ function StatsTemplate() {
     ratioData,
     feeOptions,
     totalSupplyAbond,
-    feeOptions,
     ratioData,
   ]);
 
@@ -162,9 +161,7 @@ function StatsTemplate() {
 
       // fees values
       OptionFeesValues[0].value = `$${
-        feeOptions == undefined
-          ? 0
-          : (parseFloat(feeOptions.toString()) / 10 ** 6).toFixed(2)
+        feeOptions == undefined ? 0 : feeOptions.toFixed(2)
       }`;
       // FeesValues[1].value = `${
       //   feeOptions[1] == undefined
@@ -188,6 +185,8 @@ function StatsTemplate() {
       //   : "0";
     }
   };
+
+  console.log(feeOptions, OptionFeesValues, "feeOptions");
 
   return (
     <div className="md:mt-[-20px] sm:mx-4 border-x sm:border-grayLight">

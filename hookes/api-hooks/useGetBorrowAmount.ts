@@ -30,7 +30,7 @@ const useGetTotalBorrow = () => {
     queryKey: ["depositor", NetworkId.EthereumSepolia, address],
     queryFn: (): Promise<any> =>
       fetchDepositor(
-        NetworkId.EthereumSepolia.toString(),
+        chainId ? chainId?.toString() : "",
         address ? address : undefined
       ),
     enabled: !!address,
@@ -45,7 +45,7 @@ const useGetTotalBorrow = () => {
     queryKey: ["depositor", NetworkId.BaseSepolia, address],
     queryFn: (): Promise<any> =>
       fetchDepositor(
-        NetworkId.BaseSepolia.toString(),
+        chainId ? chainId?.toString() : "",
         address ? address : undefined
       ),
     enabled: !!address,

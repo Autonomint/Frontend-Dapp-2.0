@@ -61,8 +61,6 @@ function PortfolioTemplate() {
     setCurrentPage,
   } = useGetPositionList();
 
-  console.log(pagedPositionList, positionList, "pagedPositionList");
-
   const {
     dcdsPositionList,
     dcdsPositionListError,
@@ -76,6 +74,11 @@ function PortfolioTemplate() {
     totalPages: dcdsTotalPages,
   } = useGetDcdsDepositList();
 
+  console.log(
+    pagedPositionList,
+    dcdsPagedDcdsPositionList,
+    "pagedPositionList"
+  );
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);

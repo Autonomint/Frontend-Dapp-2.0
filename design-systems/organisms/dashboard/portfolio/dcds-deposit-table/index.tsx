@@ -81,7 +81,7 @@ function DcdsDepositTable({
               ID
             </th>
             <th className="pl-5 whitespace-nowrap font-normal ">
-              USDa / Usdt Deposited
+              Total Deposit
             </th>
             <th className="pl-5 whitespace-nowrap  font-normal">
               Deposited Time

@@ -40,8 +40,9 @@ const DcdsPositionTableRow = ({
     >
       <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
       <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">
-        {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
-        {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt}
+        {/* {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
+        {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt} */}
+        {position.totalDepositedAmount}
       </td>
       <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">
         {formatTimestamp(Number(position.depositedTime))}

@@ -23,7 +23,7 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
         ? assetAddress[(chainId || NetworkId.Mode) as keyof typeof assetAddress]
         : ethAddress[(chainId || NetworkId.Mode) as keyof typeof ethAddress],
     ],
-    query: { enabled: !!address && !!chainId && !!assetAddress },
+    query: { enabled: !!address && !!chainId },
   });
 
   console.log(usdValue, "usdValue");
@@ -31,7 +31,9 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
   return {
     isUsdValuePending,
     usdValue: usdValue?.[1] || 0,
-    assetPrice: (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e20,
+    assetPrice: Math.floor(
+      (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e18
+    ),
   };
 };
 

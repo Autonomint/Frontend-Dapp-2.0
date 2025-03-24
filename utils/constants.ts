@@ -65,3 +65,8 @@ export const sm_secretAccessKey = "nbnV/Bb7tBCiPIRrmWj4jQ6xwvMgJlte9hq9++d5";
 export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
 export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
+
+export const scanUrl = {
+  919: "https://explorer.mode.network/search-results?q=",
+  11155420: "https: //optimism-sepolia.blockscout.com/tx/",
+} as const;

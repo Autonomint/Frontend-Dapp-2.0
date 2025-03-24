@@ -33,11 +33,12 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const { usdValue: ethPrice } = useGetUsdValue();
+  console.log(ethPrice, "ethPrice");
 
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
     (ethPrice || 0) as number,
-    0
+    5
   );
 
   // const expirations = useDeribitExpirations("ETH", "option");

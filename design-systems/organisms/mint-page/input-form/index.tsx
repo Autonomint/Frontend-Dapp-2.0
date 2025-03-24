@@ -34,9 +34,13 @@ import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import { BorrowAssetsEnum } from "@/utils/constants";
-import { borrowAssetsAddress } from "@/blockchain/contracts";
+import {
+  borrowAssetsAddress,
+  borrowingContractAddress,
+} from "@/blockchain/contracts";
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
+import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -53,6 +57,7 @@ function InputForm({ currency }: { currency: string }) {
   const chainId = useChainId();
   const router = useRouter();
   const [mintLoading, setMintLoading] = useState<boolean>(false);
+  const [approveLoading, setApproveLoading] = useState<boolean>(false);
   const {
     isUsdValuePending,
     usdValue: ethPrice,
@@ -60,10 +65,11 @@ function InputForm({ currency }: { currency: string }) {
   } = useGetUsdValue(
     borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
   );
-  console.log(ethPrice, assetPrice, "eth");
 
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
+
+  console.log(ethPrice, assetPrice, "eth");
 
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
@@ -90,6 +96,42 @@ function InputForm({ currency }: { currency: string }) {
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
 
+  const handleSubmit = async (values: any) => {
+    debugger;
+    if (!address) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please connect your wallet"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+    if (!formik.values.collateralAmount) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please enter amount"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+    setMintLoading(true);
+    setMintBtnLoading(true);
+    reset();
+
+    if (currency == "wrsETH" || "weETH") {
+      await approveWrapETHDynamic(
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+        parseEther(formik.values.collateralAmount.toString())
+      );
+    } else {
+      handleMint(formik.values);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       collateral: currency || "eth",
@@ -98,12 +140,13 @@ function InputForm({ currency }: { currency: string }) {
       balance: 0,
     },
     validationSchema: formSchema,
-    onSubmit: handleMint,
+    onSubmit: handleSubmit,
   });
 
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
   }, [formattedBalance]);
+
   useEffect(() => {
     formik.setFieldValue("collateral", currency);
   }, [currency]);
@@ -188,6 +231,8 @@ function InputForm({ currency }: { currency: string }) {
   const handleResetPage = () => {
     formik.resetForm();
     reset();
+    setApproveLoading(false);
+    setMintLoading(false);
   };
 
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
@@ -196,34 +241,58 @@ function InputForm({ currency }: { currency: string }) {
     getStrikePercent(formik.values.strikePricePercent)
   );
 
-  async function handleMint(values: any) {
-    debugger;
-    if (!address) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Please connect your wallet"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-      return;
-    }
-    if (!formik.values.collateralAmount) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Please enter amount"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-      return;
-    }
-    setMintLoading(true);
-    setMintBtnLoading(true);
-    reset();
+  const {
+    approveWrapETHDynamic,
+    wrapETHApproveError,
+    wrapETHApproveHash,
+    wrapETHApproveLoading,
+    wrapETHApproveReset,
+    wrapETHApproveSuccess,
+  } = useApproveWrapEth(
+    {
+      onError: () => {
+        handleResetPage();
+        toast.custom((t) => {
+          return (
+            <ToastNotificationError
+              title="Transaction failed, Please try again"
+              onClose={() => toast.dismiss(t)}
+            />
+          );
+        });
+      },
+    },
+    currency
+  );
 
-    // const colateralamount = parseUnits(
-    //   formik.values.collateralAmount.toString(),
-    //   18
-    // );
+  const {
+    data: wrapEthApprovedata,
+    isError: wrapEthApproveHashError,
+    error: wrapEthApproveErrorDetails,
+    isLoading: iswrapEthApprovedataLoading,
+    isSuccess: iswrapEthApproveSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: wrapETHApproveHash,
+    confirmations: 2,
+  });
+
+  useEffect(() => {
+    if (iswrapEthApproveSuccess) {
+      handleMint(formik.values);
+    } else if (wrapEthApproveErrorDetails || wrapEthApproveHashError) {
+      handleResetPage();
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+    }
+  }, [iswrapEthApproveSuccess]);
+
+  async function handleMint(values: any) {
     const strikePercent = getStrikePercent(values.strikePricePercent);
 
     const borrowSignedData = await refetchBorrowSignedData();
@@ -425,6 +494,13 @@ function InputForm({ currency }: { currency: string }) {
         )}
         <LoadingBox
           isLoading={mintLoading}
+          isFailure={depositError || depositHashError}
+          isSuccess={Boolean(Depositdata)}
+          setSuccessLoading={setMintBtnLoading}
+          heading="Minting USDa"
+        />
+        <LoadingBox
+          isLoading={approveLoading}
           isFailure={depositError || depositHashError}
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}

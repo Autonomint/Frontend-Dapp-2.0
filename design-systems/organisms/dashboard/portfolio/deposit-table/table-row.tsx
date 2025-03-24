@@ -143,7 +143,7 @@ const DepositTableRow = ({
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
       <td className="px-5 py-4 2xl:py-6">{position.depositedAmount}</td>
       <td className="px-5 py-4 2xl:py-6">
-        ${Number(position.noOfAmintMinted).toFixed(2)}
+        ${Number(position.noOfUSDaMinted).toFixed(2)}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}

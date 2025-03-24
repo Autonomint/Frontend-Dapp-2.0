@@ -49,7 +49,9 @@ const useGetDcdsDepositList = () => {
     if (dcdsPositionList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      setPagedDcdsPositionList(dcdsPositionList.slice(startIndex, endIndex));
+      setPagedDcdsPositionList(
+        dcdsPositionList.slice(startIndex, endIndex).reverse()
+      );
 
       // Calculate total pages based on pageSize and positionList length
       setTotalPages(Math.ceil(dcdsPositionList.length / pageSize));
