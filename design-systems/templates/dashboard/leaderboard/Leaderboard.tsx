@@ -58,7 +58,7 @@ function Leaderboard() {
                     Number(
                       formatEther(
                         (omniChainData?.totalVolumeOfBorrowersAmountinUSD ??
-                          0n) / BigInt(100)
+                          0n) / BigInt(10 ** 20)
                       )
                     )
                 : 0
