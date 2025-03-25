@@ -60,6 +60,9 @@ const useGetPositionList = () => {
 
       // Calculate total pages based on pageSize and positionList length
       setTotalPages(Math.ceil(positionList.length / pageSize));
+    } else {
+      setPagedPositionList([]);
+      setTotalPages(0);
     }
   };
 

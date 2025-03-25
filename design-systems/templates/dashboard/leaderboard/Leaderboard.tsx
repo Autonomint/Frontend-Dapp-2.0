@@ -31,6 +31,8 @@ function Leaderboard() {
 
   const { points, referralPoints } = useGetUserPoint();
 
+  console.log(omniChainData, "omniChainData");
+
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -50,13 +52,16 @@ function Leaderboard() {
           <PortfolioMetrics
             subHeading="Total Value Locked (TVL)"
             value={`$${formatNumber(
-              Number(omniChainData?.totalCdsDepositedAmount ?? 0n) / 10 ** 6 +
-                Number(
-                  formatEther(
-                    (omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n) /
-                      BigInt(100)
-                  )
-                )
+              omniChainData
+                ? Number(omniChainData?.totalCdsDepositedAmount ?? 0n) /
+                    10 ** 6 +
+                    Number(
+                      formatEther(
+                        (omniChainData?.totalVolumeOfBorrowersAmountinUSD ??
+                          0n) / BigInt(100)
+                      )
+                    )
+                : 0
             )}`}
           />
         </div>

@@ -27,6 +27,9 @@ function PriceComparison({
   const gradientBackground = gradientMap[orgName] || "transparent";
   const [isHover, setIsHover] = useState(false);
   const { theme } = useTheme();
+  const prefersDarkMode = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
   return (
     <div
       className={`flex relative ${isHover ? borderColor : ""} ${
@@ -36,6 +39,8 @@ function PriceComparison({
         backgroundImage: isHover
           ? theme == "dark"
             ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
+            : prefersDarkMode
+            ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
             : gradientBackground
           : "none",
         transition: "background 0.3s ease-in-out",
@@ -44,6 +49,8 @@ function PriceComparison({
         setIsHover(true);
         (e.currentTarget as HTMLElement).style.backgroundImage =
           theme == "dark"
+            ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
+            : prefersDarkMode
             ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
             : gradientBackground;
       }}
@@ -77,6 +84,8 @@ function PriceComparison({
                 : tagColor
               : theme == "dark"
               ? "white"
+              : prefersDarkMode
+              ? "white"
               : "black",
           }}
           className={` text-textBlack  text-[14px] lg:text-[18px] 2xl:text-[24px]`}
@@ -94,6 +103,8 @@ function PriceComparison({
                 ? tagColor
                 : theme == "dark"
                 ? "white"
+                : prefersDarkMode
+                ? "dark"
                 : "black",
           }}
           className={` text-[14px] lg:text-[18px] 2xl:text-[24px]`}

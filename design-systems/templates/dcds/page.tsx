@@ -230,6 +230,7 @@ function DCDSTemplate() {
 
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
+  // console.log(omniChainData, "omniChainData");
 
   const { balanceString: usdtBalance } = useGetBalance("USDT");
   const { balanceString: usdaBalance } = useGetBalance("USDa");
@@ -420,7 +421,6 @@ function DCDSTemplate() {
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
-      debugger;
       setUsdtApproveLoadingLocal(false);
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
@@ -461,7 +461,6 @@ function DCDSTemplate() {
 
   useEffect(() => {
     if (UsdtApprovalSuccessReceipt) {
-      debugger;
       setUsdtApproveLoadingLocal(false);
 
       if (formik.values.opAmount || formik.values.modeAmount) {
@@ -548,7 +547,6 @@ function DCDSTemplate() {
   // useEffect to check the status of the amint approval transaction
   useEffect(() => {
     if (usdaApprovalSuccessReceipt) {
-      debugger;
       setUsdaApproveLoadingLocal(false);
       if (
         Number(formik.values.usdtAmount) &&
@@ -621,7 +619,6 @@ function DCDSTemplate() {
   }, [usdaApprovalReceiptReceipt]);
 
   const handleDeposit = () => {
-    debugger;
     if (!isConnected || !address) {
       openWalletPopup();
     }

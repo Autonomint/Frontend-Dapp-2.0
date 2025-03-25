@@ -383,7 +383,6 @@ export function DcdsWithdrawModal({
   });
 
   useEffect(() => {
-    debugger;
     const callEffect = async () => {
       if (isCdsSuccessReceipt) {
         setWithdrawMethodLoading(false);
@@ -427,7 +426,6 @@ export function DcdsWithdrawModal({
   );
 
   const handleWithdrawFund = async () => {
-    debugger;
     setDcdsFundWithdrawLoadingLocal(true);
     if (position.status == "DEPOSITED") {
       if (nativeFee) {

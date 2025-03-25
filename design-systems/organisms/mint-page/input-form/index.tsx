@@ -88,16 +88,10 @@ function InputForm({ currency }: { currency: string }) {
         : undefined,
   });
 
-  console.log(
-    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
-    ethBalance,
-    "bal"
-  );
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
 
   const handleSubmit = async (values: any) => {
-    debugger;
     if (!address) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -120,7 +114,7 @@ function InputForm({ currency }: { currency: string }) {
     setMintBtnLoading(true);
     reset();
 
-    if (currency == "wrsETH" || "weETH") {
+    if (["wrsETH", "weETH"].includes(currency)) {
       await approveWrapETHDynamic(
         borrowingContractAddress[
           chainId as keyof typeof borrowingContractAddress
@@ -142,7 +136,13 @@ function InputForm({ currency }: { currency: string }) {
     validationSchema: formSchema,
     onSubmit: handleSubmit,
   });
-
+  console.log(
+    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
+    ethBalance,
+    formik.values.balance,
+    formattedBalance,
+    "bal"
+  );
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
   }, [formattedBalance]);
@@ -228,7 +228,7 @@ function InputForm({ currency }: { currency: string }) {
   }, [Depositdata, isDepositSuccess]);
 
   const handleResetPage = () => {
-    formik.resetForm();
+    // formik.resetForm();
     reset();
     setApproveLoading(false);
     setMintLoading(false);

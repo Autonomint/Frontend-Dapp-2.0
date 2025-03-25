@@ -21,8 +21,8 @@ export default function BridgeComponentLeft({
   balance: number;
   amountError: string;
   setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
-  setSendAmount: Dispatch<SetStateAction<number | null>>;
-  sendAmount: number | null;
+  setSendAmount: Dispatch<SetStateAction<number | string | undefined>>;
+  sendAmount: number | string | undefined;
   setSendNetwork: Dispatch<
     React.SetStateAction<"Sepolia" | "Base" | "Mode" | "OP">
   >;
@@ -102,8 +102,8 @@ export default function BridgeComponentLeft({
           </div>
           <input
             onWheel={handleWheel}
-            value={sendAmount || undefined}
-            onChange={(e) => setSendAmount(Number(e.target.value))}
+            value={sendAmount}
+            onChange={(e) => setSendAmount(e.target.value)}
             type="number"
             placeholder="0"
             className="text-[42px] w-full bg-transparent border-0 outline-0 text-textBlack  mt-4 lg:mt-8 dark:text-white"

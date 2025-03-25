@@ -421,7 +421,6 @@ export function WithdrawFund({
   );
 
   const handleRepay = async () => {
-    debugger;
     setIsApproveLoadingLocal(true);
     setRepayLoading(true);
     setOpenConfirmNotice(false);
@@ -462,7 +461,6 @@ export function WithdrawFund({
   useEffect(() => {
     (async () => {
       if (usdaHashData && usdaHashSucces) {
-        debugger;
         if (toggleView == "repay") {
           setIsApproveLoadingLocal(false);
           setTimeout(() => {
@@ -556,7 +554,6 @@ export function WithdrawFund({
   console.log(payableOptionFees, position.index, "payableOptionFees");
 
   const handleRenew = () => {
-    debugger;
     setRenewLoading(true);
     setRenewApproveLoading(true);
     approveReset?.();

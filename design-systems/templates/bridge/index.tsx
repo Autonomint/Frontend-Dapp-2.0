@@ -44,7 +44,7 @@ function BridgeTemplate() {
     "Sepolia" | "Base" | "Mode" | "OP"
   >("Mode");
 
-  const [sendAmount, setSendAmount] = useState<number | null>(null);
+  const [sendAmount, setSendAmount] = useState<number | string>();
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [estimateTime, setEstimateTime] = useState<number>(0);
   const [amountError, setAmountError] = useState<string>("");
@@ -72,7 +72,7 @@ function BridgeTemplate() {
 
   // Option Fees to be added to the transaction parameters (200000)
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(200000, 0)
+    .addExecutorLzReceiveOption(60000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
@@ -80,7 +80,7 @@ function BridgeTemplate() {
     useState<string>("0");
 
   useEffect(() => {
-    if ((sendAmount || 0) > Number(usdaBal?.formatted)) {
+    if ((Number(sendAmount) || 0) > Number(usdaBal?.formatted)) {
       setAmountError(
         `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`
       );
@@ -104,7 +104,7 @@ function BridgeTemplate() {
       setCollateralAmountString("0");
       letamount = "0";
     } else {
-      setCollateralAmountString((sendAmount * 10 ** 6).toString());
+      setCollateralAmountString((Number(sendAmount) * 10 ** 6).toString());
     }
     let amount = 0n;
     if (sendToken === "USDa" && nativeFee1) {
@@ -157,10 +157,16 @@ function BridgeTemplate() {
   const { nativeFee1, refetchnativeFee1 } =
     useGetBridgeFeeUsda(transactionParams);
 
-  // Get the native fee for the transaction
-  const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
-    useGetBridgeFeeUsdt(transactionParams);
-  // Approve USDa
+  // // Get the native fee for the transaction
+  // const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
+  //   useGetBridgeFeeUsdt(transactionParams);
+  // // Approve USDa
+
+  console.log(
+    nativeFee1,
+    usDaAddress[chainId as keyof typeof usDaAddress],
+    "nativeFee1"
+  );
 
   const {
     isPending: amintApproveLoading,
@@ -277,6 +283,7 @@ function BridgeTemplate() {
         } `;
         setSendAmount(0);
         refetchUsdaBalance();
+        resetUsdaApprove();
         return (
           <ToastNotification
             title="Transaction Confirmed"
@@ -363,7 +370,7 @@ function BridgeTemplate() {
           functionName: "approve",
           args: [
             usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
-            BigInt((sendAmount || 0) * 10 ** 6),
+            BigInt((Number(sendAmount) || 0) * 10 ** 6),
           ],
         });
       }
@@ -541,7 +548,7 @@ function BridgeTemplate() {
             value={secondsToMinutes(estimateTime * 2)}
           />
         </div>
-        <div className=" w-full">
+        <div className=" overflow-hidden w-full">
           {isConnected && address ? (
             !transferLoadingLocal && (
               <Button

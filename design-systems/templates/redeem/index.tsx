@@ -481,6 +481,10 @@ const RedeemContainer = () => {
 
   const pathname = usePathname();
 
+  const handleChange = (event: any) => {
+    formik.setFieldValue("redeemTokenName", event.target.value);
+  };
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar
@@ -507,7 +511,7 @@ const RedeemContainer = () => {
                 name="collateralAmount"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                value={formik.values.collateralAmount || ""}
+                value={formik.values.collateralAmount}
                 className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
               />
               <Typography size="sm" variant="regular" className="text-red-500">
@@ -535,7 +539,7 @@ const RedeemContainer = () => {
                   items={dropdownItems}
                   className="w-full text-[24px] border border-grayLight"
                 />
-                {formik.values.inputCollateral === "amint" && (
+                {/* {formik.values.inputCollateral === "amint" && (
                   <GenericDropdownMenu
                     buttonText={
                       formik.values.redeemTokenName
@@ -545,14 +549,14 @@ const RedeemContainer = () => {
                     items={RedeemTokenDropdownItems}
                     className="w-full text-[24px] border border-grayLight"
                   />
-                )}
+                )} */}
               </div>
               <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
                 Balance{" "}
                 <span className="text-grayLight">
                   {formik.values.inputCollateral == "amint"
-                    ? `${amintbalance?.formatted} USDa`
-                    : `${abondbalance?.formatted} Abond`}
+                    ? `${amintbalance?.formatted || 0} USDa`
+                    : `${abondbalance?.formatted || 0}  Abond`}
                 </span>
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
@@ -570,9 +574,39 @@ const RedeemContainer = () => {
               <div>
                 {formik.values.inputCollateral === "amint" ? (
                   <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
-                    <div className="p-1 text-2xl basis-3/5 text-bold">
-                      {formik.values.collateralAmount}{" "}
-                      {formik.values.redeemTokenName}
+                    <div className="p-1 flex justify-start gap-3 items-center text-2xl basis-3/5 text-bold">
+                      {formik.values.collateralAmount || 0}{" "}
+                      {/* {formik.values.redeemTokenName} */}
+                      <div>
+                        <div>
+                          {/* <label
+                            htmlFor="dropdown"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Choose an option:
+                          </label> */}
+                          <select
+                            id="dropdown"
+                            value={formik.values.redeemTokenName}
+                            onChange={handleChange}
+                            className=" block w-full p-1 pr-2  bg-transparent border-0 rounded-[10px] shadow-sm focus:outline-none focus:ring-transparent focus:border-transparent sm:text-[24px]"
+                          >
+                            {RedeemTokenDropdownItems.map((option) => {
+                              return (
+                                <option value={option.label}>
+                                  {option.label}
+                                </option>
+                              );
+                            })}
+                          </select>
+
+                          {/* {selectedOption && (
+                            <div className="mt-3">
+                              <p>You selected: {selectedOption}</p>
+                            </div>
+                          )} */}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (
@@ -595,7 +629,7 @@ const RedeemContainer = () => {
                   </div>
                 ) : (
                   <div className="flex items-center pt-1 basis-3/5 text-black dark:text-white text-2xl font-semibold">
-                    Output Amount
+                    0 Output Amount
                   </div>
                 )}
               </div>

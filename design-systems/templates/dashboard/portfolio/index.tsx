@@ -161,22 +161,22 @@ function PortfolioTemplate() {
       <div className="grid lg:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Total Borrowed"
+            subHeading="Total Borrowed (All Chain)"
             value={`${userTotalBorrowAmount} USDa`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Total Deposited"
+            subHeading="Total Deposited (All Chain)"
             value={`$${totalUserDeposit}`}
           />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Fee Earned" value="$120" />
+          <PortfolioMetrics subHeading="Fee Earned (All Chain)" value="$0" />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Points"
+            subHeading="Points (All Chain)"
             value={(
               Number(referralPoints || 0) + Number(points?.[0] || 0)
             ).toString()}
