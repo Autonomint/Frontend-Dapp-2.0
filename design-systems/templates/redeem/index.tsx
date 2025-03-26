@@ -602,6 +602,14 @@ const RedeemContainer = () => {
                     <div className="flex justify-start items-center gap-2 mr-1 ">
                       <div className="flex items-center p-1 text-2xl  text-bold">
                         {outputData
+                          ? Number(formatEther(outputData[3])).toFixed(5)
+                          : 0}{" "}
+                        ETH
+                      </div>
+                      <div className="text-xl">+</div>
+
+                      <div className="flex items-center p-1 text-2xl  text-bold">
+                        {outputData
                           ? Number(formatEther(outputData[1])).toFixed(5)
                           : 0}{" "}
                         WeETH
@@ -613,12 +621,7 @@ const RedeemContainer = () => {
                           : 0}{" "}
                         WrsETH
                       </div>
-                      <div className="flex items-center p-1 text-2xl  text-bold">
-                        {outputData
-                          ? Number(formatEther(outputData[3])).toFixed(5)
-                          : 0}{" "}
-                        ETH
-                      </div>
+
                       <div className="text-xl">+</div>
                       <div className="flex items-center p-1 text-2xl  text-bold">
                         {outputData
