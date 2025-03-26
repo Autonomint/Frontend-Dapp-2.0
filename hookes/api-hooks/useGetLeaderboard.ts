@@ -96,7 +96,10 @@ const useGetLeaderboard = () => {
             (parseFloat(existingEntry.totalUSDa || "0") || 0) +
             (parseFloat(entry.totalUSDa || "0") || 0)
           ).toString(),
-          points: entry.points, // Assuming latest points, modify if needed
+          points: (
+            Number(entry.points) + Number(existingEntry.points)
+          ).toString(),
+
           totalLTV: (existingEntry.totalLTV || 0) + (entry.totalLTV || 0),
           yield: existingEntry.yield + entry.yield, // Summing yields
           chainId: entry.chainId, // Assuming latest chainId
@@ -113,7 +116,10 @@ const useGetLeaderboard = () => {
   const leaderboardData = useMemo(() => {
     return mergeLeaderboardDetails(
       sortLeaderboardDetails([
-        ...((borrowdeposits || []) as LeaderboardDetails[]),
+        ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
+          ...item,
+          points: "0",
+        })),
         ...((cdsdeposits || []) as LeaderboardDetails[]),
       ])
     );

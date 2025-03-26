@@ -21,6 +21,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import { NetworkId } from "@/utils/constants";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -176,7 +177,9 @@ function PortfolioTemplate() {
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Points (All Chain)"
+            subHeading={`Points (${
+              chainId == NetworkId.Mode ? "Mode" : "OP"
+            } Chain)`}
             value={(
               Number(referralPoints || 0) + Number(points?.[0] || 0)
             ).toString()}

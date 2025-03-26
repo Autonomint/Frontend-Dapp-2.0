@@ -5,8 +5,11 @@ import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
 import { Input } from "@/design-systems/atoms/input";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useInviteCodeMutation } from "@/hookes/api-hooks/useInvite";
+import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 interface InviteCodePopup {}
@@ -15,7 +18,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   const { isInviteCodePopupOpen, setIsInviteCodePopupOpen } =
     useInviteCodePopup();
   const { open, close } = useAppKit();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chainId } = useAccount();
   const [inputError, setInputError] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const { disconnect } = useDisconnect();
@@ -29,6 +32,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   } = useInviteCodeMutation(() => {
     setInputError("Please enter a valid invite code");
   });
+  const pathname = usePathname();
   const handleChange = (value: string, index: number) => {
     // if (!/^\d$/.test(value) && value !== "") return; // Only allow digits
 

@@ -32,7 +32,7 @@ import { TransactionParams } from "./interfaces";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
-import { eId, scanUrls } from "@/utils/constants";
+import { eId, NetworkId, scanUrls } from "@/utils/constants";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
@@ -62,13 +62,33 @@ function BridgeTemplate() {
 
   const { switchChain, isPending: isChainSwitchPending } = useSwitchChain();
 
-  const { address: accountAddress, isConnected } = useAccount();
+  const {
+    address: accountAddress,
+    isConnected,
+    chainId: chainId2,
+  } = useAccount();
 
   const toastId = useRef<string | number>("");
 
   const chainId = useChainId();
 
   const Eid = chainId === 11155111 ? 40245 : 40161;
+
+  useEffect(() => {
+    debugger;
+    if (chainId2 === 84532) {
+      setSendNetwork("Base");
+    }
+    if (chainId2 === 11155111) {
+      setSendNetwork("Sepolia");
+    }
+    if (chainId2 === 919) {
+      setSendNetwork("Mode");
+    }
+    if (chainId2 === 11155420) {
+      setSendNetwork("OP");
+    }
+  }, [chainId2]);
 
   // Option Fees to be added to the transaction parameters (200000)
   const options = Options.newOptions()
