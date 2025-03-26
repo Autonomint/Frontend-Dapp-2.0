@@ -830,11 +830,7 @@ export function WithdrawFund({
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
                 {!renewLoading && (
                   <Button
-                    disabled={
-                      position.status == BorrowStatus.WITHDREW
-                      // ||
-                      // !isFifteenDaysCompleted(position.validTill)
-                    }
+                    disabled={position.status == BorrowStatus.WITHDREW}
                     onClick={handleRenew}
                     className="w-full  p-8 bg-black text-white text-[32px]"
                   >
