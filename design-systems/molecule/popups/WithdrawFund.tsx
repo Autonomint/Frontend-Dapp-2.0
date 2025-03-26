@@ -555,6 +555,7 @@ export function WithdrawFund({
     payableOptionFees,
     usdaApproveError,
     position.index,
+    BigInt(Number(payableOptionFees || 0) * 1e6),
     "payableOptionFees"
   );
 
@@ -564,7 +565,7 @@ export function WithdrawFund({
     approveReset?.();
     resetBorrowRenew?.();
     approveUsdaDynamic(
-      BigInt(Number(payableOptionFees || 0) / 1e6),
+      BigInt(Number(payableOptionFees || 0n) * 1e6),
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`

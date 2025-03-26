@@ -297,12 +297,7 @@ function DCDSTemplate() {
           (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
           USDT_DEPOSIT_LIMIT_IN_DCDS,
         errorMessage: "Mode not active now",
-        balanceAvailable: String(
-          `$${(
-            Number(modeBalance) *
-            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
-          ).toFixed(2)}`
-        ),
+        balanceAvailable: String(`${Number(modeBalance).toFixed(2)}`),
       });
     }
 
@@ -413,11 +408,14 @@ function DCDSTemplate() {
     : zeroAddress;
   const price = getOraclePrice as [number, number];
 
-  const liqAmnt =
+  const liqAmnt = Math.round(
     (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
       Number(usdtAmountLocal ? usdtAmountLocal : 0) +
       (Number(nativeTokenAmount) * 0.7 * Number(price[1])) / 1e6) *
-    1e6;
+      1e6
+  );
+
+  console.log(liqAmnt, "liqAmnt");
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
@@ -674,9 +672,9 @@ function DCDSTemplate() {
       approveNativeTokenDynamic(
         cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
         BigInt(
-          formik.values.modeFlag
+          formik?.values?.modeFlag
             ? parseUnits(formik?.values?.modeAmount?.toString() || "0", 18)
-            : formik.values.opFlag
+            : formik?.values?.opFlag
             ? parseUnits(formik?.values?.opAmount?.toString() || "0", 18)
             : 0
         )
