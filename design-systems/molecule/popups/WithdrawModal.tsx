@@ -122,14 +122,14 @@ export function DcdsWithdrawModal({
       tooltip: false,
       tooltipText: "",
     },
-    {
-      headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
-      } Token Liquidation Price`,
-      value: position?.liquidationPrice,
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   headline: `${
+    //     Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+    //   } Token Liquidation Price`,
+    //   value: position?.liquidationPrice,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     // {
     //   headline: `Total Extended Indexes`,
     //   value: 0,
@@ -524,7 +524,7 @@ export function DcdsWithdrawModal({
         </div> */}
         {view === "withdraw" ? (
           <div>
-            <div className="h-[250px] overflow-auto no-scrollbar">
+            <div className="h-[275px] overflow-auto no-scrollbar">
               {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
                 return (
                   <div key={idx} className="flex flex-col justify-between mb-2">

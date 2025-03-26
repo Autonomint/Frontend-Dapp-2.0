@@ -3,7 +3,7 @@ import { borrowingContractAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
 const usePayableOptionFees = (index: any) => {
-  const { chainId } = useAccount();
+  const { chainId, address } = useAccount();
   // Get the native fee for the transaction
   const {
     data: payableOptionFees,
@@ -16,7 +16,7 @@ const usePayableOptionFees = (index: any) => {
         chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getOptionFeesToPay",
-    args: [index],
+    args: [address as `0x${string}`, index],
   });
 
   return {

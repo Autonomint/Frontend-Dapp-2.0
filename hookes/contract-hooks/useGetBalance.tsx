@@ -31,7 +31,7 @@ const useGetBalance = (
   console.log(data, "rawData");
 
   return {
-    balanceString: `${data?.formatted.slice(0, 8) || 0} ${token}`,
+    balanceString: `$${data?.formatted.slice(0, 8) || 0} `,
     balance: Number(data?.formatted.slice(0, 8) || 0),
   };
 };

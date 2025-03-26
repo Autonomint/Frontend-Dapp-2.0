@@ -27,6 +27,7 @@ type DropdownMenuProps = {
   icon?: React.ReactNode;
   iconWrapBg?: string;
   isLoading?: boolean;
+  contentWrapClass?: string;
 };
 
 export function GenericDropdownMenu({
@@ -36,6 +37,7 @@ export function GenericDropdownMenu({
   icon = <ChevronDownIcon className="w-4 h-4" />,
   iconWrapBg,
   isLoading = false,
+  contentWrapClass,
 }: DropdownMenuProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [dropdownWidth, setDropdownWidth] = useState<string | undefined>();
@@ -67,7 +69,7 @@ export function GenericDropdownMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className={`bg-white dark:bg-black border p-3 border-grayLight dark:border-gray-700 shadow-md`}
+        className={`bg-white dark:bg-black border p-3  border-grayLight  shadow-md ${contentWrapClass}`}
         style={{ width: dropdownWidth }}
         align="start"
       >

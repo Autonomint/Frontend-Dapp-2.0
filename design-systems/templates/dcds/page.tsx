@@ -445,7 +445,7 @@ function DCDSTemplate() {
               ),
               BigInt(
                 formik.values.opFlag || formik.values.modeFlag
-                  ? parseUnits(nativeTokenAmount?.toString() || "0", 6)
+                  ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                   : 0
               ),
             ],

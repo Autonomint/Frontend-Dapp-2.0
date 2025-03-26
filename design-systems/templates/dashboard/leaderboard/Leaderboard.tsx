@@ -29,9 +29,9 @@ function Leaderboard() {
     isLeaderboardPending,
   } = useGetLeaderboard();
 
-  const { points, referralPoints } = useGetUserPoint();
+  const { points, referralPoints, totalPoints } = useGetUserPoint();
 
-  console.log(omniChainData, "omniChainData");
+  console.log(points, "omniChainData");
 
   return (
     <div className="flex flex-col sm:px-4">
@@ -68,9 +68,7 @@ function Leaderboard() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value={
-              points == undefined ? 0 : points[1] + Number(referralPoints ?? 0)
-            }
+            value={totalPoints + Number(referralPoints || 0)}
           />
         </div>
       </div>

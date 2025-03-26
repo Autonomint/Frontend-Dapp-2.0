@@ -155,7 +155,10 @@ function PortfolioTemplate() {
     };
   }, []);
 
-  console.log(pagedPositionList, "pagedPositionList");
+  console.log(
+    Number(referralPoints || 0) + Number(points || 0),
+    "pagedPositionList"
+  );
 
   return (
     <div className="flex sm:px-4 flex-col">
@@ -177,11 +180,9 @@ function PortfolioTemplate() {
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading={`Points (${
-              chainId == NetworkId.Mode ? "Mode" : "OP"
-            } Chain)`}
+            subHeading={`Points (All Chain)`}
             value={(
-              Number(referralPoints || 0) + Number(points?.[0] || 0)
+              Number(referralPoints || 0) + Number(points || 0)
             ).toString()}
           />
         </div>

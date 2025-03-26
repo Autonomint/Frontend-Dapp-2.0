@@ -32,9 +32,12 @@ function PriceComparison({
   ).matches;
   return (
     <div
+      // xl:w-[60%]w-[40%] xl:flex-1
       className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-7  gap-4  w-[40%] xl:w-[60%]  xl:flex-1 transition-all duration-300 ease-in-out`}
+      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-7  gap-4    transition-all duration-300 ease-in-out 
+      w-[400px]
+      `}
       style={{
         backgroundImage: isHover
           ? theme == "dark"

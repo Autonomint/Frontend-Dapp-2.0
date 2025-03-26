@@ -792,6 +792,11 @@ export const borrowingContractAbi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
         internalType: "uint64",
         name: "index",
         type: "uint64",

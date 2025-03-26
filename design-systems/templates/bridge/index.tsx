@@ -75,7 +75,6 @@ function BridgeTemplate() {
   const Eid = chainId === 11155111 ? 40245 : 40161;
 
   useEffect(() => {
-    debugger;
     if (chainId2 === 84532) {
       setSendNetwork("Base");
     }

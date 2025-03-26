@@ -49,7 +49,7 @@ const formSchema = Yup.object({
     .max(Yup.ref("usdaBalance"), "Collateral amount cannot exceed balance")
     .required("Collateral amount is required")
     .nullable(),
-  outputCollateralAmount: Yup.number().positive("Value must be positive"),
+  // outputCollateralAmount: Yup.number().positive("Value must be positive"),
   outputCollateral: Yup.string(),
   redeemTokenName: Yup.string(),
   usdaBalance: Yup.number(),
@@ -263,6 +263,7 @@ const RedeemContainer = () => {
     setAbondApproveLoadingLocal(false);
     setUsdaApproveLocal(false);
   };
+
   const { data: outputData, error } = useReadContract({
     abi: borrowingContractAbi,
     address:
@@ -275,6 +276,15 @@ const RedeemContainer = () => {
       BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18),
     ],
   });
+
+  console.log(
+    outputData,
+    error,
+    formik.errors,
+    formik.values,
+    "outputData",
+    BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18)
+  );
 
   useEffect(() => {
     if (
@@ -295,7 +305,7 @@ const RedeemContainer = () => {
         if (outputData) {
           formik.setFieldValue(
             "outputCollateralAmount",
-            Number(formatEther(outputData[0]))
+            Number(formatEther(outputData[0]) || 1)
           );
         }
       }
@@ -318,7 +328,7 @@ const RedeemContainer = () => {
     } else {
       formik.setFieldValue("outputCollateralAmount", 0);
     }
-  }, [formik.values.collateralAmount, outputData]);
+  }, [formik.values, outputData]);
 
   const {
     isPending: abondApproveLoading,
@@ -505,7 +515,7 @@ const RedeemContainer = () => {
                 Input Amount
               </span>
               <Input
-                placeholder="0"
+                placeholder="Enter amount here"
                 onWheel={handleWheel}
                 type="number"
                 name="collateralAmount"
@@ -539,31 +549,27 @@ const RedeemContainer = () => {
                   items={dropdownItems}
                   className="w-full text-[24px] border border-grayLight"
                 />
-                {/* {formik.values.inputCollateral === "amint" && (
-                  <GenericDropdownMenu
-                    buttonText={
-                      formik.values.redeemTokenName
-                        ? `${formik.values.redeemTokenName}`
-                        : "Select"
-                    }
-                    items={RedeemTokenDropdownItems}
-                    className="w-full text-[24px] border border-grayLight"
-                  />
-                )} */}
               </div>
-              <div className="text-black dark:text-white md:text-lg text-right mb-4 text-[14px]">
-                Balance{" "}
-                <span className="text-grayLight">
-                  {formik.values.inputCollateral == "amint"
-                    ? `${amintbalance?.formatted || 0} USDa`
-                    : `${abondbalance?.formatted || 0}  Abond`}
-                </span>
+              <div className="text-black flex justify-between dark:text-white md:text-lg text-right mb-4 text-[14px]">
+                <Typography
+                  size="sm"
+                  variant="regular"
+                  className="text-red-500"
+                >
+                  {formik.errors.inputCollateral &&
+                  formik.touched.inputCollateral
+                    ? formik.errors.inputCollateral
+                    : ""}
+                </Typography>
+                <div>
+                  Balance{" "}
+                  <span className="text-grayLight">
+                    {formik.values.inputCollateral == "amint"
+                      ? `${amintbalance?.formatted || 0} USDa`
+                      : `${abondbalance?.formatted || 0}  Abond`}
+                  </span>
+                </div>
               </div>
-              <Typography size="sm" variant="regular" className="text-red-500">
-                {formik.errors.inputCollateral && formik.touched.inputCollateral
-                  ? formik.errors.inputCollateral
-                  : ""}
-              </Typography>
             </div>
           </div>
           <div className="border border-solid border-grayLight dark:border-grayLight p-5 mt-2 lg:mt-8">
@@ -576,37 +582,19 @@ const RedeemContainer = () => {
                   <div className="text-sm text-black font-medium dark:text-[#FFFF] mt-2 flex justify-start">
                     <div className="p-1 flex justify-start gap-3 items-center text-2xl basis-3/5 text-bold">
                       {formik.values.collateralAmount || 0}{" "}
-                      {/* {formik.values.redeemTokenName} */}
-                      <div>
-                        <div>
-                          {/* <label
-                            htmlFor="dropdown"
-                            className="block text-sm font-medium text-gray-700"
-                          >
-                            Choose an option:
-                          </label> */}
-                          <select
-                            id="dropdown"
-                            value={formik.values.redeemTokenName}
-                            onChange={handleChange}
-                            className=" block w-full p-1 pr-2  bg-transparent border-0 rounded-[10px] shadow-sm focus:outline-none focus:ring-transparent focus:border-transparent sm:text-[24px]"
-                          >
-                            {RedeemTokenDropdownItems.map((option) => {
-                              return (
-                                <option value={option.label}>
-                                  {option.label}
-                                </option>
-                              );
-                            })}
-                          </select>
-
-                          {/* {selectedOption && (
-                            <div className="mt-3">
-                              <p>You selected: {selectedOption}</p>
-                            </div>
-                          )} */}
-                        </div>
-                      </div>
+                      {formik.values.inputCollateral === "amint" && (
+                        <GenericDropdownMenu
+                          buttonText={
+                            formik.values.redeemTokenName
+                              ? `${formik.values.redeemTokenName}`
+                              : "Select"
+                          }
+                          items={RedeemTokenDropdownItems}
+                          className="w-[110px] text-[24px] p-0 border-0"
+                          iconWrapBg="!border-0"
+                          contentWrapClass="!w-[120px] "
+                        />
+                      )}
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (
@@ -614,14 +602,27 @@ const RedeemContainer = () => {
                     <div className="flex justify-start items-center gap-2 mr-1 ">
                       <div className="flex items-center p-1 text-2xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[0])).toFixed(5)
+                          ? Number(formatEther(outputData[1])).toFixed(5)
+                          : 0}{" "}
+                        WeETH
+                      </div>
+                      <div className="text-xl">+</div>
+                      <div className="flex items-center p-1 text-2xl  text-bold">
+                        {outputData
+                          ? Number(formatEther(outputData[2])).toFixed(5)
+                          : 0}{" "}
+                        WrsETH
+                      </div>
+                      <div className="flex items-center p-1 text-2xl  text-bold">
+                        {outputData
+                          ? Number(formatEther(outputData[3])).toFixed(5)
                           : 0}{" "}
                         ETH
                       </div>
                       <div className="text-xl">+</div>
                       <div className="flex items-center p-1 text-2xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[2])).toFixed(2)
+                          ? Number(formatEther(outputData[4])).toFixed(2)
                           : 0}{" "}
                         USDa
                       </div>

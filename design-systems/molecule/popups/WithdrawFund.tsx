@@ -576,13 +576,18 @@ export function WithdrawFund({
         ).toFixed(2)
       : 0;
 
+  console.log(isFifteenDaysCompleted(position.validTill), "15");
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="text-2xl font-semibold mb-4">Borrow Details</div>
           <div className="flex">
-            <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div
+              onClick={() => setToggleView("repay")}
+              className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700"
+            >
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
@@ -592,7 +597,6 @@ export function WithdrawFund({
                     name="repay"
                     type="radio"
                     checked={toggleView === "repay"}
-                    onChange={() => setToggleView("repay")}
                     className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
                     id="repay"
                   />
@@ -607,7 +611,10 @@ export function WithdrawFund({
               </label>
             </div>
 
-            <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div
+              onClick={() => setToggleView("renew")}
+              className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700"
+            >
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
@@ -697,14 +704,25 @@ export function WithdrawFund({
               <div className="w-full mt-4 h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
                 {[
                   {
-                    label: "Deposit",
-                    value: 5,
+                    label: "days",
+                    value:
+                      30 - calculateRemainingDays(Number(position.validTill)), // 2,
                     color: "linear-gradient(to right,#478BFF,#00FA96)",
                   },
                   {
-                    label: "Option Fee",
-                    value: 0.7,
-                    color: "linear-gradient(to right,#05A552,#05A552)",
+                    label: "repay",
+                    value:
+                      15 -
+                      (30 -
+                        calculateRemainingDays(Number(position.validTill))) *
+                        2, // 15,
+                    color: "#2563eb",
+                  },
+                  {
+                    label: "maturity",
+                    value:
+                      calculateRemainingDays(Number(position.validTill)) - 15, // 28 ,
+                    color: "#05a552",
                   },
                 ].map((metric, index, arr) => {
                   const total = arr.reduce((acc, item) => acc + item.value, 0);
@@ -715,18 +733,25 @@ export function WithdrawFund({
                       key={index}
                       style={{
                         width: `${percentage}%`,
-                        backgroundImage: metric.color,
+                        background: metric.color,
                       }}
                     />
                   );
                 })}
               </div>
-              <div className="flex mt-2 items-center gap-2 text-[24px] text-grayLight font-medium">
-                <span className="block w-3 h-3 bg-[#05A552]"></span>
-                {calculateRemainingDays(Number(position.validTill))} Days
-                remaining till maturity
+              <div className="flex gap-4 mb-3">
+                <div className="flex mt-2 items-center gap-2 text-[16px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-[#05A552]"></span>
+                  {calculateRemainingDays(Number(position.validTill))} Days
+                  remaining till maturity
+                </div>
+                <div className="flex mt-2 items-center gap-2 text-[16px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-blue-600"></span>
+                  {calculateRemainingDays(Number(position.validTill)) - 15} Days
+                  remaining to active renew
+                </div>
               </div>
-              <div className="max-h-[250px] overflow-auto no-scrollbar">
+              <div className="max-h-[280px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
                   {[
                     {
@@ -767,11 +792,18 @@ export function WithdrawFund({
 
                   {[
                     { label: "Time Period", value: "30 days" },
-                    { label: "Option Fees", value: `${payableOptionFees}` },
+                    {
+                      label: "Option Fees",
+                      value: isFifteenDaysCompleted(position.validTill)
+                        ? `${payableOptionFees}`
+                        : "-",
+                    },
                     {
                       label: "Downside Protection",
                       value: `Up to $${(
-                        (Number(position.depositedAmount) * 20) /
+                        (Number(formatUnits(BigInt(ethPrice), 2)) *
+                          Number(position?.depositedAmount) *
+                          20) /
                         100
                       ).toFixed(2)} (20%)`,
                     },
@@ -795,7 +827,7 @@ export function WithdrawFund({
                   <Button
                     disabled={
                       position.status == BorrowStatus.WITHDREW ||
-                      isFifteenDaysCompleted(position.validTill)
+                      !isFifteenDaysCompleted(position.validTill)
                     }
                     onClick={handleRenew}
                     className="w-full  p-8 bg-black text-white text-[32px]"
