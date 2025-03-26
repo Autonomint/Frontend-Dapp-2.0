@@ -674,8 +674,10 @@ function DCDSTemplate() {
       approveNativeTokenDynamic(
         cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
         BigInt(
-          formik.values.opAmount
-            ? parseUnits(formik.values.opAmount.toString(), 6)
+          formik.values.modeFlag
+            ? parseUnits(formik?.values?.modeAmount?.toString() || "0", 18)
+            : formik.values.opFlag
+            ? parseUnits(formik?.values?.opAmount?.toString() || "0", 18)
             : 0
         )
       );
