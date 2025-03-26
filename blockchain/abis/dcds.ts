@@ -683,6 +683,11 @@ export const cdsAbi = [
         name: "index",
         type: "uint64",
       },
+      {
+        internalType: "uint256",
+        name: "excessProfitCumulativeValue",
+        type: "uint256",
+      },
     ],
     name: "calculateLiquidatedETHTogiveToUser",
     outputs: [
@@ -718,30 +723,6 @@ export const cdsAbi = [
         internalType: "uint64",
         name: "",
         type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "cdsDetails",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "index",
-        type: "uint64",
-      },
-      {
-        internalType: "bool",
-        name: "hasDeposited",
-        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -1403,6 +1384,25 @@ export const cdsAbi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+    ],
+    name: "tokenDepositedTillNow",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "totalAmountDepositedTillNow",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "totalAvailableLiquidationAmount",
     outputs: [
@@ -1497,6 +1497,19 @@ export const cdsAbi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "mpoAddress",
+        type: "address",
+      },
+    ],
+    name: "updateMpo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "amount",
         type: "uint256",
@@ -1539,6 +1552,19 @@ export const cdsAbi = [
       },
     ],
     name: "updateTotalCdsDepositedAmountWithOptionFees",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "usdtAddress",
+        type: "address",
+      },
+    ],
+    name: "updateUSDT",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

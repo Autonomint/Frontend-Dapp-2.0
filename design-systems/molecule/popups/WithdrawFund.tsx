@@ -551,7 +551,12 @@ export function WithdrawFund({
   };
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
-  console.log(payableOptionFees, position.index, "payableOptionFees");
+  console.log(
+    payableOptionFees,
+    usdaApproveError,
+    position.index,
+    "payableOptionFees"
+  );
 
   const handleRenew = () => {
     setRenewLoading(true);
@@ -559,7 +564,7 @@ export function WithdrawFund({
     approveReset?.();
     resetBorrowRenew?.();
     approveUsdaDynamic(
-      (payableOptionFees || 0) as bigint,
+      BigInt(Number(payableOptionFees || 0) / 1e6),
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`
@@ -826,8 +831,9 @@ export function WithdrawFund({
                 {!renewLoading && (
                   <Button
                     disabled={
-                      position.status == BorrowStatus.WITHDREW ||
-                      !isFifteenDaysCompleted(position.validTill)
+                      position.status == BorrowStatus.WITHDREW
+                      // ||
+                      // !isFifteenDaysCompleted(position.validTill)
                     }
                     onClick={handleRenew}
                     className="w-full  p-8 bg-black text-white text-[32px]"
