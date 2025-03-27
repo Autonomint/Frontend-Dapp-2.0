@@ -92,6 +92,8 @@ function PriceComparison({
                 : tagColor
               : theme == "dark"
               ? "white"
+              : theme == "light"
+              ? "black"
               : prefersDarkMode
               ? "white"
               : "black",
