@@ -230,19 +230,19 @@ export function DcdsWithdrawModal({
         position.depositedTime + "000"
       );
       // Update time difference value
-      updatedData[6].value = `${Number(apy == undefined ? 0 : "-").toFixed(
+      updatedData[6].value = `${Number(apy == undefined ? 0 : apy[5]).toFixed(
         2
       )}%`;
       // Update aprAtDeposit value
-      updatedData[7].value = `${Number(apy == undefined ? 0 : "-").toFixed(
+      updatedData[7].value = `${Number(apy == undefined ? 0 : apy[0]).toFixed(
         2
       )}%`;
       // Update optedForLiquidation value
       updatedData[8].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[9].value = `${Number(apy == undefined ? 0 : "-").toFixed(
+      updatedData[9].value = `${Number(apy == undefined ? 0 : apy[3]).toFixed(
         2
-      )} ETH (${Number(apy == undefined ? 0 : "-").toFixed(2)}$)`;
+      )} ETH (${Number(apy == undefined ? 0 : apy[4]).toFixed(2)}$)`;
       // Update optedForLiquidation value
       setDepositData(updatedData);
       // Update the depositData state with updatedData
@@ -576,7 +576,7 @@ export function DcdsWithdrawModal({
                   Option Fee + Liquidation Gains
                 </Label>
                 <Label className="text-[24px] font-medium dark:text-white">
-                  {/* {Number(apy == undefined ? 0 : apy[1]).toFixed(2)} */}-
+                  {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
@@ -584,8 +584,7 @@ export function DcdsWithdrawModal({
                   Yields
                 </Label>
                 <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
-                  {/* {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`} */}
-                  -
+                  {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
                 </Label>
               </div>
             </div>

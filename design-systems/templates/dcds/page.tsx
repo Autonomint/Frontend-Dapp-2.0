@@ -415,7 +415,7 @@ function DCDSTemplate() {
     : zeroAddress;
   const price = getOraclePrice as [number, number];
 
-  const liqAmnt = Math.round(
+  const liqAmnt = Math.floor(
     (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
       Number(usdtAmountLocal ? usdtAmountLocal : 0) +
       (Number(nativeTokenAmount) * 0.7 * Number(price[1])) / 1e6) *
