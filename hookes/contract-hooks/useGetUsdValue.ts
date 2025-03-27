@@ -34,6 +34,7 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
     assetPrice: Math.floor(
       (Number(usdValue?.[0]) * Number(usdValue?.[1])) / 1e18
     ),
+    exchangeRate: Number(usdValue?.[0]),
   };
 };
 

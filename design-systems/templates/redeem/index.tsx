@@ -29,7 +29,7 @@ import { useFormik } from "formik";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { formatEther, zeroAddress } from "viem";
+import { formatEther, formatUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useBalance,
@@ -236,7 +236,7 @@ const RedeemContainer = () => {
           title="Redeem Successful"
           message=""
           linkText={
-            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -625,7 +625,7 @@ const RedeemContainer = () => {
                       <div className="text-xl">+</div>
                       <div className="flex items-center p-1 text-2xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[4])).toFixed(2)
+                          ? Number(formatUnits(outputData[4], 6)).toFixed(2)
                           : 0}{" "}
                         USDa
                       </div>

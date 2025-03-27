@@ -418,7 +418,10 @@ function DCDSTemplate() {
   const liqAmnt = Math.floor(
     (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
       Number(usdtAmountLocal ? usdtAmountLocal : 0) +
-      (Number(nativeTokenAmount) * 0.7 * Number(price[1])) / 1e6) *
+      (Number(nativeTokenAmount) *
+        Number(process.env.NEXT_PUBLIC_NATIVE_TOKEN_PERCENTAGE || 0) *
+        Number(price[1])) /
+        1e6) *
       1e6
   );
 
@@ -426,7 +429,7 @@ function DCDSTemplate() {
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
-      setUsdtApproveLoadingLocal(false);
+      setNativeTokenLoadingLocal(false);
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
@@ -474,8 +477,10 @@ function DCDSTemplate() {
           approveNativeTokenDynamic(
             cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
             BigInt(
-              formik.values.opAmount
-                ? parseUnits(formik.values.opAmount.toString(), 6)
+              formik?.values?.modeFlag
+                ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+                : formik?.values?.opFlag
+                ? parseUnits(nativeTokenAmount.toString() || "0", 18)
                 : 0
             )
           );
@@ -576,12 +581,17 @@ function DCDSTemplate() {
         approveNativeTokenDynamic(
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
           BigInt(
-            formik.values.opAmount
-              ? parseUnits(formik.values.opAmount.toString(), 6)
+            formik?.values?.modeFlag
+              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+              : formik?.values?.opFlag
+              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
               : 0
           )
         );
       } else {
+        setTimeout(() => {
+          setDcdsDepositLoadingLocal(true);
+        }, 600);
         if (nativeFee?.nativeFee) {
           handleDcdsDeposit?.(
             [
@@ -707,7 +717,7 @@ function DCDSTemplate() {
           title="Deposit Successful"
           message=""
           linkText={
-            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -768,6 +778,8 @@ function DCDSTemplate() {
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  console.log(isAtBottom, "isAtBottom");
 
   const handleScrollDown = () => {
     if (scrollRef.current) {
@@ -778,12 +790,41 @@ function DCDSTemplate() {
     }
   };
 
-  const depositValue =
-    Number(formik.values?.usdaAmount) ||
-    0 + Number(formik.values?.usdtAmount) ||
-    0 + Number(formik.values?.opAmount) ||
-    0 + Number(formik.values?.modeAmount) ||
-    0;
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      // Check if the user is at the bottom
+      if (scrollTop + clientHeight >= scrollHeight) {
+        setIsAtBottom(true);
+      } else {
+        setIsAtBottom(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const currentRef = scrollRef.current;
+
+    if (currentRef) {
+      currentRef.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+  const depositValue = useMemo(() => {
+    return (
+      Number(formik.values?.usdaAmount) +
+      Number(formik.values?.usdtAmount) +
+      Number(formik.values?.opAmount) +
+      Number(formik.values?.modeAmount)
+    );
+  }, [formik.values]);
+
+  console.log(formik, depositValue, "depositValue");
 
   return (
     <div>
@@ -1023,10 +1064,10 @@ function DCDSTemplate() {
           </div>
 
           <div className="pt-[30px] lg:pt-0 relative">
-            {selectedTokens.length > 2 && (
+            {selectedTokens.length > 2 && !isAtBottom && (
               <ScrollDownArrow
                 handleClick={handleScrollDown}
-                classNames="top-[-26px]"
+                classNames="top-[-26px] "
               />
             )}
             <div className=" px-5 md:px-16 md:py-5  lg:px-5 md:pb-0 ">
@@ -1106,7 +1147,10 @@ function DCDSTemplate() {
                   selectedTokens.length === 3
                     ? "2/4"
                     : selectedTokens.length === 2
-                    ? "2/3"
+                    ? selectedTokens.find((item) => item.tokenName === "USDa")
+                        ?.tokenName
+                      ? "2/3"
+                      : "1/3"
                     : selectedTokens.length === 2
                     ? "1/2"
                     : "1/2"
@@ -1122,7 +1166,10 @@ function DCDSTemplate() {
                   selectedTokens.length === 3
                     ? "1/4"
                     : selectedTokens.length === 2
-                    ? "1/3"
+                    ? selectedTokens.find((item) => item.tokenName === "USDa")
+                        ?.tokenName
+                      ? "1/3"
+                      : "2/3"
                     : selectedTokens.length === 2
                     ? "1/2"
                     : "1/2"

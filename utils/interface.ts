@@ -51,6 +51,8 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  depositedAmountInETH?: string;
+  exchangeRateAtDeposit?: string | number;
   noOfUSDaMinted: number;
   validTill: number;
   id: string;

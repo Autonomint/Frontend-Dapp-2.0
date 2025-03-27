@@ -36,6 +36,10 @@ function AddToken({
       `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
       isSelected ? false : true
     );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}Amount`,
+      0
+    );
     setSelectedTokens?.((prev: TokenDetails[]) => {
       if (isSelected) {
         return prev.filter(

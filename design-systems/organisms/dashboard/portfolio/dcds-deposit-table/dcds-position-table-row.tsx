@@ -42,7 +42,14 @@ const DcdsPositionTableRow = ({
       <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">
         {/* {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
         {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt} */}
-        {Number(position.totalDepositedAmount).toFixed(2)}
+        $
+        {(
+          Number(position.depositedAmounts.usda) +
+          Number(position.depositedAmounts.usdt) +
+          (Number(position.depositedAmounts.nativeToken) *
+            Number(position.nativeTokenPriceAtDeposit)) /
+            1e6
+        ).toFixed(2)}
       </td>
       <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">
         {formatTimestamp(Number(position.depositedTime))}

@@ -308,7 +308,7 @@ function BridgeTemplate() {
             title="Transaction Confirmed"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}

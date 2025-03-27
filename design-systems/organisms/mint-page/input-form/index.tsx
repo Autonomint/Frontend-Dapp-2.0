@@ -62,6 +62,7 @@ function InputForm({ currency }: { currency: string }) {
     isUsdValuePending,
     usdValue: ethPrice,
     assetPrice,
+    exchangeRate,
   } = useGetUsdValue(
     borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
   );
@@ -110,11 +111,12 @@ function InputForm({ currency }: { currency: string }) {
       ));
       return;
     }
-    setMintLoading(true);
     setMintBtnLoading(true);
+
     reset();
 
     if (["wrsETH", "weETH"].includes(currency)) {
+      setApproveLoading(true);
       await approveWrapETHDynamic(
         borrowingContractAddress[
           chainId as keyof typeof borrowingContractAddress
@@ -204,7 +206,7 @@ function InputForm({ currency }: { currency: string }) {
             title="Mint Successful"
             message="New Deposit has been created"
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -235,8 +237,8 @@ function InputForm({ currency }: { currency: string }) {
   };
 
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    formik.values.collateralAmount,
-    (selectedAssetPrice || 0) as number,
+    (Number(formik.values.collateralAmount) * exchangeRate) / 1e18,
+    (ethPrice || 0) as number,
     getStrikePercent(formik.values.strikePricePercent)
   );
 
@@ -298,6 +300,10 @@ function InputForm({ currency }: { currency: string }) {
 
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
+      setApproveLoading(false);
+      setTimeout(() => {
+        setMintLoading(true);
+      }, 1000);
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
         volatility: BigInt(borrowSignedData.data?.volatility || 0),
@@ -497,13 +503,15 @@ function InputForm({ currency }: { currency: string }) {
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
           heading="Minting USDa"
+          loadingCount="2/2"
         />
         <LoadingBox
           isLoading={approveLoading}
-          isFailure={depositError || depositHashError}
-          isSuccess={Boolean(Depositdata)}
-          setSuccessLoading={setMintBtnLoading}
-          heading="Minting USDa"
+          isFailure={wrapETHApproveError || wrapEthApproveHashError}
+          isSuccess={Boolean(iswrapEthApproveSuccess)}
+          setSuccessLoading={setApproveLoading}
+          heading={`Approving ${currency}`}
+          loadingCount="1/2"
         />
       </div>
     </form>

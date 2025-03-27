@@ -161,10 +161,16 @@ export function WithdrawFund({
 
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
+      updatedData[0].headline = `${position.collateralType} Deposited`;
       updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
         position.collateralType
       }`;
-      updatedData[1].value = `$${Number(position.ethPrice) / 100}`;
+      updatedData[1].headline = `${position.collateralType} Price at Deposit`;
+      updatedData[1].value = `$${(
+        (Number(position.ethPrice) *
+          Number(position.exchangeRateAtDeposit || 0)) /
+        100
+      ).toFixed(2)}`;
       updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
         2
       )} USDa`;
@@ -381,7 +387,7 @@ export function WithdrawFund({
             title="Repay Successful"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -519,10 +525,10 @@ export function WithdrawFund({
       } `;
       toast.custom((t) => (
         <ToastNotification
-          title="Repay Successful"
+          title="Renew Successful"
           message=""
           linkText={
-            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -551,11 +557,12 @@ export function WithdrawFund({
   };
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
+
   console.log(
     payableOptionFees,
     usdaApproveError,
     position.index,
-    BigInt(Number(payableOptionFees || 0) * 1e6),
+    BigInt(Number(payableOptionFees || 0n) + 1e6),
     "payableOptionFees"
   );
 
@@ -565,7 +572,7 @@ export function WithdrawFund({
     approveReset?.();
     resetBorrowRenew?.();
     approveUsdaDynamic(
-      BigInt(Number(payableOptionFees || 0n) * 1e6),
+      BigInt(Number(payableOptionFees || 0n) + 1e6),
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`
@@ -707,28 +714,29 @@ export function WithdrawFund({
 
           {toggleView === "renew" && (
             <>
-              <div className="w-full mt-4 h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+              <div className="w-full mt-4 h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+                {
+                  <div className="h-4 w-[4px] absolute bg-grayLight left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                }
                 {[
-                  {
-                    label: "days",
-                    value:
-                      30 - calculateRemainingDays(Number(position.validTill)), // 2,
-                    color: "linear-gradient(to right,#478BFF,#00FA96)",
-                  },
+                  // {
+                  //   label: "days",
+                  //   value:
+                  //     30 - calculateRemainingDays(Number(position.validTill)), // 2,
+                  //   color: "linear-gradient(to right,#478BFF,#00FA96)",
+                  // },
                   {
                     label: "repay",
-                    value:
-                      15 -
-                      (30 -
-                        calculateRemainingDays(Number(position.validTill))) *
-                        2, // 15,
-                    color: "#2563eb",
+                    value: calculateRemainingDays(Number(position.validTill)),
+                    color: isFifteenDaysCompleted(position.validTill)
+                      ? "#2563eb"
+                      : "#05a552",
                   },
                   {
                     label: "maturity",
                     value:
-                      calculateRemainingDays(Number(position.validTill)) - 15, // 28 ,
-                    color: "#05a552",
+                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                    color: "gray",
                   },
                 ].map((metric, index, arr) => {
                   const total = arr.reduce((acc, item) => acc + item.value, 0);
@@ -807,8 +815,8 @@ export function WithdrawFund({
                     {
                       label: "Downside Protection",
                       value: `Up to $${(
-                        (Number(formatUnits(BigInt(ethPrice), 2)) *
-                          Number(position?.depositedAmount) *
+                        (Number(formatUnits(BigInt(position.ethPrice), 2)) *
+                          Number(position?.depositedAmountInETH) *
                           20) /
                         100
                       ).toFixed(2)} (20%)`,

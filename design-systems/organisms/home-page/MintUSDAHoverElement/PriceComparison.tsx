@@ -30,6 +30,9 @@ function PriceComparison({
   const prefersDarkMode = window.matchMedia(
     "(prefers-color-scheme: dark)"
   ).matches;
+
+  console.log(prefersDarkMode, theme, "theme");
+
   return (
     <div
       // xl:w-[60%]w-[40%] xl:flex-1
@@ -42,6 +45,8 @@ function PriceComparison({
         backgroundImage: isHover
           ? theme == "dark"
             ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
+            : theme == "light"
+            ? gradientBackground
             : prefersDarkMode
             ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
             : gradientBackground

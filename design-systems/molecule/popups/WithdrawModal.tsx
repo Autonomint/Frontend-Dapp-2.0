@@ -109,7 +109,15 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Tokens deposited`,
-      value: Number(position?.depositedAmounts?.nativeToken).toFixed(2),
+      value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
+        2
+      )} ($${(
+        Number(position?.depositedAmounts?.usda) +
+        Number(position?.depositedAmounts?.usdt) +
+        (Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+          1e6
+      ).toFixed(2)})`,
       tooltip: false,
       tooltipText: "",
       comment: "Will be converted to USDT at 40% price fall",
@@ -117,8 +125,16 @@ export function DcdsWithdrawModal({
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+      } Adjusted Deposit Value (30% markdown)`,
+      value: `$${Number(position?.totalDepositedAmount).toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: `${
+        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Token Price at Deposit`,
-      value: position?.nativeTokenPriceAtDeposit,
+      value: Number(position?.nativeTokenPriceAtDeposit) / 1e6,
       tooltip: false,
       tooltipText: "",
     },
@@ -326,7 +342,7 @@ export function DcdsWithdrawModal({
             title="Withdraw Successful"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -576,7 +592,7 @@ export function DcdsWithdrawModal({
                   Option Fee + Liquidation Gains
                 </Label>
                 <Label className="text-[24px] font-medium dark:text-white">
-                  {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
+                  {Number(apy == undefined ? 0 : apy[1]).toFixed(4)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
@@ -595,7 +611,7 @@ export function DcdsWithdrawModal({
               Note: Your amount will be used to offer protection to borrowers &
               protocol in return for fixed yields
             </Typography>
-            <div className="h-[50px] md:h-[86px]">
+            <div className="h-[50px] overflow-hidden  md:h-[86px]">
               {!dcdsFundWithdrawLoadingLocal && (
                 <Button
                   onClick={handleWithdrawFund}

@@ -83,7 +83,7 @@ function DepositTable({
               ID
             </th>
             <th className="pl-5 whitespace-nowrap font-normal w-4/5 lg:w-auto">
-              ETH Deposited
+              Asset Deposited
             </th>
             <th className="pl-5 whitespace-nowrap font-normal">USDa Minted</th>
             <th className="pl-5 whitespace-nowrap font-normal">
