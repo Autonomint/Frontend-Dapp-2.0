@@ -53,7 +53,7 @@ const useGetPositionList = () => {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
       setPagedPositionList(
-        positionList
+        [...positionList]
           .sort((a, b) => a.index - b.index)
           .slice(startIndex, endIndex)
       );
@@ -62,7 +62,6 @@ const useGetPositionList = () => {
       setTotalPages(Math.ceil(positionList.length / pageSize));
     } else {
       setPagedPositionList([]);
-      setTotalPages(0);
     }
   };
 

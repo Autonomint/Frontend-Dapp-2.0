@@ -172,7 +172,7 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Deposited (All Chain)"
-            value={`$${totalUserDeposit}`}
+            value={`$${totalUserDeposit?.toFixed(2)}`}
           />
         </div>
         <div className="col-span-1">

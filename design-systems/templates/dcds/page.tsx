@@ -297,7 +297,12 @@ function DCDSTemplate() {
           (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
           USDT_DEPOSIT_LIMIT_IN_DCDS,
         errorMessage: "Mode not active now",
-        balanceAvailable: String(`${Number(modeBalance).toFixed(2)}`),
+        balanceAvailable: String(
+          `$${(
+            Number(modeBalance) *
+            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
+          ).toFixed(2)}`
+        ),
       });
     }
 
@@ -399,8 +404,10 @@ function DCDSTemplate() {
   const lockInPeriodLocal = formik.values.lockInPeriod;
   const nativeTokenAmount =
     chainId == NetworkId.Mode
-      ? formik.values.modeAmount
-      : formik.values.opAmount;
+      ? ((Number(formik.values.modeAmount) || 0) * 1e6) /
+        Number(getOraclePrice[1])
+      : ((Number(formik.values.opAmount) || 0) * 1e6) /
+        Number(getOraclePrice[1]);
   const usdaTokenAdds = usDaAddress[chainId as keyof typeof usDaAddress];
 
   const usdtTokenAdds = formik.values.usdtFlag
@@ -673,9 +680,9 @@ function DCDSTemplate() {
         cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
         BigInt(
           formik?.values?.modeFlag
-            ? parseUnits(formik?.values?.modeAmount?.toString() || "0", 18)
+            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
             : formik?.values?.opFlag
-            ? parseUnits(formik?.values?.opAmount?.toString() || "0", 18)
+            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
             : 0
         )
       );

@@ -109,7 +109,7 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Tokens deposited`,
-      value: position?.depositedAmounts?.nativeToken,
+      value: Number(position?.depositedAmounts?.nativeToken).toFixed(2),
       tooltip: false,
       tooltipText: "",
       comment: "Will be converted to USDT at 40% price fall",
@@ -265,10 +265,10 @@ export function DcdsWithdrawModal({
   console.log(apy, "apy");
 
   useEffect(() => {
-    // setSpinner(true);
+    setSpinner(true);
     handleDepositData();
     setOpenConfirmNotice(true);
-    // setSpinner(false);
+    setSpinner(false);
   }, [position, lastCumulativeRate, interestGained, apy]);
 
   // Define the initial state for the options variable

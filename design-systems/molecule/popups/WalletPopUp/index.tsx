@@ -351,9 +351,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
                 >
                   <div className=" flex flex-col gap-4">
-                    {chains.map((chain) => {
+                    {chains.map((chain, idx) => {
                       return (
                         <div
+                          key={idx}
                           onClick={() =>
                             switchChain({
                               chainId: chain.id,

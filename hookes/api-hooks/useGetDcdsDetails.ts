@@ -46,17 +46,13 @@ const useGetDcdsDepositList = () => {
     retry: 1,
   });
 
-  useEffect(() => {
-    if (dcdsPositionListIsError) {
-    }
-  }, [dcdsPositionListIsError]);
   // Calculate the current page data and total pages
   const updatePagedData = () => {
     if (dcdsPositionList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
       setPagedDcdsPositionList(
-        dcdsPositionList
+        [...dcdsPositionList]
           .sort((a, b) => b.index - a.index)
           .slice(startIndex, endIndex)
           .reverse()
@@ -66,7 +62,6 @@ const useGetDcdsDepositList = () => {
       setTotalPages(Math.ceil(dcdsPositionList.length / pageSize));
     } else {
       setPagedDcdsPositionList([]);
-      setTotalPages(0);
     }
   };
 
