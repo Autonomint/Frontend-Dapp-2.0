@@ -68,7 +68,7 @@ function Leaderboard() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value={totalPoints + Number(referralPoints || 0)}
+            value={totalPoints + Number(referralPoints || 0).toString()}
           />
         </div>
       </div>
