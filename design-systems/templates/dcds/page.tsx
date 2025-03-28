@@ -65,6 +65,8 @@ import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useApproveNativeToken from "@/hookes/contract-hooks/useApproveNativeToken";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -230,6 +232,15 @@ function DCDSTemplate() {
 
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
+  const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
+    nativeTokenAddress[chainId as keyof typeof usDaAddress]
+  );
+
+  const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
+    useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  console.log(isTVLPendingUsd, "tvlValue");
+
   // console.log(omniChainData, "omniChainData");
 
   const { balanceString: usdtBalance } = useGetBalance("USDT");
@@ -285,6 +296,7 @@ function DCDSTemplate() {
             Number(formatUnits(BigInt(getOraclePrice[1]), 6))
           ).toFixed(2)}`
         ),
+        tokenCount: opBalance,
       });
     }
     if (chainId == Number(NetworkId.Mode)) {
@@ -303,6 +315,7 @@ function DCDSTemplate() {
             Number(formatUnits(BigInt(getOraclePrice[1]), 6))
           ).toFixed(2)}`
         ),
+        tokenCount: modeBalance,
       });
     }
 
@@ -425,7 +438,7 @@ function DCDSTemplate() {
       1e6
   );
 
-  console.log(liqAmnt, "liqAmnt");
+  console.log(liqAmnt, nativeTokenAmount, "liqAmnt");
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
@@ -1224,11 +1237,19 @@ function DCDSTemplate() {
           )
         )}`}
       />
-      {/* <TokenTvlDetails
+      <TokenTvlDetails
         icon={USDaIcon}
         tokenName="USDa"
-        tvl={`${GlobalContractData?.usdaGainedFromLiquidation || 0} `}
-      /> */}
+        tvl={`$${(Number(tvlValueUSDa || 0) / 1e6).toFixed(2)} `}
+      />
+      <TokenTvlDetails
+        icon={chainId === NetworkId.Mode ? ModeIcon : OPIcon}
+        tokenName={chainId === NetworkId.Mode ? "MODE" : "OP"}
+        tvl={`$${(
+          ((Number(tvlValueNative) || 0) * Number(getOraclePrice[1])) /
+          1e24
+        ).toFixed(2)} `}
+      />
       <HowItWorksPopUp
         isDialogOpen={isOptionHowItWork}
         setIsDialogOpen={() => setIsOpenHowItWork(false)}

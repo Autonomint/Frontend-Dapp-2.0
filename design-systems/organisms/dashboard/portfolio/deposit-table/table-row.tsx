@@ -152,7 +152,7 @@ const DepositTableRow = ({
         {" "}
         {position.noOfAbondMinted === null
           ? "-"
-          : `$${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
+          : `${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
       </td>
 
       <td className="px-5 py-4 2xl:py-6  ">

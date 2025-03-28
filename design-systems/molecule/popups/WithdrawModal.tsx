@@ -112,21 +112,28 @@ export function DcdsWithdrawModal({
       value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
         2
       )} ($${(
-        Number(position?.depositedAmounts?.usda) +
-        Number(position?.depositedAmounts?.usdt) +
         (Number(position?.depositedAmounts?.nativeToken) *
           Number(position?.nativeTokenPriceAtDeposit)) /
-          1e6
+        1e6
       ).toFixed(2)})`,
       tooltip: false,
       tooltipText: "",
-      comment: "Will be converted to USDT at 40% price fall",
+      comment: "Will be converted to USDT at 30% price fall",
     },
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Adjusted Deposit Value (30% markdown)`,
-      value: `$${Number(position?.totalDepositedAmount).toFixed(2)}`,
+      value: `$${(
+        (Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+          1e6 -
+        (((Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+          1e6) *
+          30) /
+          100
+      ).toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
@@ -579,20 +586,21 @@ export function DcdsWithdrawModal({
             </div>
             <div className="flex w-full pt-4">
               <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-                {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
-              Price Gains
-            </Label>
-            <Label className=" text-[14px] font-medium dark:text-white">
-              {(
-                Number(apy == undefined ? 0 : apy[1]) +
-                Number(apy == undefined ? 0 : apy[2])
-              ).toFixed(2)}
-            </Label> */}
-                <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
+                <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
                   Option Fee + Liquidation Gains
                 </Label>
-                <Label className="text-[24px] font-medium dark:text-white">
+                <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
                   {Number(apy == undefined ? 0 : apy[1]).toFixed(4)}
+                </Label>
+                <div className="h-2"></div>
+                <Label className=" text-[12px] font-normal text-[#777777]">
+                  Price Gains
+                </Label>
+                <Label className=" text-[14px] font-medium dark:text-white">
+                  {(
+                    Number(apy == undefined ? 0 : apy[1]) +
+                    Number(apy == undefined ? 0 : apy[2])
+                  ).toFixed(2)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">

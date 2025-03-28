@@ -6,6 +6,7 @@ export interface TokenDetails {
   tokenName: string;
   minTokenAmount: number;
   balanceAvailable: string;
+  tokenCount: number;
 }
 
 export interface FormValues {

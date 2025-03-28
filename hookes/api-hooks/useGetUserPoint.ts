@@ -47,9 +47,9 @@ const useGetUserPoint = () => {
   });
 
   return {
-    points: opPoints?.[0] || 0 + modePoints?.[0] || 0,
+    points: Number(opPoints?.[0] || 0) + Number(modePoints?.[0] || 0),
     referralPoints,
-    totalPoints: opPoints?.[1] || 0 + modePoints?.[1] || 0,
+    totalPoints: Number(opPoints?.[1] || 0) + Number(modePoints?.[1] || 0),
   };
 };
 

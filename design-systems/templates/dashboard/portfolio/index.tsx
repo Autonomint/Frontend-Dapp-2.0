@@ -47,6 +47,7 @@ function PortfolioTemplate() {
   const { userTotalBorrowAmount } = useGetTotalBorrow();
   const { totalUserDeposit } = useGetTotalUserDeposit();
   const { points, referralPoints } = useGetUserPoint();
+
   const {
     positionList,
     positionListError,

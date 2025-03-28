@@ -400,9 +400,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {Number(chainId) === Number(NetworkId.EthereumSepolia)
-                    ? "ETH Sepolia"
-                    : "Base Sepolia"}
+                  {Number(chainId) === Number(NetworkId.Mode)
+                    ? "Mode Sepolia"
+                    : "Op Sepolia"}
                 </Typography>
               </div>
               <div className="flex mt-3 flex-row justify-start items-center">
@@ -423,11 +423,11 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
-                  href={`https://sepolia.${
-                    chainId == NetworkId.EthereumSepolia
-                      ? "etherscan.io"
-                      : "basescan.org"
-                  }/address/${address}`}
+                  href={
+                    chainId == NetworkId.Mode
+                      ? `https://sepolia.explorer.mode.network/address/${address}`
+                      : `https://sepolia-optimism.etherscan.io/address/${address}`
+                  }
                   target="__blank"
                 >
                   <Typography

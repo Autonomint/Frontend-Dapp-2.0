@@ -30,6 +30,7 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
 import { formatUnits } from "viem";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -57,18 +58,6 @@ export function WithdrawFund({
     {
       headline: "ETH Price at Deposit",
       value: "$1645.121",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "USDa Amount Minted",
-      value: "1.234",
-      tooltip: true,
-      tooltipText: "80% of the total deposited amount",
-    },
-    {
-      headline: "Total Amount (USDa minted + Interest)",
-      value: "-",
       tooltip: false,
       tooltipText: "",
     },
@@ -127,6 +116,7 @@ export function WithdrawFund({
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
+  const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
 
   const { chainId } = useAccount();
 
@@ -136,27 +126,41 @@ export function WithdrawFund({
     useState<boolean>(false);
   const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
     useState<boolean>(false);
+
+  const downsideProtection =
+    (ethPrice || 0) < (position?.ethPrice || 0)
+      ? (
+          Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+            Number(position?.depositedAmountInETH) -
+          Number(formatUnits(BigInt(ethPrice), 2)) *
+            Number(position?.depositedAmountInETH)
+        ).toFixed(2)
+      : 0;
+
   /**
    * Updates the deposit data based on the provided details.
    * If the details are available, it updates each value in the depositData array.
    * If the details are not available, it sets each value in the depositData array to '-'.
    */
 
+  const totalAmintAmnt =
+    lastCumulativeRate === undefined
+      ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
+      : BigInt(
+          BigInt(
+            Math.round(
+              position.normalizedAmount
+                ? Number(position?.normalizedAmount || 0) * 10 ** 6
+                : 0
+            )
+          ) * lastCumulativeRate
+        ) / BigInt(10 ** 27);
+
+  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
+
   function handleDepositData() {
     // Calculate the totalAmintAmnt
     if (position && lastCumulativeRate) {
-      const totalAmintAmnt =
-        lastCumulativeRate === undefined
-          ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
-          : BigInt(
-              BigInt(
-                Math.round(
-                  position.normalizedAmount
-                    ? Number(position.normalizedAmount) * 10 ** 6
-                    : 0
-                )
-              ) * lastCumulativeRate
-            ) / BigInt(10 ** 27);
       totalAmintAmount.current = Number(totalAmintAmnt);
 
       // If details are available, update each value in the depositData array
@@ -171,24 +175,24 @@ export function WithdrawFund({
           Number(position.exchangeRateAtDeposit || 0)) /
         100
       ).toFixed(2)}`;
-      updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
-        2
-      )} USDa`;
-      updatedData[3].value = `$${(
-        parseFloat(totalAmintAmnt.toString()) /
-        10 ** 6
-      ).toFixed(2)}`;
-      updatedData[4].value = `${position.aprAtDeposit}%`;
-      updatedData[5].value = new Date(
+      // updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
+      //   2
+      // )} USDa`;
+      // updatedData[3].value = `$${(
+      //   parseFloat(totalAmintAmnt.toString()) /
+      //   10 ** 6
+      // ).toFixed(2)}`;
+      updatedData[2].value = `${position.aprAtDeposit}%`;
+      updatedData[3].value = new Date(
         position.depositedTime * 1000
       ).toLocaleString();
-      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
-      updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
-      updatedData[8].value =
+      updatedData[4].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[5].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[6].value =
         interestGained != undefined
           ? `$${Number(interestGained).toFixed(2)}`
           : "-";
-      updatedData[9].value = position.noOfAbondMinted
+      updatedData[7].value = position.noOfAbondMinted
         ? `$${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -203,10 +207,42 @@ export function WithdrawFund({
       updatedData[5].value = "-";
       updatedData[6].value = "-";
       updatedData[7].value = "-";
-      updatedData[8].value = "-";
+
       setDepositData(updatedData);
     }
   }
+
+  const repayAmountDetails = [
+    {
+      headline: "USDa Amount Minted",
+      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDa`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Total Interest",
+      value: `$${(
+        Number(totalAmintAmnt) / 10 ** 6 -
+        Number(position.noOfUSDaMinted)
+      ).toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Downside Protection till now",
+      value: `$${downsideProtection}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Repay amount",
+      value: `$${repayAmount.toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+  ];
+
+  console.log(repayAmountDetails, "repayMountDetails");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
@@ -261,46 +297,6 @@ export function WithdrawFund({
     3,
     1
   );
-
-  // const {
-  //   calculateCumulativeRate,
-  //   cumulativeRate,
-  //   cumulativeReset,
-  //   cumulativeRateLoading,
-  //   cumulativeRateError,
-  //   cumulativeRateSuccess,
-  // } = useCalculateInterest({
-  //   onError: () => {
-  //     setIsLoadingCumulativeLocal(false);
-  //     setIsApproveLoadingLocal(false);
-  //     setWithdrawLoadingLocal(false);
-  //     setTimeout(() => {
-  //       setRepayLoading(false);
-  //     }, 1000);
-  //     toast.custom((t) => (
-  //       <ToastNotificationError
-  //         title="Transaction failed, Please try again"
-  //         onClose={() => toast.dismiss(t)}
-  //       />
-  //     ));
-  //   },
-  // });
-
-  // const {
-  //   isLoading: ispendingCumulative,
-  //   isSuccess: cumulativeRateReciptSuccess,
-  //   data: culmulativeData,
-  //   isFetching: isCumulativeFetching,
-  //   isError: cumulativeRateErrorReceipt,
-  // } = useWaitForTransactionReceipt({
-  //   hash: (cumulativeRate
-  //     ? cumulativeRate.toString()
-  //     : undefined) as `0x${string}`, // Transaction hash to wait for
-  //   confirmations: 1, // Number of confirmations required
-  //   query: {
-  //     enabled: cumulativeRateSuccess,
-  //   },
-  // });
 
   const {
     approveUsda,
@@ -427,6 +423,10 @@ export function WithdrawFund({
   );
 
   const handleRepay = async () => {
+    if (balance < repayAmount) {
+      toast.error("You don't have enough USDa to repay");
+      return;
+    }
     setIsApproveLoadingLocal(true);
     setRepayLoading(true);
     setOpenConfirmNotice(false);
@@ -434,19 +434,9 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      approveUsda(lastCumulativeRate, position.normalizedAmount);
+      approveUsda(BigInt(repayAmount * 1e6));
     }
   };
-
-  // useEffect(() => {
-  //   if (culmulativeData) {
-  //     setIsLoadingCumulativeLocal(false);
-  //     setTimeout(() => {
-  //       setIsApproveLoadingLocal(true);
-  //     }, 800);
-  //     // Perform the amint approval after the cumulative rate is calculated
-  //   }
-  // }, [culmulativeData]);
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -579,23 +569,16 @@ export function WithdrawFund({
     );
   };
 
-  const downsideProtection =
-    (ethPrice || 0) < (position?.ethPrice || 0)
-      ? (
-          Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-            Number(position?.depositedAmount) -
-          Number(formatUnits(BigInt(ethPrice), 2)) *
-            Number(position?.depositedAmount)
-        ).toFixed(2)
-      : 0;
-
   console.log(isFifteenDaysCompleted(position.validTill), "15");
 
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="text-2xl font-semibold mb-4">Borrow Details</div>
+          <div className="flex gap-4 justify-start items-center mb-4">
+            <div className="text-2xl font-semibold ">Borrow Details</div>
+            <div className="text-grayLight">Balance: {balance} USDa</div>
+          </div>
           <div className="flex">
             <div
               onClick={() => setToggleView("repay")}
@@ -669,6 +652,19 @@ export function WithdrawFund({
                     </span>
                   </div>
                 ))}
+                {repayAmountDetails.map((item) => (
+                  <div
+                    key={item.headline}
+                    className="flex justify-between text-sm text-gray-700"
+                  >
+                    <span className="text-grayLight text-[16px] md:text-[20px] font-medium">
+                      {item.headline}
+                    </span>
+                    <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
                 {!repayLoading && (
@@ -680,7 +676,7 @@ export function WithdrawFund({
                     {repayLoading
                       ? "Loading..."
                       : position.status == BorrowStatus.DEPOSITED
-                      ? `Repay amount ${position.noOfUSDaMinted} USDa`
+                      ? `Repay amount ${repayAmount.toFixed(2)} USDa`
                       : `Withdrawn ${position.depositedAmount} ETH`}
                   </Button>
                 )}

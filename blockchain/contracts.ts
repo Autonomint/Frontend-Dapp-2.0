@@ -32,8 +32,8 @@ export const usdcAddress = {
 } as const;
 
 export const sUSDAddress = {
-  919: "0xD7D674d80e79CF3A3b67D6a510AC1B0493dF47cF",
-  11155420: zeroAddress,
+  11155420: "0xD7D674d80e79CF3A3b67D6a510AC1B0493dF47cF",
+  919: zeroAddress,
 } as const;
 
 export const abondAddress = {
