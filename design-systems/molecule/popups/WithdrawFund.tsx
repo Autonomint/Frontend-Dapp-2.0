@@ -80,6 +80,18 @@ export function WithdrawFund({
       tooltipText: "",
     },
     {
+      headline: "Collateral Upside At Deposit",
+      value: "20%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Collateral Upside till now",
+      value: "20%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
       headline: "Liquidated?",
       value: "No",
       tooltip: false,
@@ -170,11 +182,11 @@ export function WithdrawFund({
         position.collateralType
       }`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
-      updatedData[1].value = `$${(
+      const ethPriceAtDep =
         (Number(position.ethPrice) *
           Number(position.exchangeRateAtDeposit || 0)) /
-        100
-      ).toFixed(2)}`;
+        100;
+      updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
       // updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
       //   2
       // )} USDa`;
@@ -187,12 +199,40 @@ export function WithdrawFund({
         position.depositedTime * 1000
       ).toLocaleString();
       updatedData[4].value = `${position.downsideProtectionPercentage}%`;
-      updatedData[5].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+
+      const currentPrice = ethPrice;
+      const upsideAt =
+        (Number(position.depositedAmount) * Number(ethPriceAtDep) * 5) / 100;
+
+      const priceDef =
+        Number(ethPriceAtDep) < Number(currentPrice) / 100
+          ? Number(position.depositedAmount) * (Number(currentPrice) / 100) -
+            Number(position.depositedAmount) * Number(ethPriceAtDep)
+          : 0;
+
+      console.log(
+        priceDef,
+        upsideAt,
+        ethPriceAtDep,
+        upsideAt < priceDef,
+        currentPrice,
+        "priceDef"
+      );
+
+      const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
+
+      updatedData[5].value = `${upsideAt.toFixed(2)}`;
       updatedData[6].value =
+        Number(ethPriceAtDep) < Number(currentPrice) / 100
+          ? `${curtUpside.toFixed(2)}`
+          : "-";
+
+      updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[8].value =
         interestGained != undefined
           ? `$${Number(interestGained).toFixed(2)}`
           : "-";
-      updatedData[7].value = position.noOfAbondMinted
+      updatedData[9].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -740,11 +780,11 @@ export function WithdrawFund({
                               calculateRemainingDays(position.validTill) || 0
                             ) - 15,
                           gradient:
-                            "linear-gradient(to left, #386fe86e,#FF527000)",
+                            "linear-gradient(to right, #386fe86e,#FF527000)",
                           gradientText: "#2563eb",
-                          percentLeftPx: "",
+                          percentLeftPx: "0px",
                           borderLeftPx: "",
-                          borderRightPx: "0px",
+                          borderRightPx: "",
                         },
 
                         {
@@ -874,7 +914,7 @@ export function WithdrawFund({
                 <div className="flex mt-2 items-center gap-2 text-[16px] text-grayLight font-medium">
                   <span className="block w-3 h-3 bg-blue-600"></span>
                   {calculateRemainingDays(Number(position.validTill)) - 15} Days
-                  remaining to active renew
+                  remaining to activate renew
                 </div>
               </div>
               <div className="max-h-[280px] overflow-auto no-scrollbar">

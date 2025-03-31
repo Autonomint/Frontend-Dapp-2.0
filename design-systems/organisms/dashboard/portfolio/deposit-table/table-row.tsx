@@ -141,7 +141,9 @@ const DepositTableRow = ({
       } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
-      <td className="px-5 py-4 2xl:py-6">{position.depositedAmount}</td>
+      <td className="px-5 py-4 2xl:py-6">
+        {position.depositedAmount} {position.collateralType}
+      </td>
       <td className="px-5 py-4 2xl:py-6">
         ${Number(position.noOfUSDaMinted).toFixed(2)}
       </td>

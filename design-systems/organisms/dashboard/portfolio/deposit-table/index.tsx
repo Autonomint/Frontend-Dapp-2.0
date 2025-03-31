@@ -80,7 +80,7 @@ function DepositTable({
     <div ref={scrollRef} className="sm:my-4  overflow-x-clip  no-scrollbar">
       <table className="table-auto   w-full border-collapse text-[20px]">
         <thead
-          className={`text-left border-x z-10 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
+          className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
             isSticky ? "sticky top-[74px] left-0  right-0" : ""
           }`}
         >
