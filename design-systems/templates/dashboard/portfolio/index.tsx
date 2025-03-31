@@ -242,8 +242,10 @@ function PortfolioTemplate() {
           />
         </div>
       </div>
+
       {tabPosition == "Borrowed" ? (
         <DepositTable
+          isSticky={isSticky}
           positionListLoading={positionListLoading}
           setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
           setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
@@ -264,6 +266,7 @@ function PortfolioTemplate() {
         />
       ) : (
         <DcdsDepositTable
+          isSticky={isSticky}
           positionListLoading={dcdsPositionListLoading}
           setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
           setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}

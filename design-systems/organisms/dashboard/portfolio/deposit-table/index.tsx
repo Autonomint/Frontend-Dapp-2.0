@@ -26,6 +26,7 @@ function DepositTable({
   pageSize,
   setPageSize,
   setCurrentPage,
+  isSticky,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -44,6 +45,7 @@ function DepositTable({
   positionList: PositionData[];
   setSelectedPosition: (position: PositionData) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  isSticky: boolean;
 }) {
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -75,9 +77,13 @@ function DepositTable({
     }
   }, [positionList]);
   return (
-    <div ref={scrollRef} className="sm:my-4 overflow-x-auto   no-scrollbar">
-      <table className="table-auto w-full border-collapse text-[20px]">
-        <thead className="text-left border-x border-grayLight sm:birder-y-0 font-normal text-grayLight ">
+    <div ref={scrollRef} className="sm:my-4  overflow-x-clip  no-scrollbar">
+      <table className="table-auto   w-full border-collapse text-[20px]">
+        <thead
+          className={`text-left border-x z-10 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
+            isSticky ? "sticky top-[74px] left-0  right-0" : ""
+          }`}
+        >
           <tr>
             <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
               ID
