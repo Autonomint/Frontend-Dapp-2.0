@@ -325,7 +325,6 @@ function InputForm({ currency }: { currency: string }) {
    * Handles the calculation and setting of the amint to be minted and downside protection amounts.
    */
   const CalculateAmtToBeMinted = async () => {
-    debugger;
     try {
       // Calculate the amint to be minted
       const optionf = optionFees || 0;
