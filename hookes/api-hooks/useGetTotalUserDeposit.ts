@@ -16,7 +16,7 @@ async function getCDSDepositorData(
 }
 
 const useGetTotalUserDeposit = () => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   // Use the useQuery hook to fetch the data
   const {
     data: ethSepoliaCDSData,
@@ -24,10 +24,10 @@ const useGetTotalUserDeposit = () => {
     isSuccess: ethSepoliaCDSDataFetched,
     refetch: refetchEthSepoliaCDSDepositorData,
   } = useQuery({
-    queryKey: ["dCDSdepositorsData", NetworkId.EthereumSepolia, address],
+    queryKey: ["dCDSdepositorsData", address],
     queryFn: () =>
       getCDSDepositorData(
-        NetworkId.EthereumSepolia.toString(),
+        NetworkId.Optimism.toString(),
         address ? address : undefined
       ),
     retry: 1,
@@ -41,17 +41,16 @@ const useGetTotalUserDeposit = () => {
     isSuccess: baseSepoliaCDSDataFetched,
     refetch: refetchBaseSepoliaCDSDepositorData,
   } = useQuery({
-    queryKey: ["dCDSdepositorsUserData", NetworkId.BaseSepolia, , address],
+    queryKey: ["dCDSdepositorsUserData", address],
     queryFn: () =>
       getCDSDepositorData(
-        NetworkId.BaseSepolia.toString(),
+        NetworkId.Mode.toString(),
         address ? address : undefined
       ),
     staleTime: 5000,
     retry: 1,
     enabled: !!address,
   });
-
 
   const totalUserDeposit =
     Number(ethSepoliaCDSData?.totalDepositedAmount || 0) +

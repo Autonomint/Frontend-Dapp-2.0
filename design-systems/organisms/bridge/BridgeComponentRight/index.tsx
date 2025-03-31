@@ -6,12 +6,19 @@ function BridgeComponentRight({
   token,
   totalAmount,
   receiveAmount,
+  toNetworkOption,
+  receiveNetwork,
 }: {
   receiveAmount: number;
   heading: string;
   network: string;
   token: string;
   totalAmount: string;
+  toNetworkOption: {
+    label: string;
+    onClick: () => void;
+  }[];
+  receiveNetwork: string;
 }) {
   return (
     <div
@@ -31,13 +38,8 @@ function BridgeComponentRight({
               Network
             </span>
             <GenericDropdownMenu
-              buttonText="Mode"
-              items={[
-                {
-                  label: "Mode",
-                  onClick: () => {},
-                },
-              ]}
+              buttonText={receiveNetwork}
+              items={toNetworkOption}
               className="w-full text-[18px] lg:text-[24px] border border-grayLight  h-[60px] lg:h-[65px]"
             />
           </div>

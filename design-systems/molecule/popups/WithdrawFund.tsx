@@ -12,7 +12,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus } from "@/utils/constants";
+import { BorrowStatus, scanUrls } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -29,6 +29,8 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
+import { formatUnits } from "viem";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -60,18 +62,6 @@ export function WithdrawFund({
       tooltipText: "",
     },
     {
-      headline: "USDa Amount Minted",
-      value: "1.234",
-      tooltip: true,
-      tooltipText: "80% of the total deposited amount",
-    },
-    {
-      headline: "Total Amount (USDa minted + Interest)",
-      value: "-",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
       headline: "Deposit Time APR",
       value: "5%",
       tooltip: false,
@@ -85,6 +75,18 @@ export function WithdrawFund({
     },
     {
       headline: "Downside Percentage At Deposit",
+      value: "20%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Collateral Upside At Deposit",
+      value: "20%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Collateral Upside till now",
       value: "20%",
       tooltip: false,
       tooltipText: "",
@@ -114,6 +116,8 @@ export function WithdrawFund({
     useLastCumulativeRate();
 
   const { interestGained } = useInterestGain(position.index);
+  console.log(interestGained, "interestGained");
+
   const totalAmintAmount = useRef<Number>(Number(0));
   const { usdValue: ethPrice } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
@@ -124,6 +128,7 @@ export function WithdrawFund({
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
+  const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
 
   const { chainId } = useAccount();
 
@@ -133,54 +138,102 @@ export function WithdrawFund({
     useState<boolean>(false);
   const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
     useState<boolean>(false);
+
+  const downsideProtection =
+    (ethPrice || 0) < (position?.ethPrice || 0)
+      ? (
+          Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+            Number(position?.depositedAmountInETH) -
+          Number(formatUnits(BigInt(ethPrice), 2)) *
+            Number(position?.depositedAmountInETH)
+        ).toFixed(2)
+      : 0;
+
   /**
    * Updates the deposit data based on the provided details.
    * If the details are available, it updates each value in the depositData array.
    * If the details are not available, it sets each value in the depositData array to '-'.
    */
 
+  const totalAmintAmnt =
+    lastCumulativeRate === undefined
+      ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
+      : BigInt(
+          BigInt(
+            Math.round(
+              position.normalizedAmount
+                ? Number(position?.normalizedAmount || 0) * 10 ** 6
+                : 0
+            )
+          ) * lastCumulativeRate
+        ) / BigInt(10 ** 27);
+
+  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
+
   function handleDepositData() {
     // Calculate the totalAmintAmnt
     if (position && lastCumulativeRate) {
-      const totalAmintAmnt =
-        lastCumulativeRate === undefined
-          ? BigInt(Number(position.normalizedAmount) * 10 ** 6)
-          : BigInt(
-              BigInt(
-                Math.round(
-                  position.normalizedAmount
-                    ? Number(position.normalizedAmount) * 10 ** 6
-                    : 0
-                )
-              ) * lastCumulativeRate
-            ) / BigInt(10 ** 27);
       totalAmintAmount.current = Number(totalAmintAmnt);
 
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(
-        4
-      )} ETH`;
-      updatedData[1].value = `$${Number(position.ethPrice) / 100}`;
-      updatedData[2].value = `${Number(position.noOfAmintMinted).toFixed(
-        2
-      )} USDa`;
-      updatedData[3].value = `$${(
-        parseFloat(totalAmintAmnt.toString()) /
-        10 ** 6
-      ).toFixed(2)}`;
-      updatedData[4].value = `${position.aprAtDeposit}%`;
-      updatedData[5].value = new Date(
+      updatedData[0].headline = `${position.collateralType} Deposited`;
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
+        position.collateralType
+      }`;
+      updatedData[1].headline = `${position.collateralType} Price at Deposit`;
+      const ethPriceAtDep =
+        (Number(position.ethPrice) *
+          Number(position.exchangeRateAtDeposit || 0)) /
+        100;
+      updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
+      // updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
+      //   2
+      // )} USDa`;
+      // updatedData[3].value = `$${(
+      //   parseFloat(totalAmintAmnt.toString()) /
+      //   10 ** 6
+      // ).toFixed(2)}`;
+      updatedData[2].value = `${position.aprAtDeposit}%`;
+      updatedData[3].value = new Date(
         position.depositedTime * 1000
       ).toLocaleString();
-      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[4].value = `${position.downsideProtectionPercentage}%`;
+
+      const currentPrice = ethPrice;
+      const upsideAt =
+        (Number(position.depositedAmount) * Number(ethPriceAtDep) * 5) / 100;
+
+      const priceDef =
+        Number(ethPriceAtDep) < Number(currentPrice) / 100
+          ? Number(position.depositedAmount) * (Number(currentPrice) / 100) -
+            Number(position.depositedAmount) * Number(ethPriceAtDep)
+          : 0;
+
+      console.log(
+        priceDef,
+        upsideAt,
+        ethPriceAtDep,
+        upsideAt < priceDef,
+        currentPrice,
+        "priceDef"
+      );
+
+      const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
+
+      updatedData[5].value = `${upsideAt.toFixed(2)}`;
+      updatedData[6].value =
+        Number(ethPriceAtDep) < Number(currentPrice) / 100
+          ? `${curtUpside.toFixed(2)}`
+          : "-";
+
       updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       updatedData[8].value =
         interestGained != undefined
           ? `$${Number(interestGained).toFixed(2)}`
           : "-";
       updatedData[9].value = position.noOfAbondMinted
-        ? `$${position.noOfAbondMinted}`
+        ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
     } else {
@@ -194,10 +247,42 @@ export function WithdrawFund({
       updatedData[5].value = "-";
       updatedData[6].value = "-";
       updatedData[7].value = "-";
-      updatedData[8].value = "-";
+
       setDepositData(updatedData);
     }
   }
+
+  const repayAmountDetails = [
+    {
+      headline: "USDa Amount Minted",
+      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDa`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Total Interest",
+      value: `$${(
+        Number(totalAmintAmnt) / 10 ** 6 -
+        Number(position.noOfUSDaMinted)
+      ).toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Downside Protection till now",
+      value: `$${downsideProtection}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Repay amount",
+      value: `$${repayAmount.toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+  ];
+
+  console.log(repayAmountDetails, "repayMountDetails");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
@@ -254,46 +339,6 @@ export function WithdrawFund({
   );
 
   const {
-    calculateCumulativeRate,
-    cumulativeRate,
-    cumulativeReset,
-    cumulativeRateLoading,
-    cumulativeRateError,
-    cumulativeRateSuccess,
-  } = useCalculateInterest({
-    onError: () => {
-      setIsLoadingCumulativeLocal(false);
-      setIsApproveLoadingLocal(false);
-      setWithdrawLoadingLocal(false);
-      setTimeout(() => {
-        setRepayLoading(false);
-      }, 1000);
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Transaction failed, Please try again"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-    },
-  });
-
-  const {
-    isLoading: ispendingCumulative,
-    isSuccess: cumulativeRateReciptSuccess,
-    data: culmulativeData,
-    isFetching: isCumulativeFetching,
-    isError: cumulativeRateErrorReceipt,
-  } = useWaitForTransactionReceipt({
-    hash: (cumulativeRate
-      ? cumulativeRate.toString()
-      : undefined) as `0x${string}`, // Transaction hash to wait for
-    confirmations: 1, // Number of confirmations required
-    query: {
-      enabled: cumulativeRateSuccess,
-    },
-  });
-
-  const {
     approveUsda,
     approveReset,
     usdaApproveHash,
@@ -306,7 +351,9 @@ export function WithdrawFund({
       setIsLoadingCumulativeLocal(false);
       setIsApproveLoadingLocal(false);
       setWithdrawLoadingLocal(false);
+      setRenewApproveLoading(false);
       setTimeout(() => {
+        setRenewLoading(false);
         setRepayLoading(false);
       }, 1000);
       toast.custom((t) => (
@@ -368,17 +415,15 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${withdrawReceipt.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${withdrawReceipt.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          withdrawReceipt.transactionHash
+        } `;
         return (
           <ToastNotification
             title="Repay Successful"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -411,28 +456,27 @@ export function WithdrawFund({
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
+  console.log(
+    lastCumulativeRate,
+    position.normalizedAmount,
+    "lastCumulativeRate"
+  );
+
   const handleRepay = async () => {
-    setIsLoadingCumulativeLocal(true);
+    if (balance < repayAmount) {
+      toast.error("You don't have enough USDa to repay");
+      return;
+    }
+    setIsApproveLoadingLocal(true);
     setRepayLoading(true);
     setOpenConfirmNotice(false);
-    cumulativeReset?.();
+    // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      calculateCumulativeRate?.();
+      approveUsda(BigInt(repayAmount * 1e6));
     }
   };
-
-  useEffect(() => {
-    if (culmulativeData) {
-      setIsLoadingCumulativeLocal(false);
-      setTimeout(() => {
-        setIsApproveLoadingLocal(true);
-      }, 800);
-      // Perform the amint approval after the cumulative rate is calculated
-      approveUsda(lastCumulativeRate, position.normalizedAmount);
-    }
-  }, [culmulativeData]);
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -506,23 +550,24 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link =
-        chainId === 84532
-          ? `https://sepolia.basescan.org/tx/${renewReceipt.transactionHash} `
-          : `https://sepolia.etherscan.io/tx/${renewReceipt.transactionHash}`;
-
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        renewReceipt.transactionHash
+      } `;
       toast.custom((t) => (
         <ToastNotification
-          title="Repay Successful"
+          title="Renew Successful"
           message=""
           linkText={
-            chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
         />
       ));
     } else if (renewReceiptError) {
+      setRenewLoading(false);
+      setRenewApproveLoading(false);
+      setRenewLoadingSM(false);
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
@@ -533,7 +578,6 @@ export function WithdrawFund({
   }, [renewReceipt, renewReceiptError, isSuccessRenewReceipt]);
 
   const handleCloseDialog = (value: boolean) => {
-    cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
     setIsLoadingCumulativeLocal(false);
@@ -543,26 +587,43 @@ export function WithdrawFund({
   };
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
+
+  console.log(
+    payableOptionFees,
+    usdaApproveError,
+    position.index,
+    BigInt(Number(payableOptionFees || 0n) + 1e6),
+    "payableOptionFees"
+  );
+
   const handleRenew = () => {
     setRenewLoading(true);
     setRenewApproveLoading(true);
     approveReset?.();
     resetBorrowRenew?.();
     approveUsdaDynamic(
-      payableOptionFees as bigint,
+      BigInt(Number(payableOptionFees || 0n) + 1e6),
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`
     );
   };
 
+  console.log(isFifteenDaysCompleted(position.validTill), "15");
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="text-2xl font-semibold mb-4">Borrow Details</div>
+          <div className="flex gap-4 justify-start items-center mb-4">
+            <div className="text-2xl font-semibold ">Borrow Details</div>
+            <div className="text-grayLight">Balance: {balance} USDa</div>
+          </div>
           <div className="flex">
-            <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div
+              onClick={() => setToggleView("repay")}
+              className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700"
+            >
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
@@ -572,7 +633,6 @@ export function WithdrawFund({
                     name="repay"
                     type="radio"
                     checked={toggleView === "repay"}
-                    onChange={() => setToggleView("repay")}
                     className="peer h-4 w-4  md:h-6 md:w-6 cursor-pointer appearance-none rounded-full  border-[3px] md:border-[4px] dark:border-white  border-black dark:checked:border-white checked:border-black transition-all"
                     id="repay"
                   />
@@ -587,7 +647,10 @@ export function WithdrawFund({
               </label>
             </div>
 
-            <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
+            <div
+              onClick={() => setToggleView("renew")}
+              className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700"
+            >
               <div className="inline-flex items-center">
                 <label
                   className="relative flex items-center cursor-pointer"
@@ -629,6 +692,19 @@ export function WithdrawFund({
                     </span>
                   </div>
                 ))}
+                {repayAmountDetails.map((item) => (
+                  <div
+                    key={item.headline}
+                    className="flex justify-between text-sm text-gray-700"
+                  >
+                    <span className="text-grayLight text-[16px] md:text-[20px] font-medium">
+                      {item.headline}
+                    </span>
+                    <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
                 {!repayLoading && (
@@ -640,25 +716,25 @@ export function WithdrawFund({
                     {repayLoading
                       ? "Loading..."
                       : position.status == BorrowStatus.DEPOSITED
-                      ? `Repay amount ${position.noOfAmintMinted} USDa`
-                      : `Withdrawn ${position.depositedAmount} ETH`}
+                      ? `Repay amount ${repayAmount.toFixed(2)} USDa`
+                      : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
                   </Button>
                 )}
-                <LoadingBox
+                {/* <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
                   isFailure={cumulativeRateError || cumulativeRateErrorReceipt}
                   isSuccess={cumulativeRateReciptSuccess}
                   setSuccessLoading={() => console.log()}
                   heading="Calculating Interest "
                   loadingCount="1/3"
-                />
+                /> */}
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
                   isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
                   heading="Approving USDa "
-                  loadingCount="2/3"
+                  loadingCount="1/2"
                 />
                 <LoadingBox
                   isLoading={withdrawLoadingLocal}
@@ -666,7 +742,7 @@ export function WithdrawFund({
                   isSuccess={isSuccessWithdrawReceipt}
                   setSuccessLoading={() => console.log()}
                   heading="Withdrawing"
-                  loadingCount="3/3"
+                  loadingCount="2/2"
                 />
               </div>
             </>
@@ -674,17 +750,144 @@ export function WithdrawFund({
 
           {toggleView === "renew" && (
             <>
-              <div className="w-full mt-4 h-2 bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+              <div className="w-full h-[67px]">
+                {
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex w-full h-[60px] mb-2">
+                      {[
+                        {
+                          label: "Maturity",
+                          value: Number(
+                            isFifteenDaysCompleted(position.validTill)
+                              ? calculateRemainingDays(
+                                  Number(position.validTill)
+                                )
+                              : 15
+                          ),
+                          days: Number(
+                            calculateRemainingDays(Number(position.validTill))
+                          ),
+                          gradient:
+                            "linear-gradient(to right, #08c8646e,#627EEA00)",
+                          gradientText: "#0ea658",
+                          percentLeftPx: "0px",
+                          borderLeftPx: "0px",
+                        },
+                        {
+                          label: "Renew",
+                          value:
+                            Number(
+                              calculateRemainingDays(position.validTill) || 0
+                            ) - 15,
+                          gradient:
+                            "linear-gradient(to right, #386fe86e,#FF527000)",
+                          gradientText: "#2563eb",
+                          percentLeftPx: "0px",
+                          borderLeftPx: "",
+                          borderRightPx: "",
+                        },
+
+                        {
+                          label: "",
+                          value:
+                            30 -
+                            Number(
+                              calculateRemainingDays(position.validTill) || 0
+                            ),
+                          gradient:
+                            "linear-gradient(to right, #7a7a7a94, #FF527000)",
+                          gradientText: "#7a7a7a",
+                          percentLeftPx: "8px",
+                          borderLeftPx: "0px",
+                        },
+                      ].map((metric, index, arr) => {
+                        const total = 30;
+                        const percentage = (metric.value / total) * 100 || 0;
+
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              width: `${percentage}%`,
+                            }}
+                            className={` ${
+                              index == 1 && "mr-1"
+                            } relative h-full flex flex-col justify-end truncate`}
+                          >
+                            {index == 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                            <div
+                              className="mx-[5px] truncate"
+                              style={{
+                                position: "absolute",
+                                backgroundColor: "transparent",
+                                color: metric.gradientText,
+                                left: metric.percentLeftPx,
+                                right: metric.borderRightPx,
+                              }}
+                            >
+                              {metric.days || metric.value} Days{" "}
+                              {metric.label ? `(${metric.label})` : ""}
+                            </div>
+
+                            <div
+                              style={{
+                                position: "absolute",
+                                height: "48px",
+                                width: "2px",
+                                backgroundColor: metric.gradientText,
+                                left: metric.borderLeftPx,
+                                right: metric.borderRightPx,
+                              }}
+                            />
+
+                            {index !== 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                }
+              </div>
+              <div className="w-full  h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
                 {[
                   {
-                    label: "Deposit",
-                    value: 5,
-                    color: "linear-gradient(to right,#478BFF,#00FA96)",
+                    label: "days",
+                    value: Number(
+                      isFifteenDaysCompleted(position.validTill)
+                        ? calculateRemainingDays(Number(position.validTill))
+                        : 15
+                    ),
+
+                    color: "#05a552",
                   },
                   {
-                    label: "Option Fee",
-                    value: 0.7,
-                    color: "linear-gradient(to right,#05A552,#05A552)",
+                    label: "repay",
+                    value:
+                      Number(calculateRemainingDays(position.validTill) || 0) -
+                      15,
+                    color: !isFifteenDaysCompleted(position.validTill)
+                      ? "#2563eb"
+                      : "#05a552",
+                  },
+                  {
+                    label: "maturity",
+                    value:
+                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                    color: "gray",
                   },
                 ].map((metric, index, arr) => {
                   const total = arr.reduce((acc, item) => acc + item.value, 0);
@@ -695,41 +898,40 @@ export function WithdrawFund({
                       key={index}
                       style={{
                         width: `${percentage}%`,
-                        backgroundImage: metric.color,
+                        background: metric.color,
                       }}
                     />
                   );
                 })}
               </div>
-              <div className="flex mt-2 items-center gap-2 text-[24px] text-grayLight font-medium">
-                <span className="block w-3 h-3 bg-[#05A552]"></span>
-                {calculateRemainingDays(Number(position.validTill))} Days
-                remaining till maturity
+
+              <div className="flex gap-8 mb-3">
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-[#05A552]"></span>
+                  {calculateRemainingDays(Number(position.validTill))} Days
+                  remaining till maturity
+                </div>
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-blue-600"></span>
+                  {calculateRemainingDays(Number(position.validTill)) - 15} Days
+                  remaining to activate renew
+                </div>
               </div>
-              <div className="max-h-[250px] overflow-auto no-scrollbar">
+              <div className="max-h-[280px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
                   {[
                     {
                       heading: "ETH price at deposit",
                       value: `${depositData[1].value}`,
                     },
-                    { heading: "Current ETH price", value: "$0" },
+                    {
+                      heading: "Current ETH price",
+                      value: `$${formatUnits(BigInt(ethPrice), 2)}`,
+                    },
                     {
                       heading: "Downside Protection till now",
-                      // value: `$${(
-                      //   (Number(position.ethPrice) / 100) *
-                      //     Number(position.depositedAmount) -
-                      //   Number(ethPrice)
-                      // ).toFixed(2)} (${
-                      //   (Number(position.ethPrice) / 100) *
-                      //     Number(position.depositedAmount) -
-                      //   (Number(ethPrice) / ethPrice) * 100
-                      // }%)`,
-                      value: getDownsideProtectionTillNow(
-                        Number(position.ethPrice),
-                        Number(position.depositedAmount),
-                        Number(ethPrice)
-                      ),
+
+                      value: "$" + downsideProtection,
                     },
                     {
                       heading: "Option Fees paid",
@@ -756,11 +958,18 @@ export function WithdrawFund({
 
                   {[
                     { label: "Time Period", value: "30 days" },
-                    { label: "Option Fees", value: "$0" },
+                    {
+                      label: "Option Fees",
+                      value: isFifteenDaysCompleted(position.validTill)
+                        ? `${payableOptionFees}`
+                        : "-",
+                    },
                     {
                       label: "Downside Protection",
                       value: `Up to $${(
-                        (Number(position.noOfAmintMinted) * 20) /
+                        (Number(formatUnits(BigInt(position.ethPrice), 2)) *
+                          Number(position?.depositedAmountInETH) *
+                          20) /
                         100
                       ).toFixed(2)} (20%)`,
                     },
@@ -779,34 +988,34 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              {!renewLoading && (
-                <Button
-                  disabled={
-                    position.status == BorrowStatus.WITHDREW ||
-                    isFifteenDaysCompleted(position.validTill)
-                  }
-                  onClick={handleRenew}
-                  className="w-full mt-6 p-8 bg-black text-white text-[32px]"
-                >
-                  Pay
-                </Button>
-              )}
-              <LoadingBox
-                isLoading={renewApproveLoading}
-                isFailure={usdaApproveError || usdaHashError}
-                isSuccess={usdaHashSucces}
-                setSuccessLoading={() => console.log()}
-                heading="Approving USDa"
-                loadingCount="1/2"
-              />
-              <LoadingBox
-                isLoading={renewLoadingSM}
-                isFailure={renewReceiptError || renewErrorSm}
-                isSuccess={isSuccessRenewReceipt}
-                setSuccessLoading={() => console.log()}
-                heading="Renewing"
-                loadingCount="2/2"
-              />
+              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
+                {!renewLoading && (
+                  <Button
+                    // disabled={position.status == BorrowStatus.WITHDREW}
+                    onClick={handleRenew}
+                    className="w-full  p-8 bg-black text-white text-[32px]"
+                  >
+                    Renew
+                  </Button>
+                )}
+
+                <LoadingBox
+                  isLoading={renewApproveLoading}
+                  isFailure={usdaApproveError || usdaHashError}
+                  isSuccess={usdaHashSucces}
+                  setSuccessLoading={() => console.log()}
+                  heading="Approving USDa"
+                  loadingCount="1/2"
+                />
+                <LoadingBox
+                  isLoading={renewLoadingSM}
+                  isFailure={renewReceiptError || renewErrorSm}
+                  isSuccess={isSuccessRenewReceipt}
+                  setSuccessLoading={() => console.log()}
+                  heading="Renewing"
+                  loadingCount="2/2"
+                />
+              </div>
             </>
           )}
         </DialogContent>

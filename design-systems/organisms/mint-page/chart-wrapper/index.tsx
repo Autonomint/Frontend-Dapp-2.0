@@ -88,11 +88,29 @@ function TradingViewWidget({ currency }: { currency: string }) {
       lineType: 0,
       dateRanges: ["1d|1", "1m|30", "3m|60", "12m|1D", "60m|1W", "all|1M"],
       lineColor:
-        theme === "dark" ? "rgba(0, 120, 185, 1 )" : "rgba(0, 103, 159, 1)",
+        theme === "dark"
+          ? "rgba(0, 120, 185, 1 )"
+          : theme === "light"
+          ? "rgba(0, 103, 159, 1)"
+          : prefersDarkMode
+          ? "rgba(0, 120, 185, 1 )"
+          : "rgba(0, 103, 159, 1)",
       topColor:
-        theme === "dark" ? "rgba(0, 42, 78, 1)" : "rgba(229, 243, 255, 1)",
+        theme === "dark"
+          ? "rgba(0, 42, 78, 1)"
+          : theme === "light"
+          ? "rgba(229, 243, 255, 1)"
+          : prefersDarkMode
+          ? "rgba(0, 42, 78, 1)"
+          : "rgba(229, 243, 255, 1)",
       bottomColor:
-        theme === "dark" ? "rgba(0, 42, 78, 0)" : "rgba(255, 253, 228, 1)",
+        theme === "dark"
+          ? "rgba(0, 42, 78, 0)"
+          : theme === "light"
+          ? "rgba(255, 253, 228, 1)"
+          : prefersDarkMode
+          ? "rgba(0, 42, 78, 0)"
+          : "rgba(255, 253, 228, 1)",
     };
 
     // Pass the widget configuration as JSON

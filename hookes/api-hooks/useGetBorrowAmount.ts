@@ -27,12 +27,9 @@ const useGetTotalBorrow = () => {
     isSuccess: ethSepoliaDataFetched,
     refetch: dataEthSepoliaReftech,
   } = useQuery({
-    queryKey: ["depositor", NetworkId.EthereumSepolia, address],
+    queryKey: ["depositor", NetworkId.Mode, chainId, address],
     queryFn: (): Promise<any> =>
-      fetchDepositor(
-        NetworkId.EthereumSepolia.toString(),
-        address ? address : undefined
-      ),
+      fetchDepositor(NetworkId.Mode.toString(), address ? address : undefined),
     enabled: !!address,
   });
 
@@ -42,18 +39,18 @@ const useGetTotalBorrow = () => {
     isSuccess: baseSepoliaDataFetched,
     refetch: dataBaseSepoliaRefetch,
   } = useQuery({
-    queryKey: ["depositor", NetworkId.BaseSepolia, address],
+    queryKey: ["depositor", NetworkId.Optimism, chainId, address],
     queryFn: (): Promise<any> =>
       fetchDepositor(
-        NetworkId.BaseSepolia.toString(),
+        NetworkId.Optimism.toString(),
         address ? address : undefined
       ),
     enabled: !!address,
   });
 
   const userTotalBorrowAmount = formatNumber(
-    Number(ethSepoliaData?.totalAmint || 0) +
-      Number(baseSepoliaData?.totalAmint || 0)
+    Number(ethSepoliaData?.totalUSDa || 0) +
+      Number(baseSepoliaData?.totalUSDa || 0)
   );
 
   return { userTotalBorrowAmount, ethSepoliaData, baseSepoliaData };

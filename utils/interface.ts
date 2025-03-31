@@ -26,6 +26,13 @@ export interface dcdsDepositDetails {
   withdrawRsEthAmount: string | null;
   fees: string | null;
   status: string;
+  depositedAmounts: {
+    usda: string;
+    usdt: string;
+    nativeToken: string;
+  };
+  nativeTokenPriceAtDeposit: number;
+  liquidationPrice: number;
 }
 
 export interface DcdsDetailsResponse {
@@ -44,6 +51,9 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  depositedAmountInETH?: string;
+  exchangeRateAtDeposit?: string | number;
+  noOfUSDaMinted: number;
   validTill: number;
   id: string;
   address: string;
@@ -74,6 +84,7 @@ export interface LeaderboardDetails {
   totalDepositedAmount?: string;
   cdsdeposit?: number;
   totalAmint?: string;
+  totalUSDa?: string;
   points: string;
   totalLTV?: number;
   yield: number;

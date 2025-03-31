@@ -15,7 +15,7 @@ import { useGetBridgeFeeUsdt } from "@/hookes/contract-hooks/useGetBridgeFeeUsdt
 import useDeviceType from "@/hookes/useDeviceType";
 import { secondsToMinutes } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, padHex, parseEther, parseUnits } from "viem";
 import {
@@ -32,12 +32,19 @@ import { TransactionParams } from "./interfaces";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import { eId, NetworkId, scanUrls } from "@/utils/constants";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
-  const [receiveToken, setReceiveToken] = useState<"USDa" | "TUSDT">("USDa");
-  const [sendNetwork, setSendNetwork] = useState<"Sepolia" | "Base">("Sepolia");
-  const [sendAmount, setSendAmount] = useState<number | null>(null);
+  const [receiveToken, setReceiveToken] = useState<"USDa">("USDa");
+  const [sendNetwork, setSendNetwork] = useState<
+    "Sepolia" | "Base" | "Mode" | "OP"
+  >("Sepolia");
+  const [receiveNetwork, setReceiveNetwork] = useState<
+    "Sepolia" | "Base" | "Mode" | "OP"
+  >("Mode");
+
+  const [sendAmount, setSendAmount] = useState<number | string>();
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [estimateTime, setEstimateTime] = useState<number>(0);
   const [amountError, setAmountError] = useState<string>("");
@@ -53,9 +60,13 @@ function BridgeTemplate() {
 
   const [sendLoading, setSendLoading] = useState<boolean>(false);
 
-  const { switchChain } = useSwitchChain();
+  const { switchChain, isPending: isChainSwitchPending } = useSwitchChain();
 
-  const { address: accountAddress, isConnected } = useAccount();
+  const {
+    address: accountAddress,
+    isConnected,
+    chainId: chainId2,
+  } = useAccount();
 
   const toastId = useRef<string | number>("");
 
@@ -63,9 +74,24 @@ function BridgeTemplate() {
 
   const Eid = chainId === 11155111 ? 40245 : 40161;
 
+  useEffect(() => {
+    if (chainId2 === 84532) {
+      setSendNetwork("Base");
+    }
+    if (chainId2 === 11155111) {
+      setSendNetwork("Sepolia");
+    }
+    if (chainId2 === 919) {
+      setSendNetwork("Mode");
+    }
+    if (chainId2 === 11155420) {
+      setSendNetwork("OP");
+    }
+  }, [chainId2]);
+
   // Option Fees to be added to the transaction parameters (200000)
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(200000, 0)
+    .addExecutorLzReceiveOption(60000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
@@ -73,7 +99,7 @@ function BridgeTemplate() {
     useState<string>("0");
 
   useEffect(() => {
-    if ((sendAmount || 0) > Number(usdaBal?.formatted)) {
+    if ((Number(sendAmount) || 0) > Number(usdaBal?.formatted)) {
       setAmountError(
         `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`
       );
@@ -97,7 +123,7 @@ function BridgeTemplate() {
       setCollateralAmountString("0");
       letamount = "0";
     } else {
-      setCollateralAmountString((sendAmount * 10 ** 6).toString());
+      setCollateralAmountString((Number(sendAmount) * 10 ** 6).toString());
     }
     let amount = 0n;
     if (sendToken === "USDa" && nativeFee1) {
@@ -113,14 +139,8 @@ function BridgeTemplate() {
     }
   }, [sendAmount]);
 
-  // Get the tusdt balance of the user
-  const { data: tusdtBal } = useBalance({
-    address: accountAddress,
-    token: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
-  });
-
   // Get the usda balance of the user
-  const { data: usdaBal } = useBalance({
+  const { data: usdaBal, refetch: refetchUsdaBalance } = useBalance({
     address: accountAddress,
     token: usDaAddress[chainId as keyof typeof usDaAddress],
   });
@@ -129,14 +149,19 @@ function BridgeTemplate() {
   const getmax = () => {
     if (sendToken === "USDa") {
       setSendAmount(Number(usdaBal?.formatted.slice(0, 8)));
-    } else if (sendToken === "TUSDT") {
-      setSendAmount(Number(tusdtBal?.formatted.slice(0, 8)));
     }
   };
 
+  console.log(
+    eId[receiveNetwork],
+    usdaBal,
+    usDaAddress[chainId as keyof typeof usDaAddress],
+    "receiveNetwork"
+  );
+
   //  Define the transaction parameters
   const transactionParams: TransactionParams = {
-    dstEid: 40260,
+    dstEid: eId[receiveNetwork],
     to: padHex(accountAddress ?? ("0" as `0x${string}`), {
       size: 32,
     }) as `0x${string}`,
@@ -151,10 +176,16 @@ function BridgeTemplate() {
   const { nativeFee1, refetchnativeFee1 } =
     useGetBridgeFeeUsda(transactionParams);
 
-  // Get the native fee for the transaction
-  const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
-    useGetBridgeFeeUsdt(transactionParams);
-  // Approve USDa
+  // // Get the native fee for the transaction
+  // const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
+  //   useGetBridgeFeeUsdt(transactionParams);
+  // // Approve USDa
+
+  console.log(
+    nativeFee1,
+    usDaAddress[chainId as keyof typeof usDaAddress],
+    "nativeFee1"
+  );
 
   const {
     isPending: amintApproveLoading,
@@ -163,12 +194,12 @@ function BridgeTemplate() {
     isSuccess: amintApproved,
     isError: depositError,
     error: depositHashError,
+    reset: resetAmintApprove,
   } = useWriteContract({
     mutation: {
       onError(error: any) {
         handleTransferFail();
       },
-
       // Handle success and show a custom toast notification
       onSuccess: (data) => {},
     },
@@ -208,6 +239,7 @@ function BridgeTemplate() {
   // };
 
   // If the transaction is confirmed, show a toast notification and call UsdaApprove write call to bridge token
+
   useEffect(() => {
     if (usdaApproveSuccess && accountAddress) {
       setUsdaApproveLoading(false);
@@ -230,14 +262,13 @@ function BridgeTemplate() {
     }
   }, [amintTransactionAllowed]);
 
-  // Approve TUSDT
-
   const {
     isPending: usdaApproveLoading,
     data: usdaApproveData,
     writeContract: usdaApproveWrite,
     isSuccess: usdaApproved,
     isError: usdaErrorApproveFn,
+    reset: resetUsdaApprove,
   } = useWriteContract({
     mutation: {
       onError(error: any) {
@@ -257,6 +288,7 @@ function BridgeTemplate() {
   } = useWaitForTransactionReceipt({
     hash: usdaApproveData,
   });
+
   // If the transaction is confirmed, show a toast notification
   useEffect(() => {
     if (usdaIsSuccess) {
@@ -265,17 +297,18 @@ function BridgeTemplate() {
         setTransferLoadingLocal(false);
       }, 1000);
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${usdaTransactionConfirmed.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${usdaTransactionConfirmed.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          usdaTransactionConfirmed.transactionHash
+        } `;
+        setSendAmount(0);
+        refetchUsdaBalance();
+        resetUsdaApprove();
         return (
           <ToastNotification
             title="Transaction Confirmed"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -293,6 +326,7 @@ function BridgeTemplate() {
           onClose={() => toast.dismiss(t)}
         />
       ));
+      handleTransferFail();
     }
   }, [usdaTransactionConfirmed]);
 
@@ -303,98 +337,21 @@ function BridgeTemplate() {
         onClose={() => toast.dismiss(t)}
       />
     ));
-    clearLoading();
+    resetPage();
   };
   const clearLoading = () => {
     setTimeout(() => {
       setTransferLoadingLocal(false);
     }, 1000);
-    setUsdaApproveLoading(false);
-    setUsdtApproveLoading(false);
-    setSendLoading(false);
+    resetPage();
   };
 
-  // Approve TUSDT
-  const {
-    isPending: tusDTApproveLoading,
-    data: tusDTApproveData,
-    writeContract: tusDTApproveWrite,
-    isSuccess: tusDTApproved,
-    isError: tusDTErrorApproveFn,
-  } = useWriteContract({
-    mutation: {
-      onError(error: any) {
-        handleTransferFail();
-      },
-
-      // Handle success and show a custom toast notification
-      onSuccess: (data) => {},
-    },
-  });
-
-  // Wait for the transaction to be confirmed
-  const {
-    data: tusDTTransactionAllowed,
-    isLoading: tusDTTransactionLoading,
-    isError: tusDTErrorApprove,
-    isSuccess: tusDTApproveSuccess,
-  } = useWaitForTransactionReceipt({
-    hash: tusDTApproveData,
-  });
-
-  // If the transaction is confirmed, show a toast notification and call tusdtApprove write call to bridge token
-  useEffect(() => {
-    if (tusDTApproveSuccess && accountAddress) {
-      setUsdtApproveLoading(false);
-      setTimeout(() => {
-        setSendLoading(true);
-      }, 1000);
-      tusdtApproveWrite({
-        abi: testusdtAbiAbi,
-        address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
-        functionName: "send",
-        args: [
-          transactionParams as never,
-          { nativeFee: 37671213890518646n, lzTokenFee: 0n },
-          accountAddress,
-        ],
-        value: nativeFee2?.nativeFee,
-      });
-    } else if (usdaErrorApprove) {
-      handleTransferFail();
-    }
-  }, [tusDTTransactionAllowed]);
-
-  const {
-    isPending: tusdtApproveLoading,
-    data: tusdtApproveData,
-    writeContract: tusdtApproveWrite,
-    isSuccess: tusdtApproved,
-    isError: tusdtErrorApproveFn,
-  } = useWriteContract({});
-
-  // Wait for the transaction to be confirmed
-  const {
-    data: tusdtTransactionConfirmed,
-    isLoading: istusdtTransactionLoading,
-    isError: tusdtIsError,
-    isSuccess: tusdtIsSuccess,
-    error: tusdtError,
-  } = useWaitForTransactionReceipt({
-    hash: tusdtApproveData,
-  });
-  // If the transaction is confirmed, show a toast notification
-  useEffect(() => {
-    if (tusdtIsSuccess) {
-      setSendLoading(false);
-      setTimeout(() => {
-        setTransferLoadingLocal(false);
-      }, 1000);
-      toast.success("Transaction Confirmed");
-    } else if (tusdtIsError) {
-      handleTransferFail();
-    }
-  }, [usdaTransactionConfirmed]);
+  const resetPage = () => {
+    resetUsdaApprove();
+    resetAmintApprove();
+    clearLoading();
+    setSendAmount(0);
+  };
 
   // Handle the form submission
   async function onSubmit() {
@@ -432,23 +389,24 @@ function BridgeTemplate() {
           functionName: "approve",
           args: [
             usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
-            BigInt((sendAmount || 0) * 10 ** 6),
-          ],
-        });
-      } else if (sendToken === "TUSDT") {
-        setUsdtApproveLoading(true);
-        tusDTApproveWrite({
-          abi: testusdtAbiAbi,
-          address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
-          functionName: "approve",
-          args: [
-            testusdtAbiAddress[
-              chainId as keyof typeof testusdtAbiAddress
-            ] as `0x${string}`,
-            BigInt((sendAmount || 0) * 10 ** 6),
+            BigInt((Number(sendAmount) || 0) * 10 ** 6),
           ],
         });
       }
+      // else if (sendToken === "TUSDT") {
+      //   setUsdtApproveLoading(true);
+      //   tusDTApproveWrite({
+      //     abi: testusdtAbiAbi,
+      //     address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
+      //     functionName: "approve",
+      //     args: [
+      //       testusdtAbiAddress[
+      //         chainId as keyof typeof testusdtAbiAddress
+      //       ] as `0x${string}`,
+      //       BigInt((sendAmount || 0) * 10 ** 6),
+      //     ],
+      //   });
+      // }
     }
   }
 
@@ -504,14 +462,82 @@ function BridgeTemplate() {
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
 
+  const fromNetworkOption = [
+    {
+      label: "Sepolia",
+      onClick: () => {
+        switchChain({ chainId: 11155111 });
+        setSendNetwork("Sepolia");
+      },
+    },
+    {
+      label: "Base",
+      onClick: () => {
+        switchChain({ chainId: 84532 });
+        setSendNetwork("Base");
+      },
+    },
+    {
+      label: "Mode",
+      onClick: () => {
+        switchChain({ chainId: 919 });
+        setSendNetwork("Mode");
+      },
+    },
+    {
+      label: "OP",
+      onClick: () => {
+        switchChain({ chainId: 11155420 });
+        setSendNetwork("OP");
+      },
+    },
+  ];
+
+  const toNetworkOption = useMemo(() => {
+    const option = [];
+
+    if (sendNetwork !== "Sepolia") {
+      option.push({
+        label: "Sepolia",
+        onClick: () => {
+          setReceiveNetwork("Sepolia");
+        },
+      });
+    }
+    if (sendNetwork !== "Base") {
+      option.push({
+        label: "Base",
+        onClick: () => {
+          setReceiveNetwork("Base");
+        },
+      });
+    }
+    if (sendNetwork !== "Mode") {
+      option.push({
+        label: "Mode",
+        onClick: () => {
+          setReceiveNetwork("Mode");
+        },
+      });
+    }
+    if (sendNetwork !== "OP") {
+      option.push({
+        label: "OP",
+        onClick: () => {
+          setReceiveNetwork("OP");
+        },
+      });
+    }
+    setReceiveNetwork(option[0].label as any);
+    return option;
+  }, [sendNetwork]);
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar activeBack={showBack} />
       <div className="grid md:grid-cols-2 md:grid-rows-[85%_15%] flex-grow">
         <BridgeComponentLeft
-          balance={Number(
-            sendToken === "USDa" ? usdaBal?.formatted : tusdtBal?.formatted
-          )}
+          balance={Number(Number(usdaBal?.formatted).toFixed(2))}
           heading={"From"}
           network={sendNetwork}
           token={sendToken}
@@ -521,6 +547,8 @@ function BridgeTemplate() {
           sendAmount={sendAmount}
           setSendAmount={setSendAmount}
           amountError={amountError}
+          fromNetworkOption={fromNetworkOption}
+          isChainSwitchPending={isChainSwitchPending}
         />
 
         <BridgeComponentRight
@@ -529,6 +557,8 @@ function BridgeTemplate() {
           token={sendToken}
           totalAmount={"$1,200"}
           receiveAmount={receiveAmount}
+          toNetworkOption={toNetworkOption}
+          receiveNetwork={receiveNetwork}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           <BridgeMetricFields label={"Gas"} value={"-"} />
@@ -537,7 +567,7 @@ function BridgeTemplate() {
             value={secondsToMinutes(estimateTime * 2)}
           />
         </div>
-        <div className=" w-full">
+        <div className=" overflow-hidden w-full">
           {isConnected && address ? (
             !transferLoadingLocal && (
               <Button
@@ -561,25 +591,9 @@ function BridgeTemplate() {
           />
 
           <LoadingBox
-            isLoading={usdtApproveLoading}
-            isFailure={tusDTErrorApproveFn || tusDTErrorApprove}
-            isSuccess={Boolean(tusDTApproveSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading="Approving USDT"
-            loadingCount="1/2"
-          />
-          <LoadingBox
             isLoading={sendLoading && sendToken === "USDa"}
             isFailure={usdaErrorApproveFn || usdaIsError}
             isSuccess={Boolean(usdaIsSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading={"Transferring " + sendToken}
-            loadingCount="2/2"
-          />
-          <LoadingBox
-            isLoading={sendLoading && sendToken === "TUSDT"}
-            isFailure={tusdtErrorApproveFn || tusdtIsError}
-            isSuccess={Boolean(tusdtIsSuccess)}
             setSuccessLoading={() => console.log()}
             heading={"Transferring " + sendToken}
             loadingCount="2/2"

@@ -49,7 +49,11 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     staleTime: Infinity,
     enabled: !!address,
   });
-  const referralLink = `https://www.dev.testnet.app.autonomint.com?ref=${referral}`;
+
+  const currentUrl = window.location.origin;
+  console.log(currentUrl, "currentUrl");
+
+  const referralLink = `${currentUrl}?ref=${referral}`;
 
   useEffect(() => {
     if (referral != undefined) {

@@ -141,9 +141,11 @@ const DepositTableRow = ({
       } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
-      <td className="px-5 py-4 2xl:py-6">{position.depositedAmount}</td>
       <td className="px-5 py-4 2xl:py-6">
-        ${Number(position.noOfAmintMinted).toFixed(2)}
+        {position.depositedAmount} {position.collateralType}
+      </td>
+      <td className="px-5 py-4 2xl:py-6">
+        ${Number(position.noOfUSDaMinted).toFixed(2)}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
@@ -152,7 +154,7 @@ const DepositTableRow = ({
         {" "}
         {position.noOfAbondMinted === null
           ? "-"
-          : `$${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
+          : `${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
       </td>
 
       <td className="px-5 py-4 2xl:py-6  ">

@@ -256,11 +256,12 @@ function FarmYourLuckTemplate() {
       ));
     }
   };
+  console.log(ethPrice, "ethPrice");
 
   const handleButtonClick = async () => {
     if ((farmLuckDetails?.totalLuck || 0) === 0 && !isPayed) {
       setPayLoading(true);
-      const amountToPay = calculateEthAmount(Number(ethPrice || 0) / 100, 0.5);
+      const amountToPay = calculateEthAmount(Number(ethPrice || 0) / 100, 5);
       const txHash = await sendTransactionAsync({
         to: FarmYourLuckWalletAddress,
         value: parseEther(amountToPay.toString()),

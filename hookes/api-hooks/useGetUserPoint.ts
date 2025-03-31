@@ -6,13 +6,28 @@ const useGetUserPoint = () => {
   const { address, chainId } = useAccount();
   // Fetch user points, referral, referral points data using the useQuery hook
   const {
-    data: points,
-    error,
-    refetch: refetchpoints,
+    data: modePoints,
+    error: modeError,
+    refetch: modeRefetchPoints,
   } = useQuery({
-    queryKey: ["points", { chainId, address }],
+    queryKey: ["mode-points", { chainId, address }],
     queryFn: () =>
-      fetch(`${BACKEND_API_URL}/points/userPoints/${chainId}/${address}`).then(
+      fetch(`${BACKEND_API_URL}/points/userPoints/${919}/${address}`).then(
+        (res) => res.json()
+      ),
+    staleTime: 5000,
+    enabled: !!chainId && !!address,
+    retry: 1,
+  });
+
+  const {
+    data: opPoints,
+    error: opError,
+    refetch: opRefetchpoints,
+  } = useQuery({
+    queryKey: ["op-points", { chainId, address }],
+    queryFn: () =>
+      fetch(`${BACKEND_API_URL}/points/userPoints/${11155420}/${address}`).then(
         (res) => res.json()
       ),
     staleTime: 5000,
@@ -32,8 +47,9 @@ const useGetUserPoint = () => {
   });
 
   return {
-    points,
+    points: Number(opPoints?.[0] || 0) + Number(modePoints?.[0] || 0),
     referralPoints,
+    totalPoints: Number(opPoints?.[1] || 0) + Number(modePoints?.[1] || 0),
   };
 };
 

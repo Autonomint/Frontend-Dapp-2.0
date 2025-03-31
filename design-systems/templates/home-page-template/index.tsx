@@ -33,11 +33,12 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const { usdValue: ethPrice } = useGetUsdValue();
+  console.log(ethPrice, "ethPrice");
 
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
     (ethPrice || 0) as number,
-    0
+    5
   );
 
   // const expirations = useDeribitExpirations("ETH", "option");
@@ -56,24 +57,24 @@ export default function HomeTemplate() {
       textColor: "white",
       borderColor: "borderGreen",
     },
-    {
-      orgName: "Deribit",
-      amount: "$220",
-      tag: "Fee",
-      tagColor: "#D6A100",
-      tagBg: "#FFF7E0",
-      textColor: "#D6A100",
-      borderColor: "borderYellow",
-    },
-    {
-      orgName: "Hegic",
-      amount: "$221",
-      tag: "Fee",
-      tagColor: "#b42e2e",
-      tagBg: "#FEE2E2",
-      textColor: "#AA0001",
-      borderColor: "borderRed",
-    },
+    // {
+    //   orgName: "Deribit",
+    //   amount: "$220",
+    //   tag: "Fee",
+    //   tagColor: "#D6A100",
+    //   tagBg: "#FFF7E0",
+    //   textColor: "#D6A100",
+    //   borderColor: "borderYellow",
+    // },
+    // {
+    //   orgName: "Hegic",
+    //   amount: "$221",
+    //   tag: "Fee",
+    //   tagColor: "#b42e2e",
+    //   tagBg: "#FEE2E2",
+    //   textColor: "#AA0001",
+    //   borderColor: "borderRed",
+    // },
   ];
 
   const pairs = [];

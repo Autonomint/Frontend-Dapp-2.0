@@ -15,10 +15,7 @@ const useApproveUsda = (mutation: any) => {
   });
   const { chainId } = useAccount();
 
-  const approveUsda = async (
-    lastCumulativeRate: bigint | undefined,
-    normalizedAmount: string
-  ) => {
+  const approveUsda = async (repayAmount: bigint) => {
     usdaApproveAsync({
       abi: usDaAbi,
       address: usDaAddress[chainId as keyof typeof usDaAddress],
@@ -28,15 +25,7 @@ const useApproveUsda = (mutation: any) => {
           chainId as keyof typeof borrowingContractAddress
         ] as `0x${string}`, // address of borrowing contract based on chainId
 
-        BigInt(
-          BigInt(
-            parseInt(normalizedAmount)
-              ? Number(parseInt(normalizedAmount)) * 10 ** 6
-              : 0
-          ) * BigInt(lastCumulativeRate ?? 0n)
-        ) /
-          BigInt(10 ** 27) +
-          1000000n, // Total amint amount
+        repayAmount + 1000000n, // Total amint amount
       ],
     });
   };

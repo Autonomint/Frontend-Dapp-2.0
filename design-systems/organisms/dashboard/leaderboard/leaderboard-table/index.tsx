@@ -56,7 +56,7 @@ function LeaderboardTable({
                   {sortWalletAddress(item.address)}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
-                  {item.totalAmint ? Number(item.totalAmint).toFixed(4) : "--"}
+                  {item.totalUSDa ? Number(item.totalUSDa).toFixed(4) : "--"}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalDepositedAmount
@@ -66,13 +66,14 @@ function LeaderboardTable({
                 <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalLTV ? item.totalLTV : "--"}
                 </td>
-                <td className="px-5 py-4 2xl:py-6  table-cell font-normal">
-                  {!!item.totalAmint ? (
+                <td className="px-5 py-4 2xl:py-6   table-cell font-normal">
+                  {!!item.totalUSDa && (
                     <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
                       Borrower
                     </span>
-                  ) : (
-                    <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
+                  )}
+                  {!!item.totalDepositedAmount && (
+                    <span className="bg-[#ABFFDE] border ml-3 border-solid border-grayLight p-2 dark:text-textBlack">
                       Deposit
                     </span>
                   )}

@@ -47,12 +47,15 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
         </span>
       </div>
       <div className=" hidden xl:block text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">
-        Fee Comparison
+        Fee Comparison{" "}
+        <span className="lg:text-lg text-grayLight">
+          (Option fee per 1 ETH At the Money prices)
+        </span>
       </div>
       <div className="  xl:hidden text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee
       </div>
-      <div className=" hidden xl:flex  lg:flex-wrap gap-2 sm:gap-3 lg:gap-3 lg:justify-around  2xl:gap-8 xl:ml-6  xl:mb-20 bg-none">
+      <div className=" hidden xl:flex  lg:flex-wrap gap-2 sm:gap-3 lg:gap-3 lg:justify-start  2xl:gap-8 xl:ml-6  xl:mb-20 bg-none">
         {feesList.map((feeCom, idx) => {
           return (
             <PriceComparison

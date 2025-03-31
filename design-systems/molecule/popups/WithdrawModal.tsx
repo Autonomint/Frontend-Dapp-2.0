@@ -19,7 +19,7 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import { borrowAssetsAddress } from "@/blockchain/contracts";
 import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
 
@@ -102,38 +102,63 @@ export function DcdsWithdrawModal({
     },
   ];
 
+  console.log(position, "position");
+
   const NewDetails = [
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
       } Tokens deposited`,
-      value: 0,
+      value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
+        2
+      )} ($${(
+        (Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+        1e6
+      ).toFixed(2)})`,
       tooltip: false,
       tooltipText: "",
-      comment: "Will be converted to USDT at 40% price fall",
+      comment: "Will be converted to USDT at 30% price fall",
     },
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
-      } Token Price and Deposit`,
-      value: 0,
+      } Adjusted Deposit Value (30% markdown)`,
+      value: `$${(
+        (Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+          1e6 -
+        (((Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)) /
+          1e6) *
+          30) /
+          100
+      ).toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: `${
         Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
-      } Token Liquidation Price`,
-      value: 0,
+      } Token Price at Deposit`,
+      value: Number(position?.nativeTokenPriceAtDeposit) / 1e6,
       tooltip: false,
       tooltipText: "",
     },
-    {
-      headline: `Total Extended Indexes`,
-      value: 0,
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   headline: `${
+    //     Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+    //   } Token Liquidation Price`,
+    //   value: position?.liquidationPrice,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
+    // {
+    //   headline: `Total Extended Indexes`,
+    //   value: 0,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
   ];
 
   const rebalanceDetails = [
@@ -207,14 +232,14 @@ export function DcdsWithdrawModal({
         position.depositedAmint == "undefined" ||
         position.depositedAmint == "NaN"
           ? "0"
-          : position.depositedAmint;
+          : position.depositedAmounts.usda;
       // Update depositedAmint value
       updatedData[1].value =
         position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
           ? "0"
-          : position.depositedUsdt;
+          : position.depositedAmounts.usdt;
       // Update depositedAmint value
-      updatedData[2].value = `${Number(position.ethPriceAtDeposit) / 100}`;
+      updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
       // Update ethPriceAtDeposit value
       updatedData[3].value = new Date(
         Number(position.depositedTime) * 1000
@@ -259,6 +284,8 @@ export function DcdsWithdrawModal({
       setDepositData(updatedData); // Update the depositData state with updatedData
     }
   }
+
+  console.log(apy, "apy");
 
   useEffect(() => {
     setSpinner(true);
@@ -314,17 +341,15 @@ export function DcdsWithdrawModal({
     if (cdsWithdrawGainReceiptIsSuccess) {
       setWithdrawMethodLoading(false);
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${cdsWithdrawGainReceipt.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${cdsWithdrawGainReceipt.transactionHash}`;
-
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          cdsWithdrawGainReceipt.transactionHash
+        } `;
         return (
           <ToastNotification
             title="Withdraw Successful"
             message=""
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -468,8 +493,10 @@ export function DcdsWithdrawModal({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
-        <div className="text-2xl font-semibold mb-4">Deposit Details</div>
-        <div className="flex">
+        <div className="text-2xl font-semibold mb-2 dark:text-white text-textBlack">
+          Deposit Details
+        </div>
+        {/* <div className="flex">
           <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
             <div className="inline-flex items-center">
               <label
@@ -519,10 +546,10 @@ export function DcdsWithdrawModal({
               Rebalance
             </label>
           </div>
-        </div>
+        </div> */}
         {view === "withdraw" ? (
           <div>
-            <div className="h-[250px] overflow-auto no-scrollbar">
+            <div className="h-[275px] overflow-auto no-scrollbar">
               {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
                 return (
                   <div key={idx} className="flex flex-col justify-between mb-2">
@@ -559,20 +586,21 @@ export function DcdsWithdrawModal({
             </div>
             <div className="flex w-full pt-4">
               <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-                {/* <Label className="tex-[16px] md:text-[18px] font-normal text-[#777777]">
-              Price Gains
-            </Label>
-            <Label className=" text-[14px] font-medium dark:text-white">
-              {(
-                Number(apy == undefined ? 0 : apy[1]) +
-                Number(apy == undefined ? 0 : apy[2])
-              ).toFixed(2)}
-            </Label> */}
-                <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
+                <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
                   Option Fee + Liquidation Gains
                 </Label>
-                <Label className="text-[24px] font-medium dark:text-white">
-                  {Number(apy == undefined ? 0 : apy[1]).toFixed(2)}
+                <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
+                  {Number(apy == undefined ? 0 : apy[1]).toFixed(4)}
+                </Label>
+                <div className="h-2"></div>
+                <Label className=" text-[12px] font-normal text-[#777777]">
+                  Price Gains
+                </Label>
+                <Label className=" text-[14px] font-medium dark:text-white">
+                  {(
+                    Number(apy == undefined ? 0 : apy[1]) +
+                    Number(apy == undefined ? 0 : apy[2])
+                  ).toFixed(2)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
@@ -591,7 +619,7 @@ export function DcdsWithdrawModal({
               Note: Your amount will be used to offer protection to borrowers &
               protocol in return for fixed yields
             </Typography>
-            <div className="h-[50px] md:h-[86px]">
+            <div className="h-[50px] overflow-hidden  md:h-[86px]">
               {!dcdsFundWithdrawLoadingLocal && (
                 <Button
                   onClick={handleWithdrawFund}
@@ -601,15 +629,39 @@ export function DcdsWithdrawModal({
                   }
                   className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                 >
-                  {position.status == "DEPOSITED" ? "Withdraw" : "Withdrawn"}
+                  {position.status == "DEPOSITED"
+                    ? "Close Position"
+                    : position.status == "WITHDREW"
+                    ? "Withdraw"
+                    : position.status == "WITHDREW_GAINS "
+                    ? "Withdrawn"
+                    : position.status == "LIQUIDATED "
+                    ? "Liquidated"
+                    : "Withdrawn"}
                 </Button>
               )}
-              <LoadingBox
+              {/* <LoadingBox
                 isLoading={withdrawMethodLoading}
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
                 setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
                 heading="Withdrawing Funds"
+              /> */}
+              <LoadingBox
+                isLoading={withdrawMethodLoading}
+                isFailure={dcdsFundWithdrawError}
+                isSuccess={Boolean(dcdsFundWithdrawData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Closing Position"
+                loadingCount="1/2"
+              />
+              <LoadingBox
+                isLoading={withdrawGainLoading}
+                isFailure={dcdsWithdrawGainError}
+                isSuccess={Boolean(dcdsWithdrawGainData)}
+                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                heading="Withdrawing Gains"
+                loadingCount="2/2"
               />
             </div>
           </div>
@@ -673,14 +725,14 @@ export function DcdsWithdrawModal({
               </div>
             </div>
 
-            <div className="h-[50px] md:h-[86px] mt-4">
+            <div className="h-[50px] overflow-hidden  md:h-[86px] mt-4">
               {true && (
                 <Button
                   onClick={handleWithdrawFund}
-                  disabled={
-                    (position.status === "WITHDREW" ? true : false) ||
-                    Number(position.lockingPeriod) * 1000 > Date.now()
-                  }
+                  // disabled={
+                  //   (position.status === "WITHDREW" ? true : false) ||
+                  //   Number(position.lockingPeriod) * 1000 > Date.now()
+                  // }
                   className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                 >
                   {position.status == "DEPOSITED"

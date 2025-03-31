@@ -25,6 +25,7 @@ function DcdsDepositTable({
   totalPages,
   pageSize,
   setPageSize,
+  isSticky,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -42,6 +43,7 @@ function DcdsDepositTable({
   tabPosition: "Borrowed" | "Deposited";
   positionList: dcdsDepositDetails[];
   setSelectedPosition: (position: dcdsDepositDetails) => void;
+  isSticky: boolean;
 }) {
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -73,15 +75,19 @@ function DcdsDepositTable({
   }, [positionList]);
 
   return (
-    <div ref={scrollRef} className="sm:my-4 overflow-x-auto   no-scrollbar">
+    <div ref={scrollRef} className="sm:my-4 overflow-x-clip   no-scrollbar">
       <table className="table-auto  w-full border-collapse text-[20px]">
-        <thead className="text-left font-normal sm:border-y-0 sm:border-x border-grayLight text-grayLight ">
+        <thead
+          className={` text-left font-normal sm:border-y-0 bg-white dark:bg-black sm:border-x border-grayLight text-grayLight ${
+            isSticky ? "sticky top-[74px] " : ""
+          } `}
+        >
           <tr>
             <th className="pl-5 whitespace-nowrap font-normal py-3 2xl:py-5 ">
               ID
             </th>
             <th className="pl-5 whitespace-nowrap font-normal ">
-              USDa / Usdt Deposited
+              Total Deposit
             </th>
             <th className="pl-5 whitespace-nowrap  font-normal">
               Deposited Time

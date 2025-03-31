@@ -12,7 +12,7 @@ const useLastCumulativeRate = () => {
         borrowingContractAddress[
           chainId as keyof typeof borrowingContractAddress
         ],
-      functionName: "lastCumulativeRate",
+      functionName: "viewCurrentCr",
       query: {
         enabled: !!address,
         staleTime: 10 * 1000,
@@ -23,4 +23,3 @@ const useLastCumulativeRate = () => {
 };
 
 export default useLastCumulativeRate;
-

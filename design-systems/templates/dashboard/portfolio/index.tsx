@@ -21,6 +21,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import { NetworkId } from "@/utils/constants";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -46,6 +47,7 @@ function PortfolioTemplate() {
   const { userTotalBorrowAmount } = useGetTotalBorrow();
   const { totalUserDeposit } = useGetTotalUserDeposit();
   const { points, referralPoints } = useGetUserPoint();
+
   const {
     positionList,
     positionListError,
@@ -61,8 +63,6 @@ function PortfolioTemplate() {
     setCurrentPage,
   } = useGetPositionList();
 
-  console.log(pagedPositionList, positionList, "pagedPositionList");
-
   const {
     dcdsPositionList,
     dcdsPositionListError,
@@ -76,6 +76,11 @@ function PortfolioTemplate() {
     totalPages: dcdsTotalPages,
   } = useGetDcdsDepositList();
 
+  console.log(
+    pagedPositionList,
+    dcdsPagedDcdsPositionList,
+    "pagedPositionList"
+  );
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
@@ -151,31 +156,34 @@ function PortfolioTemplate() {
     };
   }, []);
 
-  console.log(pagedPositionList, "pagedPositionList");
+  console.log(
+    Number(referralPoints || 0) + Number(points || 0),
+    "pagedPositionList"
+  );
 
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Total Borrowed"
+            subHeading="Total Borrowed (All Chain)"
             value={`${userTotalBorrowAmount} USDa`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Total Deposited"
-            value={`$${totalUserDeposit}`}
+            subHeading="Total Deposited (All Chain)"
+            value={`$${totalUserDeposit?.toFixed(2)}`}
           />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Fee Earned" value="$120" />
+          <PortfolioMetrics subHeading="Fee Earned (All Chain)" value="$0" />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Points"
+            subHeading={`Points (All Chain)`}
             value={(
-              Number(referralPoints || 0) + Number(points?.[0] || 0)
+              Number(referralPoints || 0) + Number(points || 0)
             ).toString()}
           />
         </div>
@@ -234,8 +242,10 @@ function PortfolioTemplate() {
           />
         </div>
       </div>
+
       {tabPosition == "Borrowed" ? (
         <DepositTable
+          isSticky={isSticky}
           positionListLoading={positionListLoading}
           setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
           setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
@@ -256,6 +266,7 @@ function PortfolioTemplate() {
         />
       ) : (
         <DcdsDepositTable
+          isSticky={isSticky}
           positionListLoading={dcdsPositionListLoading}
           setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
           setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}

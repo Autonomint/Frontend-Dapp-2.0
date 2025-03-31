@@ -36,6 +36,10 @@ function AddToken({
       `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
       isSelected ? false : true
     );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}Amount`,
+      0
+    );
     setSelectedTokens?.((prev: TokenDetails[]) => {
       if (isSelected) {
         return prev.filter(
@@ -54,8 +58,8 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        <div className="flex items-center gap-5 w-full">
-          <div className="flex w-[40%] md:w-[30%] flex-row items-center lg:items-start lg:flex-col gap-4">
+        <div className="flex  gap-5 w-full items-start">
+          <div className="flex w-[40%] md:w-[30%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -68,19 +72,26 @@ function AddToken({
               {tokenDetails.tokenName}
             </span>
           </div>
-          <div className="flex flex-row items-center lg:items-start lg:flex-col gap-2 md:gap-4">
-            <div className="hidden md:flex text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
+          <div className="flex flex-row items-center lg:items-start lg:flex-col justify-start  md:gap-0">
+            <div className="hidden md:flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
               balance
             </div>
             <div className="flex md:hidden text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
               bal.
             </div>
-            <span className="text-base md:text-[18px] md:mt-1 text-[#7a7a7a]">
-              {tokenDetails.balanceAvailable.replaceAll(
-                tokenDetails.tokenName,
-                ""
+            <div className="flex flex-col gap-0">
+              <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+                {tokenDetails.balanceAvailable.replaceAll(
+                  tokenDetails.tokenName,
+                  ""
+                )}
+              </span>
+              {tokenDetails.tokenCount && (
+                <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+                  {tokenDetails.tokenCount} {` ${tokenDetails.tokenName}`}
+                </span>
               )}
-            </span>
+            </div>
           </div>
         </div>
         <Button

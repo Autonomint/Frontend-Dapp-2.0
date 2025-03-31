@@ -70,19 +70,59 @@ const useGetLeaderboard = () => {
       });
   }
 
-  const totalBorrowCount = useMemo(() => {
-    return (borrowdeposits as LeaderboardDetails[])?.length || 0;
-  }, [borrowdeposits]);
+  function mergeLeaderboardDetails(
+    leaderboard: LeaderboardDetails[]
+  ): LeaderboardDetails[] {
+    const mergedData: { [address: string]: LeaderboardDetails } = {};
 
-  const totalDepositedCount = useMemo(() => {
-    return (cdsdeposits as LeaderboardDetails[])?.length || 0;
-  }, [cdsdeposits]);
+    leaderboard.forEach((entry) => {
+      const existingEntry = mergedData[entry.address];
 
+      if (existingEntry) {
+        // Merge logic for summing numeric fields and handling string conversion
+        mergedData[entry.address] = {
+          ...existingEntry,
+          rank: entry.rank, // Update with the latest rank or customize logic
+          totalDepositedAmount: (
+            (parseFloat(existingEntry.totalDepositedAmount || "0") || 0) +
+            (parseFloat(entry.totalDepositedAmount || "0") || 0)
+          ).toString(),
+          cdsdeposit: (existingEntry.cdsdeposit || 0) + (entry.cdsdeposit || 0),
+          totalAmint: (
+            (parseFloat(existingEntry.totalAmint || "0") || 0) +
+            (parseFloat(entry.totalAmint || "0") || 0)
+          ).toString(),
+          totalUSDa: (
+            (parseFloat(existingEntry.totalUSDa || "0") || 0) +
+            (parseFloat(entry.totalUSDa || "0") || 0)
+          ).toString(),
+          points: (
+            Number(entry.points) + Number(existingEntry.points)
+          ).toString(),
+
+          totalLTV: (existingEntry.totalLTV || 0) + (entry.totalLTV || 0),
+          yield: existingEntry.yield + entry.yield, // Summing yields
+          chainId: entry.chainId, // Assuming latest chainId
+        };
+      } else {
+        // If not a duplicate, simply add the entry
+        mergedData[entry.address] = { ...entry };
+      }
+    });
+
+    // Return the merged leaderboard details as an array
+    return Object.values(mergedData);
+  }
   const leaderboardData = useMemo(() => {
-    return sortLeaderboardDetails([
-      ...((borrowdeposits || []) as LeaderboardDetails[]),
-      ...((cdsdeposits || []) as LeaderboardDetails[]),
-    ]);
+    return mergeLeaderboardDetails(
+      sortLeaderboardDetails([
+        ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
+          ...item,
+          points: "0",
+        })),
+        ...((cdsdeposits || []) as LeaderboardDetails[]),
+      ])
+    );
   }, [borrowdeposits, cdsdeposits, borrowdepositsError, cdsdepositsError]);
 
   // Calculate the current page data and total pages
@@ -115,6 +155,22 @@ const useGetLeaderboard = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+  const totalBorrowCount = useMemo(() => {
+    return (
+      (leaderboardData as LeaderboardDetails[])?.filter(
+        (entry) => Number(entry.totalUSDa || 0) > 0
+      ).length || 0
+    );
+  }, [leaderboardData]);
+
+  const totalDepositedCount = useMemo(() => {
+    return (
+      (leaderboardData as LeaderboardDetails[])?.filter(
+        (entry) => Number(entry.totalDepositedAmount || 0) > 0
+      ).length || 0
+    );
+  }, [leaderboardData]);
 
   return {
     leaderboardData: leaderboardData as LeaderboardDetails[], // Complete list of positions

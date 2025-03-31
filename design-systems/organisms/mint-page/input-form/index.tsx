@@ -33,10 +33,14 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum } from "@/utils/constants";
-import { borrowAssetsAddress } from "@/blockchain/contracts";
+import { BorrowAssetsEnum, scanUrls } from "@/utils/constants";
+import {
+  borrowAssetsAddress,
+  borrowingContractAddress,
+} from "@/blockchain/contracts";
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
+import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -53,17 +57,20 @@ function InputForm({ currency }: { currency: string }) {
   const chainId = useChainId();
   const router = useRouter();
   const [mintLoading, setMintLoading] = useState<boolean>(false);
+  const [approveLoading, setApproveLoading] = useState<boolean>(false);
   const {
     isUsdValuePending,
     usdValue: ethPrice,
     assetPrice,
+    exchangeRate,
   } = useGetUsdValue(
     borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
   );
-  console.log(ethPrice, assetPrice, "eth");
 
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
+
+  console.log(ethPrice, assetPrice, "eth");
 
   const [amintToBeMinted, setAmintToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
@@ -82,13 +89,44 @@ function InputForm({ currency }: { currency: string }) {
         : undefined,
   });
 
-  console.log(
-    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
-    ethBalance,
-    "bal"
-  );
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
+
+  const handleSubmit = async (values: any) => {
+    if (!address) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please connect your wallet"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+    if (!formik.values.collateralAmount) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please enter amount"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+    setMintBtnLoading(true);
+
+    reset();
+
+    if (["wrsETH", "weETH"].includes(currency)) {
+      setApproveLoading(true);
+      await approveWrapETHDynamic(
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+        parseEther(formik.values.collateralAmount.toString())
+      );
+    } else {
+      handleMint(formik.values);
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -98,12 +136,19 @@ function InputForm({ currency }: { currency: string }) {
       balance: 0,
     },
     validationSchema: formSchema,
-    onSubmit: handleMint,
+    onSubmit: handleSubmit,
   });
-
+  console.log(
+    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
+    ethBalance,
+    formik.values.balance,
+    formattedBalance,
+    "bal"
+  );
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
   }, [formattedBalance]);
+
   useEffect(() => {
     formik.setFieldValue("collateral", currency);
   }, [currency]);
@@ -152,17 +197,16 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link =
-          chainId === 84532
-            ? `https://sepolia.basescan.org/tx/${Depositdata.transactionHash} `
-            : `https://sepolia.etherscan.io/tx/${Depositdata.transactionHash}`;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+          Depositdata.transactionHash
+        } `;
 
         return (
           <ToastNotification
             title="Mint Successful"
             message="New Deposit has been created"
             linkText={
-              chainId === 84532 ? "View On Basescan" : "View On Etherscan"
+              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -186,50 +230,80 @@ function InputForm({ currency }: { currency: string }) {
   }, [Depositdata, isDepositSuccess]);
 
   const handleResetPage = () => {
-    formik.resetForm();
+    // formik.resetForm();
     reset();
+    setApproveLoading(false);
+    setMintLoading(false);
   };
 
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    formik.values.collateralAmount,
-    (selectedAssetPrice || 0) as number,
+    (Number(formik.values.collateralAmount) * exchangeRate) / 1e18,
+    (ethPrice || 0) as number,
     getStrikePercent(formik.values.strikePricePercent)
   );
 
-  async function handleMint(values: any) {
-    debugger;
-    if (!address) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Please connect your wallet"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-      return;
-    }
-    if (!formik.values.collateralAmount) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Please enter amount"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-      return;
-    }
-    setMintLoading(true);
-    setMintBtnLoading(true);
-    reset();
+  const {
+    approveWrapETHDynamic,
+    wrapETHApproveError,
+    wrapETHApproveHash,
+    wrapETHApproveLoading,
+    wrapETHApproveReset,
+    wrapETHApproveSuccess,
+  } = useApproveWrapEth(
+    {
+      onError: () => {
+        handleResetPage();
+        toast.custom((t) => {
+          return (
+            <ToastNotificationError
+              title="Transaction failed, Please try again"
+              onClose={() => toast.dismiss(t)}
+            />
+          );
+        });
+      },
+    },
+    currency
+  );
 
-    // const colateralamount = parseUnits(
-    //   formik.values.collateralAmount.toString(),
-    //   18
-    // );
+  const {
+    data: wrapEthApprovedata,
+    isError: wrapEthApproveHashError,
+    error: wrapEthApproveErrorDetails,
+    isLoading: iswrapEthApprovedataLoading,
+    isSuccess: iswrapEthApproveSuccess,
+  } = useWaitForTransactionReceipt({
+    hash: wrapETHApproveHash,
+    confirmations: 2,
+  });
+
+  useEffect(() => {
+    if (iswrapEthApproveSuccess) {
+      handleMint(formik.values);
+    } else if (wrapEthApproveErrorDetails || wrapEthApproveHashError) {
+      handleResetPage();
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+    }
+  }, [iswrapEthApproveSuccess]);
+
+  async function handleMint(values: any) {
     const strikePercent = getStrikePercent(values.strikePricePercent);
 
     const borrowSignedData = await refetchBorrowSignedData();
 
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
+      setApproveLoading(false);
+      setTimeout(() => {
+        setMintLoading(true);
+      }, 1000);
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
         volatility: BigInt(borrowSignedData.data?.volatility || 0),
@@ -429,6 +503,15 @@ function InputForm({ currency }: { currency: string }) {
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
           heading="Minting USDa"
+          loadingCount="2/2"
+        />
+        <LoadingBox
+          isLoading={approveLoading}
+          isFailure={wrapETHApproveError || wrapEthApproveHashError}
+          isSuccess={Boolean(iswrapEthApproveSuccess)}
+          setSuccessLoading={setApproveLoading}
+          heading={`Approving ${currency}`}
+          loadingCount="1/2"
         />
       </div>
     </form>

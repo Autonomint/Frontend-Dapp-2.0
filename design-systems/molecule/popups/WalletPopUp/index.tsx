@@ -6,7 +6,9 @@ import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
 import Spinner from "@/design-systems/atoms/Spinner";
 import {
+  BaseIcon,
   DownArrowIcon,
+  EthereumIcon,
   OptimismIcon,
   WalletIcon,
 } from "@/design-systems/atoms/SvgIcons";
@@ -91,7 +93,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className="border-[#041A50] lg:hidden  p-0 gap-0 shadow-outlined-none lg:shadow-outlined   h-fit dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] "
         >
-          <div className="relative flex p-[13px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
+          <div className="relative flex p-[12px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
             <Popover>
               <PopoverTrigger className="" asChild>
                 <div className="relative flex items-center gap-1">
@@ -103,15 +105,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       height={24}
                     />
                   ) : chainId == NetworkId.Optimism ? (
-                    <Image
-                      src={opIconNew}
-                      alt="opIconNew"
-                      width={24}
-                      height={24}
+                    <OptimismIcon
+                      className=" fill-black  "
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon
+                      className=" stroke-black  "
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon
+                      className=" stroke-black  "
+                      style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
                     <OptimismIcon
-                      className="dark:stroke-white fill-black "
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
@@ -183,11 +193,11 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
             <div className="flex-col md:flex-row md:justify-between flex mt-8 flex- justify-center gap-2 items-center">
               <a
-                href={`https://sepolia.${
-                  chainId == NetworkId.EthereumSepolia
-                    ? "etherscan.io"
-                    : "basescan.org"
-                }/address/${address}`}
+                href={
+                  chainId == NetworkId.Optimism
+                    ? `https://optimism-sepolia.blockscout.com/address/${address}`
+                    : `https://modescan.io/address/${address}`
+                }
                 target="__blank"
               >
                 <Typography
@@ -224,7 +234,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         >
           <div className="hidden lg:block ">
             <Popover>
-              <PopoverTrigger className="py-[14px] px-4 bg-[#ABFFDE]" asChild>
+              <PopoverTrigger className="py-[12px] px-4 bg-[#ABFFDE]" asChild>
                 <div className="relative flex items-center gap-1">
                   {chainId == NetworkId.Mode ? (
                     <Image
@@ -238,12 +248,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
+                  ) : chainId == NetworkId.EthereumSepolia ? (
+                    <EthereumIcon
+                      className=" stroke-black  "
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : chainId == NetworkId.BaseSepolia ? (
+                    <BaseIcon
+                      className=" stroke-black  "
+                      style={{ width: "20px", height: "20px" }}
+                    />
                   ) : (
                     <OptimismIcon
                       className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
+
                   <DownArrowIcon className="w-4 h-4 dark:stroke-black stroke-black  " />
                 </div>
               </PopoverTrigger>
@@ -292,7 +313,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           >
             <div className=" hidden lg:block">
               <Popover>
-                <PopoverTrigger className="py-[14px] px-4 bg-[#ABFFDE]" asChild>
+                <PopoverTrigger className="py-[12px] px-4 bg-[#ABFFDE]" asChild>
                   <div className="relative flex items-center gap-2">
                     {chainId == NetworkId.Mode ? (
                       <Image
@@ -302,11 +323,19 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                         height={24}
                       />
                     ) : chainId == NetworkId.Optimism ? (
-                      <Image
-                        src={opIconNew}
-                        alt="opIconNew"
-                        width={24}
-                        height={24}
+                      <OptimismIcon
+                        className=" fill-black  "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    ) : chainId == NetworkId.EthereumSepolia ? (
+                      <EthereumIcon
+                        className=" stroke-black  "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                    ) : chainId == NetworkId.BaseSepolia ? (
+                      <BaseIcon
+                        className=" stroke-black  "
+                        style={{ width: "20px", height: "20px" }}
                       />
                     ) : (
                       <OptimismIcon
@@ -322,9 +351,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="w-full border mr-12  mt-3 bg-white border-gray-200 rounded-md shadow-md dark:bg-[#0D0D0D]"
                 >
                   <div className=" flex flex-col gap-4">
-                    {chains.map((chain) => {
+                    {chains.map((chain, idx) => {
                       return (
                         <div
+                          key={idx}
                           onClick={() =>
                             switchChain({
                               chainId: chain.id,
@@ -350,7 +380,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Popup
               title="Wallet Info"
               content={
-                <div className="relative flex p-[13px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
+                <div className="relative flex p-[11px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
                   <WalletIcon className="dark:stroke-white stroke-black" />
                   <Typography size="body" className="">
                     {isConnected
@@ -370,9 +400,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {Number(chainId) === Number(NetworkId.EthereumSepolia)
-                    ? "ETH Sepolia"
-                    : "Base Sepolia"}
+                  {Number(chainId) === Number(NetworkId.Mode)
+                    ? "Mode Sepolia"
+                    : "Op Sepolia"}
                 </Typography>
               </div>
               <div className="flex mt-3 flex-row justify-start items-center">
@@ -393,11 +423,11 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
-                  href={`https://sepolia.${
-                    chainId == NetworkId.EthereumSepolia
-                      ? "etherscan.io"
-                      : "basescan.org"
-                  }/address/${address}`}
+                  href={
+                    chainId == NetworkId.Mode
+                      ? `https://sepolia.explorer.mode.network/address/${address}`
+                      : `https://sepolia-optimism.etherscan.io/address/${address}`
+                  }
                   target="__blank"
                 >
                   <Typography

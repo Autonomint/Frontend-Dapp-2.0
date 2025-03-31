@@ -1,8 +1,12 @@
+import { zeroAddress } from "viem";
+
 type ChainAddresses = {
   [key: number]: `0x${string}`;
 };
 
 export const usDaAddress = {
+  84532: "0x85a336614eA679204d2C7853e45DD81B97Fd3dAE",
+  11155111: "0xb9D0273ed143771e0e239616619586E887870438",
   919: "0xE33b26cB92e5886F8e988F4c7bd76e195A42bC18",
   11155420: "0xF0C29E75985847a99D167C56abDA706ACc88Ff21",
 } as const;
@@ -20,6 +24,16 @@ export const cdsAddress = {
 export const testusdtAbiAddress = {
   919: "0xe16C2C9978eD7a16ebc704b704A4d92a9890069a",
   11155420: "0x6fc38878E82b7EDf83abD419C33bf1c500DdF362",
+} as const;
+
+export const usdcAddress = {
+  919: "0x61e052DbdD34190F6bD851838391F45022744C19",
+  11155420: "0x611FEA2a068e0EC856dc8EFcB138991C57Cb05dd",
+} as const;
+
+export const sUSDAddress = {
+  11155420: "0xD7D674d80e79CF3A3b67D6a510AC1B0493dF47cF",
+  919: zeroAddress,
 } as const;
 
 export const abondAddress = {

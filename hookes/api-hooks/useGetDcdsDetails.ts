@@ -1,6 +1,7 @@
 import { dcdsDepositDetails, DcdsDetailsResponse } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useEffect, useState } from "react";
+import { reset } from "viem/actions";
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "wagmi/query";
 
@@ -36,6 +37,7 @@ const useGetDcdsDepositList = () => {
     error: dcdsPositionListError,
     refetch: dcdsPositionListRefetch,
     isLoading: dcdsPositionListLoading,
+    isError: dcdsPositionListIsError,
   } = useQuery({
     queryKey: ["dcdsDepositsDetails", chainId, address],
     queryFn: () => getDeposits(address ? address : undefined, chainId),
@@ -49,10 +51,17 @@ const useGetDcdsDepositList = () => {
     if (dcdsPositionList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      setPagedDcdsPositionList(dcdsPositionList.slice(startIndex, endIndex));
+      setPagedDcdsPositionList(
+        [...dcdsPositionList]
+          .sort((a, b) => b.index - a.index)
+          .slice(startIndex, endIndex)
+          .reverse()
+      );
 
       // Calculate total pages based on pageSize and positionList length
       setTotalPages(Math.ceil(dcdsPositionList.length / pageSize));
+    } else {
+      setPagedDcdsPositionList([]);
     }
   };
 

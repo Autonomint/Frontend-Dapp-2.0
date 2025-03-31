@@ -55,7 +55,7 @@ const useFetchOptionFees = (
         strikePercent,
       }), // Query function
     // Optional configurations
-    enabled: !!isConnected && !!chainId && !!collateralAmount && !!ethPrice, // Only run when values are provided
+    enabled: !!isConnected && !!chainId && !!collateralAmount, // Only run when values are provided
     refetchOnWindowFocus: true,
     retry: 1,
   });

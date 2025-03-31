@@ -15,17 +15,26 @@ export default function BridgeComponentLeft({
   sendAmount,
   balance,
   amountError,
+  fromNetworkOption,
+  isChainSwitchPending,
 }: {
   balance: number;
   amountError: string;
   setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
-  setSendAmount: Dispatch<SetStateAction<number | null>>;
-  sendAmount: number | null;
-  setSendNetwork: Dispatch<React.SetStateAction<"Base" | "Sepolia">>;
+  setSendAmount: Dispatch<SetStateAction<number | string | undefined>>;
+  sendAmount: number | string | undefined;
+  setSendNetwork: Dispatch<
+    React.SetStateAction<"Sepolia" | "Base" | "Mode" | "OP">
+  >;
   heading: string;
   network: string;
   token: string;
   totalAmount: string;
+  fromNetworkOption: {
+    label: string;
+    onClick: () => void;
+  }[];
+  isChainSwitchPending: boolean;
 }) {
   const { switchChain } = useSwitchChain();
 
@@ -50,23 +59,9 @@ export default function BridgeComponentLeft({
             </span>
             <GenericDropdownMenu
               buttonText={network}
-              items={[
-                {
-                  label: "Sepolia",
-                  onClick: () => {
-                    switchChain({ chainId: 11155111 });
-                    setSendNetwork("Sepolia");
-                  },
-                },
-                {
-                  label: "Base",
-                  onClick: () => {
-                    switchChain({ chainId: 84532 });
-                    setSendNetwork("Base");
-                  },
-                },
-              ]}
+              items={fromNetworkOption}
               className="w-full  text-[20px] lg:text-[24px] border border-grayLight h-[60px] lg:h-[65px]"
+              isLoading={isChainSwitchPending}
             />
           </div>
           <div className="flex flex-col gap-3 flex-1">
@@ -107,8 +102,8 @@ export default function BridgeComponentLeft({
           </div>
           <input
             onWheel={handleWheel}
-            value={sendAmount || undefined}
-            onChange={(e) => setSendAmount(Number(e.target.value))}
+            value={sendAmount}
+            onChange={(e) => setSendAmount(e.target.value)}
             type="number"
             placeholder="0"
             className="text-[42px] w-full bg-transparent border-0 outline-0 text-textBlack  mt-4 lg:mt-8 dark:text-white"

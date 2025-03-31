@@ -21,7 +21,6 @@ const useDcdsWithdrawGain = (mutation: any) => {
       address: cdsAddress[chainId as keyof typeof cdsAddress],
       functionName: "withdraw",
       args,
-      
     });
   };
   return {

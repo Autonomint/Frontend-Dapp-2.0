@@ -13,7 +13,7 @@ const getDeposits = (
   address: `0x${string}` | undefined,
   chainId: Number
 ): Promise<PositionData[]> => {
-  return fetch(`${BACKEND_API_URL}/borrows/${84532}/${address}`).then(
+  return fetch(`${BACKEND_API_URL}/borrows/${chainId}/${address}`).then(
     (response) =>
       response
         .json()
@@ -53,13 +53,15 @@ const useGetPositionList = () => {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
       setPagedPositionList(
-        positionList
+        [...positionList]
           .sort((a, b) => a.index - b.index)
           .slice(startIndex, endIndex)
       );
 
       // Calculate total pages based on pageSize and positionList length
       setTotalPages(Math.ceil(positionList.length / pageSize));
+    } else {
+      setPagedPositionList([]);
     }
   };
 
