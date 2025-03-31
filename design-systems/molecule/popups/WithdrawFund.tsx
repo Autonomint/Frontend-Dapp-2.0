@@ -905,13 +905,13 @@ export function WithdrawFund({
                 })}
               </div>
 
-              <div className="flex gap-4 mb-3">
-                <div className="flex mt-2 items-center gap-2 text-[16px] text-grayLight font-medium">
+              <div className="flex gap-8 mb-3">
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                   <span className="block w-3 h-3 bg-[#05A552]"></span>
                   {calculateRemainingDays(Number(position.validTill))} Days
                   remaining till maturity
                 </div>
-                <div className="flex mt-2 items-center gap-2 text-[16px] text-grayLight font-medium">
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                   <span className="block w-3 h-3 bg-blue-600"></span>
                   {calculateRemainingDays(Number(position.validTill)) - 15} Days
                   remaining to activate renew
