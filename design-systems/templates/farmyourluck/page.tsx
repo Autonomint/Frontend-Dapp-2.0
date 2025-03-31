@@ -217,31 +217,46 @@ function FarmYourLuckTemplate() {
   // }, [result]);
 
   const setPayment = async (hash?: string) => {
-    const verifyData = await verifyGamePayment({
-      address: address,
-      chainId: chainId,
-      txHash: hash,
-    });
+    try {
+      const verifyData = await verifyGamePayment({
+        address: address,
+        chainId: chainId,
+        txHash: hash,
+      });
 
-    if (verifyData) {
-      setPaymentConformed(true);
+      if (verifyData) {
+        setPaymentConformed(true);
 
-      if (!isPayed) setButtonText("Select Card");
-      resetSendTransaction();
-      await refetchFarmLuckDetails();
-      setIsPayed(true);
+        if (!isPayed) setButtonText("Select Card");
+        resetSendTransaction();
+        await refetchFarmLuckDetails();
+        setIsPayed(true);
 
-      setTimeout(() => {
-        setPayLoading(false);
-      }, 400);
-      toast.custom((t) => (
-        <ToastNotification
-          message=""
-          title="Payment successful"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
-    } else if (!verifyData) {
+        setTimeout(() => {
+          setPayLoading(false);
+        }, 400);
+        toast.custom((t) => (
+          <ToastNotification
+            message=""
+            title="Payment successful"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+      } else if (!verifyData) {
+        setTimeout(() => {
+          setPayLoading(false);
+        }, 400);
+        setIsPayed(false);
+        refetchFarmLuckDetails();
+        handleReset();
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Payment failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+      }
+    } catch (error) {
       setTimeout(() => {
         setPayLoading(false);
       }, 400);
@@ -261,10 +276,14 @@ function FarmYourLuckTemplate() {
   const handleButtonClick = async () => {
     if ((farmLuckDetails?.totalLuck || 0) === 0 && !isPayed) {
       setPayLoading(true);
-      const amountToPay = calculateEthAmount(Number(ethPrice || 0) / 100, 5);
+      const amountToPay = calculateEthAmount(
+        Number(ethPrice || 0) / 100,
+        5.00001
+      );
+
       const txHash = await sendTransactionAsync({
         to: FarmYourLuckWalletAddress,
-        value: parseEther(amountToPay.toString()),
+        value: parseEther(amountToPay.toFixed(9)),
       });
       setTimeout(() => {
         setPayment(txHash);
