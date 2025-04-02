@@ -1240,15 +1240,14 @@ function DCDSTemplate() {
       <TokenTvlDetails
         icon={USDaIcon}
         tokenName="USDa"
-        tvl={`$${(Number(tvlValueUSDa || 0) / 1e6).toFixed(2)} `}
+        tvl={`$${formatNumber(Number(tvlValueUSDa || 0) / 1e6)} `}
       />
       <TokenTvlDetails
         icon={chainId === NetworkId.Mode ? ModeIcon : OPIcon}
         tokenName={chainId === NetworkId.Mode ? "MODE" : "OP"}
-        tvl={`$${(
-          ((Number(tvlValueNative) || 0) * Number(getOraclePrice[1])) /
-          1e24
-        ).toFixed(2)} `}
+        tvl={`$${formatNumber(
+          ((Number(tvlValueNative) || 0) * Number(getOraclePrice[1])) / 1e24
+        )} `}
       />
       <HowItWorksPopUp
         isDialogOpen={isOptionHowItWork}
