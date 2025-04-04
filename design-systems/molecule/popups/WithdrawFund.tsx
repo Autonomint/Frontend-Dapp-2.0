@@ -264,7 +264,7 @@ export function WithdrawFund({
       value: `$${(
         Number(totalAmintAmnt) / 10 ** 6 -
         Number(position.noOfUSDaMinted)
-      ).toFixed(2)}`,
+      ).toFixed(4)}`,
       tooltip: false,
       tooltipText: "",
     },
