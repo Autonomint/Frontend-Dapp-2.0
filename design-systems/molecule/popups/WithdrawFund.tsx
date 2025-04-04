@@ -22,7 +22,11 @@ import { PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
@@ -31,6 +35,7 @@ import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFe
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
 import { formatUnits } from "viem";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -63,6 +68,12 @@ export function WithdrawFund({
     },
     {
       headline: "Deposit Time APR",
+      value: "5%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Current APR",
       value: "5%",
       tooltip: false,
       tooltipText: "",
@@ -170,6 +181,16 @@ export function WithdrawFund({
 
   const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
 
+  // getting current APR value
+  const { data: currentAPR } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "APR",
+  });
+
   function handleDepositData() {
     // Calculate the totalAmintAmnt
     if (position && lastCumulativeRate) {
@@ -195,10 +216,11 @@ export function WithdrawFund({
       //   10 ** 6
       // ).toFixed(2)}`;
       updatedData[2].value = `${position.aprAtDeposit}%`;
-      updatedData[3].value = new Date(
+      updatedData[3].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[4].value = new Date(
         position.depositedTime * 1000
       ).toLocaleString();
-      updatedData[4].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
       const currentPrice = ethPrice;
       const upsideAt =
@@ -221,18 +243,18 @@ export function WithdrawFund({
 
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
 
-      updatedData[5].value = `${upsideAt.toFixed(2)}`;
-      updatedData[6].value =
+      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[7].value =
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? `${curtUpside.toFixed(2)}`
           : "-";
 
-      updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
-      updatedData[8].value =
+      updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[9].value =
         interestGained != undefined
           ? `$${Number(interestGained).toFixed(2)}`
           : "-";
-      updatedData[9].value = position.noOfAbondMinted
+      updatedData[10].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -247,6 +269,9 @@ export function WithdrawFund({
       updatedData[5].value = "-";
       updatedData[6].value = "-";
       updatedData[7].value = "-";
+      updatedData[8].value = "-";
+      updatedData[9].value = "-";
+      updatedData[10].value = "-";
 
       setDepositData(updatedData);
     }

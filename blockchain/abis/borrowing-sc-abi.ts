@@ -586,6 +586,32 @@ export const borrowingContractAbi = [
   },
   {
     inputs: [],
+    name: "APR",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "LTV",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [
       {
@@ -637,6 +663,19 @@ export const borrowingContractAbi = [
         internalType: "address",
         name: "assetAddress",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "bondRatio",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
       },
     ],
     stateMutability: "view",
@@ -987,19 +1026,6 @@ export const borrowingContractAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "lastCumulativeRate",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint128",
@@ -1086,6 +1112,19 @@ export const borrowingContractAbi = [
     name: "liquidate",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "minInterval",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
