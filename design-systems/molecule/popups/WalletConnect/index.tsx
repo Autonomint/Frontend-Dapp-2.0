@@ -16,14 +16,17 @@ interface SwitchChainPopupProps {}
 const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
-  const { chainId } = useAccount();
+  const { chainId, isConnected } = useAccount();
   const pathname = usePathname();
   const [switchingChain, setSwitchingChain] = useState<number>();
 
   useEffect(() => {
+    debugger;
     if (
+      chainId &&
       !["/bridge", "/"].includes(pathname) &&
-      ![11155420, 919].includes(chainId || 0)
+      ![11155420, 919].includes(chainId || 0) &&
+      isConnected
     ) {
       setIsPopUpOpen(true);
     } else {

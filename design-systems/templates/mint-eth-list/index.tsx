@@ -33,6 +33,7 @@ function MintEthListTemplate() {
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
+
   // getting current APR value
   const { data: currentAPR } = useReadContract({
     abi: borrowingContractAbi,
