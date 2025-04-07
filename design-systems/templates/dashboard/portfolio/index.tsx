@@ -191,7 +191,7 @@ function PortfolioTemplate() {
       <div
         id="dashboard-nav"
         className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
-          isSticky ? "sticky top-0" : ""
+          isSticky ? "sticky top-0 " : ""
         }`}
       >
         <div

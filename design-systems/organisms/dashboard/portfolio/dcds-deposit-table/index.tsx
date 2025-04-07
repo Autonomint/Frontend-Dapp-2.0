@@ -79,7 +79,9 @@ function DcdsDepositTable({
       <table className="table-auto  w-full border-collapse text-[20px]">
         <thead
           className={` text-left font-normal sm:border-y-0 bg-white dark:bg-black sm:border-x border-grayLight text-grayLight ${
-            isSticky ? "sticky top-[74px] " : ""
+            isSticky
+              ? "sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px]  "
+              : ""
           } `}
         >
           <tr>

@@ -53,7 +53,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                 setSwitchingChain(11155420);
               }}
               variant={"shadowOutline"}
-              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-white text-[#7A7A7A]"
+              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
             >
               <div>
                 <Image src={opImage} alt="image op" width={50} height={50} />
@@ -76,7 +76,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                 setSwitchingChain(919);
               }}
               variant={"shadowOutline"}
-              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-white text-[#7A7A7A]"
+              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
             >
               <div>
                 <Image

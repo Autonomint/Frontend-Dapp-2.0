@@ -11,6 +11,9 @@ import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import { useAccount, useReadContract } from "wagmi";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { borrowingContractAddress } from "@/blockchain/contracts";
 
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -24,32 +27,41 @@ const farmTextVariants = {
 };
 
 function MintEthListTemplate() {
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+  const { chainId } = useAccount();
 
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
+  // getting current APR value
+  const { data: currentAPR } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "APR",
+  });
 
   const list = [
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: "5%",
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
     },
     {
       token: "wrsETH",
       tokenImage: WrsETH,
-      BorrowRate: "5%",
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
     },
     {
       token: "weETH",
       tokenImage: WeETH,
-      BorrowRate: "5%",
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
     },

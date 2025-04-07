@@ -81,7 +81,9 @@ function DepositTable({
       <table className="table-auto   w-full border-collapse text-[20px]">
         <thead
           className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
-            isSticky ? "sticky top-[74px] left-0  right-0" : ""
+            isSticky
+              ? "sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px] "
+              : ""
           }`}
         >
           <tr>

@@ -12,6 +12,7 @@ export default {
   theme: {
     extend: {
       screens: {
+        nss: "368px",
         hxl: "1366px",
         "3xl": "1920px",
         "4xl": "2560px",

@@ -517,7 +517,21 @@ export function WithdrawFund({
     renewBorrowHash,
     resetBorrowRenew,
     renewError: renewErrorSm,
-  } = useBorrowRenew({});
+  } = useBorrowRenew({
+    onError: () => {
+      setTimeout(() => {
+        setRenewLoading(false);
+      }, 800);
+      setRenewApproveLoading(false);
+      setRenewLoadingSM(false);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    },
+  });
 
   useEffect(() => {
     (async () => {
@@ -578,6 +592,7 @@ export function WithdrawFund({
       const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
         renewReceipt.transactionHash
       } `;
+
       toast.custom((t) => (
         <ToastNotification
           title="Renew Successful"
@@ -589,6 +604,11 @@ export function WithdrawFund({
           onClose={() => toast.dismiss(t)}
         />
       ));
+      setRenewApproveLoading(false);
+      setRenewLoadingSM(false);
+      setTimeout(() => {
+        setRenewLoading(false);
+      }, 800);
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);
@@ -985,9 +1005,16 @@ export function WithdrawFund({
                     { label: "Time Period", value: "30 days" },
                     {
                       label: "Option Fees",
-                      value: isFifteenDaysCompleted(position.validTill)
-                        ? `${payableOptionFees}`
-                        : "-",
+                      //  value: isFifteenDaysCompleted(position.validTill)
+                      //     ? `${formatUnits(
+                      //     BigInt(payableOptionFees || 0),
+                      //     6
+                      //   )}`
+                      //    : "-",
+                      value: `${formatUnits(
+                        BigInt(payableOptionFees || 0),
+                        6
+                      )}`,
                     },
                     {
                       label: "Downside Protection",
