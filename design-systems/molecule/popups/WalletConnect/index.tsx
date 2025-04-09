@@ -21,7 +21,6 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [switchingChain, setSwitchingChain] = useState<number>();
 
   useEffect(() => {
-    debugger;
     if (
       chainId &&
       !["/bridge", "/"].includes(pathname) &&
