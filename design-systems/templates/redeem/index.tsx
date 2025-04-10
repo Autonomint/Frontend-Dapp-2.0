@@ -109,13 +109,6 @@ const RedeemContainer = () => {
     }
   }, [abondbalance, amintbalance, formik.values.inputCollateral]);
 
-  const options = Options.newOptions()
-    .addExecutorLzReceiveOption(200000, 0)
-    .toHex()
-    .toString() as `0x${string}`;
-  const Eid = chainId === 11155111 ? 40245 : 40161;
-  // const { quoteValue: nativeFee1, quoteError } = useGetGlobalQuote(options);
-
   const {
     isPending: amintApproveLoading,
     data: amintApproveData,
@@ -141,17 +134,6 @@ const RedeemContainer = () => {
   } = useWaitForTransactionReceipt({
     hash: amintApproveData,
   });
-
-  console.log(
-    formik.values.redeemTokenName === "USDT"
-      ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-      : formik.values.redeemTokenName === "USDC"
-      ? usdcAddress[chainId as keyof typeof usdcAddress]
-      : formik.values.redeemTokenName === "sUSD"
-      ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-      : zeroAddress,
-    "usd"
-  );
 
   useEffect(() => {
     if (usdaApproveSuccess) {
@@ -276,15 +258,6 @@ const RedeemContainer = () => {
       BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18),
     ],
   });
-
-  console.log(
-    outputData,
-    error,
-    formik.errors,
-    formik.values,
-    "outputData",
-    BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18)
-  );
 
   useEffect(() => {
     if (

@@ -4,17 +4,12 @@ import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
 import { Button } from "@/design-systems/atoms/button";
 import { StickyNote } from "lucide-react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
-import React from "react";
 import { AiOutlineDiscord } from "react-icons/ai";
 import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
 
 export default function Footer() {
-  const [openFaq, setOpenFaq] = React.useState(false);
-  const [openGetstart, setOpenGetstart] = React.useState(false);
-  const { theme, setTheme } = useTheme();
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">

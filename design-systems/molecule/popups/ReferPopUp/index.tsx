@@ -50,9 +50,10 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     enabled: !!address,
   });
 
+  // browser current url
   const currentUrl = window.location.origin;
-  console.log(currentUrl, "currentUrl");
 
+  // creating referral url
   const referralLink = `${currentUrl}?ref=${referral}`;
 
   useEffect(() => {

@@ -11,8 +11,6 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
-console.log(projectId, "projectId");
-
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",

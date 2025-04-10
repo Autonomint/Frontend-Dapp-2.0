@@ -212,10 +212,6 @@ function FarmYourLuckTemplate() {
     }
   };
 
-  // useEffect(() => {
-  //   setPayment(hash);
-  // }, [result]);
-
   const setPayment = async (hash?: string) => {
     try {
       const verifyData = await verifyGamePayment({

@@ -52,7 +52,12 @@ const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     staleTime: Infinity,
     enabled: !!address,
   });
-  const referralLink = `https://www.dev.testnet.app.autonomint.com?ref=${referral}`;
+
+  // browser current url
+  const currentUrl = window.location.origin;
+
+  // creating referral url
+  const referralLink = `${currentUrl}?ref=${referral}`;
 
   useEffect(() => {
     if (referral != undefined) {

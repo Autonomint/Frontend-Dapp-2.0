@@ -633,14 +633,6 @@ export function WithdrawFund({
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
 
-  console.log(
-    payableOptionFees,
-    usdaApproveError,
-    position.index,
-    BigInt(Number(payableOptionFees || 0n) + 1e6),
-    "payableOptionFees"
-  );
-
   const handleRenew = () => {
     setRenewLoading(true);
     setRenewApproveLoading(true);
@@ -653,8 +645,6 @@ export function WithdrawFund({
       ] as `0x${string}`
     );
   };
-
-  console.log(isFifteenDaysCompleted(position.validTill), "15");
 
   return (
     <>

@@ -242,7 +242,6 @@ function DCDSTemplate() {
   console.log(isTVLPendingUsd, "tvlValue");
 
   // console.log(omniChainData, "omniChainData");
-
   const { balanceString: usdtBalance } = useGetBalance("USDT");
   const { balanceString: usdaBalance } = useGetBalance("USDa");
   const { balance: opBalance } = useGetBalance("OP");
@@ -760,34 +759,6 @@ function DCDSTemplate() {
     setNativeTokenLoadingLocal(false);
   };
 
-  const radius = 200; // Radius of the circle (adjustable for larger/smaller curves)
-
-  // Define the letters and calculate the angle for each one
-  const text = "The Wishing Well";
-  const characters = text.split("");
-  const angleIncrement = 180 / (characters.length - 1); // Spread letters evenly over 180 degrees
-  // Define the letters and their transformations
-  const letters = [
-    {
-      char: "T",
-      translate: "translate(24px, 100px)",
-      rotate: "rotate(-35deg)",
-    },
-    { char: "h", translate: "translate(18px, 80px)", rotate: "rotate(-30deg)" },
-    { char: "e", translate: "translate(12px, 60px)", rotate: "rotate(-25deg)" },
-    { char: "W", translate: "translate(8px, 45px)", rotate: "rotate(-20deg)" },
-    { char: "i", translate: "translate(5px, 35px)", rotate: "rotate(-15deg)" },
-    { char: "s", translate: "translate(3px, 25px)", rotate: "rotate(-10deg)" },
-    { char: "h", translate: "translate(1px, 15px)", rotate: "rotate(-5deg)" },
-    { char: "i", translate: "translate(0px, 10px)", rotate: "rotate(0deg)" },
-    { char: "n", translate: "translate(-1px, 10px)", rotate: "rotate(5deg)" },
-    { char: "g", translate: "translate(-3px, 15px)", rotate: "rotate(10deg)" },
-    { char: "W", translate: "translate(-5px, 25px)", rotate: "rotate(15deg)" },
-    { char: "e", translate: "translate(-8px, 45px)", rotate: "rotate(20deg)" },
-    { char: "l", translate: "translate(-12px, 60px)", rotate: "rotate(25deg)" },
-    { char: "l", translate: "translate(-18px, 80px)", rotate: "rotate(30deg)" },
-  ];
-
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -828,6 +799,7 @@ function DCDSTemplate() {
       }
     };
   }, []);
+
   const depositValue = useMemo(() => {
     return (
       Number(formik.values?.usdaAmount) +

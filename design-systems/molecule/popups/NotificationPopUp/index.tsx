@@ -56,7 +56,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         <div className="pb-2">
           <NotifiContext
             dappAddress={DAPP_ADDRESS_NOTIFI}
-            env="Production"
+            env="Development"
             signMessage={async (message: Uint8Array) => {
               const result = await signer.signMessage(message);
               return arrayify(result);

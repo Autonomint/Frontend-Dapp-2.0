@@ -36,7 +36,6 @@ import { eId, NetworkId, scanUrls } from "@/utils/constants";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
-  const [receiveToken, setReceiveToken] = useState<"USDa">("USDa");
   const [sendNetwork, setSendNetwork] = useState<
     "Sepolia" | "Base" | "Mode" | "OP"
   >("Sepolia");
@@ -53,7 +52,6 @@ function BridgeTemplate() {
 
   const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
     useState<boolean>(false);
-  const [usdtApproveLoading, setUsdtApproveLoading] = useState<boolean>(false);
 
   const { isConnected: isWalletConnected, address } =
     useCheckWalletConnection();
@@ -68,11 +66,7 @@ function BridgeTemplate() {
     chainId: chainId2,
   } = useAccount();
 
-  const toastId = useRef<string | number>("");
-
   const chainId = useChainId();
-
-  const Eid = chainId === 11155111 ? 40245 : 40161;
 
   useEffect(() => {
     if (chainId2 === 84532) {
@@ -130,10 +124,6 @@ function BridgeTemplate() {
       amount = parseUnits(letamount, 18) - nativeFee1.nativeFee;
     }
 
-    // if (sendToken === "TUSDT" && nativeFee2) {
-    //   amount = parseEther(letamount) - nativeFee2.nativeFee;
-    // }
-
     if (sendAmount != null) {
       setReceiveAmount(Number(formatUnits(sendAmount == 0 ? 0n : amount, 18)));
     }
@@ -152,13 +142,6 @@ function BridgeTemplate() {
     }
   };
 
-  console.log(
-    eId[receiveNetwork],
-    usdaBal,
-    usDaAddress[chainId as keyof typeof usDaAddress],
-    "receiveNetwork"
-  );
-
   //  Define the transaction parameters
   const transactionParams: TransactionParams = {
     dstEid: eId[receiveNetwork],
@@ -175,17 +158,6 @@ function BridgeTemplate() {
   // Get the native fee for the transaction
   const { nativeFee1, refetchnativeFee1 } =
     useGetBridgeFeeUsda(transactionParams);
-
-  // // Get the native fee for the transaction
-  // const { nativeFee2, TUSDTQuoteError, refetchnativeFee2 } =
-  //   useGetBridgeFeeUsdt(transactionParams);
-  // // Approve USDa
-
-  console.log(
-    nativeFee1,
-    usDaAddress[chainId as keyof typeof usDaAddress],
-    "nativeFee1"
-  );
 
   const {
     isPending: amintApproveLoading,
@@ -215,31 +187,7 @@ function BridgeTemplate() {
     hash: amintApproveData,
   });
 
-  // const config = useConfig();
-
-  // const configCore = createConfig({
-  //   chains: [sepolia],
-  //   transports: {
-  //     [baseSepolia.id]: http(),
-  //     [sepolia.id]: http(),
-  //     [optimismSepolia.id]: http(),
-  //   },
-  // });
-  // const getGas = async () => {
-  //   const estimatedGas = await estimateContractGas(configCore, {
-  //     abi: usDaAbi,
-  //     address: usDaAddress[chainId as keyof typeof usDaAddress],
-  //     functionName: "approve",
-  //     args: [
-  //       usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
-  //       BigInt(sendAmount * 10 ** 6),
-  //     ],
-  //   });
-  //   console.log(estimatedGas, "gas");
-  // };
-
   // If the transaction is confirmed, show a toast notification and call UsdaApprove write call to bridge token
-
   useEffect(() => {
     if (usdaApproveSuccess && accountAddress) {
       setUsdaApproveLoading(false);
@@ -393,71 +341,46 @@ function BridgeTemplate() {
           ],
         });
       }
-      // else if (sendToken === "TUSDT") {
-      //   setUsdtApproveLoading(true);
-      //   tusDTApproveWrite({
-      //     abi: testusdtAbiAbi,
-      //     address: testusdtAbiAddress[chainId as keyof typeof usDaAddress],
-      //     functionName: "approve",
-      //     args: [
-      //       testusdtAbiAddress[
-      //         chainId as keyof typeof testusdtAbiAddress
-      //       ] as `0x${string}`,
-      //       BigInt((sendAmount || 0) * 10 ** 6),
-      //     ],
-      //   });
-      // }
     }
   }
 
-  const result = useEstimateGas({
-    account: accountAddress,
-    to: usDaAddress[chainId as keyof typeof usDaAddress],
-    value: parseEther("0.01"),
-  });
+  // const result = useEstimateGas({
+  //   account: accountAddress,
+  //   to: usDaAddress[chainId as keyof typeof usDaAddress],
+  //   value: parseEther("0.01"),
+  // });
 
-  const publicClient = usePublicClient();
+  // const publicClient = usePublicClient();
 
-  async function estimateTransactionTime() {
-    try {
-      // 1. Fetch the current gas price
-      const gasPrice = await publicClient?.getGasPrice();
+  // async function estimateTransactionTime() {
+  //   try {
+  //     // 1. Fetch the current gas price
+  //     const gasPrice = await publicClient?.getGasPrice();
 
-      // 2. Fetch the number of pending transactions
-      const pendingTransactions = 3;
+  //     // 2. Fetch the number of pending transactions
+  //     const pendingTransactions = 3;
 
-      // 3. Fetch the latest block to get the average block time
-      const latestBlock = await publicClient?.getBlock();
-      const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
+  //     // 3. Fetch the latest block to get the average block time
+  //     const latestBlock = await publicClient?.getBlock();
+  //     const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
 
-      // 4. Estimate the time for your transaction to be included in a block
-      const transactionsPerBlock = 200; // Approximate number of transactions per block
-      const estimatedBlocksToWait = Math.ceil(
-        pendingTransactions / transactionsPerBlock
-      );
-      const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
-      setEstimateTime(estimatedTimeInSeconds);
-      return estimatedTimeInSeconds;
-    } catch (error) {
-      console.error("Error estimating transaction time:", error);
-      throw error;
-    }
-  }
-
-  useEffect(() => {
-    estimateTransactionTime();
-  }, []);
-
-  // // Fetch the native fee for USDa
-  // useEffect(() => {
-  //   if (form.getValues("inputCollateral") === "usda") {
-  //     refetchnativeFee1();
-  //     form.setValue("outputCollateral", "usda");
-  //   } else if (form.getValues("inputCollateral") === "tusdt") {
-  //     refetchnativeFee2();
-  //     form.setValue("outputCollateral", "tusdt");
+  //     // 4. Estimate the time for your transaction to be included in a block
+  //     const transactionsPerBlock = 200; // Approximate number of transactions per block
+  //     const estimatedBlocksToWait = Math.ceil(
+  //       pendingTransactions / transactionsPerBlock
+  //     );
+  //     const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
+  //     setEstimateTime(estimatedTimeInSeconds);
+  //     return estimatedTimeInSeconds;
+  //   } catch (error) {
+  //     console.error("Error estimating transaction time:", error);
+  //     throw error;
   //   }
-  // }, [form.watch("inputCollateral")]);
+  // }
+
+  // useEffect(() => {
+  //   estimateTransactionTime();
+  // }, []);
 
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
