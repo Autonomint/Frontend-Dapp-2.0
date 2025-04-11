@@ -41,6 +41,12 @@ import {
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -69,6 +75,8 @@ function InputForm({ currency }: { currency: string }) {
 
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
+
+  const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
   console.log(ethPrice, assetPrice, "eth");
 
@@ -485,14 +493,26 @@ function InputForm({ currency }: { currency: string }) {
       <div className="col-span-1 overflow-hidden h-[85px]">
         {address && isConnected ? (
           !mintBtnLoading && (
-            <Button
-              type="submit"
-              className={`
-               bg-black dark:bg-custom-gradient-to-top py-6
-             text-white  font-semibold text-[24px] w-full h-full rounded-md `}
-            >
-              {!mintBtnLoading && "Mint USDa"}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="h-full">
+                  <Button
+                    disabled={isFunctionPausedBorrow_Deposit}
+                    type="submit"
+                    className={`
+                    bg-black dark:bg-custom-gradient-to-top py-6
+                    text-white  font-semibold text-[24px] w-full h-full rounded-md `}
+                  >
+                    {!mintBtnLoading && "Mint USDa"}
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {isFunctionPausedBorrow_Deposit && (
+                <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                  <p>{"ETH borrow is paused now"}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
           )
         ) : (
           <WalletConnectButton />

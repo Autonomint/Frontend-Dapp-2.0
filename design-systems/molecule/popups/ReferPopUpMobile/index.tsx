@@ -54,7 +54,7 @@ const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
   });
 
   // browser current url
-  const currentUrl = window.location.origin;
+  const currentUrl = window?.location?.origin;
 
   // creating referral url
   const referralLink = `${currentUrl}?ref=${referral}`;

@@ -14,6 +14,7 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -44,6 +45,9 @@ function MintEthListTemplate() {
     functionName: "APR",
   });
 
+  const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
+  console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
+
   const list = [
     {
       token: "ETH",
@@ -51,6 +55,8 @@ function MintEthListTemplate() {
       BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "ETH borrow is paused now",
     },
     {
       token: "wrsETH",
@@ -58,6 +64,8 @@ function MintEthListTemplate() {
       BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "wrsETH borrow is paused now",
     },
     {
       token: "weETH",
@@ -65,6 +73,8 @@ function MintEthListTemplate() {
       BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "wrsETH borrow is paused now",
     },
   ];
 

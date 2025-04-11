@@ -5,6 +5,14 @@ import arrow from "@/app/assets/arrow-right-02.png";
 import { motion } from "framer-motion";
 import SingleListItemImage from "../SingleListItemImage";
 import ListItemMetric from "../ListItemMetric";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import { Info } from "lucide-react";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -57,22 +65,49 @@ function SingleListItem({
             ))}
           </div>
         </div>
-        <div className="hidden lg:block">
+        <div className="hidden lg:block ">
           <Link prefetch={true} href={`/mintUSDaWithCollateral/${item.token}`}>
-            <Button className="absolute rounded-none md:right-0 md:h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
-              <Image src={arrow} width={42} height={42} alt="arrow" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute  rounded-none md:right-0 md:h-full md:top-0 bottom-0">
+                  <Button
+                    disabled={!item.isActive}
+                    className=" h-full bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+                  >
+                    <Image src={arrow} width={42} height={42} alt="arrow" />
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {!item.isActive && (
+                <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                  <p>{item.InActiveHeading}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
           </Link>
         </div>
       </motion.div>
+
       <Link
         className="w-full lg:hidden"
         prefetch={true}
         href={`/mintUSDaWithCollateral/${item.token}`}
       >
-        <Button className="  rounded-none md:right-0 w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom">
-          <Image src={arrow} width={42} height={42} alt="arrow" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              disabled={!item.isActive}
+              className="  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+            >
+              <Image src={arrow} width={42} height={42} alt="arrow" />
+            </Button>
+          </TooltipTrigger>
+          {!item.isActive && (
+            <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+              <p>{item.InActiveHeading}</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
       </Link>
     </div>
   );

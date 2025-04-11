@@ -7,6 +7,8 @@ export interface TokenDetails {
   minTokenAmount: number;
   balanceAvailable: string;
   tokenCount: number;
+  isTokenPause: boolean;
+  tokenPauseMessage: string;
 }
 
 export interface FormValues {

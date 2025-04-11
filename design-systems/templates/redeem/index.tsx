@@ -15,12 +15,19 @@ import {
 import { Button } from "@/design-systems/atoms/button";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import { Input } from "@/design-systems/atoms/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { NetworkId, scanUrls } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
@@ -84,6 +91,11 @@ const RedeemContainer = () => {
       handleSubmit(values);
     },
   });
+
+  // getting value for borrow redeem pause
+  const { isFunctionPausedBorrow_Redeem } = useBorrowPause();
+  // getting cds pause data
+  const { isFunctionPausedCDS_Redeem } = useCdsPause();
 
   const chainId = useChainId();
 
@@ -477,6 +489,8 @@ const RedeemContainer = () => {
             nameA: "Redeem",
             path: "/redeem",
             isActive: pathname === "/redeem",
+            InActiveHeading: "",
+            isFeatureActive: true,
           },
         ]}
       />
@@ -613,18 +627,51 @@ const RedeemContainer = () => {
             </div>
           </div>
         </div>
-        <div className="text-grayLight md:text-lg text-center lg:mb-4 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
+        <div className="text-grayLight md:text-lg text-center lg:mb-2 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
           Note: 0% Withdrawal Fee will be applied.
         </div>
+        {((isFunctionPausedBorrow_Redeem &&
+          formik.values.inputCollateral === "abond") ||
+          (isFunctionPausedCDS_Redeem && formik.values.inputCollateral)) && (
+          <div className="text-red-600 text-center lg:mb-2  ">
+            {formik.values.inputCollateral === "abond"
+              ? "Abond redeem is paused now"
+              : "USDa redeem is paused now"}
+          </div>
+        )}
         <div className="flex justify-center items-center overflow-hidden lg:mb-20">
           <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
             {!redeemLoadingLocal && (
-              <Button
-                onClick={() => formik.handleSubmit()}
-                className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
-              >
-                Redeem
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="h-full">
+                    <Button
+                      disabled={
+                        (isFunctionPausedBorrow_Redeem &&
+                          formik.values.inputCollateral === "abond") ||
+                        (isFunctionPausedCDS_Redeem &&
+                          formik.values.inputCollateral === "amint")
+                      }
+                      onClick={() => formik.handleSubmit()}
+                      className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
+                    >
+                      Redeem
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                {((isFunctionPausedBorrow_Redeem &&
+                  formik.values.inputCollateral === "abond") ||
+                  (isFunctionPausedCDS_Redeem &&
+                    formik.values.inputCollateral)) && (
+                  <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                    <p>
+                      {formik.values.inputCollateral === "abond"
+                        ? "Abond redeem is pause now"
+                        : "USDa redeem is paused now"}
+                    </p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
             )}
             <LoadingBox
               isLoading={usdaApproveLoadingLocal}

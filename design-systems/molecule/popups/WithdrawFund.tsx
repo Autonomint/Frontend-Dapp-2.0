@@ -36,6 +36,12 @@ import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
 import { formatUnits } from "viem";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -50,6 +56,10 @@ export function WithdrawFund({
   setSelectedPosition: (position: PositionData) => void;
 }) {
   const [toggleView, setToggleView] = useState("repay");
+
+  // getting value for borrow withdraw and renew pause
+  const { isFunctionPausedBorrow_Renew, isFunctionPausedBorrow_Withdraw } =
+    useBorrowPause();
 
   const [spinner, setSpinner] = useState(false);
 
@@ -743,17 +753,31 @@ export function WithdrawFund({
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
                 {!repayLoading && (
-                  <Button
-                    disabled={position.status == BorrowStatus.WITHDREW}
-                    onClick={handleRepay}
-                    className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
-                  >
-                    {repayLoading
-                      ? "Loading..."
-                      : position.status == BorrowStatus.DEPOSITED
-                      ? `Repay amount ${repayAmount.toFixed(2)} USDa`
-                      : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={
+                            position.status == BorrowStatus.WITHDREW ||
+                            isFunctionPausedBorrow_Withdraw
+                          }
+                          onClick={handleRepay}
+                          className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                        >
+                          {repayLoading
+                            ? "Loading..."
+                            : position.status == BorrowStatus.DEPOSITED
+                            ? `Repay amount ${repayAmount.toFixed(2)} USDa`
+                            : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedBorrow_Withdraw && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Repay is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )}
                 {/* <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
@@ -1032,13 +1056,27 @@ export function WithdrawFund({
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
                 {!renewLoading && (
-                  <Button
-                    // disabled={position.status == BorrowStatus.WITHDREW}
-                    onClick={handleRenew}
-                    className="w-full  p-8 bg-black text-white text-[32px]"
-                  >
-                    Renew
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={
+                            position.status == BorrowStatus.WITHDREW ||
+                            isFunctionPausedBorrow_Renew
+                          }
+                          onClick={handleRenew}
+                          className="w-full  p-8 bg-black text-white text-[32px]"
+                        >
+                          Renew
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedBorrow_Renew && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Renew is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )}
 
                 <LoadingBox

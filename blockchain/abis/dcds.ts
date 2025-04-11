@@ -590,6 +590,40 @@ export const cdsAbi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+    ],
+    name: "assetDetails",
+    outputs: [
+      {
+        internalType: "enum CDSInterface.AssetStatus",
+        name: "status",
+        type: "uint8",
+      },
+      {
+        internalType: "uint64",
+        name: "LTV",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "tokenDecimals",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "priceDecimals",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint128",
         name: "upside",
         type: "uint128",
@@ -1682,6 +1716,19 @@ export const cdsAbi = [
     name: "withdrawGains",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdrawTimeLimit",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const;

@@ -4,6 +4,11 @@ type ChainAddresses = {
   [key: number]: `0x${string}`;
 };
 
+export const multiSignAddress = {
+  919: "0xE4cd803312bd41F719eCDC21D51c961cA57c6B0f",
+  11155420: "0xBCb6c5822FafC50D5a7DB5eDdAd44E46676d115B",
+} as const;
+
 export const usDaAddress = {
   84532: "0x85a336614eA679204d2C7853e45DD81B97Fd3dAE",
   11155111: "0xb9D0273ed143771e0e239616619586E887870438",

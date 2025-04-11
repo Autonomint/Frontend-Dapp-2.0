@@ -84,3 +84,26 @@ export const eId = {
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
 };
+
+// enum for control cds and borrow pause unpause
+export enum Functions {
+  Borrow_Deposit,
+  Borrow_Withdraw,
+  Borrow_Liq,
+  Borrow_Renew,
+  Borrow_Redeem,
+  CDS_Deposit,
+  CDS_Withdraw,
+  CDS_WithdrawGains,
+  CDS_Liq,
+  CDS_Redeem,
+}
+
+// enum for asset pause
+export enum AssetStatus {
+  DUMMY,
+  DEPOSIT_PAUSED,
+  WITHDRAW_PAUSED,
+  BOTH_PAUSED,
+  BOTH_UNPAUSED,
+}

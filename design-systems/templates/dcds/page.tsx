@@ -56,7 +56,11 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import PageLoader from "@/design-systems/molecule/page-loader";
@@ -67,6 +71,9 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useApproveNativeToken from "@/hookes/contract-hooks/useApproveNativeToken";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
 import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import { cdsAbi } from "@/blockchain/abis/dcds";
+import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -248,10 +255,49 @@ function DCDSTemplate() {
   const { balanceString: modeBalanceString, balance: modeBalance } =
     useGetBalance("MODE");
 
-  console.log(
-    Number(opBalance),
-    Number(opBalance) * Number(getOraclePrice[1]),
-    "getOraclePrice"
+  //checking is Cds Deposit pause or not
+  const { isFunctionPausedCDS_Deposit } = useCdsPause();
+
+  // getting mode token status
+  const {
+    assetDetails: assetDetailsMode,
+    isTokenDepositPaused: isTokenDepositPausedMode,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedMode,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedMode,
+    isTokenWithdrawPaused: isTokenWithdrawPausedMode,
+    refetchCurrentData: refetchCurrentDataMode,
+  } = useTokenDetails(nativeTokenAddress[919]);
+
+  // getting op token status
+  const {
+    assetDetails: assetDetailsOP,
+    isTokenDepositPaused: isTokenDepositPausedOP,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedOP,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedOP,
+    isTokenWithdrawPaused: isTokenWithdrawPausedOP,
+    refetchCurrentData: refetchCurrentDataOP,
+  } = useTokenDetails(nativeTokenAddress[11155420]);
+
+  // getting usda token status
+  const {
+    assetDetails: assetDetailsUSDa,
+    isTokenDepositPaused: isTokenDepositPausedUSDa,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDa,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDa,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDa,
+    refetchCurrentData: refetchCurrentDataUSDa,
+  } = useTokenDetails(usDaAddress[chainId as keyof typeof testusdtAbiAddress]);
+
+  // getting mode token usdt
+  const {
+    assetDetails: assetDetailsUSDT,
+    isTokenDepositPaused: isTokenDepositPausedUSDT,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDT,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDT,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDT,
+    refetchCurrentData: refetchCurrentDataUSDT,
+  } = useTokenDetails(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
   );
 
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -267,6 +313,11 @@ function DCDSTemplate() {
         errorMessage: "USDa not active now",
         balanceAvailable: usdaBalance,
         minTokenAmount: 500,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenDepositPausedUSDa ||
+          isTokenWithdrawPausedUSDa,
+        tokenPauseMessage: "USDa Deposit is paused now",
       },
       {
         tokenImage: UsdtIcon,
@@ -275,6 +326,11 @@ function DCDSTemplate() {
         minTokenAmount: 500,
         active: true,
         balanceAvailable: usdtBalance,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedUSDT ||
+          isTokenDepositWithdrawPausedUSDT,
+        tokenPauseMessage: "USDT Deposit is paused now",
       },
     ] as TokenDetails[];
 
@@ -296,6 +352,11 @@ function DCDSTemplate() {
           ).toFixed(2)}`
         ),
         tokenCount: opBalance,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedOP ||
+          isTokenDepositWithdrawPausedOP,
+        tokenPauseMessage: "OP Deposit is paused now",
       });
     }
     if (chainId == Number(NetworkId.Mode)) {
@@ -315,6 +376,11 @@ function DCDSTemplate() {
           ).toFixed(2)}`
         ),
         tokenCount: modeBalance,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedMode ||
+          isTokenDepositWithdrawPausedMode,
+        tokenPauseMessage: "MODE Deposit is paused now",
       });
     }
 
@@ -1110,13 +1176,25 @@ function DCDSTemplate() {
             <div className=" h-[86px] overflow-hidden">
               {isConnected && address ? (
                 !dcdsLoadingLocal && (
-                  <Button
-                    type="submit"
-                    onClick={() => formik.handleSubmit()}
-                    className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
-                  >
-                    Deposit
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={isFunctionPausedCDS_Deposit}
+                          type="submit"
+                          onClick={() => formik.handleSubmit()}
+                          className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
+                        >
+                          Deposit
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedCDS_Deposit && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Cds Deposit is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )
               ) : (
                 <WalletConnectButton />

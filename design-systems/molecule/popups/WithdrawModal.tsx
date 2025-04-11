@@ -20,8 +20,20 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 import { NetworkId, scanUrls } from "@/utils/constants";
-import { borrowAssetsAddress } from "@/blockchain/contracts";
+import {
+  borrowAssetsAddress,
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 
 export function DcdsWithdrawModal({
   position,
@@ -102,7 +114,85 @@ export function DcdsWithdrawModal({
     },
   ];
 
-  console.log(position, "position");
+  // getting cds pause data
+  const { isFunctionPausedCDS_Withdraw } = useCdsPause();
+
+  // getting mode token status
+  const {
+    assetDetails: assetDetailsMode,
+    isTokenDepositPaused: isTokenDepositPausedMode,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedMode,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedMode,
+    isTokenWithdrawPaused: isTokenWithdrawPausedMode,
+    refetchCurrentData: refetchCurrentDataMode,
+  } = useTokenDetails(nativeTokenAddress[919]);
+
+  // checking all pause variable for mode
+  const isMODEPauseInAllStatus =
+    (isTokenWithdrawPausedMode ||
+      isTokenDepositWithdrawPausedMode ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts.nativeToken);
+
+  // getting op token status
+  const {
+    assetDetails: assetDetailsOP,
+    isTokenDepositPaused: isTokenDepositPausedOP,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedOP,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedOP,
+    isTokenWithdrawPaused: isTokenWithdrawPausedOP,
+    refetchCurrentData: refetchCurrentDataOP,
+  } = useTokenDetails(nativeTokenAddress[11155420]);
+
+  // checking  all pause variable for OP
+  const isOPPauseInAllStatus =
+    (isTokenWithdrawPausedOP ||
+      isTokenDepositWithdrawPausedOP ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts.nativeToken);
+
+  // getting usda token status
+  const {
+    assetDetails: assetDetailsUSDa,
+    isTokenDepositPaused: isTokenDepositPausedUSDa,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDa,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDa,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDa,
+    refetchCurrentData: refetchCurrentDataUSDa,
+  } = useTokenDetails(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  // checking all pause variable for usda
+  const isUSDaPauseInAllStatus =
+    (isTokenWithdrawPausedUSDa ||
+      isTokenDepositWithdrawPausedUSDa ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts.usda);
+
+  // getting mode token usdt
+  const {
+    assetDetails: assetDetailsUSDT,
+    isTokenDepositPaused: isTokenDepositPausedUSDT,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDT,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDT,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDT,
+    refetchCurrentData: refetchCurrentDataUSDT,
+  } = useTokenDetails(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
+
+  // checking all pause variable for usdt
+  const isUSDTPauseInAllStatus =
+    (isTokenWithdrawPausedUSDT ||
+      isTokenDepositWithdrawPausedUSDT ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts.usda);
+
+  // checking all asset pause or not
+  const isWithdrawPause =
+    isMODEPauseInAllStatus ||
+    isOPPauseInAllStatus ||
+    isUSDaPauseInAllStatus ||
+    isUSDTPauseInAllStatus;
 
   const NewDetails = [
     {
@@ -621,24 +711,36 @@ export function DcdsWithdrawModal({
             </Typography>
             <div className="h-[50px] overflow-hidden  md:h-[86px]">
               {!dcdsFundWithdrawLoadingLocal && (
-                <Button
-                  onClick={handleWithdrawFund}
-                  disabled={
-                    (position.status === "WITHDREW" ? true : false) ||
-                    Number(position.lockingPeriod) * 1000 > Date.now()
-                  }
-                  className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
-                >
-                  {position.status == "DEPOSITED"
-                    ? "Close Position"
-                    : position.status == "WITHDREW"
-                    ? "Withdraw"
-                    : position.status == "WITHDREW_GAINS "
-                    ? "Withdrawn"
-                    : position.status == "LIQUIDATED "
-                    ? "Liquidated"
-                    : "Withdrawn"}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="h-full">
+                      <Button
+                        onClick={handleWithdrawFund}
+                        disabled={
+                          (position.status === "WITHDREW" ? true : false) ||
+                          Number(position.lockingPeriod) * 1000 > Date.now() ||
+                          isWithdrawPause
+                        }
+                        className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                      >
+                        {position.status == "DEPOSITED"
+                          ? "Close Position"
+                          : position.status == "WITHDREW"
+                          ? "Withdraw"
+                          : position.status == "WITHDREW_GAINS "
+                          ? "Withdrawn"
+                          : position.status == "LIQUIDATED "
+                          ? "Liquidated"
+                          : "Withdrawn"}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  {isWithdrawPause && (
+                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                      <p>{"Withdraw is paused now"}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               )}
               {/* <LoadingBox
                 isLoading={withdrawMethodLoading}
