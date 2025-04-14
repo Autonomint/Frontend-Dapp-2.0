@@ -197,7 +197,7 @@ function StatsTemplate() {
             title="USDa Price Chart"
             timeFrame="All Time"
             hideElements={false}
-            chartApiFlag="amintPrice"
+            chartApiFlag="usdaPrice"
           />
         </div>
         <div>

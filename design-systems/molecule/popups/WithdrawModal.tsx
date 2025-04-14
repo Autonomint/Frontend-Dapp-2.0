@@ -132,7 +132,7 @@ export function DcdsWithdrawModal({
     (isTokenWithdrawPausedMode ||
       isTokenDepositWithdrawPausedMode ||
       isFunctionPausedCDS_Withdraw) &&
-    Boolean(position.depositedAmounts.nativeToken);
+    Boolean(position.depositedAmounts?.nativeToken);
 
   // getting op token status
   const {
@@ -149,7 +149,7 @@ export function DcdsWithdrawModal({
     (isTokenWithdrawPausedOP ||
       isTokenDepositWithdrawPausedOP ||
       isFunctionPausedCDS_Withdraw) &&
-    Boolean(position.depositedAmounts.nativeToken);
+    Boolean(position.depositedAmounts?.nativeToken);
 
   // getting usda token status
   const {
@@ -166,7 +166,7 @@ export function DcdsWithdrawModal({
     (isTokenWithdrawPausedUSDa ||
       isTokenDepositWithdrawPausedUSDa ||
       isFunctionPausedCDS_Withdraw) &&
-    Boolean(position.depositedAmounts.usda);
+    Boolean(position.depositedAmounts?.usda);
 
   // getting mode token usdt
   const {
@@ -185,7 +185,7 @@ export function DcdsWithdrawModal({
     (isTokenWithdrawPausedUSDT ||
       isTokenDepositWithdrawPausedUSDT ||
       isFunctionPausedCDS_Withdraw) &&
-    Boolean(position.depositedAmounts.usda);
+    Boolean(position.depositedAmounts?.usda);
 
   // checking all asset pause or not
   const isWithdrawPause =
@@ -732,6 +732,10 @@ export function DcdsWithdrawModal({
                           : position.status == "LIQUIDATED "
                           ? "Liquidated"
                           : "Withdrawn"}
+
+                        <span className="text-base mt-1">
+                          {isWithdrawPause && "(Paused)"}
+                        </span>
                       </Button>
                     </div>
                   </TooltipTrigger>

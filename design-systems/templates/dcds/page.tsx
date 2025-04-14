@@ -1186,6 +1186,9 @@ function DCDSTemplate() {
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
                           Deposit
+                          <span className="text-base">
+                            {isFunctionPausedCDS_Deposit && "(Paused)"}
+                          </span>
                         </Button>
                       </div>
                     </TooltipTrigger>

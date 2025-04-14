@@ -66,7 +66,20 @@ function SingleListItem({
           </div>
         </div>
         <div className="hidden lg:block ">
-          <Link prefetch={true} href={`/mintUSDaWithCollateral/${item.token}`}>
+          {item.isActive ? (
+            <Link
+              prefetch={true}
+              href={`/mintUSDaWithCollateral/${item.token}`}
+              className="absolute  rounded-none md:right-0 md:h-full md:top-0 bottom-0"
+            >
+              <Button
+                disabled={!item.isActive}
+                className=" h-full bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+              >
+                <Image src={arrow} width={42} height={42} alt="arrow" />
+              </Button>
+            </Link>
+          ) : (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="absolute  rounded-none md:right-0 md:h-full md:top-0 bottom-0">
@@ -84,20 +97,29 @@ function SingleListItem({
                 </TooltipContent>
               )}
             </Tooltip>
-          </Link>
+          )}
         </div>
       </motion.div>
 
-      <Link
-        className="w-full lg:hidden"
-        prefetch={true}
-        href={`/mintUSDaWithCollateral/${item.token}`}
-      >
+      {item.isActive ? (
+        <Link
+          className="w-full lg:hidden"
+          prefetch={true}
+          href={`/mintUSDaWithCollateral/${item.token}`}
+        >
+          <Button
+            disabled={!item.isActive}
+            className="  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+          >
+            <Image src={arrow} width={42} height={42} alt="arrow" />
+          </Button>
+        </Link>
+      ) : (
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               disabled={!item.isActive}
-              className="  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+              className=" lg:hidden  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
             >
               <Image src={arrow} width={42} height={42} alt="arrow" />
             </Button>
@@ -108,7 +130,7 @@ function SingleListItem({
             </TooltipContent>
           )}
         </Tooltip>
-      </Link>
+      )}
     </div>
   );
 }

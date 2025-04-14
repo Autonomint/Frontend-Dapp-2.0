@@ -42,7 +42,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               pathname === "/mintusdalist" ||
               pathname === "/mintUSDaWithCollateral/ETH",
             isFeatureActive: !isFunctionPausedBorrow_Deposit,
-            InActiveHeading: "ETH borrow is paused now",
+            InActiveHeading: "Borrow is paused now",
           },
           {
             nameA: "dCDS",
@@ -81,7 +81,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             router.back();
           }}
           className={
-            "bg-black h-full px-3  sm:px-8  p-[8px] md:py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
+            "bg-black h-auto px-3  sm:px-8  p-[8px] md:py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
           }
         >
           <Image src={arrowLeft} width={42} height={42} alt="arrow" />

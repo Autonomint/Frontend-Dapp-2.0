@@ -769,6 +769,9 @@ export function WithdrawFund({
                             : position.status == BorrowStatus.DEPOSITED
                             ? `Repay amount ${repayAmount.toFixed(2)} USDa`
                             : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
+                          <span className="text-base">
+                            {isFunctionPausedBorrow_Withdraw && "(Paused)"}
+                          </span>
                         </Button>
                       </div>
                     </TooltipTrigger>
@@ -1065,9 +1068,12 @@ export function WithdrawFund({
                             isFunctionPausedBorrow_Renew
                           }
                           onClick={handleRenew}
-                          className="w-full  p-8 bg-black text-white text-[32px]"
+                          className="w-full   p-8 bg-black text-white text-[32px]"
                         >
-                          Renew
+                          Renew{" "}
+                          <span className="text-base mt-1">
+                            {isFunctionPausedBorrow_Withdraw && "(Paused)"}
+                          </span>
                         </Button>
                       </div>
                     </TooltipTrigger>

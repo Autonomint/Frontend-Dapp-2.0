@@ -339,7 +339,7 @@ function InputForm({ currency }: { currency: string }) {
       const amintToMint =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          80) /
+          Number(ltv || 0)) /
         10000;
       const amint2Decimal = displayNumberWithPrecision(amintToMint.toString());
       setAmintToBeMinted((Number(amint2Decimal) - optionf).toFixed(2));
@@ -395,6 +395,7 @@ function InputForm({ currency }: { currency: string }) {
     formik.values.collateralAmount,
     formik.values.strikePricePercent,
     optionFees,
+    ltv,
   ]);
 
   const handleSetMaxBal = () => {
@@ -503,7 +504,10 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && "Mint USDa"}
+                    {!mintBtnLoading && "Mint USDa"}{" "}
+                    <span className="text-base">
+                      {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                    </span>
                   </Button>
                 </div>
               </TooltipTrigger>
