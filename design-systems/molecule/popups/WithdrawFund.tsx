@@ -170,11 +170,18 @@ export function WithdrawFund({
         ).toFixed(2)
       : 0;
 
-  /**
-   * Updates the deposit data based on the provided details.
-   * If the details are available, it updates each value in the depositData array.
-   * If the details are not available, it sets each value in the depositData array to '-'.
-   */
+  console.log(
+    Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+      Number(position?.depositedAmountInETH),
+    Number(formatUnits(BigInt(ethPrice), 2)) *
+      Number(position?.depositedAmountInETH),
+    downsideProtection,
+    position?.depositedAmountInETH,
+    "downsideProtection",
+    position.index,
+    Number(formatUnits(BigInt(ethPrice), 2)),
+    Number(formatUnits(BigInt(position?.ethPrice || 0), 2))
+  );
 
   const totalAmintAmnt =
     lastCumulativeRate === undefined
@@ -984,7 +991,9 @@ export function WithdrawFund({
                   {[
                     {
                       heading: "ETH price at deposit",
-                      value: `${depositData[1].value}`,
+                      value: `$${Number(
+                        formatUnits(BigInt(position?.ethPrice || 0), 2)
+                      )}`,
                     },
                     {
                       heading: "Current ETH price",
@@ -1072,7 +1081,7 @@ export function WithdrawFund({
                         >
                           Renew{" "}
                           <span className="text-base mt-1">
-                            {isFunctionPausedBorrow_Withdraw && "(Paused)"}
+                            {isFunctionPausedBorrow_Renew && "(Paused)"}
                           </span>
                         </Button>
                       </div>
