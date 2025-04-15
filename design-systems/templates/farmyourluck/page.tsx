@@ -109,6 +109,8 @@ function FarmYourLuckTemplate() {
       nameA: "Farm Your Luck",
       path: "/farmyourluck",
       isActive: pathname === "",
+      isFeatureActive: true,
+      InActiveHeading: "",
     },
   ];
 

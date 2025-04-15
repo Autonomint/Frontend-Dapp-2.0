@@ -1,12 +1,12 @@
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useScroll } from "@/contexts/scroll";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DcdsPositionTableRow from "./dcds-position-table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { useAccount } from "wagmi";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 
 function DcdsDepositTable({
   tabPosition,
@@ -45,6 +45,8 @@ function DcdsDepositTable({
   setSelectedPosition: (position: dcdsDepositDetails) => void;
   isSticky: boolean;
 }) {
+  const [sortBy, setSortBy] = useState<string>("Default");
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isScroll, setIsScroll } = useScroll();
@@ -74,6 +76,32 @@ function DcdsDepositTable({
     }
   }, [positionList]);
 
+  const sortedPositionList = useMemo(() => {
+    return positionList.sort((a, b) => {
+      if (sortBy === "deposit") {
+        const depositB =
+          Number(b.depositedAmounts.usda) +
+          Number(b.depositedAmounts.usdt) +
+          (Number(b.depositedAmounts.nativeToken) *
+            Number(b.nativeTokenPriceAtDeposit)) /
+            1e6;
+        const depositA =
+          Number(a.depositedAmounts.usda) +
+          Number(a.depositedAmounts.usdt) +
+          (Number(a.depositedAmounts.nativeToken) *
+            Number(a.nativeTokenPriceAtDeposit)) /
+            1e6;
+        return sortAsc ? depositB - depositA : depositA - depositB;
+      } else if (sortBy === "time") {
+        return sortAsc
+          ? Number(b.depositedTime) - Number(a.depositedTime)
+          : Number(a.depositedTime) - Number(b.depositedTime);
+      }
+
+      return 0;
+    });
+  }, [positionList, sortBy, sortAsc]);
+
   return (
     <div ref={scrollRef} className="sm:my-4 overflow-x-clip   no-scrollbar">
       <table className="table-auto  w-full border-collapse text-[20px]">
@@ -88,11 +116,65 @@ function DcdsDepositTable({
             <th className="pl-5 whitespace-nowrap font-normal py-3 2xl:py-5 ">
               ID
             </th>
-            <th className="pl-5 whitespace-nowrap font-normal ">
-              Total Deposit
+            <th
+              onClick={() => {
+                setSortBy("deposit");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap font-normal "
+            >
+              <div className="flex gap-2 items-center">
+                <span> Total Deposit </span>
+                <span>
+                  {sortAsc && sortBy === "deposit" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "deposit"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "deposit"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
             </th>
-            <th className="pl-5 whitespace-nowrap  font-normal">
-              Deposited Time
+            <th
+              onClick={() => {
+                setSortBy("time");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap  font-normal"
+            >
+              <div className="flex gap-2 items-center">
+                <span> Deposited Time </span>
+                <span>
+                  {sortAsc && sortBy === "time" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "time"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "time"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
             </th>
             <th className="pl-5 whitespace-nowrap  font-normal">
               Lock In period
@@ -101,24 +183,26 @@ function DcdsDepositTable({
           </tr>
         </thead>
         <tbody className="font-normal ">
-          {positionList.map((position: dcdsDepositDetails, key: number) => {
-            return (
-              <DcdsPositionTableRow
-                key={key}
-                idx={key + 1 + (currentPage - 1) * pageSize}
-                position={position}
-                tabPosition={tabPosition}
-                setSelectedPosition={setSelectedPosition}
-                setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
-                setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
-                isViewPositionOpen={isViewPositionOpen}
-                setViewPosition={setViewPosition}
-                isLast={key === positionList.length - 1}
-                setRenewRepay={setRenewRepay}
-                highlight={key + 1 === positionList.length && isScroll}
-              />
-            );
-          })}
+          {sortedPositionList.map(
+            (position: dcdsDepositDetails, key: number) => {
+              return (
+                <DcdsPositionTableRow
+                  key={key}
+                  idx={key + 1 + (currentPage - 1) * pageSize}
+                  position={position}
+                  tabPosition={tabPosition}
+                  setSelectedPosition={setSelectedPosition}
+                  setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+                  setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+                  isViewPositionOpen={isViewPositionOpen}
+                  setViewPosition={setViewPosition}
+                  isLast={key === positionList.length - 1}
+                  setRenewRepay={setRenewRepay}
+                  highlight={key + 1 === positionList.length && isScroll}
+                />
+              );
+            }
+          )}
         </tbody>
       </table>
       {positionList.length > 0 && (
