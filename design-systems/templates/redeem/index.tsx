@@ -463,12 +463,12 @@ const RedeemContainer = () => {
         onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
       },
     ];
-    if (chainId === NetworkId.Mode) {
-      options.push({
-        label: "sUSD",
-        onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
-      });
-    }
+    // if (chainId === NetworkId.Mode) {
+    //   options.push({
+    //     label: "sUSD",
+    //     onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
+    //   });
+    // }
     return options;
   }, [chainId]);
 
@@ -630,15 +630,18 @@ const RedeemContainer = () => {
         <div className="text-grayLight md:text-lg text-center lg:mb-2 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
           Note: 0% Withdrawal Fee will be applied.
         </div>
-        {((isFunctionPausedBorrow_Redeem &&
-          formik.values.inputCollateral === "abond") ||
-          (isFunctionPausedCDS_Redeem && formik.values.inputCollateral)) && (
-          <div className="text-red-600 text-center lg:mb-2  ">
-            {formik.values.inputCollateral === "abond"
-              ? "Abond redeem is paused now"
-              : "USDa redeem is paused now"}
-          </div>
-        )}
+        {isFunctionPausedBorrow_Redeem &&
+          formik.values.inputCollateral === "abond" && (
+            <div className="text-red-600 text-center lg:mb-2  ">
+              {"Abond redeem is paused now"}
+            </div>
+          )}
+        {isFunctionPausedCDS_Redeem &&
+          formik.values.inputCollateral === "amint" && (
+            <div className="text-red-600 text-center lg:mb-2  ">
+              {"USDa+ redeem is paused now"}
+            </div>
+          )}
         <div className="flex justify-center items-center overflow-hidden lg:mb-20">
           <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
             {!redeemLoadingLocal && (
