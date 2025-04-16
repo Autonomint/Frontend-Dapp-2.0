@@ -22,16 +22,16 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   });
 
   const provider = new ethers.JsonRpcProvider(
-    chainId === NetworkId.Mode
+    chainId === NetworkId.BaseSepolia
       ? "https://optimism-sepolia.infura.io/v3/e9cf275f1ddc4b81aa62c5aa0b11ac0f"
-      : "https://sepolia.mode.network/"
+      : "sepolia.base.org/"
   );
 
   const cdsContract = new ethers.Contract(
     cdsAddress[
-      chainId === NetworkId.Mode
+      chainId === NetworkId.BaseSepolia
         ? NetworkId.Optimism
-        : (NetworkId.Mode as keyof typeof cdsAddress)
+        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
     ],
     cdsAbi,
     provider
@@ -44,9 +44,9 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   const getOtherChainData = async () => {
     setOtherChainUSDa(0);
     const usdaTvl2 = await cdsContract.tokenDepositedTillNow(
-      chainId === NetworkId.Mode
+      chainId === NetworkId.BaseSepolia
         ? usDaAddress[NetworkId.Optimism]
-        : usDaAddress[NetworkId.Mode]
+        : usDaAddress[NetworkId.BaseSepolia]
     );
     setOtherChainUSDa(usdaTvl2);
   };
@@ -54,13 +54,13 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   console.log(
     otherChainUDSa,
     tokenAddress,
-    chainId === NetworkId.Mode
+    chainId === NetworkId.BaseSepolia
       ? usDaAddress[NetworkId.Optimism]
-      : usDaAddress[NetworkId.Mode],
+      : usDaAddress[NetworkId.BaseSepolia],
     cdsAddress[
-      chainId === NetworkId.Mode
+      chainId === NetworkId.BaseSepolia
         ? NetworkId.Optimism
-        : (NetworkId.Mode as keyof typeof cdsAddress)
+        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
     ],
     "usdaTvl2"
   );

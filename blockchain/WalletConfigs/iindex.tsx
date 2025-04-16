@@ -19,7 +19,7 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
+  networks: [optimismSepolia, baseSepolia, sepolia],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -32,8 +32,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
-  defaultNetwork: modeTestnet,
+  networks: [optimismSepolia, baseSepolia, sepolia],
+  defaultNetwork: baseSepolia,
   metadata: metadata,
   features: {
     email: false,

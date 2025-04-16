@@ -33,7 +33,7 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum, scanUrls } from "@/utils/constants";
+import { BorrowAssetsEnum, NetworkId, scanUrls } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
@@ -47,6 +47,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { Network } from "ethers";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -214,7 +215,9 @@ function InputForm({ currency }: { currency: string }) {
             title="Mint Successful"
             message="New Deposit has been created"
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -527,7 +530,7 @@ function InputForm({ currency }: { currency: string }) {
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
           heading="Minting USDa"
-          loadingCount="2/2"
+          loadingCount={currency.toLocaleLowerCase() === "eth" ? "1/1" : "2/2"}
         />
         <LoadingBox
           isLoading={approveLoading}

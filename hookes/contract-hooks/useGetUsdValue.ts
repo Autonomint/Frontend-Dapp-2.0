@@ -20,8 +20,12 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
     functionName: "getUSDValue",
     args: [
       assetAddress
-        ? assetAddress[(chainId || NetworkId.Mode) as keyof typeof assetAddress]
-        : ethAddress[(chainId || NetworkId.Mode) as keyof typeof ethAddress],
+        ? assetAddress[
+            (chainId || NetworkId.BaseSepolia) as keyof typeof assetAddress
+          ]
+        : ethAddress[
+            (chainId || NetworkId.BaseSepolia) as keyof typeof ethAddress
+          ],
     ],
     query: { enabled: !!address && !!chainId },
   });

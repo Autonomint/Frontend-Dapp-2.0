@@ -1,8 +1,8 @@
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export enum NetworkId {
-  EthereumSepolia = (process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA || 0) as number,
-  BaseSepolia = (process.env.NEXT_PUBLIC_BASE_SEPOLIA || 0) as number,
+  EthereumSepolia = 11155111,
+  BaseSepolia = 84532,
   Optimism = 11155420,
   Mode = 919,
 }
@@ -69,8 +69,8 @@ export const BRAND_ICON_URL =
 export const scanUrls = {
   919: "https://explorer.mode.network/search-results?q=",
   11155420: "https://optimism-sepolia.blockscout.com/tx/",
-  11155111: `https://sepolia.basescan.org/tx/`,
-  84532: `https://sepolia.etherscan.io/tx/`,
+  11155111: `https://sepolia.etherscan.io/tx/`,
+  84532: `sepolia.base.org/tx/`,
 } as const;
 
 export const eidOpSepolia = 40232;
@@ -106,4 +106,10 @@ export enum AssetStatus {
   WITHDRAW_PAUSED,
   BOTH_PAUSED,
   BOTH_UNPAUSED,
+}
+export interface AssetDetails {
+  status: AssetStatus;
+  LTV: BigInt;
+  tokenDecimals: BigInt;
+  priceDecimals: BigInt;
 }

@@ -67,12 +67,12 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   };
   const chains = [
     {
-      id: Number(NetworkId.Mode),
-      name: "Mode",
+      id: Number(NetworkId.BaseSepolia),
+      name: "Base",
       Icon: () => (
-        <Image src={modeIconNew} alt="modeIconNew" width={24} height={24} />
+        <BaseIcon className="w-6   h-6 stroke-black dark:stroke-white" />
       ),
-      loading: chainId != NetworkId.Mode && isPending,
+      loading: chainId != NetworkId.BaseSepolia && isPending,
     },
     {
       id: Number(NetworkId.Optimism),
@@ -400,8 +400,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {Number(chainId) === Number(NetworkId.Mode)
-                    ? "Mode Sepolia"
+                  {Number(chainId) === Number(NetworkId.BaseSepolia)
+                    ? "Base Sepolia"
                     : "Op Sepolia"}
                 </Typography>
               </div>
@@ -424,8 +424,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
                   href={
-                    chainId == NetworkId.Mode
-                      ? `https://sepolia.explorer.mode.network/address/${address}`
+                    chainId == NetworkId.BaseSepolia
+                      ? `https://sepolia-explorer.base.org/address/${address}`
                       : `https://sepolia-optimism.etherscan.io/address/${address}`
                   }
                   target="__blank"

@@ -1,7 +1,3 @@
-/**
- * - [__View Contract on Base Sepolia Basescan__](https://sepolia.basescan.org/address/0x86C632E8D1fc82eef3801EFB37cbE0ad93D9755b)
- * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0xA687412e7De672a5F945B15Db24c50F91512A19C)
- */
 export const globalAbi = [
   {
     inputs: [
@@ -44,6 +40,43 @@ export const globalAbi = [
   {
     inputs: [],
     name: "FailedInnerCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Global_CallerIsNotAnAdmin",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "Global_CantBeContractOrZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "Global_CantBeEOAOrZeroAddress",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Global_NeedsMoreThanZero",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Global_RequiredApprovalsNotMetToSet",
     type: "error",
   },
   {
@@ -273,6 +306,19 @@ export const globalAbi = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "admin",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -577,6 +623,11 @@ export const globalAbi = [
       {
         internalType: "address",
         name: "cdsAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "multiSignAddress",
         type: "address",
       },
       {
@@ -1050,6 +1101,19 @@ export const globalAbi = [
       },
     ],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_admin",
+        type: "address",
+      },
+    ],
+    name: "setAdmin",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

@@ -125,7 +125,7 @@ export function DcdsWithdrawModal({
     isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedMode,
     isTokenWithdrawPaused: isTokenWithdrawPausedMode,
     refetchCurrentData: refetchCurrentDataMode,
-  } = useTokenDetails(nativeTokenAddress[919]);
+  } = useTokenDetails(nativeTokenAddress[NetworkId.BaseSepolia]);
 
   // checking all pause variable for mode
   const isMODEPauseInAllStatus =
@@ -142,7 +142,7 @@ export function DcdsWithdrawModal({
     isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedOP,
     isTokenWithdrawPaused: isTokenWithdrawPausedOP,
     refetchCurrentData: refetchCurrentDataOP,
-  } = useTokenDetails(nativeTokenAddress[11155420]);
+  } = useTokenDetails(nativeTokenAddress[NetworkId.BaseSepolia]);
 
   // checking  all pause variable for OP
   const isOPPauseInAllStatus =
@@ -197,7 +197,7 @@ export function DcdsWithdrawModal({
   const NewDetails = [
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Tokens deposited`,
       value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
         2
@@ -212,7 +212,7 @@ export function DcdsWithdrawModal({
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Adjusted Deposit Value (30% markdown)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
@@ -229,7 +229,7 @@ export function DcdsWithdrawModal({
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
       value: Number(position?.nativeTokenPriceAtDeposit) / 1e6,
       tooltip: false,
@@ -281,7 +281,7 @@ export function DcdsWithdrawModal({
       value: "0",
       tooltip: false,
       tooltipText: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Status`,
     },
   ];
@@ -439,7 +439,9 @@ export function DcdsWithdrawModal({
             title="Withdraw Successful"
             message=""
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}

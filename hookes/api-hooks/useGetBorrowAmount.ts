@@ -27,9 +27,12 @@ const useGetTotalBorrow = () => {
     isSuccess: ethSepoliaDataFetched,
     refetch: dataEthSepoliaReftech,
   } = useQuery({
-    queryKey: ["depositor", NetworkId.Mode, chainId, address],
+    queryKey: ["depositor", NetworkId.BaseSepolia, chainId, address],
     queryFn: (): Promise<any> =>
-      fetchDepositor(NetworkId.Mode.toString(), address ? address : undefined),
+      fetchDepositor(
+        NetworkId.BaseSepolia.toString(),
+        address ? address : undefined
+      ),
     enabled: !!address,
   });
 

@@ -24,10 +24,10 @@ const useApproveWrapEth = (
   });
   const { chainId } = useAccount();
 
-  const abi = chainId === NetworkId.Mode ? modeABI : modeABI;
+  const abi = chainId === NetworkId.BaseSepolia ? modeABI : modeABI;
   const tokenContractAddress =
     borrowAssetsAddress[tokenName as keyof typeof borrowAssetsAddress][
-      chainId || NetworkId.Mode
+      chainId || NetworkId.BaseSepolia
     ];
 
   const approveWrapETHDynamic = async (

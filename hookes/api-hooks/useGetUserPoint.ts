@@ -1,3 +1,4 @@
+import { NetworkId } from "@/utils/constants";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
@@ -12,9 +13,9 @@ const useGetUserPoint = () => {
   } = useQuery({
     queryKey: ["mode-points", { chainId, address }],
     queryFn: () =>
-      fetch(`${BACKEND_API_URL}/points/userPoints/${919}/${address}`).then(
-        (res) => res.json()
-      ),
+      fetch(
+        `${BACKEND_API_URL}/points/userPoints/${NetworkId.BaseSepolia}/${address}`
+      ).then((res) => res.json()),
     staleTime: 5000,
     enabled: !!chainId && !!address,
     retry: 1,
@@ -27,9 +28,9 @@ const useGetUserPoint = () => {
   } = useQuery({
     queryKey: ["op-points", { chainId, address }],
     queryFn: () =>
-      fetch(`${BACKEND_API_URL}/points/userPoints/${11155420}/${address}`).then(
-        (res) => res.json()
-      ),
+      fetch(
+        `${BACKEND_API_URL}/points/userPoints/${NetworkId.Optimism}/${address}`
+      ).then((res) => res.json()),
     staleTime: 5000,
     enabled: !!chainId && !!address,
     retry: 1,

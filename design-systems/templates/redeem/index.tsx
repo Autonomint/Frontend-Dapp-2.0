@@ -230,7 +230,9 @@ const RedeemContainer = () => {
           title="Redeem Successful"
           message=""
           linkText={
-            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+            Number(chainId) === NetworkId.BaseSepolia
+              ? "View On Basescan"
+              : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -463,7 +465,7 @@ const RedeemContainer = () => {
         onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
       },
     ];
-    // if (chainId === NetworkId.Mode) {
+    // if (chainId === NetworkId.BaseSepolia) {
     //   options.push({
     //     label: "sUSD",
     //     onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),

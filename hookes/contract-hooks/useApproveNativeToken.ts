@@ -47,7 +47,7 @@ const useApproveNativeToken = (mutation: any) => {
   //   });
   // };
 
-  const abi = chainId === NetworkId.Mode ? modeABI : modeABI;
+  const abi = chainId === NetworkId.BaseSepolia ? modeABI : modeABI;
   const tokenContractAddress =
     nativeTokenAddress[chainId as keyof typeof nativeTokenAddress];
 

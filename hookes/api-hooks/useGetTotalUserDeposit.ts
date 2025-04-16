@@ -44,7 +44,7 @@ const useGetTotalUserDeposit = () => {
     queryKey: ["dCDSdepositorsUserData", address],
     queryFn: () =>
       getCDSDepositorData(
-        NetworkId.Mode.toString(),
+        NetworkId.BaseSepolia.toString(),
         address ? address : undefined
       ),
     staleTime: 5000,

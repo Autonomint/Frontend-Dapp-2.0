@@ -246,7 +246,7 @@ export const modeABI = [
         type: "uint8",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
     type: "function",
   },
   {

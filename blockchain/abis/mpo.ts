@@ -150,7 +150,30 @@ export const mpoABI = [
   {
     inputs: [
       {
-        internalType: "enum IBorrowing.AssetName",
+        internalType: "address[]",
+        name: "underlyings",
+        type: "address[]",
+      },
+      {
+        internalType: "address[]",
+        name: "oracles_",
+        type: "address[]",
+      },
+      {
+        internalType: "enum BasePriceOracle.Assets[]",
+        name: "assetNames",
+        type: "uint8[]",
+      },
+    ],
+    name: "addOrUpdateAsset",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum BasePriceOracle.Assets",
         name: "",
         type: "uint8",
       },
@@ -177,6 +200,11 @@ export const mpoABI = [
         internalType: "address[]",
         name: "_oracles",
         type: "address[]",
+      },
+      {
+        internalType: "enum BasePriceOracle.Assets[]",
+        name: "assetNames",
+        type: "uint8[]",
       },
     ],
     name: "initialize",

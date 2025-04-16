@@ -12,7 +12,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, scanUrls } from "@/utils/constants";
+import { BorrowStatus, NetworkId, scanUrls } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -42,6 +42,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { Network } from "ethers";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -465,7 +466,9 @@ export function WithdrawFund({
             title="Repay Successful"
             message=""
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -615,7 +618,9 @@ export function WithdrawFund({
           title="Renew Successful"
           message=""
           linkText={
-            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+            Number(chainId) === NetworkId.BaseSepolia
+              ? "View On Basescan"
+              : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
