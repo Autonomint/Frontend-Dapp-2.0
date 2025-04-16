@@ -82,15 +82,13 @@ function DcdsDepositTable({
         const depositB =
           Number(b.depositedAmounts.usda) +
           Number(b.depositedAmounts.usdt) +
-          (Number(b.depositedAmounts.nativeToken) *
-            Number(b.nativeTokenPriceAtDeposit)) /
-            1e6;
+          Number(b.depositedAmounts.nativeToken) *
+            Number(b.nativeTokenPriceAtDeposit);
         const depositA =
           Number(a.depositedAmounts.usda) +
           Number(a.depositedAmounts.usdt) +
-          (Number(a.depositedAmounts.nativeToken) *
-            Number(a.nativeTokenPriceAtDeposit)) /
-            1e6;
+          Number(a.depositedAmounts.nativeToken) *
+            Number(a.nativeTokenPriceAtDeposit);
         return sortAsc ? depositB - depositA : depositA - depositB;
       } else if (sortBy === "time") {
         return sortAsc

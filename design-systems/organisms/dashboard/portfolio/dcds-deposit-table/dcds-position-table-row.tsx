@@ -46,9 +46,8 @@ const DcdsPositionTableRow = ({
         {(
           Number(position.depositedAmounts.usda) +
           Number(position.depositedAmounts.usdt) +
-          (Number(position.depositedAmounts.nativeToken) *
-            Number(position.nativeTokenPriceAtDeposit)) /
-            1e6
+          Number(position.depositedAmounts.nativeToken) *
+            Number(position.nativeTokenPriceAtDeposit)
         ).toFixed(2)}
       </td>
       <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">

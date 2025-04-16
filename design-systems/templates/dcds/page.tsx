@@ -183,7 +183,7 @@ function DCDSTemplate() {
     initialValues: {
       usdaFlag: false,
       usdtFlag: false,
-      modeFlag: false,
+      aeroFlag: false,
       opFlag: false,
       usdaAmount: null,
       usdtAmount: null,
@@ -218,18 +218,9 @@ function DCDSTemplate() {
     },
   ];
 
-  const showToastError = () => {
-    toast.custom((t) => (
-      <ToastNotification
-        title="Transaction failed"
-        message="Please try again"
-        linkText=""
-        linkUrl=""
-        onClose={() => toast.dismiss(t)}
-        className="bg-[#AA0001]"
-      />
-    ));
-  };
+  useEffect(() => {
+    setSelectedTokens([]);
+  }, [chainId]);
 
   const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
   const { getOraclePrice, getOraclePriceRefetch } =
@@ -388,7 +379,7 @@ function DCDSTemplate() {
         balanceAvailable: String(
           `$${(
             Number(opBalance) *
-            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
+            Number(formatUnits(BigInt(getOraclePrice[0]), 18))
           ).toFixed(2)}`
         ),
         tokenPrice: getOraclePrice[0],
@@ -416,7 +407,7 @@ function DCDSTemplate() {
         balanceAvailable: String(
           `$${(
             Number(modeBalance) *
-            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
+            Number(formatUnits(BigInt(getOraclePrice[0]), 18))
           ).toFixed(2)}`
         ),
         tokenCount: modeBalance,
@@ -571,7 +562,7 @@ function DCDSTemplate() {
       [
         formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
         formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-        formik.values.opFlag || formik.values.modeFlag
+        formik.values.opFlag || formik.values.aeroFlag
           ? nativeTokenAdds
           : zeroAddress,
       ],
@@ -581,7 +572,7 @@ function DCDSTemplate() {
         formik.values.usdaFlag ||
         formik.values.usdtFlag ||
         formik.values.opFlag ||
-        formik.values.modeFlag,
+        formik.values.aeroFlag,
     },
   });
 
@@ -598,7 +589,7 @@ function DCDSTemplate() {
         [
           formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
           formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-          formik.values.opFlag || formik.values.modeFlag
+          formik.values.opFlag || formik.values.aeroFlag
             ? nativeTokenAdds
             : zeroAddress,
         ],
@@ -610,12 +601,16 @@ function DCDSTemplate() {
             usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
           ),
           BigInt(
-            formik.values.opFlag || formik.values.modeFlag
+            formik.values.opFlag || formik.values.aeroFlag
               ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
               : 0
           ),
         ],
-        [assetDetailsUSDa, assetDetailsUSDT, assetDetailsMode]
+        [
+          assetDetailsUSDa,
+          assetDetailsUSDT,
+          chainId === NetworkId.BaseSepolia ? assetDetailsMode : assetDetailsOP,
+        ]
       );
     }
     return res;
@@ -632,7 +627,7 @@ function DCDSTemplate() {
     [
       formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
       formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-      formik.values.opFlag || formik.values.modeFlag
+      formik.values.opFlag || formik.values.aeroFlag
         ? nativeTokenAdds
         : zeroAddress,
     ],
@@ -640,7 +635,7 @@ function DCDSTemplate() {
       BigInt(usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0),
       BigInt(usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0),
       BigInt(
-        formik.values.opFlag || formik.values.modeFlag
+        formik.values.opFlag || formik.values.aeroFlag
           ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
           : 0
       ),
@@ -663,7 +658,7 @@ function DCDSTemplate() {
             [
               formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
               formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.modeFlag
+              formik.values.opFlag || formik.values.aeroFlag
                 ? nativeTokenAdds
                 : zeroAddress,
             ],
@@ -675,7 +670,7 @@ function DCDSTemplate() {
                 usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
               ),
               BigInt(
-                formik.values.opFlag || formik.values.modeFlag
+                formik.values.opFlag || formik.values.aeroFlag
                   ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                   : 0
               ),
@@ -695,12 +690,12 @@ function DCDSTemplate() {
       setUsdtApproveLoadingLocal(false);
 
       if (formik.values.opAmount || formik.values.aeroAmount) {
-        if (formik.values.modeFlag || formik.values.opFlag) {
+        if (formik.values.aeroFlag || formik.values.opFlag) {
           setNativeTokenLoadingLocal(true);
           approveNativeTokenDynamic(
             cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
             BigInt(
-              formik?.values?.modeFlag
+              formik?.values?.aeroFlag
                 ? parseUnits(nativeTokenAmount.toString() || "0", 18)
                 : formik?.values?.opFlag
                 ? parseUnits(nativeTokenAmount.toString() || "0", 18)
@@ -717,7 +712,7 @@ function DCDSTemplate() {
             [
               formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
               formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.modeFlag
+              formik.values.opFlag || formik.values.aeroFlag
                 ? nativeTokenAdds
                 : zeroAddress,
             ],
@@ -729,7 +724,7 @@ function DCDSTemplate() {
                 usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
               ),
               BigInt(
-                formik.values.opFlag || formik.values.modeFlag
+                formik.values.opFlag || formik.values.aeroFlag
                   ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                   : 0
               ),
@@ -804,7 +799,7 @@ function DCDSTemplate() {
         approveNativeTokenDynamic(
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
           BigInt(
-            formik?.values?.modeFlag
+            formik?.values?.aeroFlag
               ? parseUnits(nativeTokenAmount.toString() || "0", 18)
               : formik?.values?.opFlag
               ? parseUnits(nativeTokenAmount.toString() || "0", 18)
@@ -821,7 +816,7 @@ function DCDSTemplate() {
               [
                 formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
                 formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-                formik.values.opFlag || formik.values.modeFlag
+                formik.values.opFlag || formik.values.aeroFlag
                   ? nativeTokenAdds
                   : zeroAddress,
               ],
@@ -837,7 +832,7 @@ function DCDSTemplate() {
                     : 0
                 ),
                 BigInt(
-                  formik.values.opFlag || formik.values.modeFlag
+                  formik.values.opFlag || formik.values.aeroFlag
                     ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                     : 0
                 ),
@@ -908,12 +903,12 @@ function DCDSTemplate() {
       ]);
       return;
     }
-    if (formik.values.modeFlag || formik.values.opFlag) {
+    if (formik.values.aeroFlag || formik.values.opFlag) {
       setNativeTokenLoadingLocal(true);
       approveNativeTokenDynamic(
         cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
         BigInt(
-          formik?.values?.modeFlag
+          formik?.values?.aeroFlag
             ? parseUnits(nativeTokenAmount.toString() || "0", 18)
             : formik?.values?.opFlag
             ? parseUnits(nativeTokenAmount.toString() || "0", 18)

@@ -202,9 +202,8 @@ export function DcdsWithdrawModal({
       value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
         2
       )} ($${(
-        (Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-        1e6
+        Number(position?.depositedAmounts?.nativeToken) *
+        Number(position?.nativeTokenPriceAtDeposit)
       ).toFixed(2)})`,
       tooltip: false,
       tooltipText: "",
@@ -231,7 +230,7 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit) / 1e6,
+      value: Number(position?.nativeTokenPriceAtDeposit),
       tooltip: false,
       tooltipText: "",
     },

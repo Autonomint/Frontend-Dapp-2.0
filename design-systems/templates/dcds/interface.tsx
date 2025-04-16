@@ -15,7 +15,7 @@ export interface TokenDetails {
 export interface FormValues {
   usdaFlag: boolean;
   usdtFlag: boolean;
-  modeFlag: boolean;
+  aeroFlag: boolean;
   opFlag: boolean;
   usdaAmount: string | number | null;
   usdtAmount: string | number | null;
