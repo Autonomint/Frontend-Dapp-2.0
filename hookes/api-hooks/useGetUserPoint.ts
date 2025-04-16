@@ -50,7 +50,7 @@ const useGetUserPoint = () => {
   return {
     points: Number(opPoints?.[0] || 0) + Number(modePoints?.[0] || 0),
     referralPoints,
-    totalPoints: Number(opPoints?.[1] || 0) + Number(modePoints?.[1] || 0),
+    totalPoints: Number(opPoints?.[1] || 0),
   };
 };
 

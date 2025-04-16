@@ -1454,13 +1454,13 @@ function DCDSTemplate() {
         tokenName="USDa"
         tvl={`$${formatNumber(Number(tvlValueUSDa || 0) / 1e6)} `}
       />
-      {/* <TokenTvlDetails
+      <TokenTvlDetails
         icon={chainId === NetworkId.BaseSepolia ? AEROIcon : OPIcon}
         tokenName={chainId === NetworkId.BaseSepolia ? "AERO" : "OP"}
         tvl={`$${formatNumber(
           ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
         )} `}
-      /> */}
+      />
       <HowItWorksPopUp
         isDialogOpen={isOptionHowItWork}
         setIsDialogOpen={() => setIsOpenHowItWork(false)}

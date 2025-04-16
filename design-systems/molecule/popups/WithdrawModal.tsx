@@ -215,13 +215,9 @@ export function DcdsWithdrawModal({
       } Adjusted Deposit Value (30% markdown)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-          1e6 -
-        (((Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-          1e6) *
+          Number(position?.nativeTokenPriceAtDeposit) *
           30) /
-          100
+        100
       ).toFixed(2)}`,
       tooltip: false,
       tooltipText: "",

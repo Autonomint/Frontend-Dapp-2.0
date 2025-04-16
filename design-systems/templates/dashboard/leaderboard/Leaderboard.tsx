@@ -25,7 +25,7 @@ function Leaderboard() {
   } = useGetLeaderboard();
 
   const { points, referralPoints, totalPoints } = useGetUserPoint();
-
+  console.log(referralPoints, totalPoints, "referralPoints");
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -61,7 +61,9 @@ function Leaderboard() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value={totalPoints + Number(referralPoints || 0).toString()}
+            value={(
+              Number(totalPoints || 0) + Number(referralPoints || 0)
+            ).toString()}
           />
         </div>
       </div>
