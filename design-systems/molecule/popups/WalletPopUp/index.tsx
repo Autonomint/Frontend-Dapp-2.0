@@ -173,7 +173,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 <Typography variant="regular" size="subtitle"></Typography>$
                 {data?.formatted.slice(0, 8)}
                 <span className="text-[#7A7A7A] text-[14px]">
-                  {chainId === NetworkId.Optimism ? "OP Sepolia" : "Mode"}
+                  {chainId === NetworkId.Optimism
+                    ? "OP Sepolia"
+                    : "Base Sepolia"}
                 </span>
               </div>
             </div>
