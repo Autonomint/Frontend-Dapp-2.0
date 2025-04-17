@@ -511,7 +511,7 @@ function BridgeTemplate() {
             isFailure={depositError || usdaErrorApprove}
             isSuccess={Boolean(usdaApproveSuccess)}
             setSuccessLoading={() => console.log()}
-            heading="Approving USDa"
+            heading="Approving USDA+"
             loadingCount="1/2"
           />
 
@@ -520,7 +520,7 @@ function BridgeTemplate() {
             isFailure={usdaErrorApproveFn || usdaIsError}
             isSuccess={Boolean(usdaIsSuccess)}
             setSuccessLoading={() => console.log()}
-            heading={"Transferring " + sendToken}
+            heading={"Transferring " + `${sendToken}+`}
             loadingCount="2/2"
           />
         </div>

@@ -328,6 +328,7 @@ function DCDSTemplate() {
       {
         tokenImage: USDaIcon,
         tokenName: "USDa",
+        tokenLabel: "USDA+",
         isLoading: false,
         active:
           USDT_DEPOSIT_LIMIT_IN_DCDS === 0
@@ -349,6 +350,7 @@ function DCDSTemplate() {
       {
         tokenImage: UsdtIcon,
         tokenName: "USDT",
+        tokenLabel: "USDT",
         isLoading: false,
         minTokenAmount: 500,
         active: true,
@@ -367,6 +369,7 @@ function DCDSTemplate() {
       tokenList.push({
         tokenImage: OPIcon,
         tokenName: "OP",
+        tokenLabel: "OP",
         isLoading: false,
         minTokenAmount: 500,
         active:
@@ -395,6 +398,7 @@ function DCDSTemplate() {
       tokenList.push({
         tokenImage: AEROIcon,
         tokenName: "AERO",
+        tokenLabel: "AERO",
         minTokenAmount: 500,
         isLoading: false,
         active:
@@ -772,7 +776,7 @@ function DCDSTemplate() {
     }
   }, [DepositdataReceipt]);
 
-  // useEffect to check the status of the amint approval transaction
+  // useEffect to check the status of the usda approval transaction
   useEffect(() => {
     if (usdaApprovalSuccessReceipt) {
       setUsdaApproveLoadingLocal(false);
@@ -1058,76 +1062,6 @@ function DCDSTemplate() {
                 src={dcdsFrame}
                 alt="light-mode-image"
               />
-              {/* <div className="w-full h-full absolute"> */}
-              {/* <div className="loader relative"> */}
-              {/* <svg
-                    className="w-full h-full"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      id="topArc"
-                      d="M 270, 250 m -200, 10 a 200,200 0 0,1 450,0"
-                      fill="none"
-                    />
-
-                    <path
-                      id="bottomArc"
-                      d="M 270, 250 m -200, 190 a 250,250 0 0,0  450,0"
-                      fill="none"
-                    />
-
-                    <text font-size="44" fill="gray">
-                      <textPath
-                        href="#topArc"
-                        startOffset="50%"
-                        text-anchor="middle"
-                      >
-                        The Wishing Well
-                      </textPath>
-                    </text>
-
-                    <text font-size="44" fill="gray">
-                      <textPath
-                        href="#bottomArc"
-                        startOffset="50%"
-                        text-anchor="middle"
-                      >
-                        The Wishing Well
-                      </textPath>
-                    </text>
-                  </svg> */}
-              {/* <div
-                    style={{
-                      textAlign: "center",
-                      paddingTop: "",
-                      fontSize: "42px",
-                      color: "green",
-                    }}
-                  >
-                    {letters.map((letter, index) => (
-                      <span
-                        key={index}
-                        style={{
-                          display: "inline-block",
-                          transform: `${letter.translate} ${letter.rotate}`,
-                        }}
-                      >
-                        {letter.char}
-                      </span>
-                    ))}
-                  </div> */}
-              {/* </div> */}
-              {/* {selectedTokens.length === 0 && (
-                  <Typography
-                    className="absolute z-20 text-grayLight  left-1/2 top-1/2 -translate-x-1/2 text-center -translate-y-1/2 w-[30%]"
-                    size="lg"
-                    variant="condensed"
-                  >
-                    Drop your desired coin into this well and it will grant you
-                    your wish
-                  </Typography>
-                )} */}
-              {/* </div> */}
             </div>
 
             {selectedTokens.length > 0 && (
@@ -1159,7 +1093,7 @@ function DCDSTemplate() {
                 })}
 
                 <span className="text-[28px] font-medium mt-1 absolute bottom-6">
-                  {selectedTokens[0].tokenName}
+                  {selectedTokens[0].tokenLabel || selectedTokens[0].tokenName}
                   {selectedTokens.length > 1 &&
                     ` +${selectedTokens.length - 1}`}
                 </span>
@@ -1207,7 +1141,7 @@ function DCDSTemplate() {
                     htmlFor={`token-${key}`}
                     className="text-grayLight text-lg font-medium"
                   >
-                    {token.tokenName}
+                    {token.tokenLabel || token.tokenName}
                   </Label>
                   <div className="flex flex-nowrap">
                     <Input
@@ -1386,7 +1320,7 @@ function DCDSTemplate() {
                 isFailure={usdaApprovalErrorReceipt || usdaApproveError}
                 isSuccess={Boolean(usdaApprovalReceiptReceipt)}
                 setSuccessLoading={() => console.log(true)}
-                heading="Approving USDa"
+                heading="Approving USDA+"
                 loadingCount={
                   selectedTokens.length === 3
                     ? "1/4"
@@ -1451,7 +1385,7 @@ function DCDSTemplate() {
       />
       <TokenTvlDetails
         icon={USDaIcon}
-        tokenName="USDa"
+        tokenName="USDA+"
         tvl={`$${formatNumber(Number(tvlValueUSDa || 0) / 1e6)} `}
       />
       <TokenTvlDetails

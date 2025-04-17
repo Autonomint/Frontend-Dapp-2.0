@@ -17,8 +17,8 @@ import RatioOfCollaterals, {
 } from "../../../organisms/dashboard/state/RatioOfCollaterals";
 import {
   abondValues,
-  amintPrice,
-  amintValues,
+  USDAPrice,
+  usdaValues,
   BorrowFeesValues,
   lockedValues,
   OptionFeesValues,
@@ -33,7 +33,7 @@ function StatsTemplate() {
   const chainId = useChainId();
   const [loading, setLoading] = React.useState(true);
 
-  // Get the ethprice, amint supply abond supply and global data from the contracts
+  // Get the ethprice, usda+ supply abond supply and global data from the contracts
   const { usdValue: ethPrice } = useGetUsdValue();
   const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda();
   const { totalSupplyAbond } = useGetTotalSupplyAbond();
@@ -83,13 +83,13 @@ function StatsTemplate() {
       feeOptions != undefined &&
       totalSupplyAbond != undefined
     ) {
-      amintPrice[0].value = userTotalBorrowAmount;
+      USDAPrice[0].value = userTotalBorrowAmount;
 
-      amintValues[0].value = usdaSupply
+      usdaValues[0].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
 
-      amintValues[1].value = usdaSupply
+      usdaValues[1].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
 
@@ -107,7 +107,7 @@ function StatsTemplate() {
       lockedValues[1].value = omniChainData.totalCdsDepositedAmount
         ? `${formatNumber(
             Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
-          )} USDa`
+          )} USDA+`
         : "0";
       // lockedValues[2].value = omniChainData.totalCdsDepositedAmount
       //   ? formatNumber(
@@ -193,8 +193,8 @@ function StatsTemplate() {
       <div className="grid lg:grid-cols-2 grid-cols-1 ">
         <div>
           <ChartComponent
-            stats={amintPrice}
-            title="USDa Price Chart"
+            stats={USDAPrice}
+            title="USDA+ Price Chart"
             timeFrame="All Time"
             hideElements={false}
             chartApiFlag="usdaPrice"
@@ -202,8 +202,8 @@ function StatsTemplate() {
         </div>
         <div>
           <ChartComponent
-            stats={amintValues}
-            title="USDa Supply Chart"
+            stats={usdaValues}
+            title="USDA+ Supply Chart"
             timeFrame="1Y"
             hideElements={false}
             chartApiFlag=""

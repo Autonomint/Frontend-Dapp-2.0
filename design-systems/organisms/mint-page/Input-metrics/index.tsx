@@ -23,7 +23,7 @@ function InputMetics({
           { label: "Deposit", value: `$${deposit}`, color: "#2DDA95" },
           { label: "Option Fee", value: `$${optionFees}`, color: "#FF5270" },
           {
-            label: "USDa borrowed",
+            label: "USDA+ borrowed",
             value: `$${usdaBorrowed}`,
             color: "#627EEA",
           },

@@ -50,7 +50,7 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
             <ol className="list-decimal list-outside pl-4 mt-8 text-grayLight">
               <li className="mb-3 text-[14px] md:text-lg">
                 Deposit Any Token – Click ‘+’ to deposit stablecoins or tokens.
-                Some limits apply—for example, if you deposit $100 in USDa, you
+                Some limits apply—for example, if you deposit $100 in USDA+, you
                 can add $20 in USDT.
               </li>
               <li className="mb-3 text-[14px] md:text-lg">

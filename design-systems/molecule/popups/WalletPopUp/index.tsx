@@ -393,7 +393,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             >
               <div className="flex mt-8 flex-row justify-between items-center">
                 <Typography size="lg" className="" variant="regular">
-                  <span className="font-bold mr-1">USDa+ </span> Balance
+                  <span className="font-bold mr-1">USDA+ </span> Balance
                 </Typography>
                 <Typography
                   size="lg"

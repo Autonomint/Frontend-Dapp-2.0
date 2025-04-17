@@ -42,7 +42,7 @@ const useApproveNativeToken = (mutation: any) => {
   //         ) * BigInt(lastCumulativeRate ?? 0n)
   //       ) /
   //         BigInt(10 ** 27) +
-  //         1000000n, // Total amint amount
+  //         1000000n, // Total usda amount
   //     ],
   //   });
   // };

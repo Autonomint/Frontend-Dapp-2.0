@@ -74,7 +74,7 @@ function AddToken({
               />
             </div>
             <span className="text-[24px] text-textBlack dark:text-white">
-              {tokenDetails.tokenName}
+              {tokenDetails.tokenLabel || tokenDetails.tokenName}
             </span>
           </div>
           <div className="flex flex-row items-center lg:items-start lg:flex-col justify-start  md:gap-0">

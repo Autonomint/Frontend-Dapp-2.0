@@ -32,12 +32,12 @@ function SingleListItem({
       label: "Borrow Rate",
       value: item.BorrowRate,
       tooltipText:
-        "The current yearly interest rate charged on stablecoin USDa loan",
+        "The current yearly interest rate charged on stablecoin USDA+ loan",
     },
     {
       label: "LTV",
       value: item.ltv,
-      tooltipText: "USDa borrowing limit per unit of collateral",
+      tooltipText: "USDA+ borrowing limit per unit of collateral",
     },
     {
       label: "Downside Protection",

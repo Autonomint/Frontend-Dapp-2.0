@@ -10,6 +10,7 @@ export interface TokenDetails {
   isTokenPause: boolean;
   tokenPauseMessage: string;
   tokenPrice: string | Number;
+  tokenLabel: string;
 }
 
 export interface FormValues {

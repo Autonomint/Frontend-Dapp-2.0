@@ -190,10 +190,10 @@ function DepositTable({
                 setSortBy("usda");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap font-normal"
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
             >
               <div className="flex gap-2 items-center">
-                <span>USDa Minted </span>
+                <span>USDA+ Minted </span>
                 <span>
                   {sortAsc && sortBy === "usda" ? (
                     <ChevronDown
@@ -220,7 +220,7 @@ function DepositTable({
                 setSortBy("protected");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap font-normal"
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
             >
               <div className="flex gap-2 items-center">
                 <span>Amount Protected</span>
@@ -250,7 +250,7 @@ function DepositTable({
                 setSortBy("abond");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap font-normal"
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
             >
               <div className="flex gap-2 items-center">
                 <span>Abond Minted</span>
@@ -280,7 +280,7 @@ function DepositTable({
                 setSortBy("liquidation");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap font-normal"
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
             >
               <div className="flex gap-2 items-center">
                 <span>Liquidation</span>

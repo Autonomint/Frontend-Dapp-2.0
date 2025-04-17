@@ -48,10 +48,10 @@ function BridgeComponentRight({
               Token
             </span>
             <GenericDropdownMenu
-              buttonText={token}
+              buttonText={`${token}+`}
               items={[
                 {
-                  label: "USDa",
+                  label: "USDA+",
                   onClick: () => {},
                 },
               ]}

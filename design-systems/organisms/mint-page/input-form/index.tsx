@@ -81,7 +81,7 @@ function InputForm({ currency }: { currency: string }) {
 
   console.log(ethPrice, assetPrice, "eth");
 
-  const [amintToBeMinted, setAmintToBeMinted] = useState("0");
+  const [usdaToBeMinted, setUsdaToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
   const { address, isConnected } = useAccount();
@@ -333,19 +333,19 @@ function InputForm({ currency }: { currency: string }) {
   }
 
   /**
-   * Handles the calculation and setting of the amint to be minted and downside protection amounts.
+   * Handles the calculation and setting of the usda to be minted and downside protection amounts.
    */
   const CalculateAmtToBeMinted = async () => {
     try {
-      // Calculate the amint to be minted
+      // Calculate the usda to be minted
       const optionf = optionFees || 0;
-      const amintToMint =
+      const usdaToMint =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv || 0)) /
         10000;
-      const amint2Decimal = displayNumberWithPrecision(amintToMint.toString());
-      setAmintToBeMinted((Number(amint2Decimal) - optionf).toFixed(2));
+      const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
+      setUsdaToBeMinted((Number(udsa2Decimal) - optionf).toFixed(2));
 
       // Calculate the downside protection amount
       const downsideProtection =
@@ -377,7 +377,7 @@ function InputForm({ currency }: { currency: string }) {
         collateralAmount: "select collateral type",
       });
     } else if (formik.values.collateralAmount == 0) {
-      setAmintToBeMinted("0");
+      setUsdaToBeMinted("0");
       setDownsideProtectionAmnt("0");
       setUpsideCollateral(0);
       CalculateAmtToBeMinted();
@@ -413,7 +413,7 @@ function InputForm({ currency }: { currency: string }) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
-        <div className=" font-medium text-2xl">Mint USDa</div>
+        <div className=" font-medium text-2xl">Mint USDA+</div>
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
@@ -460,16 +460,17 @@ function InputForm({ currency }: { currency: string }) {
             <div className="flex">
               <div className="relative w-full">
                 <Input
-                  value={amintToBeMinted}
+                  value={usdaToBeMinted}
                   readOnly
                   className="rounded-none md:text-subtitle h-12 px-4"
                 />
                 <Button
+                  type="button"
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 md:text-subtitle font-medium px-4 text-textBlack dark:text-white"
                   variant={"ghost"}
                   size={"sm"}
                 >
-                  USDa
+                  USDA+
                 </Button>
               </div>
             </div>
@@ -490,7 +491,7 @@ function InputForm({ currency }: { currency: string }) {
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={optionFees.toFixed(2)}
-          usdaBorrowed={amintToBeMinted == "0" ? "0.00" : amintToBeMinted}
+          usdaBorrowed={usdaToBeMinted == "0" ? "0.00" : usdaToBeMinted}
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
       </div>
@@ -507,7 +508,7 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && "Mint USDa"}{" "}
+                    {!mintBtnLoading && "Mint USDA+"}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
@@ -516,7 +517,7 @@ function InputForm({ currency }: { currency: string }) {
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (
                 <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                  <p>{"ETH borrow is paused now"}</p>
+                  <p>{"Borrow is paused now"}</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -529,7 +530,7 @@ function InputForm({ currency }: { currency: string }) {
           isFailure={depositError || depositHashError}
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
-          heading="Minting USDa"
+          heading="Minting USDA+"
           loadingCount={currency.toLocaleLowerCase() === "eth" ? "1/1" : "2/2"}
         />
         <LoadingBox

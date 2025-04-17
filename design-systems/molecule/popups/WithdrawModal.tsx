@@ -53,7 +53,7 @@ export function DcdsWithdrawModal({
   // kept this inside because every row is going to have different state
   const depositDetails = [
     {
-      headline: "USDa Deposited",
+      headline: "USDA+ Deposited",
       value: "1200",
       tooltip: false,
       tooltipText: "",

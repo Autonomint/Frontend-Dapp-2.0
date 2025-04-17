@@ -167,7 +167,7 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Borrowed (All Chain)"
-            value={`${userTotalBorrowAmount} USDa`}
+            value={`${userTotalBorrowAmount} USDA+`}
           />
         </div>
         <div className="col-span-1">

@@ -106,7 +106,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
-  const { data: amintbalance, refetch: refetchBlAmint } = useBalance({
+  const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
     token: usDaAddress
       ? usDaAddress[chainId as keyof typeof usDaAddress]
@@ -117,9 +117,9 @@ const RedeemContainer = () => {
     if (formik.values.inputCollateral == "abond") {
       formik.setFieldValue("usdaBalance", Number(abondbalance?.formatted));
     } else if (formik.values.inputCollateral == "amint") {
-      formik.setFieldValue("usdaBalance", Number(amintbalance?.formatted));
+      formik.setFieldValue("usdaBalance", Number(usdabalance?.formatted));
     }
-  }, [abondbalance, amintbalance, formik.values.inputCollateral]);
+  }, [abondbalance, usdabalance, formik.values.inputCollateral]);
 
   const {
     isPending: amintApproveLoading,
@@ -302,7 +302,7 @@ const RedeemContainer = () => {
     ) {
       if (
         (formik.values.collateralAmount || 0) >
-        Number(amintbalance?.formatted.slice(0, 9))
+        Number(usdabalance?.formatted.slice(0, 9))
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
@@ -554,7 +554,7 @@ const RedeemContainer = () => {
                   Balance{" "}
                   <span className="text-grayLight">
                     {formik.values.inputCollateral == "amint"
-                      ? `${amintbalance?.formatted || 0} USDa`
+                      ? `${usdabalance?.formatted || 0} USDa`
                       : `${abondbalance?.formatted || 0}  Abond`}
                   </span>
                 </div>
@@ -641,7 +641,7 @@ const RedeemContainer = () => {
         {isFunctionPausedCDS_Redeem &&
           formik.values.inputCollateral === "amint" && (
             <div className="text-red-600 text-center lg:mb-2  ">
-              {"USDa+ redeem is paused now"}
+              {"USDA+ redeem is paused now"}
             </div>
           )}
         <div className="flex justify-center items-center overflow-hidden lg:mb-20">

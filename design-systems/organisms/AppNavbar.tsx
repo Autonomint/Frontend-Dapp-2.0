@@ -36,7 +36,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
     tabOptions?.length === 0
       ? [
           {
-            nameA: "Mint USDa",
+            nameA: "Mint USDA+",
             path: "/mintusdalist",
             isActive:
               pathname === "/mintusdalist" ||

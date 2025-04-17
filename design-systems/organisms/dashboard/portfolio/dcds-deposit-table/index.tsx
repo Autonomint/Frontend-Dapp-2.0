@@ -119,7 +119,7 @@ function DcdsDepositTable({
                 setSortBy("deposit");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap font-normal "
+              className="pl-5 cursor-pointer whitespace-nowrap font-normal "
             >
               <div className="flex gap-2 items-center">
                 <span> Total Deposit </span>
@@ -149,7 +149,7 @@ function DcdsDepositTable({
                 setSortBy("time");
                 setSortAsc(!sortAsc);
               }}
-              className="pl-5 whitespace-nowrap  font-normal"
+              className="pl-5 cursor-pointer whitespace-nowrap  font-normal"
             >
               <div className="flex gap-2 items-center">
                 <span> Deposited Time </span>

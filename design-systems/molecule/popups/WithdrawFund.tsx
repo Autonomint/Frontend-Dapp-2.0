@@ -297,8 +297,8 @@ export function WithdrawFund({
 
   const repayAmountDetails = [
     {
-      headline: "USDa Amount Minted",
-      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDa`,
+      headline: "USDA+ Amount Minted",
+      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDA+`,
       tooltip: false,
       tooltipText: "",
     },
@@ -674,7 +674,7 @@ export function WithdrawFund({
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="flex gap-4 justify-start items-center mb-4">
             <div className="text-2xl font-semibold ">Borrow Details</div>
-            <div className="text-grayLight">Balance: {balance} USDa</div>
+            <div className="text-grayLight">Balance: {balance} USDA+</div>
           </div>
           <div className="flex">
             <div
@@ -779,7 +779,7 @@ export function WithdrawFund({
                           {repayLoading
                             ? "Loading..."
                             : position.status == BorrowStatus.DEPOSITED
-                            ? `Repay amount ${repayAmount.toFixed(2)} USDa`
+                            ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
                             : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
                           <span className="text-base">
                             {isFunctionPausedBorrow_Withdraw && "(Paused)"}
@@ -807,7 +807,7 @@ export function WithdrawFund({
                   isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa "
+                  heading="Approving USDA+"
                   loadingCount="1/2"
                 />
                 <LoadingBox
@@ -1104,7 +1104,7 @@ export function WithdrawFund({
                   isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa"
+                  heading="Approving USDA+"
                   loadingCount="1/2"
                 />
                 <LoadingBox
