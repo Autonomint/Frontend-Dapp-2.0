@@ -48,7 +48,7 @@ function BridgeComponentRight({
               Token
             </span>
             <GenericDropdownMenu
-              buttonText={`${token}+`}
+              buttonText={`${token.toLocaleUpperCase()}+`}
               items={[
                 {
                   label: "USDA+",

@@ -530,7 +530,7 @@ const RedeemContainer = () => {
                     formik.values.inputCollateral
                       ? `${
                           formik.values.inputCollateral === "amint"
-                            ? "USDa"
+                            ? "USDA+"
                             : "Abond"
                         }`
                       : "Select"
@@ -554,7 +554,7 @@ const RedeemContainer = () => {
                   Balance{" "}
                   <span className="text-grayLight">
                     {formik.values.inputCollateral == "amint"
-                      ? `${usdabalance?.formatted || 0} USDa`
+                      ? `${usdabalance?.formatted || 0} USDA+`
                       : `${abondbalance?.formatted || 0}  Abond`}
                   </span>
                 </div>
