@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/design-systems/atoms/popover";
 import NotificationContainer from "@/design-systems/molecule/notifiaction-card";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import { sortWalletAddress } from "@/utils/helpers";
 import {
   useAppKit,
@@ -195,11 +195,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
             <div className="flex-col md:flex-row md:justify-between flex mt-8 flex- justify-center gap-2 items-center">
               <a
-                href={
-                  chainId == NetworkId.Optimism
-                    ? `https://optimism-sepolia.blockscout.com/address/${address}`
-                    : `https://modescan.io/address/${address}`
-                }
+                href={`${scanUrls[Number(chainId || 919)]}/address/${address}`}
                 target="__blank"
               >
                 <Typography

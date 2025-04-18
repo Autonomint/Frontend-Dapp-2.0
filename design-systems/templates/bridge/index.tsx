@@ -245,7 +245,7 @@ function BridgeTemplate() {
         setTransferLoadingLocal(false);
       }, 1000);
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           usdaTransactionConfirmed.transactionHash
         } `;
         setSendAmount(0);

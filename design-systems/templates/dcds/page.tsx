@@ -932,7 +932,7 @@ function DCDSTemplate() {
     setPortfolioTab("Deposited");
     resetLoadings();
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         DepositdataReceipt?.transactionHash
       } `;
       return (

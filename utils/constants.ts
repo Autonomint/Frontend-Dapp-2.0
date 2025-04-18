@@ -67,11 +67,11 @@ export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
 export const scanUrls = {
-  919: "https://explorer.mode.network/search-results?q=",
-  11155420: "https://optimism-sepolia.blockscout.com/tx/",
-  11155111: `https://sepolia.etherscan.io/tx/`,
-  84532: `sepolia.base.org/tx/`,
-} as const;
+  919: "https://sepolia.explorer.mode.network/",
+  11155420: "https://sepolia-optimism.etherscan.io/",
+  11155111: `https://sepolia.etherscan.io/`,
+  84532: `https://sepolia.basescan.org/`,
+} as Record<number, string>;
 
 export const eidOpSepolia = 40232;
 export const eidModeSepolia = 40260;

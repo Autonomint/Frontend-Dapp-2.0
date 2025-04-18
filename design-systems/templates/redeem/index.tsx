@@ -222,7 +222,7 @@ const RedeemContainer = () => {
   };
   const handleSuccess = () => {
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         redeemdataEth?.transactionHash
       } `;
       return (

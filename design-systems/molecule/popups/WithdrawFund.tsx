@@ -458,7 +458,7 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           withdrawReceipt.transactionHash
         } `;
         return (
@@ -609,7 +609,7 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         renewReceipt.transactionHash
       } `;
 

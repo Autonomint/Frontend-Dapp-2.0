@@ -206,7 +206,7 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           Depositdata.transactionHash
         } `;
 
