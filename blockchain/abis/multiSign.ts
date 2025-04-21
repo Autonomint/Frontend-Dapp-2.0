@@ -1,4 +1,4 @@
-export const mpoABI = [
+export const multiSignABI = [
   {
     inputs: [
       {
@@ -39,16 +39,6 @@ export const mpoABI = [
   {
     inputs: [],
     name: "NotInitializing",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "Oracle_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "Oracle_InvalidChain",
     type: "error",
   },
   {
@@ -150,22 +140,12 @@ export const mpoABI = [
   {
     inputs: [
       {
-        internalType: "address[]",
-        name: "underlyings",
-        type: "address[]",
-      },
-      {
-        internalType: "address[]",
-        name: "oracles_",
-        type: "address[]",
-      },
-      {
-        internalType: "enum BasePriceOracle.Assets[]",
-        name: "assetNames",
+        internalType: "uint8[]",
+        name: "functions",
         type: "uint8[]",
       },
     ],
-    name: "addOrUpdateAsset",
+    name: "approvePause",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -173,17 +153,143 @@ export const mpoABI = [
   {
     inputs: [
       {
-        internalType: "enum BasePriceOracle.Assets",
+        internalType: "uint8[]",
+        name: "functions",
+        type: "uint8[]",
+      },
+    ],
+    name: "approveSetterFunction",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8[]",
+        name: "functions",
+        type: "uint8[]",
+      },
+    ],
+    name: "approveUnPause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.SetterFunctions",
+        name: "",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "approvedToUpdate",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.SetterFunctions",
+        name: "_function",
+        type: "uint8",
+      },
+    ],
+    name: "executeSetterFunction",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.Functions",
         name: "",
         type: "uint8",
       },
     ],
-    name: "assetAddress",
+    name: "functionState",
     outputs: [
       {
-        internalType: "address",
-        name: "assetAddress",
-        type: "address",
+        internalType: "bool",
+        name: "paused",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.Functions",
+        name: "_function",
+        type: "uint8",
+      },
+    ],
+    name: "getApprovalPauseCount",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.Functions",
+        name: "_function",
+        type: "uint8",
+      },
+    ],
+    name: "getApprovalUnPauseCount",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.SetterFunctions",
+        name: "_function",
+        type: "uint8",
+      },
+    ],
+    name: "getSetterFunctionApproval",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
       },
     ],
     stateMutability: "view",
@@ -193,18 +299,13 @@ export const mpoABI = [
     inputs: [
       {
         internalType: "address[]",
-        name: "underlyings",
+        name: "_owners",
         type: "address[]",
       },
       {
-        internalType: "address[]",
-        name: "_oracles",
-        type: "address[]",
-      },
-      {
-        internalType: "enum BasePriceOracle.Assets[]",
-        name: "assetNames",
-        type: "uint8[]",
+        internalType: "uint64",
+        name: "_requiredApprovals",
+        type: "uint64",
       },
     ],
     name: "initialize",
@@ -216,16 +317,16 @@ export const mpoABI = [
     inputs: [
       {
         internalType: "address",
-        name: "underlying",
+        name: "",
         type: "address",
       },
     ],
-    name: "oracles",
+    name: "isOwner",
     outputs: [
       {
-        internalType: "address",
-        name: "oracleAddress",
-        type: "address",
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -247,25 +348,38 @@ export const mpoABI = [
   {
     inputs: [
       {
+        internalType: "enum IMultiSign.Functions",
+        name: "",
+        type: "uint8",
+      },
+      {
         internalType: "address",
-        name: "underlying",
+        name: "owner",
         type: "address",
       },
     ],
-    name: "price",
+    name: "pauseApproved",
     outputs: [
       {
-        internalType: "uint128",
-        name: "",
-        type: "uint128",
-      },
-      {
-        internalType: "uint128",
-        name: "",
-        type: "uint128",
+        internalType: "bool",
+        name: "paused",
+        type: "bool",
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8[]",
+        name: "functions",
+        type: "uint8[]",
+      },
+    ],
+    name: "pauseFunction",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -289,6 +403,32 @@ export const mpoABI = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "requiredApprovals",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "coreContractsAddresses",
+        type: "address[]",
+      },
+    ],
+    name: "setCoreContracts",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -297,6 +437,43 @@ export const mpoABI = [
       },
     ],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IMultiSign.Functions",
+        name: "",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "unpauseApproved",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "unpaused",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8[]",
+        name: "functions",
+        type: "uint8[]",
+      },
+    ],
+    name: "unpauseFunction",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

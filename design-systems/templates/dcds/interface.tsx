@@ -6,17 +6,21 @@ export interface TokenDetails {
   tokenName: string;
   minTokenAmount: number;
   balanceAvailable: string;
-  tokenCount: number;
+  tokenCount?: number;
+  isTokenPause: boolean;
+  tokenPauseMessage: string;
+  tokenPrice: string | Number;
+  tokenLabel: string;
 }
 
 export interface FormValues {
   usdaFlag: boolean;
   usdtFlag: boolean;
-  modeFlag: boolean;
+  aeroFlag: boolean;
   opFlag: boolean;
   usdaAmount: string | number | null;
   usdtAmount: string | number | null;
-  modeAmount: string | number | null;
+  aeroAmount: string | number | null;
   opAmount: string | number | null;
   lockInPeriod: string | null;
   liquidationGains: boolean;

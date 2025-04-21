@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ChartFilter } from "./interface";
 import { WheelEvent } from "react";
+import { zeroAddress } from "viem";
+import { AssetDetails } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -365,4 +367,34 @@ export function calculateRemainingTimeDate(dateString: string) {
   return timeDifferenceInSeconds > 0
     ? { days, hours, minutes, seconds, formattedTime: formattedTime.trim() }
     : { days: 0, hours: 0, minutes: 0, seconds: 0, formattedTime: "0 days" };
+}
+
+export function getTotalDepositingAmount(
+  getPrices: any,
+  tokenAddress: any,
+  tokenAmounts: any,
+  assetDetails: any
+) {
+  let totalDepositingAmount = 0;
+  const prices = getPrices;
+  for (let i = 0; i < tokenAmounts.length; i++) {
+    if (tokenAddress[i] != zeroAddress) {
+      console.log(
+        tokenAmounts[i],
+        prices[i + 1],
+        assetDetails[i].LTV,
+        assetDetails[i].priceDecimals,
+        assetDetails[i].tokenDecimals,
+        "getTotalDepositingAmount"
+      );
+      totalDepositingAmount +=
+        (Number(tokenAmounts[i]) *
+          Number(prices[i + 1]) *
+          Number(assetDetails[i][1]) *
+          1e6) /
+        (Number(assetDetails[i][2]) * Number(assetDetails[i][3]) * 100);
+    }
+  }
+
+  return Math.floor(totalDepositingAmount);
 }

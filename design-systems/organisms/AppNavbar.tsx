@@ -6,6 +6,8 @@ import arrowLeft from "@/app/assets/arrow-right-02 (1).png";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 interface AppNavbarProps {
   tabOptions?: TabOption[];
   activeBack?: boolean;
@@ -15,6 +17,8 @@ interface TabOption {
   nameA: string;
   path: string;
   isActive: boolean;
+  isFeatureActive?: boolean;
+  InActiveHeading?: string;
 }
 const AppNavbar: React.FC<AppNavbarProps> = ({
   tabOptions = [],
@@ -23,26 +27,36 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const { theme } = useTheme();
+  // getting borrow puase data
+  const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
+  // getting cds pause data
+  const { isFunctionPausedCDS_Deposit } = useCdsPause();
 
   const navList =
     tabOptions?.length === 0
       ? [
           {
-            nameA: "Mint USDa",
+            nameA: "Mint USDA+",
             path: "/mintusdalist",
             isActive:
               pathname === "/mintusdalist" ||
               pathname === "/mintUSDaWithCollateral/ETH",
+            isFeatureActive: !isFunctionPausedBorrow_Deposit,
+            InActiveHeading: "Borrow is paused now",
           },
           {
             nameA: "dCDS",
             path: "/dcds",
             isActive: pathname === "/dcds",
+            isFeatureActive: !isFunctionPausedCDS_Deposit,
+            InActiveHeading: "CDS Deposit is paused now",
           },
           {
             nameA: "Bridge",
             path: "/bridge",
             isActive: pathname === "/bridge",
+            isFeatureActive: true,
+            InActiveHeading: "",
           },
           {
             nameA: "Dashboard",
@@ -51,6 +65,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               pathname === "/dashboard/leaderboard" ||
               pathname === "/dashboard/portfolio" ||
               pathname === "/dashboard/stats",
+            isFeatureActive: true,
+            InActiveHeading: "",
           },
         ]
       : tabOptions;
@@ -65,7 +81,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             router.back();
           }}
           className={
-            "bg-black h-full px-3  sm:px-8  p-[8px] md:py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
+            "bg-black h-auto px-3  sm:px-8  p-[8px] md:py-[13px] hover:bg-black dark:bg-custom-gradient-to-top"
           }
         >
           <Image src={arrowLeft} width={42} height={42} alt="arrow" />
@@ -73,21 +89,26 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
       )}
 
       <div className="hidden lg:flex w-full border-b border-grayLight">
-        {navList?.map(({ nameA, path, isActive }) => (
-          <Link
-            prefetch={true}
-            href={path}
-            key={nameA}
-            className={`flex-1 px-5  py-[8px] md:py-[13px] cursor-pointer text-2xl sm:text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
-              isActive && navList.length > 1
-                ? "bg-[#ABFFDE] dark:text-black"
-                : ""
-            }`}
-            // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
-          >
-            {nameA}
-          </Link>
-        ))}
+        {navList?.map(
+          ({ nameA, path, isActive, isFeatureActive, InActiveHeading }) => (
+            <Link
+              prefetch={true}
+              href={path}
+              key={nameA}
+              className={`flex-1 px-5  py-[8px] md:py-[13px] cursor-pointer text-2xl sm:text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
+                isActive && navList.length > 1
+                  ? "bg-[#ABFFDE] dark:text-black"
+                  : ""
+              }`}
+              // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
+            >
+              {nameA}{" "}
+              <span className="text-[14px] text-grayLight">
+                {!isFeatureActive && `(${InActiveHeading})`}
+              </span>
+            </Link>
+          )
+        )}
       </div>
 
       <div

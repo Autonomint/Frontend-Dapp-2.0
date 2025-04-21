@@ -8,7 +8,7 @@ import React from "react";
 import { useBalance, useAccount, useChainId } from "wagmi";
 
 const useGetBalance = (
-  token: "USDa" | "USDT" | "ABOND" | "MODE" | "OP"
+  token: "USDa" | "USDT" | "ABOND" | "AERO" | "OP"
 ): { balanceString: string; balance: number } => {
   const chainId = useChainId();
   const { address } = useAccount();
@@ -21,7 +21,7 @@ const useGetBalance = (
         ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
         : token == "ABOND"
         ? abondAddress[chainId as keyof typeof abondAddress]
-        : token == "MODE"
+        : token == "AERO"
         ? nativeTokenAddress[chainId as keyof typeof nativeTokenAddress]
         : token == "OP"
         ? nativeTokenAddress[chainId as keyof typeof nativeTokenAddress]

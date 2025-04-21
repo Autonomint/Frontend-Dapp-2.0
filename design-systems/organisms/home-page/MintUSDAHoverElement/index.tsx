@@ -83,7 +83,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
         />
       </div>
       <Button className="absolute px-2 lg:px-6 bottom-0 left-0 w-full lg:mt-13 bg-textBlack text-white text-[20px] lg:text-[32px] flex justify-between  h-[60px] lg:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
-        Mint USDa
+        Mint USDA+
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
     </div>

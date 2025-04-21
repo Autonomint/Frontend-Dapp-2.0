@@ -11,19 +11,23 @@ import { Button } from "@/design-systems/atoms/button";
 import { useAccount, useSwitchChain } from "wagmi";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { useParams, usePathname } from "next/navigation";
+import { NetworkId } from "@/utils/constants";
+import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
 interface SwitchChainPopupProps {}
 
 const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
-  const { chainId } = useAccount();
+  const { chainId, isConnected } = useAccount();
   const pathname = usePathname();
   const [switchingChain, setSwitchingChain] = useState<number>();
 
   useEffect(() => {
     if (
+      chainId &&
       !["/bridge", "/"].includes(pathname) &&
-      ![11155420, 919].includes(chainId || 0)
+      ![11155420, 84532].includes(chainId || 0) &&
+      isConnected
     ) {
       setIsPopUpOpen(true);
     } else {
@@ -48,17 +52,17 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
               disabled={isPending}
               onClick={() => {
                 switchChain({
-                  chainId: 11155420,
+                  chainId: NetworkId.Optimism,
                 });
-                setSwitchingChain(11155420);
+                setSwitchingChain(NetworkId.Optimism);
               }}
               variant={"shadowOutline"}
-              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-white text-[#7A7A7A]"
+              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
             >
               <div>
                 <Image src={opImage} alt="image op" width={50} height={50} />
               </div>
-              {isPending && switchingChain === 11155420 ? (
+              {isPending && switchingChain === NetworkId.Optimism ? (
                 <div className="h-[20px] mx-auto">
                   <Spinner />
                 </div>
@@ -70,28 +74,26 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
               disabled={isPending}
               onClick={() => {
                 switchChain({
-                  chainId: 919,
+                  chainId: NetworkId.BaseSepolia,
                 });
 
-                setSwitchingChain(919);
+                setSwitchingChain(NetworkId.BaseSepolia);
               }}
               variant={"shadowOutline"}
-              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-white text-[#7A7A7A]"
+              className="p-5 cursor-pointer border-[1px]  gap-2 rounded-[10px] flex flex-col justify-center items-center w-[110px] h-[110px] !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
             >
               <div>
-                <Image
-                  src={modeImage}
-                  alt="image mode"
-                  width={50}
-                  height={50}
+                <BaseIcon
+                  className=" stroke-black  "
+                  style={{ width: "50px", height: "50px" }}
                 />
               </div>
-              {isPending && switchingChain === 919 ? (
+              {isPending && switchingChain === NetworkId.BaseSepolia ? (
                 <div className="h-[20px] mx-auto">
                   <Spinner />
                 </div>
               ) : (
-                <div className="text-[16px]">Mode</div>
+                <div className="text-[16px]">Base</div>
               )}
             </Button>
           </div>

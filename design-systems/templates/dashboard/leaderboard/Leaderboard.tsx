@@ -4,19 +4,14 @@ import PortfolioMetrics from "@/design-systems/organisms/dashboard/leaderboard/p
 import useGetLeaderboard from "@/hookes/api-hooks/useGetLeaderboard";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { formatNumber } from "@/utils/helpers";
 import { formatEther } from "viem";
 
 function Leaderboard() {
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
-
   // Fetch the total volume of borrowers amount in USD
   const { omniChainData } = useGetOmniChainData();
+
   const {
-    leaderboardData,
-    borrowdepositsError,
-    cdsdepositsError,
     totalBorrowCount,
     totalDepositedCount,
     currentPage,
@@ -30,9 +25,7 @@ function Leaderboard() {
   } = useGetLeaderboard();
 
   const { points, referralPoints, totalPoints } = useGetUserPoint();
-
-  console.log(points, "omniChainData");
-
+  console.log(referralPoints, totalPoints, "referralPoints");
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -68,7 +61,9 @@ function Leaderboard() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value={totalPoints + Number(referralPoints || 0).toString()}
+            value={(
+              Number(totalPoints || 0) + Number(referralPoints || 0)
+            ).toString()}
           />
         </div>
       </div>

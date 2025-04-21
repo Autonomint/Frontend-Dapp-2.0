@@ -19,7 +19,7 @@ const useDcdsWithdrawGain = (mutation: any) => {
     dcdsFundWithdrawGain({
       abi: cdsAbi,
       address: cdsAddress[chainId as keyof typeof cdsAddress],
-      functionName: "withdraw",
+      functionName: "withdrawGains",
       args,
     });
   };

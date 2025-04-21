@@ -29,6 +29,24 @@ async function signedDataForDcdsWithDrawDeposit(
   }).then((response) => response.json());
 }
 
+async function signedDataForDcdsWithGainsDrawDeposit(
+  address: `0x${string}` | undefined,
+  chainId: number,
+  index: number
+): Promise<SignedDataReturn> {
+  return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSWithdrawGains`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      address: address,
+      chainId: chainId,
+      index: index,
+    }),
+  }).then((response) => response.json());
+}
+
 const useGetDcdsWithdrawSignedData = (index: number) => {
   const { address, chainId } = useAccount();
   const {
@@ -46,10 +64,28 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
     select: (data) => data,
     enabled: !!address && !!chainId,
   });
+
+  const {
+    data: BorrowWithdrawGainsSignedData,
+    isPending: isPendingBorrowWithDrawGainsSignedData,
+    refetch: refetchBorrowWithDrawGainsSignedData,
+  } = useQuery({
+    queryKey: ["useGetDcdsWithdrawSignedData"],
+    queryFn: () =>
+      signedDataForDcdsWithGainsDrawDeposit(
+        address ? address : undefined,
+        chainId as number,
+        index || 0
+      ),
+    select: (data) => data,
+    enabled: !!address && !!chainId,
+  });
+
   return {
     BorrowWithdrawSignedData,
     isPendingBorrowWithDrawSignedData,
     refetchBorrowWithDrawSignedData,
+    refetchBorrowWithDrawGainsSignedData,
   };
 };
 

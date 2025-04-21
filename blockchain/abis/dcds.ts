@@ -590,6 +590,40 @@ export const cdsAbi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+    ],
+    name: "assetDetails",
+    outputs: [
+      {
+        internalType: "enum CDSInterface.AssetStatus",
+        name: "status",
+        type: "uint8",
+      },
+      {
+        internalType: "uint64",
+        name: "LTV",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "tokenDecimals",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "priceDecimals",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint128",
         name: "upside",
         type: "uint128",
@@ -1157,7 +1191,7 @@ export const cdsAbi = [
       },
       {
         internalType: "address[]",
-        name: "liquidatingTokens",
+        name: "liquidatingToken",
         type: "address[]",
       },
       {
@@ -1497,19 +1531,6 @@ export const cdsAbi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "mpoAddress",
-        type: "address",
-      },
-    ],
-    name: "updateMpo",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "amount",
         type: "uint256",
@@ -1552,19 +1573,6 @@ export const cdsAbi = [
       },
     ],
     name: "updateTotalCdsDepositedAmountWithOptionFees",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "usdtAddress",
-        type: "address",
-      },
-    ],
-    name: "updateUSDT",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1684,4 +1692,17 @@ export const cdsAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-] as const;
+  {
+    inputs: [],
+    name: "withdrawTimeLimit",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];

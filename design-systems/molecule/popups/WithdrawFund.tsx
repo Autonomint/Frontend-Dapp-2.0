@@ -12,7 +12,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, scanUrls } from "@/utils/constants";
+import { BorrowStatus, NetworkId, scanUrls } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -22,7 +22,11 @@ import { PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import LoadingBox from "../LoadingBox";
 import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
@@ -31,6 +35,14 @@ import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFe
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
 import { formatUnits } from "viem";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import { Network } from "ethers";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -45,6 +57,10 @@ export function WithdrawFund({
   setSelectedPosition: (position: PositionData) => void;
 }) {
   const [toggleView, setToggleView] = useState("repay");
+
+  // getting value for borrow withdraw and renew pause
+  const { isFunctionPausedBorrow_Renew, isFunctionPausedBorrow_Withdraw } =
+    useBorrowPause();
 
   const [spinner, setSpinner] = useState(false);
 
@@ -63,6 +79,12 @@ export function WithdrawFund({
     },
     {
       headline: "Deposit Time APR",
+      value: "5%",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Current APR",
       value: "5%",
       tooltip: false,
       tooltipText: "",
@@ -149,11 +171,18 @@ export function WithdrawFund({
         ).toFixed(2)
       : 0;
 
-  /**
-   * Updates the deposit data based on the provided details.
-   * If the details are available, it updates each value in the depositData array.
-   * If the details are not available, it sets each value in the depositData array to '-'.
-   */
+  console.log(
+    Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+      Number(position?.depositedAmountInETH),
+    Number(formatUnits(BigInt(ethPrice), 2)) *
+      Number(position?.depositedAmountInETH),
+    downsideProtection,
+    position?.depositedAmountInETH,
+    "downsideProtection",
+    position.index,
+    Number(formatUnits(BigInt(ethPrice), 2)),
+    Number(formatUnits(BigInt(position?.ethPrice || 0), 2))
+  );
 
   const totalAmintAmnt =
     lastCumulativeRate === undefined
@@ -168,7 +197,19 @@ export function WithdrawFund({
           ) * lastCumulativeRate
         ) / BigInt(10 ** 27);
 
-  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
+  const repayAmount = Math.round(
+    Number(totalAmintAmnt) / 1e6 - Number(downsideProtection)
+  );
+
+  // getting current APR value
+  const { data: currentAPR } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "APR",
+  });
 
   function handleDepositData() {
     // Calculate the totalAmintAmnt
@@ -195,10 +236,11 @@ export function WithdrawFund({
       //   10 ** 6
       // ).toFixed(2)}`;
       updatedData[2].value = `${position.aprAtDeposit}%`;
-      updatedData[3].value = new Date(
+      updatedData[3].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[4].value = new Date(
         position.depositedTime * 1000
       ).toLocaleString();
-      updatedData[4].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
       const currentPrice = ethPrice;
       const upsideAt =
@@ -221,18 +263,18 @@ export function WithdrawFund({
 
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
 
-      updatedData[5].value = `${upsideAt.toFixed(2)}`;
-      updatedData[6].value =
+      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[7].value =
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? `${curtUpside.toFixed(2)}`
           : "-";
 
-      updatedData[7].value = position.status === "LIQUIDATED" ? "Yes" : "No";
-      updatedData[8].value =
+      updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[9].value =
         interestGained != undefined
           ? `$${Number(interestGained).toFixed(2)}`
           : "-";
-      updatedData[9].value = position.noOfAbondMinted
+      updatedData[10].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -247,6 +289,9 @@ export function WithdrawFund({
       updatedData[5].value = "-";
       updatedData[6].value = "-";
       updatedData[7].value = "-";
+      updatedData[8].value = "-";
+      updatedData[9].value = "-";
+      updatedData[10].value = "-";
 
       setDepositData(updatedData);
     }
@@ -254,8 +299,8 @@ export function WithdrawFund({
 
   const repayAmountDetails = [
     {
-      headline: "USDa Amount Minted",
-      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDa`,
+      headline: "USDA+ Amount Minted",
+      value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDA+`,
       tooltip: false,
       tooltipText: "",
     },
@@ -264,7 +309,7 @@ export function WithdrawFund({
       value: `$${(
         Number(totalAmintAmnt) / 10 ** 6 -
         Number(position.noOfUSDaMinted)
-      ).toFixed(2)}`,
+      ).toFixed(4)}`,
       tooltip: false,
       tooltipText: "",
     },
@@ -415,7 +460,7 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           withdrawReceipt.transactionHash
         } `;
         return (
@@ -423,7 +468,9 @@ export function WithdrawFund({
             title="Repay Successful"
             message=""
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -492,7 +539,21 @@ export function WithdrawFund({
     renewBorrowHash,
     resetBorrowRenew,
     renewError: renewErrorSm,
-  } = useBorrowRenew({});
+  } = useBorrowRenew({
+    onError: () => {
+      setTimeout(() => {
+        setRenewLoading(false);
+      }, 800);
+      setRenewApproveLoading(false);
+      setRenewLoadingSM(false);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    },
+  });
 
   useEffect(() => {
     (async () => {
@@ -550,20 +611,28 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         renewReceipt.transactionHash
       } `;
+
       toast.custom((t) => (
         <ToastNotification
           title="Renew Successful"
           message=""
           linkText={
-            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+            Number(chainId) === NetworkId.BaseSepolia
+              ? "View On Basescan"
+              : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
         />
       ));
+      setRenewApproveLoading(false);
+      setRenewLoadingSM(false);
+      setTimeout(() => {
+        setRenewLoading(false);
+      }, 800);
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);
@@ -588,14 +657,6 @@ export function WithdrawFund({
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
 
-  console.log(
-    payableOptionFees,
-    usdaApproveError,
-    position.index,
-    BigInt(Number(payableOptionFees || 0n) + 1e6),
-    "payableOptionFees"
-  );
-
   const handleRenew = () => {
     setRenewLoading(true);
     setRenewApproveLoading(true);
@@ -609,15 +670,13 @@ export function WithdrawFund({
     );
   };
 
-  console.log(isFifteenDaysCompleted(position.validTill), "15");
-
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
           <div className="flex gap-4 justify-start items-center mb-4">
             <div className="text-2xl font-semibold ">Borrow Details</div>
-            <div className="text-grayLight">Balance: {balance} USDa</div>
+            <div className="text-grayLight">Balance: {balance} USDA+</div>
           </div>
           <div className="flex">
             <div
@@ -708,17 +767,34 @@ export function WithdrawFund({
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
                 {!repayLoading && (
-                  <Button
-                    disabled={position.status == BorrowStatus.WITHDREW}
-                    onClick={handleRepay}
-                    className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
-                  >
-                    {repayLoading
-                      ? "Loading..."
-                      : position.status == BorrowStatus.DEPOSITED
-                      ? `Repay amount ${repayAmount.toFixed(2)} USDa`
-                      : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={
+                            position.status == BorrowStatus.WITHDREW ||
+                            isFunctionPausedBorrow_Withdraw
+                          }
+                          onClick={handleRepay}
+                          className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                        >
+                          {repayLoading
+                            ? "Loading..."
+                            : position.status == BorrowStatus.DEPOSITED
+                            ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                            : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
+                          <span className="text-base">
+                            {isFunctionPausedBorrow_Withdraw && "(Paused)"}
+                          </span>
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedBorrow_Withdraw && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Repay is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )}
                 {/* <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
@@ -733,7 +809,7 @@ export function WithdrawFund({
                   isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa "
+                  heading="Approving USDA+"
                   loadingCount="1/2"
                 />
                 <LoadingBox
@@ -922,7 +998,9 @@ export function WithdrawFund({
                   {[
                     {
                       heading: "ETH price at deposit",
-                      value: `${depositData[1].value}`,
+                      value: `$${Number(
+                        formatUnits(BigInt(position?.ethPrice || 0), 2)
+                      )}`,
                     },
                     {
                       heading: "Current ETH price",
@@ -960,9 +1038,16 @@ export function WithdrawFund({
                     { label: "Time Period", value: "30 days" },
                     {
                       label: "Option Fees",
-                      value: isFifteenDaysCompleted(position.validTill)
-                        ? `${payableOptionFees}`
-                        : "-",
+                      //  value: isFifteenDaysCompleted(position.validTill)
+                      //     ? `${formatUnits(
+                      //     BigInt(payableOptionFees || 0),
+                      //     6
+                      //   )}`
+                      //    : "-",
+                      value: `${formatUnits(
+                        BigInt(payableOptionFees || 0),
+                        6
+                      )}`,
                     },
                     {
                       label: "Downside Protection",
@@ -990,13 +1075,30 @@ export function WithdrawFund({
               </div>
               <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
                 {!renewLoading && (
-                  <Button
-                    // disabled={position.status == BorrowStatus.WITHDREW}
-                    onClick={handleRenew}
-                    className="w-full  p-8 bg-black text-white text-[32px]"
-                  >
-                    Renew
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={
+                            position.status == BorrowStatus.WITHDREW ||
+                            isFunctionPausedBorrow_Renew
+                          }
+                          onClick={handleRenew}
+                          className="w-full   p-8 bg-black text-white text-[32px]"
+                        >
+                          Renew{" "}
+                          <span className="text-base mt-1">
+                            {isFunctionPausedBorrow_Renew && "(Paused)"}
+                          </span>
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedBorrow_Renew && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Renew is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )}
 
                 <LoadingBox
@@ -1004,7 +1106,7 @@ export function WithdrawFund({
                   isFailure={usdaApproveError || usdaHashError}
                   isSuccess={usdaHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDa"
+                  heading="Approving USDA+"
                   loadingCount="1/2"
                 />
                 <LoadingBox

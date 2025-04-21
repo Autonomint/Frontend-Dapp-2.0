@@ -8,7 +8,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import { Gift } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 interface ReferPopupProps {
@@ -52,7 +52,27 @@ const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
     staleTime: Infinity,
     enabled: !!address,
   });
-  const referralLink = `https://www.dev.testnet.app.autonomint.com?ref=${referral}`;
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  const referralLink = useMemo(() => {
+    if (isMounted) {
+      // browser current url
+      const currentUrl = window?.location?.origin;
+
+      // creating referral url
+      const referralLink = `${currentUrl}?ref=${referral}`;
+      return referralLink;
+    }
+    return "";
+  }, [referral]);
 
   useEffect(() => {
     if (referral != undefined) {

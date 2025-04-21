@@ -6,6 +6,11 @@ import minus from "@/app/assets/minus-sign.png";
 import add from "@/app/assets/add-01.png";
 import { TokenDetails } from "@/design-systems/templates/dcds/interface";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 
 function AddToken({
   tokenDetails,
@@ -69,7 +74,7 @@ function AddToken({
               />
             </div>
             <span className="text-[24px] text-textBlack dark:text-white">
-              {tokenDetails.tokenName}
+              {tokenDetails.tokenLabel || tokenDetails.tokenName}
             </span>
           </div>
           <div className="flex flex-row items-center lg:items-start lg:flex-col justify-start  md:gap-0">
@@ -94,16 +99,29 @@ function AddToken({
             </div>
           </div>
         </div>
-        <Button
-          onClick={toggleToken}
-          className="bg-black absolute right-0 top-0 h-full dark:bg-custom-gradient-to-bottom"
-        >
-          {isSelected ? (
-            <Image src={minus} alt="minus" />
-          ) : (
-            <Image src={add} alt="add" />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="  absolute right-0 top-0 h-full">
+              <Button
+                disabled={tokenDetails.isLoading || tokenDetails.isTokenPause}
+                onClick={toggleToken}
+                className="bg-black h-full dark:bg-custom-gradient-to-bottom"
+              >
+                {isSelected ? (
+                  <Image src={minus} alt="minus" />
+                ) : (
+                  <Image src={add} alt="add" />
+                )}
+              </Button>
+            </div>
+          </TooltipTrigger>
+          {tokenDetails.isTokenPause && (
+            <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+              <p>{tokenDetails.tokenPauseMessage}</p>
+            </TooltipContent>
           )}
-        </Button>
+        </Tooltip>
       </div>
       {tokenDetails.isLoading && (
         <div className="top-0 text-white left-0 absolute w-full h-full bg-[#00000080] dark:bg-[#ffffff52] flex items-center justify-center ">

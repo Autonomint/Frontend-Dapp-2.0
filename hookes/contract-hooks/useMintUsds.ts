@@ -2,13 +2,6 @@ import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
 import { AssetNames } from "@/utils/constants";
-enum StrikePrice {
-  // Define the enum values according to the IOptions.StrikePrice
-  // Example:
-  OPTION_ONE,
-  OPTION_TWO,
-  OPTION_THREE,
-}
 
 interface BorrowInputs {
   strikePercent: bigint; // uint8 can be mapped to the enum
@@ -47,18 +40,6 @@ const useDepositTokens = (mutation: any) => {
     signature,
     nonce,
   }: BorrowInputs) => {
-    // Call the `writeContract` function to deposit tokens
-    //   writeContract?.({
-    //     abi: borrowingContractAbi,
-    //     address:
-    //       borrowingContractAddress[
-    //         chainId as keyof typeof borrowingContractAddress
-    //       ],
-    //     functionName: "depositTokens",
-    //     args: [strikePercent, strikePrice, volatility, depositingAmount],
-    //     value,
-    //   });
-    // };
     writeContract?.({
       abi: borrowingContractAbi,
       address:

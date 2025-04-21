@@ -55,6 +55,32 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
     }
   };
 
+  useEffect(() => {
+    handleAutoInviteCodeLogin();
+  }, [address, isConnected]);
+
+  const handleAutoInviteCodeLogin = async () => {
+    const inviteCode = localStorage.getItem("inviteCode");
+    if (inviteCode && isConnected) {
+      if (address) {
+        const res = await assignInviteCodeAsync({
+          address,
+          inviteCode: inviteCode,
+        });
+
+        if (!!res) {
+          setIsInviteCodePopupOpen(false);
+          localStorage.setItem("verified", "true");
+          localStorage.setItem("AddressForInviteCode", address);
+          localStorage.setItem("inviteCode", otp.join(""));
+        } else {
+          localStorage.setItem("verified", "false");
+          localStorage.removeItem("AddressForInviteCode");
+        }
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     setInputError("");
     try {
@@ -74,6 +100,8 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
         if (!!res) {
           setIsInviteCodePopupOpen(false);
           localStorage.setItem("verified", "true");
+          localStorage.setItem("inviteCode", otp.join(""));
+          localStorage.setItem("AddressForInviteCode", address);
           setOtp(Array(6).fill(""));
         } else {
           disconnect();

@@ -104,13 +104,6 @@ const DepositTableRow = ({
         displayNumberWithPrecision((amountProt / 100).toFixed(8))
       );
       setAmountProtected(amountProtPrecision);
-    } else if (parseFloat(ethPrice.toString()) <= 0.8 * position.ethPrice) {
-      const amountProt =
-        0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
-      const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision((amountProt / 100).toFixed(8))
-      );
-      setAmountProtected(amountProtPrecision);
     }
   };
 

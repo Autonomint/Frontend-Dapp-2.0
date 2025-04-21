@@ -20,17 +20,31 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 import { NetworkId, scanUrls } from "@/utils/constants";
-import { borrowAssetsAddress } from "@/blockchain/contracts";
+import {
+  borrowAssetsAddress,
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 
 export function DcdsWithdrawModal({
   position,
   isDialogOpen,
   setIsDialogOpen,
+  dcdsPositionListRefetch,
 }: {
   position: dcdsDepositDetails;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
+  dcdsPositionListRefetch: () => void;
 }) {
   const [spinner, setSpinner] = useState(false);
 
@@ -41,7 +55,7 @@ export function DcdsWithdrawModal({
   // kept this inside because every row is going to have different state
   const depositDetails = [
     {
-      headline: "USDa Deposited",
+      headline: "USDA+ Deposited",
       value: "1200",
       tooltip: false,
       tooltipText: "",
@@ -102,19 +116,96 @@ export function DcdsWithdrawModal({
     },
   ];
 
-  console.log(position, "position");
+  // getting cds pause data
+  const { isFunctionPausedCDS_Withdraw } = useCdsPause();
+
+  // getting mode token status
+  const {
+    assetDetails: assetDetailsMode,
+    isTokenDepositPaused: isTokenDepositPausedMode,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedMode,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedMode,
+    isTokenWithdrawPaused: isTokenWithdrawPausedMode,
+    refetchCurrentData: refetchCurrentDataMode,
+  } = useTokenDetails(nativeTokenAddress[NetworkId.BaseSepolia]);
+
+  // checking all pause variable for mode
+  const isMODEPauseInAllStatus =
+    (isTokenWithdrawPausedMode ||
+      isTokenDepositWithdrawPausedMode ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts?.nativeToken);
+
+  // getting op token status
+  const {
+    assetDetails: assetDetailsOP,
+    isTokenDepositPaused: isTokenDepositPausedOP,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedOP,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedOP,
+    isTokenWithdrawPaused: isTokenWithdrawPausedOP,
+    refetchCurrentData: refetchCurrentDataOP,
+  } = useTokenDetails(nativeTokenAddress[NetworkId.BaseSepolia]);
+
+  // checking  all pause variable for OP
+  const isOPPauseInAllStatus =
+    (isTokenWithdrawPausedOP ||
+      isTokenDepositWithdrawPausedOP ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts?.nativeToken);
+
+  // getting usda token status
+  const {
+    assetDetails: assetDetailsUSDa,
+    isTokenDepositPaused: isTokenDepositPausedUSDa,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDa,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDa,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDa,
+    refetchCurrentData: refetchCurrentDataUSDa,
+  } = useTokenDetails(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  // checking all pause variable for usda
+  const isUSDaPauseInAllStatus =
+    (isTokenWithdrawPausedUSDa ||
+      isTokenDepositWithdrawPausedUSDa ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts?.usda);
+
+  // getting mode token usdt
+  const {
+    assetDetails: assetDetailsUSDT,
+    isTokenDepositPaused: isTokenDepositPausedUSDT,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDT,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDT,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDT,
+    refetchCurrentData: refetchCurrentDataUSDT,
+  } = useTokenDetails(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
+
+  // checking all pause variable for usdt
+  const isUSDTPauseInAllStatus =
+    (isTokenWithdrawPausedUSDT ||
+      isTokenDepositWithdrawPausedUSDT ||
+      isFunctionPausedCDS_Withdraw) &&
+    Boolean(position.depositedAmounts?.usda);
+
+  // checking all asset pause or not
+  const isWithdrawPause =
+    isMODEPauseInAllStatus ||
+    isOPPauseInAllStatus ||
+    isUSDaPauseInAllStatus ||
+    isUSDTPauseInAllStatus;
 
   const NewDetails = [
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Tokens deposited`,
       value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
         2
       )} ($${(
-        (Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-        1e6
+        Number(position?.depositedAmounts?.nativeToken) *
+        Number(position?.nativeTokenPriceAtDeposit)
       ).toFixed(2)})`,
       tooltip: false,
       tooltipText: "",
@@ -122,26 +213,22 @@ export function DcdsWithdrawModal({
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Adjusted Deposit Value (30% markdown)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-          1e6 -
-        (((Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit)) /
-          1e6) *
+          Number(position?.nativeTokenPriceAtDeposit) *
           30) /
-          100
+        100
       ).toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit) / 1e6,
+      value: Number(position?.nativeTokenPriceAtDeposit),
       tooltip: false,
       tooltipText: "",
     },
@@ -191,7 +278,7 @@ export function DcdsWithdrawModal({
       value: "0",
       tooltip: false,
       tooltipText: `${
-        Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Status`,
     },
   ];
@@ -296,9 +383,10 @@ export function DcdsWithdrawModal({
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(250000, 0)
+    .addExecutorLzReceiveOption(305000000, 0)
     .toHex()
     .toString() as `0x${string}`;
+
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
     options,
     5,
@@ -313,7 +401,9 @@ export function DcdsWithdrawModal({
     isDcdsWithdrawGainPending,
     resetDcdsWithdrawGain,
   } = useDcdsWithdrawGain({
-    onError: () => {
+    onError: (error: any) => {
+      console.log(error, "error");
+
       setTimeout(() => {
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
@@ -339,9 +429,11 @@ export function DcdsWithdrawModal({
 
   useEffect(() => {
     if (cdsWithdrawGainReceiptIsSuccess) {
-      setWithdrawMethodLoading(false);
+      setTimeout(() => {
+        setWithdrawGainLoading(false);
+      }, 800);
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           cdsWithdrawGainReceipt.transactionHash
         } `;
         return (
@@ -349,13 +441,20 @@ export function DcdsWithdrawModal({
             title="Withdraw Successful"
             message=""
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
           />
         );
       });
+      setTimeout(() => {
+        dcdsPositionListRefetch();
+      }, 1000);
+      dcdsPositionListRefetch();
+      handleCloseDialog();
     }
     if (cdsWithdrawGainIsErrorReceipt) {
       setTimeout(() => {
@@ -414,18 +513,17 @@ export function DcdsWithdrawModal({
         setTimeout(() => {
           setWithdrawGainLoading(true);
         }, 1000);
-        const res = await refetchBorrowWithDrawSignedData();
+        dcdsPositionListRefetch();
+        const res = await refetchBorrowWithDrawGainsSignedData();
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
-          res.data?.excessProfitCumulativeValue,
           res.data?.odosAssembledData,
           res.data?.usdtFromOdos,
           res.data?.nonce,
           res.data?.deadline,
           res.data?.signature,
         ]);
-      }
-      if (isCdserrorReceipt) {
+      } else if (isCdserrorReceipt) {
         setTimeout(() => {
           setDcdsFundWithdrawLoadingLocal(false);
         }, 1000);
@@ -446,9 +544,10 @@ export function DcdsWithdrawModal({
     callEffect();
   }, [cdsLogdataReceipt, isCdserrorReceipt]);
 
-  const { refetchBorrowWithDrawSignedData } = useGetDcdsWithdrawSignedData(
-    position.index
-  );
+  const {
+    refetchBorrowWithDrawSignedData,
+    refetchBorrowWithDrawGainsSignedData,
+  } = useGetDcdsWithdrawSignedData(position.index);
 
   const handleWithdrawFund = async () => {
     setDcdsFundWithdrawLoadingLocal(true);
@@ -471,10 +570,9 @@ export function DcdsWithdrawModal({
       }
     } else if (position.status == "WITHDREW") {
       setWithdrawGainLoading(true);
-      const res = await refetchBorrowWithDrawSignedData();
+      const res = await refetchBorrowWithDrawGainsSignedData();
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
-        res.data?.excessProfitCumulativeValue,
         res.data?.odosAssembledData,
         res.data?.usdtFromOdos,
         res.data?.nonce,
@@ -621,24 +719,42 @@ export function DcdsWithdrawModal({
             </Typography>
             <div className="h-[50px] overflow-hidden  md:h-[86px]">
               {!dcdsFundWithdrawLoadingLocal && (
-                <Button
-                  onClick={handleWithdrawFund}
-                  disabled={
-                    (position.status === "WITHDREW" ? true : false) ||
-                    Number(position.lockingPeriod) * 1000 > Date.now()
-                  }
-                  className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
-                >
-                  {position.status == "DEPOSITED"
-                    ? "Close Position"
-                    : position.status == "WITHDREW"
-                    ? "Withdraw"
-                    : position.status == "WITHDREW_GAINS "
-                    ? "Withdrawn"
-                    : position.status == "LIQUIDATED "
-                    ? "Liquidated"
-                    : "Withdrawn"}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="h-full">
+                      <Button
+                        onClick={handleWithdrawFund}
+                        disabled={
+                          (position.status === "WITHDREW_GAINS"
+                            ? true
+                            : false) ||
+                          Number(position.lockingPeriod) * 1000 > Date.now() ||
+                          isWithdrawPause
+                        }
+                        className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                      >
+                        {position.status == "DEPOSITED"
+                          ? "Close Position"
+                          : position.status == "WITHDREW"
+                          ? "Withdraw"
+                          : position.status == "WITHDREW_GAINS"
+                          ? "Withdrawn"
+                          : position.status == "LIQUIDATED "
+                          ? "Liquidated"
+                          : "Withdrawn"}
+
+                        <span className="text-base mt-1">
+                          {isWithdrawPause && "(Paused)"}
+                        </span>
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  {isWithdrawPause && (
+                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                      <p>{"Withdraw is paused now"}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
               )}
               {/* <LoadingBox
                 isLoading={withdrawMethodLoading}
@@ -651,7 +767,7 @@ export function DcdsWithdrawModal({
                 isLoading={withdrawMethodLoading}
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
-                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                setSuccessLoading={() => false}
                 heading="Closing Position"
                 loadingCount="1/2"
               />

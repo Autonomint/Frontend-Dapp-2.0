@@ -11,8 +11,6 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
-console.log(projectId, "projectId");
-
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",
@@ -21,7 +19,7 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
+  networks: [optimismSepolia, baseSepolia, sepolia],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -34,8 +32,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [optimismSepolia, modeTestnet, baseSepolia, sepolia],
-  defaultNetwork: modeTestnet,
+  networks: [optimismSepolia, baseSepolia, sepolia],
+  defaultNetwork: baseSepolia,
   metadata: metadata,
   features: {
     email: false,

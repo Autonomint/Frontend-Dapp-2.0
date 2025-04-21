@@ -1,4 +1,4 @@
-export const amintValues = [
+export const usdaValues = [
   {
     headline: "Total Supply",
     value: "0",
@@ -8,13 +8,13 @@ export const amintValues = [
     value: "0",
   },
 ];
-export const amintPrice = [
+export const USDAPrice = [
   {
-    headline: "USDa Minted",
+    headline: "USDA+ Minted",
     value: "0",
   },
   {
-    headline: "USDa price",
+    headline: "USDA+ price",
     value: "$1",
   },
 ];
@@ -25,7 +25,7 @@ export const lockedValues = [
   },
   {
     headline: "Total Stablecoins Locked",
-    value: "0 USDa",
+    value: "0 USDA+",
   },
 ];
 export const RatioValues = [

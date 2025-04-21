@@ -33,7 +33,7 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum, scanUrls } from "@/utils/constants";
+import { BorrowAssetsEnum, NetworkId, scanUrls } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
@@ -41,6 +41,13 @@ import {
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import { Network } from "ethers";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -70,9 +77,11 @@ function InputForm({ currency }: { currency: string }) {
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
 
+  const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
+
   console.log(ethPrice, assetPrice, "eth");
 
-  const [amintToBeMinted, setAmintToBeMinted] = useState("0");
+  const [usdaToBeMinted, setUsdaToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
   const { address, isConnected } = useAccount();
@@ -197,7 +206,7 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           Depositdata.transactionHash
         } `;
 
@@ -206,7 +215,9 @@ function InputForm({ currency }: { currency: string }) {
             title="Mint Successful"
             message="New Deposit has been created"
             linkText={
-              chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+              Number(chainId) === NetworkId.BaseSepolia
+                ? "View On Basescan"
+                : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -322,19 +333,19 @@ function InputForm({ currency }: { currency: string }) {
   }
 
   /**
-   * Handles the calculation and setting of the amint to be minted and downside protection amounts.
+   * Handles the calculation and setting of the usda to be minted and downside protection amounts.
    */
   const CalculateAmtToBeMinted = async () => {
     try {
-      // Calculate the amint to be minted
+      // Calculate the usda to be minted
       const optionf = optionFees || 0;
-      const amintToMint =
+      const usdaToMint =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          80) /
+          Number(ltv || 0)) /
         10000;
-      const amint2Decimal = displayNumberWithPrecision(amintToMint.toString());
-      setAmintToBeMinted((Number(amint2Decimal) - optionf).toFixed(2));
+      const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
+      setUsdaToBeMinted((Number(udsa2Decimal) - optionf).toFixed(2));
 
       // Calculate the downside protection amount
       const downsideProtection =
@@ -366,7 +377,7 @@ function InputForm({ currency }: { currency: string }) {
         collateralAmount: "select collateral type",
       });
     } else if (formik.values.collateralAmount == 0) {
-      setAmintToBeMinted("0");
+      setUsdaToBeMinted("0");
       setDownsideProtectionAmnt("0");
       setUpsideCollateral(0);
       CalculateAmtToBeMinted();
@@ -387,6 +398,7 @@ function InputForm({ currency }: { currency: string }) {
     formik.values.collateralAmount,
     formik.values.strikePricePercent,
     optionFees,
+    ltv,
   ]);
 
   const handleSetMaxBal = () => {
@@ -401,7 +413,7 @@ function InputForm({ currency }: { currency: string }) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
-        <div className=" font-medium text-2xl">Mint USDa</div>
+        <div className=" font-medium text-2xl">Mint USDA+</div>
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
@@ -448,16 +460,17 @@ function InputForm({ currency }: { currency: string }) {
             <div className="flex">
               <div className="relative w-full">
                 <Input
-                  value={amintToBeMinted}
+                  value={usdaToBeMinted}
                   readOnly
                   className="rounded-none md:text-subtitle h-12 px-4"
                 />
                 <Button
+                  type="button"
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 md:text-subtitle font-medium px-4 text-textBlack dark:text-white"
                   variant={"ghost"}
                   size={"sm"}
                 >
-                  USDa
+                  USDA+
                 </Button>
               </div>
             </div>
@@ -478,21 +491,36 @@ function InputForm({ currency }: { currency: string }) {
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={optionFees.toFixed(2)}
-          usdaBorrowed={amintToBeMinted == "0" ? "0.00" : amintToBeMinted}
+          usdaBorrowed={usdaToBeMinted == "0" ? "0.00" : usdaToBeMinted}
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />
       </div>
       <div className="col-span-1 overflow-hidden h-[85px]">
         {address && isConnected ? (
           !mintBtnLoading && (
-            <Button
-              type="submit"
-              className={`
-               bg-black dark:bg-custom-gradient-to-top py-6
-             text-white  font-semibold text-[24px] w-full h-full rounded-md `}
-            >
-              {!mintBtnLoading && "Mint USDa"}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="h-full">
+                  <Button
+                    disabled={isFunctionPausedBorrow_Deposit}
+                    type="submit"
+                    className={`
+                    bg-black dark:bg-custom-gradient-to-top py-6
+                    text-white  font-semibold text-[24px] w-full h-full rounded-md `}
+                  >
+                    {!mintBtnLoading && "Mint USDA+"}{" "}
+                    <span className="text-base">
+                      {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                    </span>
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              {isFunctionPausedBorrow_Deposit && (
+                <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                  <p>{"Borrow is paused now"}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
           )
         ) : (
           <WalletConnectButton />
@@ -502,8 +530,8 @@ function InputForm({ currency }: { currency: string }) {
           isFailure={depositError || depositHashError}
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
-          heading="Minting USDa"
-          loadingCount="2/2"
+          heading="Minting USDA+"
+          loadingCount={currency.toLocaleLowerCase() === "eth" ? "1/1" : "2/2"}
         />
         <LoadingBox
           isLoading={approveLoading}

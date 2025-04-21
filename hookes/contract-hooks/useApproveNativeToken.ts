@@ -42,12 +42,12 @@ const useApproveNativeToken = (mutation: any) => {
   //         ) * BigInt(lastCumulativeRate ?? 0n)
   //       ) /
   //         BigInt(10 ** 27) +
-  //         1000000n, // Total amint amount
+  //         1000000n, // Total usda amount
   //     ],
   //   });
   // };
 
-  const abi = chainId === NetworkId.Mode ? modeABI : modeABI;
+  const abi = chainId === NetworkId.BaseSepolia ? modeABI : modeABI;
   const tokenContractAddress =
     nativeTokenAddress[chainId as keyof typeof nativeTokenAddress];
 

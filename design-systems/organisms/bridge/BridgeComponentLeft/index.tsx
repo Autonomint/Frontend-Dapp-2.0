@@ -69,10 +69,10 @@ export default function BridgeComponentLeft({
               Token
             </span>
             <GenericDropdownMenu
-              buttonText={token}
+              buttonText={`${token.toLocaleUpperCase()}+`}
               items={[
                 {
-                  label: "USDa",
+                  label: "USDA+",
                   onClick: () => setSendToken("USDa"),
                 },
               ]}

@@ -10,6 +10,7 @@ import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
 import USDaIcon from "@/app/assets/logo.svg";
 import ModeIcon from "@/app/assets/mode.png";
 import OPIcon from "@/app/assets/optimism.png";
+import AEROIcon from "@/app/assets/aero-icon.png";
 import {
   cdsAddress,
   nativeTokenAddress,
@@ -48,7 +49,11 @@ import {
   scanUrls,
   USDT_DEPOSIT_LIMIT_IN_DCDS,
 } from "@/utils/constants";
-import { formatNumber, handleWheel } from "@/utils/helpers";
+import {
+  formatNumber,
+  getTotalDepositingAmount,
+  handleWheel,
+} from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { Info, Network } from "lucide-react";
@@ -56,7 +61,11 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import PageLoader from "@/design-systems/molecule/page-loader";
@@ -67,6 +76,10 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useApproveNativeToken from "@/hookes/contract-hooks/useApproveNativeToken";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
 import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import { cdsAbi } from "@/blockchain/abis/dcds";
+import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
+import { get } from "http";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -170,12 +183,12 @@ function DCDSTemplate() {
     initialValues: {
       usdaFlag: false,
       usdtFlag: false,
-      modeFlag: false,
+      aeroFlag: false,
       opFlag: false,
       usdaAmount: null,
       usdtAmount: null,
       opAmount: null,
-      modeAmount: null,
+      aeroAmount: null,
       lockInPeriod: null,
       liquidationGains: false,
     },
@@ -205,22 +218,25 @@ function DCDSTemplate() {
     },
   ];
 
-  const showToastError = () => {
-    toast.custom((t) => (
-      <ToastNotification
-        title="Transaction failed"
-        message="Please try again"
-        linkText=""
-        linkUrl=""
-        onClose={() => toast.dismiss(t)}
-        className="bg-[#AA0001]"
-      />
-    ));
-  };
+  useEffect(() => {
+    setSelectedTokens([]);
+  }, [chainId]);
 
   const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
   const { getOraclePrice, getOraclePriceRefetch } =
     useMasterPriceOracle(nativeTokenAdds);
+
+  const {
+    getOraclePrice: getOraclePriceUSDa,
+    getOraclePriceRefetch: getOraclePriceRefetchUSDa,
+  } = useMasterPriceOracle(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  const {
+    getOraclePrice: getOraclePriceUSDT,
+    getOraclePriceRefetch: getOraclePriceRefetchUSDT,
+  } = useMasterPriceOracle(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
@@ -242,40 +258,110 @@ function DCDSTemplate() {
   console.log(isTVLPendingUsd, "tvlValue");
 
   // console.log(omniChainData, "omniChainData");
-
   const { balanceString: usdtBalance } = useGetBalance("USDT");
   const { balanceString: usdaBalance } = useGetBalance("USDa");
   const { balance: opBalance } = useGetBalance("OP");
   const { balanceString: modeBalanceString, balance: modeBalance } =
-    useGetBalance("MODE");
+    useGetBalance("AERO");
+
+  //checking is Cds Deposit pause or not
+  const { isFunctionPausedCDS_Deposit } = useCdsPause();
+
+  // getting mode token status
+  const {
+    assetDetails: assetDetailsMode,
+    isTokenDepositPaused: isTokenDepositPausedMode,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedMode,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedMode,
+    isTokenWithdrawPaused: isTokenWithdrawPausedMode,
+    refetchCurrentData: refetchCurrentDataMode,
+  } = useTokenDetails(nativeTokenAddress[NetworkId.BaseSepolia]);
+
+  // getting op token status
+  const {
+    assetDetails: assetDetailsOP,
+    isTokenDepositPaused: isTokenDepositPausedOP,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedOP,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedOP,
+    isTokenWithdrawPaused: isTokenWithdrawPausedOP,
+    refetchCurrentData: refetchCurrentDataOP,
+  } = useTokenDetails(nativeTokenAddress[NetworkId.Optimism]);
+
+  // getting usda token status
+  const {
+    assetDetails: assetDetailsUSDa,
+    isTokenDepositPaused: isTokenDepositPausedUSDa,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDa,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDa,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDa,
+    refetchCurrentData: refetchCurrentDataUSDa,
+  } = useTokenDetails(usDaAddress[chainId as keyof typeof testusdtAbiAddress]);
+
+  // getting mode token usdt
+  const {
+    assetDetails: assetDetailsUSDT,
+    isTokenDepositPaused: isTokenDepositPausedUSDT,
+    isTokenDepositWithdrawPaused: isTokenDepositWithdrawPausedUSDT,
+    isTokenDepositWithdrawUnpaused: isTokenDepositWithdrawUnpausedUSDT,
+    isTokenWithdrawPaused: isTokenWithdrawPausedUSDT,
+    refetchCurrentData: refetchCurrentDataUSDT,
+  } = useTokenDetails(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
 
   console.log(
-    Number(opBalance),
-    Number(opBalance) * Number(getOraclePrice[1]),
-    "getOraclePrice"
+    getOraclePriceUSDa[0],
+    getOraclePriceUSDT[0],
+    "getOraclePriceUSDa"
   );
+
+  // getting current LTV value
+  const { data: usdtLimit, refetch: refetchCurrentData } = useReadContract({
+    abi: cdsAbi,
+    address: cdsAddress[chainId as keyof typeof cdsAddress],
+    functionName: "usdtLimit",
+  });
+  const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
 
   const tokenList: TokenDetails[] = useMemo(() => {
     const tokenList = [
       {
         tokenImage: USDaIcon,
         tokenName: "USDa",
+        tokenLabel: "USDA+",
         isLoading: false,
         active:
-          (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
-          USDT_DEPOSIT_LIMIT_IN_DCDS,
+          USDT_DEPOSIT_LIMIT_IN_DCDS === 0
+            ? true
+            : (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
+              USDT_DEPOSIT_LIMIT_IN_DCDS,
         // active: true,
         errorMessage: "USDa not active now",
         balanceAvailable: usdaBalance,
+        // tokenCount: Number(usdaBalance),
         minTokenAmount: 500,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenDepositPausedUSDa ||
+          isTokenWithdrawPausedUSDa,
+        tokenPauseMessage: "USDa Deposit is paused now",
+        tokenPrice: getOraclePriceUSDa[0],
       },
       {
         tokenImage: UsdtIcon,
         tokenName: "USDT",
+        tokenLabel: "USDT",
         isLoading: false,
         minTokenAmount: 500,
         active: true,
         balanceAvailable: usdtBalance,
+        // tokenCount: Number(usdtBalance),
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedUSDT ||
+          isTokenDepositWithdrawPausedUSDT,
+        tokenPauseMessage: "USDT Deposit is paused now",
+        tokenPrice: getOraclePriceUSDT[0],
       },
     ] as TokenDetails[];
 
@@ -283,39 +369,58 @@ function DCDSTemplate() {
       tokenList.push({
         tokenImage: OPIcon,
         tokenName: "OP",
+        tokenLabel: "OP",
         isLoading: false,
         minTokenAmount: 500,
         active:
-          (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
-          USDT_DEPOSIT_LIMIT_IN_DCDS,
+          USDT_DEPOSIT_LIMIT_IN_DCDS === 0
+            ? true
+            : (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
+              USDT_DEPOSIT_LIMIT_IN_DCDS,
         // active: true,
         errorMessage: "OP not active now",
         balanceAvailable: String(
           `$${(
             Number(opBalance) *
-            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
+            Number(formatUnits(BigInt(getOraclePrice[0]), 18))
           ).toFixed(2)}`
         ),
+        tokenPrice: getOraclePrice[0],
         tokenCount: opBalance,
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedOP ||
+          isTokenDepositWithdrawPausedOP,
+        tokenPauseMessage: "OP Deposit is paused now",
       });
     }
-    if (chainId == Number(NetworkId.Mode)) {
+    if (chainId == Number(NetworkId.BaseSepolia)) {
       tokenList.push({
-        tokenImage: ModeIcon,
-        tokenName: "Mode",
+        tokenImage: AEROIcon,
+        tokenName: "AERO",
+        tokenLabel: "AERO",
         minTokenAmount: 500,
         isLoading: false,
         active:
-          (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
-          USDT_DEPOSIT_LIMIT_IN_DCDS,
+          USDT_DEPOSIT_LIMIT_IN_DCDS === 0
+            ? true
+            : (GlobalContractData?.usdtAmountDepositedTillNow ?? 0n) >=
+              USDT_DEPOSIT_LIMIT_IN_DCDS,
+        // active: true,
         errorMessage: "Mode not active now",
         balanceAvailable: String(
           `$${(
             Number(modeBalance) *
-            Number(formatUnits(BigInt(getOraclePrice[1]), 6))
+            Number(formatUnits(BigInt(getOraclePrice[0]), 18))
           ).toFixed(2)}`
         ),
         tokenCount: modeBalance,
+        tokenPrice: getOraclePrice[0],
+        isTokenPause:
+          isFunctionPausedCDS_Deposit ||
+          isTokenWithdrawPausedMode ||
+          isTokenDepositWithdrawPausedMode,
+        tokenPauseMessage: "AERO Deposit is paused now",
       });
     }
 
@@ -412,15 +517,30 @@ function DCDSTemplate() {
   const usdtAmountLocal = formik.values.usdtAmount;
   const usdaAmountLocal = formik.values.usdaAmount;
   const opAmountLocal = formik.values.opAmount;
-  const modeAmountLocal = formik.values.modeAmount;
+  const modeAmountLocal = formik.values.aeroAmount;
   const liquidationGains = formik.values.liquidationGains;
   const lockInPeriodLocal = formik.values.lockInPeriod;
+
   const nativeTokenAmount =
-    chainId == NetworkId.Mode
-      ? ((Number(formik.values.modeAmount) || 0) * 1e6) /
-        Number(getOraclePrice[1])
-      : ((Number(formik.values.opAmount) || 0) * 1e6) /
-        Number(getOraclePrice[1]);
+    chainId == NetworkId.BaseSepolia
+      ? Number(formik.values.aeroAmount) || 0
+      : Number(formik.values.opAmount) || 0;
+
+  const nativeTokenAmountDollor =
+    chainId == NetworkId.BaseSepolia
+      ? ((Number(formik.values.aeroAmount) || 0) * Number(getOraclePrice[0])) /
+        1e18
+      : ((Number(formik.values.opAmount) || 0) * Number(getOraclePrice[0])) /
+        1e18;
+
+  console.log(
+    formik.values.aeroAmount,
+    nativeTokenAmount,
+    "nativeTokenAmount",
+    getOraclePrice[0],
+    nativeTokenAmountDollor
+  );
+
   const usdaTokenAdds = usDaAddress[chainId as keyof typeof usDaAddress];
 
   const usdtTokenAdds = formik.values.usdtFlag
@@ -428,17 +548,106 @@ function DCDSTemplate() {
     : zeroAddress;
   const price = getOraclePrice as [number, number];
 
-  const liqAmnt = Math.floor(
-    (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
-      Number(usdtAmountLocal ? usdtAmountLocal : 0) +
-      (Number(nativeTokenAmount) *
-        Number(process.env.NEXT_PUBLIC_NATIVE_TOKEN_PERCENTAGE || 0) *
-        Number(price[1])) /
-        1e6) *
-      1e6
-  );
+  // const liqAmnt = Math.floor(
+  //   (Number(usdaAmountLocal ? usdaAmountLocal : 0) +
+  //     Number(usdtAmountLocal ? usdtAmountLocal : 0) +
+  //     (Number(nativeTokenAmount) *
+  //       Number(process.env.NEXT_PUBLIC_NATIVE_TOKEN_PERCENTAGE || 0) *
+  //       Number(price[1])) /
+  //       1e6) *
+  //     1e6
+  // );
 
-  console.log(liqAmnt, nativeTokenAmount, "liqAmnt");
+  const { data: getPrices } = useReadContract({
+    address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    abi: cdsAbi,
+    functionName: "getPrices",
+    args: [
+      [
+        formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
+        formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
+        formik.values.opFlag || formik.values.aeroFlag
+          ? nativeTokenAdds
+          : zeroAddress,
+      ],
+    ],
+    query: {
+      enabled:
+        formik.values.usdaFlag ||
+        formik.values.usdtFlag ||
+        formik.values.opFlag ||
+        formik.values.aeroFlag,
+    },
+  });
+
+  const liqAmnt = useMemo(() => {
+    let res = 0;
+    if (
+      formik.values.aeroAmount ||
+      formik.values.opAmount ||
+      formik.values.usdaAmount ||
+      formik.values.usdtAmount
+    ) {
+      res = getTotalDepositingAmount(
+        getPrices,
+        [
+          formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
+          formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
+          formik.values.opFlag || formik.values.aeroFlag
+            ? nativeTokenAdds
+            : zeroAddress,
+        ],
+        [
+          BigInt(
+            usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
+          ),
+          BigInt(
+            usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
+          ),
+          BigInt(
+            formik.values.opFlag || formik.values.aeroFlag
+              ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
+              : 0
+          ),
+        ],
+        [
+          assetDetailsUSDa,
+          assetDetailsUSDT,
+          chainId === NetworkId.BaseSepolia ? assetDetailsMode : assetDetailsOP,
+        ]
+      );
+    }
+    return res;
+  }, [
+    formik.values.aeroAmount,
+    formik.values.opAmount,
+    formik.values.usdaAmount,
+    formik.values.usdtAmount,
+  ]);
+
+  console.log(
+    liqAmnt,
+    getPrices,
+    [
+      formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
+      formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
+      formik.values.opFlag || formik.values.aeroFlag
+        ? nativeTokenAdds
+        : zeroAddress,
+    ],
+    [
+      BigInt(usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0),
+      BigInt(usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0),
+      BigInt(
+        formik.values.opFlag || formik.values.aeroFlag
+          ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
+          : 0
+      ),
+    ],
+    [assetDetailsUSDa, assetDetailsUSDT, assetDetailsMode],
+    nativeTokenAddress[NetworkId.BaseSepolia],
+    "liqAmnt"
+  );
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
@@ -453,7 +662,7 @@ function DCDSTemplate() {
             [
               formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
               formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.modeFlag
+              formik.values.opFlag || formik.values.aeroFlag
                 ? nativeTokenAdds
                 : zeroAddress,
             ],
@@ -465,7 +674,7 @@ function DCDSTemplate() {
                 usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
               ),
               BigInt(
-                formik.values.opFlag || formik.values.modeFlag
+                formik.values.opFlag || formik.values.aeroFlag
                   ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                   : 0
               ),
@@ -484,13 +693,13 @@ function DCDSTemplate() {
     if (UsdtApprovalSuccessReceipt) {
       setUsdtApproveLoadingLocal(false);
 
-      if (formik.values.opAmount || formik.values.modeAmount) {
-        if (formik.values.modeFlag || formik.values.opFlag) {
+      if (formik.values.opAmount || formik.values.aeroAmount) {
+        if (formik.values.aeroFlag || formik.values.opFlag) {
           setNativeTokenLoadingLocal(true);
           approveNativeTokenDynamic(
             cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
             BigInt(
-              formik?.values?.modeFlag
+              formik?.values?.aeroFlag
                 ? parseUnits(nativeTokenAmount.toString() || "0", 18)
                 : formik?.values?.opFlag
                 ? parseUnits(nativeTokenAmount.toString() || "0", 18)
@@ -507,7 +716,7 @@ function DCDSTemplate() {
             [
               formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
               formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.modeFlag
+              formik.values.opFlag || formik.values.aeroFlag
                 ? nativeTokenAdds
                 : zeroAddress,
             ],
@@ -519,8 +728,8 @@ function DCDSTemplate() {
                 usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
               ),
               BigInt(
-                formik.values.opFlag || formik.values.modeFlag
-                  ? parseUnits(nativeTokenAmount?.toString() || "0", 6)
+                formik.values.opFlag || formik.values.aeroFlag
+                  ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                   : 0
               ),
             ],
@@ -567,7 +776,7 @@ function DCDSTemplate() {
     }
   }, [DepositdataReceipt]);
 
-  // useEffect to check the status of the amint approval transaction
+  // useEffect to check the status of the usda approval transaction
   useEffect(() => {
     if (usdaApprovalSuccessReceipt) {
       setUsdaApproveLoadingLocal(false);
@@ -586,7 +795,7 @@ function DCDSTemplate() {
               : 0
           ),
         ]);
-      } else if (formik.values.opAmount || formik.values.modeAmount) {
+      } else if (formik.values.opAmount || formik.values.aeroAmount) {
         setTimeout(() => {
           setNativeTokenLoadingLocal(true);
         }, 600);
@@ -594,7 +803,7 @@ function DCDSTemplate() {
         approveNativeTokenDynamic(
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
           BigInt(
-            formik?.values?.modeFlag
+            formik?.values?.aeroFlag
               ? parseUnits(nativeTokenAmount.toString() || "0", 18)
               : formik?.values?.opFlag
               ? parseUnits(nativeTokenAmount.toString() || "0", 18)
@@ -611,7 +820,7 @@ function DCDSTemplate() {
               [
                 formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
                 formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-                formik.values.opFlag || formik.values.modeFlag
+                formik.values.opFlag || formik.values.aeroFlag
                   ? nativeTokenAdds
                   : zeroAddress,
               ],
@@ -627,8 +836,8 @@ function DCDSTemplate() {
                     : 0
                 ),
                 BigInt(
-                  formik.values.opFlag || formik.values.modeFlag
-                    ? parseUnits(nativeTokenAmount?.toString() || "0", 6)
+                  formik.values.opFlag || formik.values.aeroFlag
+                    ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
                     : 0
                 ),
               ],
@@ -682,6 +891,7 @@ function DCDSTemplate() {
           ),
           cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`
         );
+
         return;
       }
     }
@@ -697,12 +907,12 @@ function DCDSTemplate() {
       ]);
       return;
     }
-    if (formik.values.modeFlag || formik.values.opFlag) {
+    if (formik.values.aeroFlag || formik.values.opFlag) {
       setNativeTokenLoadingLocal(true);
       approveNativeTokenDynamic(
         cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
         BigInt(
-          formik?.values?.modeFlag
+          formik?.values?.aeroFlag
             ? parseUnits(nativeTokenAmount.toString() || "0", 18)
             : formik?.values?.opFlag
             ? parseUnits(nativeTokenAmount.toString() || "0", 18)
@@ -722,7 +932,7 @@ function DCDSTemplate() {
     setPortfolioTab("Deposited");
     resetLoadings();
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         DepositdataReceipt?.transactionHash
       } `;
       return (
@@ -730,7 +940,9 @@ function DCDSTemplate() {
           title="Deposit Successful"
           message=""
           linkText={
-            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+            Number(chainId) === NetworkId.BaseSepolia
+              ? "View On Basescan"
+              : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -759,34 +971,6 @@ function DCDSTemplate() {
     setDcdsDepositLoadingLocal(false);
     setNativeTokenLoadingLocal(false);
   };
-
-  const radius = 200; // Radius of the circle (adjustable for larger/smaller curves)
-
-  // Define the letters and calculate the angle for each one
-  const text = "The Wishing Well";
-  const characters = text.split("");
-  const angleIncrement = 180 / (characters.length - 1); // Spread letters evenly over 180 degrees
-  // Define the letters and their transformations
-  const letters = [
-    {
-      char: "T",
-      translate: "translate(24px, 100px)",
-      rotate: "rotate(-35deg)",
-    },
-    { char: "h", translate: "translate(18px, 80px)", rotate: "rotate(-30deg)" },
-    { char: "e", translate: "translate(12px, 60px)", rotate: "rotate(-25deg)" },
-    { char: "W", translate: "translate(8px, 45px)", rotate: "rotate(-20deg)" },
-    { char: "i", translate: "translate(5px, 35px)", rotate: "rotate(-15deg)" },
-    { char: "s", translate: "translate(3px, 25px)", rotate: "rotate(-10deg)" },
-    { char: "h", translate: "translate(1px, 15px)", rotate: "rotate(-5deg)" },
-    { char: "i", translate: "translate(0px, 10px)", rotate: "rotate(0deg)" },
-    { char: "n", translate: "translate(-1px, 10px)", rotate: "rotate(5deg)" },
-    { char: "g", translate: "translate(-3px, 15px)", rotate: "rotate(10deg)" },
-    { char: "W", translate: "translate(-5px, 25px)", rotate: "rotate(15deg)" },
-    { char: "e", translate: "translate(-8px, 45px)", rotate: "rotate(20deg)" },
-    { char: "l", translate: "translate(-12px, 60px)", rotate: "rotate(25deg)" },
-    { char: "l", translate: "translate(-18px, 80px)", rotate: "rotate(30deg)" },
-  ];
 
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
@@ -828,12 +1012,13 @@ function DCDSTemplate() {
       }
     };
   }, []);
+
   const depositValue = useMemo(() => {
     return (
       Number(formik.values?.usdaAmount) +
       Number(formik.values?.usdtAmount) +
       Number(formik.values?.opAmount) +
-      Number(formik.values?.modeAmount)
+      Number(formik.values?.aeroAmount)
     );
   }, [formik.values]);
 
@@ -877,76 +1062,6 @@ function DCDSTemplate() {
                 src={dcdsFrame}
                 alt="light-mode-image"
               />
-              {/* <div className="w-full h-full absolute"> */}
-              {/* <div className="loader relative"> */}
-              {/* <svg
-                    className="w-full h-full"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      id="topArc"
-                      d="M 270, 250 m -200, 10 a 200,200 0 0,1 450,0"
-                      fill="none"
-                    />
-
-                    <path
-                      id="bottomArc"
-                      d="M 270, 250 m -200, 190 a 250,250 0 0,0  450,0"
-                      fill="none"
-                    />
-
-                    <text font-size="44" fill="gray">
-                      <textPath
-                        href="#topArc"
-                        startOffset="50%"
-                        text-anchor="middle"
-                      >
-                        The Wishing Well
-                      </textPath>
-                    </text>
-
-                    <text font-size="44" fill="gray">
-                      <textPath
-                        href="#bottomArc"
-                        startOffset="50%"
-                        text-anchor="middle"
-                      >
-                        The Wishing Well
-                      </textPath>
-                    </text>
-                  </svg> */}
-              {/* <div
-                    style={{
-                      textAlign: "center",
-                      paddingTop: "",
-                      fontSize: "42px",
-                      color: "green",
-                    }}
-                  >
-                    {letters.map((letter, index) => (
-                      <span
-                        key={index}
-                        style={{
-                          display: "inline-block",
-                          transform: `${letter.translate} ${letter.rotate}`,
-                        }}
-                      >
-                        {letter.char}
-                      </span>
-                    ))}
-                  </div> */}
-              {/* </div> */}
-              {/* {selectedTokens.length === 0 && (
-                  <Typography
-                    className="absolute z-20 text-grayLight  left-1/2 top-1/2 -translate-x-1/2 text-center -translate-y-1/2 w-[30%]"
-                    size="lg"
-                    variant="condensed"
-                  >
-                    Drop your desired coin into this well and it will grant you
-                    your wish
-                  </Typography>
-                )} */}
-              {/* </div> */}
             </div>
 
             {selectedTokens.length > 0 && (
@@ -978,7 +1093,7 @@ function DCDSTemplate() {
                 })}
 
                 <span className="text-[28px] font-medium mt-1 absolute bottom-6">
-                  {selectedTokens[0].tokenName}
+                  {selectedTokens[0].tokenLabel || selectedTokens[0].tokenName}
                   {selectedTokens.length > 1 &&
                     ` +${selectedTokens.length - 1}`}
                 </span>
@@ -1026,21 +1141,37 @@ function DCDSTemplate() {
                     htmlFor={`token-${key}`}
                     className="text-grayLight text-lg font-medium"
                   >
-                    {token.tokenName}
+                    {token.tokenLabel || token.tokenName}
                   </Label>
-                  <Input
-                    onWheel={handleWheel}
-                    type="number"
-                    name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
-                    id={`token-${key}`}
-                    className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
-                    placeholder="0"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values[
-                      `${token.tokenName}Amount` as keyof FormValues
-                    ]?.toString()}
-                  />
+                  <div className="flex flex-nowrap">
+                    <Input
+                      onWheel={handleWheel}
+                      type="number"
+                      name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
+                      id={`token-${key}`}
+                      className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
+                      placeholder="0"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values[
+                        `${token.tokenName}Amount` as keyof FormValues
+                      ]?.toString()}
+                    />
+                    <div className="p-1 flex justify-center items-center border-[1px] border-y border-x border-grayLight font-medium md:text-[20px] dark:text-[20px] border-l-0 text-grayLight">
+                      <span>
+                        $
+                        {(
+                          (Number(
+                            formik.values[
+                              `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
+                            ]
+                          ) *
+                            Number(token?.tokenPrice || 0)) /
+                          1e18
+                        ).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                   <div className="flex justify-between">
                     <span className="text-[18px] font-medium text-grayLight">
                       Min $100
@@ -1138,13 +1269,28 @@ function DCDSTemplate() {
             <div className=" h-[86px] overflow-hidden">
               {isConnected && address ? (
                 !dcdsLoadingLocal && (
-                  <Button
-                    type="submit"
-                    onClick={() => formik.handleSubmit()}
-                    className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
-                  >
-                    Deposit
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          disabled={isFunctionPausedCDS_Deposit}
+                          type="submit"
+                          onClick={() => formik.handleSubmit()}
+                          className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
+                        >
+                          Deposit
+                          <span className="text-base">
+                            {isFunctionPausedCDS_Deposit && "(Paused)"}
+                          </span>
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isFunctionPausedCDS_Deposit && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Cds Deposit is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
                 )
               ) : (
                 <WalletConnectButton />
@@ -1174,7 +1320,7 @@ function DCDSTemplate() {
                 isFailure={usdaApprovalErrorReceipt || usdaApproveError}
                 isSuccess={Boolean(usdaApprovalReceiptReceipt)}
                 setSuccessLoading={() => console.log(true)}
-                heading="Approving USDa"
+                heading="Approving USDA+"
                 loadingCount={
                   selectedTokens.length === 3
                     ? "1/4"
@@ -1196,7 +1342,7 @@ function DCDSTemplate() {
                 isSuccess={Boolean(nativeApprovalSuccessReceipt)}
                 setSuccessLoading={() => console.log(true)}
                 heading={`Approving ${
-                  chainId === NetworkId.Mode ? "Mode" : "OP"
+                  chainId === NetworkId.BaseSepolia ? "AERO" : "OP"
                 }`}
                 loadingCount={
                   selectedTokens.length === 3
@@ -1239,16 +1385,15 @@ function DCDSTemplate() {
       />
       <TokenTvlDetails
         icon={USDaIcon}
-        tokenName="USDa"
-        tvl={`$${(Number(tvlValueUSDa || 0) / 1e6).toFixed(2)} `}
+        tokenName="USDA+"
+        tvl={`$${formatNumber(Number(tvlValueUSDa || 0) / 1e6)} `}
       />
       <TokenTvlDetails
-        icon={chainId === NetworkId.Mode ? ModeIcon : OPIcon}
-        tokenName={chainId === NetworkId.Mode ? "MODE" : "OP"}
-        tvl={`$${(
-          ((Number(tvlValueNative) || 0) * Number(getOraclePrice[1])) /
-          1e24
-        ).toFixed(2)} `}
+        icon={chainId === NetworkId.BaseSepolia ? AEROIcon : OPIcon}
+        tokenName={chainId === NetworkId.BaseSepolia ? "AERO" : "OP"}
+        tvl={`$${formatNumber(
+          ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
+        )} `}
       />
       <HowItWorksPopUp
         isDialogOpen={isOptionHowItWork}

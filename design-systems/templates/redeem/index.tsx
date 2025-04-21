@@ -15,12 +15,19 @@ import {
 import { Button } from "@/design-systems/atoms/button";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import { Input } from "@/design-systems/atoms/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { NetworkId, scanUrls } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
@@ -85,6 +92,11 @@ const RedeemContainer = () => {
     },
   });
 
+  // getting value for borrow redeem pause
+  const { isFunctionPausedBorrow_Redeem } = useBorrowPause();
+  // getting cds pause data
+  const { isFunctionPausedCDS_Redeem } = useCdsPause();
+
   const chainId = useChainId();
 
   const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
@@ -94,7 +106,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
-  const { data: amintbalance, refetch: refetchBlAmint } = useBalance({
+  const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
     token: usDaAddress
       ? usDaAddress[chainId as keyof typeof usDaAddress]
@@ -105,16 +117,9 @@ const RedeemContainer = () => {
     if (formik.values.inputCollateral == "abond") {
       formik.setFieldValue("usdaBalance", Number(abondbalance?.formatted));
     } else if (formik.values.inputCollateral == "amint") {
-      formik.setFieldValue("usdaBalance", Number(amintbalance?.formatted));
+      formik.setFieldValue("usdaBalance", Number(usdabalance?.formatted));
     }
-  }, [abondbalance, amintbalance, formik.values.inputCollateral]);
-
-  const options = Options.newOptions()
-    .addExecutorLzReceiveOption(200000, 0)
-    .toHex()
-    .toString() as `0x${string}`;
-  const Eid = chainId === 11155111 ? 40245 : 40161;
-  // const { quoteValue: nativeFee1, quoteError } = useGetGlobalQuote(options);
+  }, [abondbalance, usdabalance, formik.values.inputCollateral]);
 
   const {
     isPending: amintApproveLoading,
@@ -141,17 +146,6 @@ const RedeemContainer = () => {
   } = useWaitForTransactionReceipt({
     hash: amintApproveData,
   });
-
-  console.log(
-    formik.values.redeemTokenName === "USDT"
-      ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-      : formik.values.redeemTokenName === "USDC"
-      ? usdcAddress[chainId as keyof typeof usdcAddress]
-      : formik.values.redeemTokenName === "sUSD"
-      ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-      : zeroAddress,
-    "usd"
-  );
 
   useEffect(() => {
     if (usdaApproveSuccess) {
@@ -228,7 +222,7 @@ const RedeemContainer = () => {
   };
   const handleSuccess = () => {
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}${
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         redeemdataEth?.transactionHash
       } `;
       return (
@@ -236,7 +230,9 @@ const RedeemContainer = () => {
           title="Redeem Successful"
           message=""
           linkText={
-            chainId === 919 ? "View On Modescan" : "View On Optimismscan"
+            Number(chainId) === NetworkId.BaseSepolia
+              ? "View On Basescan"
+              : "View On Optimismscan"
           }
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
@@ -277,15 +273,6 @@ const RedeemContainer = () => {
     ],
   });
 
-  console.log(
-    outputData,
-    error,
-    formik.errors,
-    formik.values,
-    "outputData",
-    BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18)
-  );
-
   useEffect(() => {
     if (
       formik.values.inputCollateral === "abond" &&
@@ -315,7 +302,7 @@ const RedeemContainer = () => {
     ) {
       if (
         (formik.values.collateralAmount || 0) >
-        Number(amintbalance?.formatted.slice(0, 9))
+        Number(usdabalance?.formatted.slice(0, 9))
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
@@ -478,12 +465,12 @@ const RedeemContainer = () => {
         onClick: () => formik.setFieldValue("redeemTokenName", "USDC"),
       },
     ];
-    if (chainId === NetworkId.Mode) {
-      options.push({
-        label: "sUSD",
-        onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
-      });
-    }
+    // if (chainId === NetworkId.BaseSepolia) {
+    //   options.push({
+    //     label: "sUSD",
+    //     onClick: () => formik.setFieldValue("redeemTokenName", "sUSD"),
+    //   });
+    // }
     return options;
   }, [chainId]);
 
@@ -504,6 +491,8 @@ const RedeemContainer = () => {
             nameA: "Redeem",
             path: "/redeem",
             isActive: pathname === "/redeem",
+            InActiveHeading: "",
+            isFeatureActive: true,
           },
         ]}
       />
@@ -541,7 +530,7 @@ const RedeemContainer = () => {
                     formik.values.inputCollateral
                       ? `${
                           formik.values.inputCollateral === "amint"
-                            ? "USDa"
+                            ? "USDA+"
                             : "Abond"
                         }`
                       : "Select"
@@ -565,7 +554,7 @@ const RedeemContainer = () => {
                   Balance{" "}
                   <span className="text-grayLight">
                     {formik.values.inputCollateral == "amint"
-                      ? `${amintbalance?.formatted || 0} USDa`
+                      ? `${usdabalance?.formatted || 0} USDA+`
                       : `${abondbalance?.formatted || 0}  Abond`}
                   </span>
                 </div>
@@ -640,18 +629,54 @@ const RedeemContainer = () => {
             </div>
           </div>
         </div>
-        <div className="text-grayLight md:text-lg text-center lg:mb-4 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
+        <div className="text-grayLight md:text-lg text-center lg:mb-2 py-8 lg:py-0 lg:border-0 border-t border-solid border-grayLight text-[14px]">
           Note: 0% Withdrawal Fee will be applied.
         </div>
+        {isFunctionPausedBorrow_Redeem &&
+          formik.values.inputCollateral === "abond" && (
+            <div className="text-red-600 text-center lg:mb-2  ">
+              {"Abond redeem is paused now"}
+            </div>
+          )}
+        {isFunctionPausedCDS_Redeem &&
+          formik.values.inputCollateral === "amint" && (
+            <div className="text-red-600 text-center lg:mb-2  ">
+              {"USDA+ redeem is paused now"}
+            </div>
+          )}
         <div className="flex justify-center items-center overflow-hidden lg:mb-20">
           <div className=" w-full lg:w-[45%] h-[80px] lg:h-[120px]">
             {!redeemLoadingLocal && (
-              <Button
-                onClick={() => formik.handleSubmit()}
-                className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
-              >
-                Redeem
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="h-full">
+                    <Button
+                      disabled={
+                        (isFunctionPausedBorrow_Redeem &&
+                          formik.values.inputCollateral === "abond") ||
+                        (isFunctionPausedCDS_Redeem &&
+                          formik.values.inputCollateral === "amint")
+                      }
+                      onClick={() => formik.handleSubmit()}
+                      className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
+                    >
+                      Redeem
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                {((isFunctionPausedBorrow_Redeem &&
+                  formik.values.inputCollateral === "abond") ||
+                  (isFunctionPausedCDS_Redeem &&
+                    formik.values.inputCollateral)) && (
+                  <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                    <p>
+                      {formik.values.inputCollateral === "abond"
+                        ? "Abond redeem is pause now"
+                        : "USDa redeem is paused now"}
+                    </p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
             )}
             <LoadingBox
               isLoading={usdaApproveLoadingLocal}

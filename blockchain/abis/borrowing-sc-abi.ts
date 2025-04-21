@@ -144,6 +144,17 @@ export const borrowingContractAbi = [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+    ],
+    name: "Borrow_NotAllowedToken",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "Borrow_NotEnoughFundInCDS",
     type: "error",
@@ -408,9 +419,9 @@ export const borrowingContractAbi = [
       },
       {
         indexed: false,
-        internalType: "uint8",
+        internalType: "uint16",
         name: "APR",
-        type: "uint8",
+        type: "uint16",
       },
       {
         indexed: false,
@@ -586,6 +597,32 @@ export const borrowingContractAbi = [
   },
   {
     inputs: [],
+    name: "APR",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "LTV",
+    outputs: [
+      {
+        internalType: "uint16",
+        name: "",
+        type: "uint16",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [
       {
@@ -637,6 +674,53 @@ export const borrowingContractAbi = [
         internalType: "address",
         name: "assetAddress",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+    ],
+    name: "assetDetails",
+    outputs: [
+      {
+        internalType: "enum IBorrowing.AssetStatus",
+        name: "status",
+        type: "uint8",
+      },
+      {
+        internalType: "uint64",
+        name: "LTV",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "tokenDecimals",
+        type: "uint64",
+      },
+      {
+        internalType: "uint64",
+        name: "priceDecimals",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "bondRatio",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
       },
     ],
     stateMutability: "view",
@@ -987,19 +1071,6 @@ export const borrowingContractAbi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "lastCumulativeRate",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint128",
@@ -1086,6 +1157,19 @@ export const borrowingContractAbi = [
     name: "liquidate",
     outputs: [],
     stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "minInterval",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -1187,9 +1271,9 @@ export const borrowingContractAbi = [
   {
     inputs: [
       {
-        internalType: "uint8",
+        internalType: "uint16",
         name: "_APR",
-        type: "uint8",
+        type: "uint16",
       },
       {
         internalType: "uint128",
@@ -1209,21 +1293,13 @@ export const borrowingContractAbi = [
         name: "_admin",
         type: "address",
       },
-    ],
-    name: "setAdmin",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
       {
         internalType: "bytes32",
         name: "hashedAddress",
         type: "bytes32",
       },
     ],
-    name: "setAdminTwo",
+    name: "setAdmin",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1245,11 +1321,21 @@ export const borrowingContractAbi = [
     inputs: [
       {
         internalType: "address",
+        name: "_treasury",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_options",
+        type: "address",
+      },
+      {
+        internalType: "address",
         name: "_borrowLiquidation",
         type: "address",
       },
     ],
-    name: "setBorrowLiquidation",
+    name: "setCoreContracts",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1271,37 +1357,51 @@ export const borrowingContractAbi = [
     inputs: [
       {
         internalType: "address",
-        name: "_options",
-        type: "address",
-      },
-    ],
-    name: "setOptions",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_treasury",
-        type: "address",
-      },
-    ],
-    name: "setTreasury",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "newOwner",
         type: "address",
       },
     ],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+      {
+        components: [
+          {
+            internalType: "enum IBorrowing.AssetStatus",
+            name: "status",
+            type: "uint8",
+          },
+          {
+            internalType: "uint64",
+            name: "LTV",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "tokenDecimals",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "priceDecimals",
+            type: "uint64",
+          },
+        ],
+        internalType: "struct IBorrowing.AssetDetails",
+        name: "assetDetail",
+        type: "tuple",
+      },
+    ],
+    name: "updateAssetDetails",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1315,19 +1415,6 @@ export const borrowingContractAbi = [
       },
     ],
     name: "updateMinInterval",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "mpoAddress",
-        type: "address",
-      },
-    ],
-    name: "updateMpo",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1366,19 +1453,6 @@ export const borrowingContractAbi = [
       },
     ],
     name: "updateRatePerSecByUSDaPrice",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "usdtAddress",
-        type: "address",
-      },
-    ],
-    name: "updateUSDT",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

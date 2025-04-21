@@ -1,8 +1,8 @@
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 export enum NetworkId {
-  EthereumSepolia = (process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA || 0) as number,
-  BaseSepolia = (process.env.NEXT_PUBLIC_BASE_SEPOLIA || 0) as number,
+  EthereumSepolia = 11155111,
+  BaseSepolia = 84532,
   Optimism = 11155420,
   Mode = 919,
 }
@@ -67,11 +67,11 @@ export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
 export const scanUrls = {
-  919: "https://explorer.mode.network/search-results?q=",
-  11155420: "https://optimism-sepolia.blockscout.com/tx/",
-  11155111: `https://sepolia.basescan.org/tx/`,
-  84532: `https://sepolia.etherscan.io/tx/`,
-} as const;
+  919: "https://sepolia.explorer.mode.network/",
+  11155420: "https://sepolia-optimism.etherscan.io/",
+  11155111: `https://sepolia.etherscan.io/`,
+  84532: `https://sepolia.basescan.org/`,
+} as Record<number, string>;
 
 export const eidOpSepolia = 40232;
 export const eidModeSepolia = 40260;
@@ -84,3 +84,32 @@ export const eId = {
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
 };
+
+// enum for control cds and borrow pause unpause
+export enum Functions {
+  Borrow_Deposit,
+  Borrow_Withdraw,
+  Borrow_Liq,
+  Borrow_Renew,
+  Borrow_Redeem,
+  CDS_Deposit,
+  CDS_Withdraw,
+  CDS_WithdrawGains,
+  CDS_Liq,
+  CDS_Redeem,
+}
+
+// enum for asset pause
+export enum AssetStatus {
+  DUMMY,
+  DEPOSIT_PAUSED,
+  WITHDRAW_PAUSED,
+  BOTH_PAUSED,
+  BOTH_UNPAUSED,
+}
+export interface AssetDetails {
+  status: AssetStatus;
+  LTV: BigInt;
+  tokenDecimals: BigInt;
+  priceDecimals: BigInt;
+}

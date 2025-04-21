@@ -167,7 +167,7 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Borrowed (All Chain)"
-            value={`${userTotalBorrowAmount} USDa`}
+            value={`${userTotalBorrowAmount} USDA+`}
           />
         </div>
         <div className="col-span-1">
@@ -191,7 +191,7 @@ function PortfolioTemplate() {
       <div
         id="dashboard-nav"
         className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
-          isSticky ? "sticky top-0" : ""
+          isSticky ? "sticky top-0 " : ""
         }`}
       >
         <div
@@ -293,6 +293,7 @@ function PortfolioTemplate() {
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
         setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
+        dcdsPositionListRefetch={dcdsPositionListRefetch}
       />
       <WithdrawFund
         setSelectedPosition={setSelectedPosition}

@@ -1,12 +1,14 @@
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useScroll } from "@/contexts/scroll";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import DepositTableRow from "./table-row";
 import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import displayNumberWithPrecision from "@/utils/helpers";
 
 function DepositTable({
   tabPosition,
@@ -47,9 +49,13 @@ function DepositTable({
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   isSticky: boolean;
 }) {
+  const [sortBy, setSortBy] = useState<string>("Default");
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isScroll, setIsScroll } = useScroll();
+  const { usdValue: ethPrice } = useGetUsdValue();
+
   const scrollToElement = () => {
     if (scrollRef.current) {
       scrollRef.current.scroll({
@@ -76,34 +82,236 @@ function DepositTable({
       }, 10000);
     }
   }, [positionList]);
+
+  const positionListDP = positionList.map((position) => {
+    let dp = 0;
+    if (ethPrice === undefined) {
+      dp = 0;
+    }
+    if (parseFloat(ethPrice.toString()) > position.ethPrice) {
+      dp = 0;
+    } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
+      const amountProt =
+        parseFloat(position.depositedAmount) *
+        (position.ethPrice - parseFloat(ethPrice.toString()));
+      const amountProtPrecision = parseFloat(
+        displayNumberWithPrecision((amountProt / 100).toFixed(8))
+      );
+      dp = amountProtPrecision;
+    }
+    return {
+      ...position,
+      dp,
+    };
+  });
+
+  const sortedPositionList = useMemo(() => {
+    return positionListDP.sort((a, b) => {
+      if (sortBy === "usda") {
+        return sortAsc
+          ? b.noOfUSDaMinted - a.noOfUSDaMinted
+          : a.noOfUSDaMinted - b.noOfUSDaMinted;
+      } else if (sortBy === "Date") {
+        return (
+          new Date(b.depositedTime).getTime() -
+          new Date(a.depositedTime).getTime()
+        );
+      } else if (sortBy === "amount") {
+        return sortAsc
+          ? Number(b.depositedAmount) - Number(a.depositedAmount)
+          : Number(a.depositedAmount) - Number(b.depositedAmount);
+      } else if (sortBy === "protected") {
+        return sortAsc ? b.dp - a.dp : a.dp - b.dp;
+      } else if (sortBy === "abond") {
+        return sortAsc
+          ? Number(b.noOfAbondMinted) - Number(a.noOfAbondMinted)
+          : Number(a.noOfAbondMinted) - Number(b.noOfAbondMinted);
+      } else if (sortBy === "liquidation") {
+        return sortAsc
+          ? b.status === "LIQUIDATED"
+            ? -1
+            : 1
+          : a.status === "LIQUIDATED"
+          ? 1
+          : -1;
+      }
+      return 0;
+    });
+  }, [positionList, sortBy, sortAsc]);
+
+  console.log(sortedPositionList, "sortedPositionList");
+
   return (
     <div ref={scrollRef} className="sm:my-4  overflow-x-clip  no-scrollbar">
       <table className="table-auto   w-full border-collapse text-[20px]">
         <thead
           className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
-            isSticky ? "sticky top-[74px] left-0  right-0" : ""
+            isSticky
+              ? "sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px] "
+              : ""
           }`}
         >
           <tr>
             <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
               ID
             </th>
-            <th className="pl-5 whitespace-nowrap font-normal w-4/5 lg:w-auto">
-              Asset Deposited
+            <th
+              onClick={() => {
+                setSortBy("amount");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal w-4/5 lg:w-auto"
+            >
+              <div className="flex gap-2 items-center">
+                <span>Asset Deposited </span>
+                <span>
+                  {sortAsc && sortBy === "amount" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "amount"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "amount"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
             </th>
-            <th className="pl-5 whitespace-nowrap font-normal">USDa Minted</th>
-            <th className="pl-5 whitespace-nowrap font-normal">
-              Amount Protected
+            <th
+              onClick={() => {
+                setSortBy("usda");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+            >
+              <div className="flex gap-2 items-center">
+                <span>USDA+ Minted </span>
+                <span>
+                  {sortAsc && sortBy === "usda" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "usda"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "usda"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
             </th>
-            <th className="pl-5 whitespace-nowrap font-normal">Abond Minted</th>
-            <th className="pl-5 whitespace-nowrap font-normal">Liquidation</th>
+            <th
+              onClick={() => {
+                setSortBy("protected");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+            >
+              <div className="flex gap-2 items-center">
+                <span>Amount Protected</span>
+                <span>
+                  {sortAsc && sortBy === "protected" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "protected"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "protected"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
+            </th>
+            <th
+              onClick={() => {
+                setSortBy("abond");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+            >
+              <div className="flex gap-2 items-center">
+                <span>Abond Minted</span>
+                <span>
+                  {sortAsc && sortBy === "abond" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "abond"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "abond"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
+            </th>
+            <th
+              onClick={() => {
+                setSortBy("liquidation");
+                setSortAsc(!sortAsc);
+              }}
+              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+            >
+              <div className="flex gap-2 items-center">
+                <span>Liquidation</span>
+                <span>
+                  {sortAsc && sortBy === "liquidation" ? (
+                    <ChevronDown
+                      className={
+                        sortBy === "liquidation"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  ) : (
+                    <ChevronUp
+                      className={
+                        sortBy === "liquidation"
+                          ? "stroke-black dark:stroke-white"
+                          : ""
+                      }
+                    />
+                  )}
+                </span>
+              </div>
+            </th>
             <th className="pr-5 whitespace-nowrap font-normal lg:w-auto text-right">
               Action
             </th>
           </tr>
         </thead>
         <tbody className={`font-normal `}>
-          {positionList.map((position: PositionData, key: number) => {
+          {sortedPositionList.map((position: PositionData, key: number) => {
             return (
               <DepositTableRow
                 key={key}

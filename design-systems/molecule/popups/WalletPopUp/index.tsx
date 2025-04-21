@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/design-systems/atoms/popover";
 import NotificationContainer from "@/design-systems/molecule/notifiaction-card";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import { sortWalletAddress } from "@/utils/helpers";
 import {
   useAppKit,
@@ -67,12 +67,12 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   };
   const chains = [
     {
-      id: Number(NetworkId.Mode),
-      name: "Mode",
+      id: Number(NetworkId.BaseSepolia),
+      name: "Base",
       Icon: () => (
-        <Image src={modeIconNew} alt="modeIconNew" width={24} height={24} />
+        <BaseIcon className="w-6   h-6 stroke-black dark:stroke-white" />
       ),
-      loading: chainId != NetworkId.Mode && isPending,
+      loading: chainId != NetworkId.BaseSepolia && isPending,
     },
     {
       id: Number(NetworkId.Optimism),
@@ -173,7 +173,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 <Typography variant="regular" size="subtitle"></Typography>$
                 {data?.formatted.slice(0, 8)}
                 <span className="text-[#7A7A7A] text-[14px]">
-                  {chainId === NetworkId.Optimism ? "OP Sepolia" : "Mode"}
+                  {chainId === NetworkId.Optimism
+                    ? "OP Sepolia"
+                    : "Base Sepolia"}
                 </span>
               </div>
             </div>
@@ -193,11 +195,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
             <div className="flex-col md:flex-row md:justify-between flex mt-8 flex- justify-center gap-2 items-center">
               <a
-                href={
-                  chainId == NetworkId.Optimism
-                    ? `https://optimism-sepolia.blockscout.com/address/${address}`
-                    : `https://modescan.io/address/${address}`
-                }
+                href={`${scanUrls[Number(chainId || 919)]}/address/${address}`}
                 target="__blank"
               >
                 <Typography
@@ -393,15 +391,15 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             >
               <div className="flex mt-8 flex-row justify-between items-center">
                 <Typography size="lg" className="" variant="regular">
-                  USDa Balance
+                  <span className="font-bold mr-1">USDA+ </span> Balance
                 </Typography>
                 <Typography
                   size="lg"
                   className="text-[#7A7A7A]"
                   variant="regular"
                 >
-                  {Number(chainId) === Number(NetworkId.Mode)
-                    ? "Mode Sepolia"
+                  {Number(chainId) === Number(NetworkId.BaseSepolia)
+                    ? "Base Sepolia"
                     : "Op Sepolia"}
                 </Typography>
               </div>
@@ -424,8 +422,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
                   href={
-                    chainId == NetworkId.Mode
-                      ? `https://sepolia.explorer.mode.network/address/${address}`
+                    chainId == NetworkId.BaseSepolia
+                      ? `https://sepolia-explorer.base.org/address/${address}`
                       : `https://sepolia-optimism.etherscan.io/address/${address}`
                   }
                   target="__blank"
