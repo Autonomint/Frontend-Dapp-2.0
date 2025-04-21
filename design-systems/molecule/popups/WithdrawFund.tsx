@@ -197,7 +197,9 @@ export function WithdrawFund({
           ) * lastCumulativeRate
         ) / BigInt(10 ** 27);
 
-  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
+  const repayAmount = Math.round(
+    Number(totalAmintAmnt) / 1e6 - Number(downsideProtection)
+  );
 
   // getting current APR value
   const { data: currentAPR } = useReadContract({

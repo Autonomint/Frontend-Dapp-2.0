@@ -293,6 +293,7 @@ function PortfolioTemplate() {
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
         setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
+        dcdsPositionListRefetch={dcdsPositionListRefetch}
       />
       <WithdrawFund
         setSelectedPosition={setSelectedPosition}

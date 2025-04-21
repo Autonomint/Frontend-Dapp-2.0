@@ -39,10 +39,12 @@ export function DcdsWithdrawModal({
   position,
   isDialogOpen,
   setIsDialogOpen,
+  dcdsPositionListRefetch,
 }: {
   position: dcdsDepositDetails;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
+  dcdsPositionListRefetch: () => void;
 }) {
   const [spinner, setSpinner] = useState(false);
 
@@ -381,9 +383,10 @@ export function DcdsWithdrawModal({
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(250000, 0)
+    .addExecutorLzReceiveOption(305000000, 0)
     .toHex()
     .toString() as `0x${string}`;
+
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
     options,
     5,
@@ -398,7 +401,9 @@ export function DcdsWithdrawModal({
     isDcdsWithdrawGainPending,
     resetDcdsWithdrawGain,
   } = useDcdsWithdrawGain({
-    onError: () => {
+    onError: (error: any) => {
+      console.log(error, "error");
+
       setTimeout(() => {
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
@@ -424,7 +429,9 @@ export function DcdsWithdrawModal({
 
   useEffect(() => {
     if (cdsWithdrawGainReceiptIsSuccess) {
-      setWithdrawMethodLoading(false);
+      setTimeout(() => {
+        setWithdrawGainLoading(false);
+      }, 800);
       toast.custom((t) => {
         const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           cdsWithdrawGainReceipt.transactionHash
@@ -443,6 +450,11 @@ export function DcdsWithdrawModal({
           />
         );
       });
+      setTimeout(() => {
+        dcdsPositionListRefetch();
+      }, 1000);
+      dcdsPositionListRefetch();
+      handleCloseDialog();
     }
     if (cdsWithdrawGainIsErrorReceipt) {
       setTimeout(() => {
@@ -501,18 +513,17 @@ export function DcdsWithdrawModal({
         setTimeout(() => {
           setWithdrawGainLoading(true);
         }, 1000);
-        const res = await refetchBorrowWithDrawSignedData();
+        dcdsPositionListRefetch();
+        const res = await refetchBorrowWithDrawGainsSignedData();
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
-          res.data?.excessProfitCumulativeValue,
           res.data?.odosAssembledData,
           res.data?.usdtFromOdos,
           res.data?.nonce,
           res.data?.deadline,
           res.data?.signature,
         ]);
-      }
-      if (isCdserrorReceipt) {
+      } else if (isCdserrorReceipt) {
         setTimeout(() => {
           setDcdsFundWithdrawLoadingLocal(false);
         }, 1000);
@@ -533,9 +544,10 @@ export function DcdsWithdrawModal({
     callEffect();
   }, [cdsLogdataReceipt, isCdserrorReceipt]);
 
-  const { refetchBorrowWithDrawSignedData } = useGetDcdsWithdrawSignedData(
-    position.index
-  );
+  const {
+    refetchBorrowWithDrawSignedData,
+    refetchBorrowWithDrawGainsSignedData,
+  } = useGetDcdsWithdrawSignedData(position.index);
 
   const handleWithdrawFund = async () => {
     setDcdsFundWithdrawLoadingLocal(true);
@@ -558,10 +570,9 @@ export function DcdsWithdrawModal({
       }
     } else if (position.status == "WITHDREW") {
       setWithdrawGainLoading(true);
-      const res = await refetchBorrowWithDrawSignedData();
+      const res = await refetchBorrowWithDrawGainsSignedData();
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
-        res.data?.excessProfitCumulativeValue,
         res.data?.odosAssembledData,
         res.data?.usdtFromOdos,
         res.data?.nonce,
@@ -714,7 +725,9 @@ export function DcdsWithdrawModal({
                       <Button
                         onClick={handleWithdrawFund}
                         disabled={
-                          (position.status === "WITHDREW" ? true : false) ||
+                          (position.status === "WITHDREW_GAINS"
+                            ? true
+                            : false) ||
                           Number(position.lockingPeriod) * 1000 > Date.now() ||
                           isWithdrawPause
                         }
@@ -724,7 +737,7 @@ export function DcdsWithdrawModal({
                           ? "Close Position"
                           : position.status == "WITHDREW"
                           ? "Withdraw"
-                          : position.status == "WITHDREW_GAINS "
+                          : position.status == "WITHDREW_GAINS"
                           ? "Withdrawn"
                           : position.status == "LIQUIDATED "
                           ? "Liquidated"
@@ -754,7 +767,7 @@ export function DcdsWithdrawModal({
                 isLoading={withdrawMethodLoading}
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
-                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
+                setSuccessLoading={() => false}
                 heading="Closing Position"
                 loadingCount="1/2"
               />

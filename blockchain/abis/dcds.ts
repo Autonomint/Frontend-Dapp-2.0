@@ -1705,4 +1705,4 @@ export const cdsAbi = [
     stateMutability: "view",
     type: "function",
   },
-] as const;
+];
