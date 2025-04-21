@@ -3,6 +3,7 @@ import { cdsAddress } from "@/blockchain/contracts";
 import { AssetStatus } from "@/utils/constants";
 import { Address } from "viem";
 import { useAccount, useChainId, useReadContract } from "wagmi";
+import { number } from "yup";
 
 const useTokenDetails = (tokenAddress: Address) => {
   const { chainId } = useAccount();
@@ -12,7 +13,7 @@ const useTokenDetails = (tokenAddress: Address) => {
     address: cdsAddress[chainId as keyof typeof cdsAddress],
     args: [tokenAddress],
     functionName: "assetDetails",
-  });
+  }) as { data: Record<number, string | number>; refetch: () => void };
 
   const isTokenDepositPaused = assetDetails?.[0] === AssetStatus.DEPOSIT_PAUSED;
   const isTokenWithdrawPaused =
