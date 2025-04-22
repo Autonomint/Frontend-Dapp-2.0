@@ -6,6 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
+import { Button } from "@/design-systems/atoms/button";
+import { useWalletClient } from "wagmi";
+import { useTokenConfig } from "@/utils/token-config";
+import { toast } from "sonner";
+import Spinner from "@/design-systems/atoms/Spinner";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -147,6 +152,34 @@ function ChartComponent({ currency }: { currency: string }) {
         return cryptoEth;
     }
   };
+
+  const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
+
+  const { data: walletClient } = useWalletClient();
+  const tokenConfig = useTokenConfig(currency);
+
+  console.log(tokenConfig, "tokenConfig");
+
+  const handleAddToken = async () => {
+    if (!walletClient) return console.error("Wallet client not available");
+    setIsAddingToken(true);
+    try {
+      const wasAdded = await walletClient.request({
+        method: "wallet_watchAsset",
+        params: tokenConfig,
+      });
+
+      if (wasAdded) {
+        toast.success("✅ Token added successfully");
+      } else {
+        toast.error("❌ Token was not added");
+      }
+      setIsAddingToken(false);
+    } catch (error) {
+      setIsAddingToken(false);
+      console.error("Error adding token:", error);
+    }
+  };
   return (
     <div className="lg:p-6 p-2 h-full">
       <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
@@ -154,7 +187,18 @@ function ChartComponent({ currency }: { currency: string }) {
         <Typography className="text-[32px] dark:text-white font-medium text-black ">
           {currency}
         </Typography>
+
+        {currency !== "ETH" && (
+          <Button
+            onClick={handleAddToken}
+            variant={"shadowOutline"}
+            className="text-lg"
+          >
+            {isAddingToken ? <Spinner /> : "Add Token"}
+          </Button>
+        )}
       </div>
+
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
         <TradingViewWidget currency={currency} />
       </div>

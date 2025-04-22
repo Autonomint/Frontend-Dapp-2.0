@@ -5,7 +5,7 @@ import { ScrollProvider } from "./scroll";
 import { InviteCodePopupProvider } from "./InviteCodePopup";
 const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <ScrollProvider>
         <PortfolioTabProvider>
           <InviteCodePopupProvider>

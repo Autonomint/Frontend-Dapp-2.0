@@ -29,6 +29,8 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import { DownArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useLuckPrice } from "@/hookes/api-hooks/useLuckPrice";
+import { useFarmYourLuckWalletAddress } from "@/hookes/api-hooks/useFarmYouLuckWalletAddress";
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -54,6 +56,12 @@ function FarmYourLuckTemplate() {
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
 
   const { data: luckData, mutateAsync: getLuckAsync } = useBorrowGame();
+
+  const { data: luckPrice, isLoading: isLuckPriceLoading } = useLuckPrice();
+  const { data: walletAddress, isLoading: isLoadingWalletAddress } =
+    useFarmYourLuckWalletAddress();
+
+  console.log(luckPrice, walletAddress, "luckPrice");
 
   const {
     data: farmLuckDetails,
@@ -276,11 +284,11 @@ function FarmYourLuckTemplate() {
       setPayLoading(true);
       const amountToPay = calculateEthAmount(
         Number(ethPrice || 0) / 100,
-        5.00001
+        Number(luckPrice) + 0.00001
       );
 
       const txHash = await sendTransactionAsync({
-        to: FarmYourLuckWalletAddress,
+        to: walletAddress,
         value: parseEther(amountToPay.toFixed(9)),
       });
       setTimeout(() => {
@@ -495,7 +503,7 @@ function FarmYourLuckTemplate() {
                   <>
                     {!payLoading && (
                       <button
-                        // disabled={isPayed && selectedIndex == -1}
+                        disabled={isLuckPriceLoading || isLoadingWalletAddress}
                         onClick={() => handleButtonClick()}
                         className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
                           false

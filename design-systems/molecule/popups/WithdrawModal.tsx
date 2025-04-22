@@ -34,6 +34,7 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
+import { Info } from "lucide-react";
 
 export function DcdsWithdrawModal({
   position,
@@ -93,14 +94,15 @@ export function DcdsWithdrawModal({
     {
       headline: "APY till now",
       value: "5%",
-      tooltip: true,
+      tooltip: false,
       tooltipText: "APY of the index",
     },
     {
       headline: "Yearly APY",
       value: "Yes",
-      tooltip: false,
-      tooltipText: "",
+      tooltip: true,
+      tooltipText:
+        "These yields are highly fluctuating based on annualized estimates derived from irregular option fees returns",
     },
     {
       headline: "Opted for liquidations",
@@ -214,11 +216,11 @@ export function DcdsWithdrawModal({
     {
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Adjusted Deposit Value (30% markdown)`,
+      } Adjusted Deposit Value (70% markdown)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
           Number(position?.nativeTokenPriceAtDeposit) *
-          30) /
+          70) /
         100
       ).toFixed(2)}`,
       tooltip: false,
@@ -671,9 +673,19 @@ export function DcdsWithdrawModal({
               {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
                 return (
                   <div key={idx} className="flex justify-between mb-2">
-                    <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                    <span className="text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight">
                       {" "}
                       {dcdsWidthDrawMetricsObj.headline}
+                      {dcdsWidthDrawMetricsObj.tooltip && (
+                        <Tooltip delayDuration={100}>
+                          <TooltipTrigger asChild>
+                            <Info width={18} height={18} className="ml-2" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white dark:bg-black">
+                            <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </span>
                     <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
                       {dcdsWidthDrawMetricsObj.value}

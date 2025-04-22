@@ -7,9 +7,32 @@ import {
   sepolia,
 } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
+import { defineChain, http } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
+
+export const opSepolia = defineChain({
+  id: 11155420,
+  name: "OP Sepolia",
+  nativeCurrency: {
+    name: "Sepolia ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia.optimism.io"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Optimism Explorer",
+      url: "https://sepolia-optimism.etherscan.io",
+    },
+  },
+  testnet: true,
+});
 
 const metadata = {
   name: "autonomint",
@@ -19,12 +42,15 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [optimismSepolia, baseSepolia, sepolia],
+  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
   projectId,
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
+  transports: {
+    [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
+  },
 });
 
 export const config = wagmiAdapter.wagmiConfig;
@@ -32,7 +58,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [optimismSepolia, baseSepolia, sepolia],
+  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
   defaultNetwork: baseSepolia,
   metadata: metadata,
   features: {

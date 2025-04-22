@@ -391,28 +391,28 @@ function BridgeTemplate() {
     {
       label: "Sepolia",
       onClick: () => {
-        switchChain({ chainId: 11155111 });
+        switchChain({ chainId: NetworkId.EthereumSepolia });
         setSendNetwork("Sepolia");
       },
     },
     {
       label: "Base",
       onClick: () => {
-        switchChain({ chainId: 84532 });
+        switchChain({ chainId: NetworkId.BaseSepolia });
         setSendNetwork("Base");
       },
     },
     {
       label: "Mode",
       onClick: () => {
-        switchChain({ chainId: 919 });
+        switchChain({ chainId: NetworkId.Mode });
         setSendNetwork("Mode");
       },
     },
     {
       label: "OP",
       onClick: () => {
-        switchChain({ chainId: 11155420 });
+        switchChain({ chainId: NetworkId.Optimism });
         setSendNetwork("OP");
       },
     },

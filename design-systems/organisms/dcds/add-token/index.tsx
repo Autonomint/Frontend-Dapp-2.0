@@ -11,6 +11,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { useState } from "react";
+import { useWalletClient } from "wagmi";
+import { useTokenConfig } from "@/utils/token-config";
+import Spinner from "@/design-systems/atoms/Spinner";
 
 function AddToken({
   tokenDetails,
@@ -56,6 +60,36 @@ function AddToken({
     });
   };
 
+  const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
+
+  const { data: walletClient } = useWalletClient();
+  const tokenConfig = useTokenConfig(
+    tokenDetails.tokenLabel || tokenDetails.tokenName
+  );
+
+  console.log(tokenConfig, "tokenConfig");
+
+  const handleAddToken = async () => {
+    if (!walletClient) return console.error("Wallet client not available");
+    setIsAddingToken(true);
+    try {
+      const wasAdded = await walletClient.request({
+        method: "wallet_watchAsset",
+        params: tokenConfig,
+      });
+
+      if (wasAdded) {
+        toast.success("✅ Token added successfully");
+      } else {
+        toast.error("❌ Token was not added");
+      }
+      setIsAddingToken(false);
+    } catch (error) {
+      setIsAddingToken(false);
+      console.error("Error adding token:", error);
+    }
+  };
+
   return (
     <div
       className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
@@ -98,6 +132,13 @@ function AddToken({
               )}
             </div>
           </div>
+          <Button
+            onClick={handleAddToken}
+            variant={"shadowOutline"}
+            className="text-lg"
+          >
+            {isAddingToken ? <Spinner /> : "Add Token"}
+          </Button>
         </div>
 
         <Tooltip>

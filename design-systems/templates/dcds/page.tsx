@@ -1012,13 +1012,18 @@ function DCDSTemplate() {
       }
     };
   }, []);
+  formatUnits(BigInt(getOraclePrice[0]), 18);
 
   const depositValue = useMemo(() => {
     return (
-      Number(formik.values?.usdaAmount) +
-      Number(formik.values?.usdtAmount) +
-      Number(formik.values?.opAmount) +
-      Number(formik.values?.aeroAmount)
+      Number(formik.values?.usdaAmount) *
+        Number(formatUnits(BigInt(getOraclePriceUSDa[0]), 18)) +
+      Number(formik.values?.usdtAmount) *
+        Number(formatUnits(BigInt(getOraclePriceUSDT[0]), 18)) +
+      Number(formik.values?.opAmount) *
+        Number(formatUnits(BigInt(getOraclePrice[0]), 18)) +
+      Number(formik.values?.aeroAmount) *
+        Number(formatUnits(BigInt(getOraclePrice[0]), 18))
     );
   }, [formik.values]);
 
@@ -1263,7 +1268,7 @@ function DCDSTemplate() {
             <div className=" px-5 py-3 md:px-16 md:py-5  lg:px-5">
               <DepositSummary
                 apy="Expected range 5% to 200%"
-                depositing={depositValue ? `$${depositValue}` : "-"}
+                depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
               />
             </div>
             <div className=" h-[86px] overflow-hidden">
