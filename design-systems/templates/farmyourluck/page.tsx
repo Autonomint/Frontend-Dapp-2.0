@@ -9,7 +9,7 @@ import { useBorrowGame } from "@/hookes/api-hooks/useGetLuck";
 import useVerifyGamePay from "@/hookes/api-hooks/useVerifyGamePay";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { FarmYourLuckWalletAddress } from "@/utils/constants";
+
 import {
   calculateEthAmount,
   calculateRemainingTimeDate,

@@ -20,7 +20,6 @@ import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
-import getSecretVar from "@/services/aws-secret";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -45,9 +44,6 @@ function Navbar() {
       localStorage.removeItem("currentAddress");
     },
   });
-  useEffect(() => {
-    getSecretVar();
-  }, []);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(

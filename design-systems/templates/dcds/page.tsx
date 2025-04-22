@@ -44,11 +44,7 @@ import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useDeviceType from "@/hookes/useDeviceType";
-import {
-  NetworkId,
-  scanUrls,
-  USDT_DEPOSIT_LIMIT_IN_DCDS,
-} from "@/utils/constants";
+import { NetworkId, scanUrls } from "@/utils/constants";
 import {
   formatNumber,
   getTotalDepositingAmount,

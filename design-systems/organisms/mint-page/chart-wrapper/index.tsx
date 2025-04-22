@@ -188,7 +188,7 @@ function ChartComponent({ currency }: { currency: string }) {
           {currency}
         </Typography>
 
-        {currency !== "ETH" && (
+        {/* {currency !== "ETH" && (
           <Button
             onClick={handleAddToken}
             variant={"shadowOutline"}
@@ -196,7 +196,7 @@ function ChartComponent({ currency }: { currency: string }) {
           >
             {isAddingToken ? <Spinner /> : "Add Token"}
           </Button>
-        )}
+        )} */}
       </div>
 
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">

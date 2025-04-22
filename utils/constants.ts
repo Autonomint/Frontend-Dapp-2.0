@@ -15,8 +15,6 @@ export const BorrowStatus = {
 
 export const DEFAULT_TOAST_POSITION = "top-right";
 
-export const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;
-
 export const DAPP_ADDRESS_NOTIFI = "9xu0e0btkv6g71ypagwo";
 
 export const CARD_ID_NOTIFI = "fb7bcc660ddb4d6e99703595e6eed049";
@@ -53,13 +51,6 @@ export const RedeemAssets = {
   abond: AssetNames.ABOND,
   tusdt: AssetNames.TUSDT,
 };
-export const FarmYourLuckWalletAddress =
-  "0x555c74B09A29e083EA6F661c2dD78617d8Fd906E";
-
-// AWS secret manager
-export const aws_secret_name = "testingSecret";
-export const sm_accessKeyId = "AKIAQLVQQPQX6XEGOPMA";
-export const sm_secretAccessKey = "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";
 
 // urls
 export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";

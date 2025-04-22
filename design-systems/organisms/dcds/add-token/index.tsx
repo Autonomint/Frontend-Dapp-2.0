@@ -132,13 +132,13 @@ function AddToken({
               )}
             </div>
           </div>
-          <Button
+          {/* <Button
             onClick={handleAddToken}
             variant={"shadowOutline"}
             className="text-lg"
           >
             {isAddingToken ? <Spinner /> : "Add Token"}
-          </Button>
+          </Button> */}
         </div>
 
         <Tooltip>
