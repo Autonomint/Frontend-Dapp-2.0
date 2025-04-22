@@ -46,7 +46,6 @@ function MintEthListTemplate() {
   });
 
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
-  console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
 
   const list = [
     {

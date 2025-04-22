@@ -139,8 +139,6 @@ function DepositTable({
     });
   }, [positionList, sortBy, sortAsc]);
 
-  console.log(sortedPositionList, "sortedPositionList");
-
   return (
     <div ref={scrollRef} className="sm:my-4  overflow-x-clip  no-scrollbar">
       <table className="table-auto   w-full border-collapse text-[20px]">

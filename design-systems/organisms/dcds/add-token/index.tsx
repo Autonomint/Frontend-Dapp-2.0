@@ -67,8 +67,6 @@ function AddToken({
     tokenDetails.tokenLabel || tokenDetails.tokenName
   );
 
-  console.log(tokenConfig, "tokenConfig");
-
   const handleAddToken = async () => {
     if (!walletClient) return console.error("Wallet client not available");
     setIsAddingToken(true);

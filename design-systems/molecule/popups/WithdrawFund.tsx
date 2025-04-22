@@ -138,13 +138,11 @@ export function WithdrawFund({
     useLastCumulativeRate();
 
   const { interestGained } = useInterestGain(position.index);
-  console.log(interestGained, "interestGained");
 
   const totalAmintAmount = useRef<Number>(Number(0));
   const { usdValue: ethPrice } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
-  console.log(ethPrice, "ethPrice");
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
@@ -170,19 +168,6 @@ export function WithdrawFund({
             Number(position?.depositedAmountInETH)
         ).toFixed(2)
       : 0;
-
-  console.log(
-    Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-      Number(position?.depositedAmountInETH),
-    Number(formatUnits(BigInt(ethPrice), 2)) *
-      Number(position?.depositedAmountInETH),
-    downsideProtection,
-    position?.depositedAmountInETH,
-    "downsideProtection",
-    position.index,
-    Number(formatUnits(BigInt(ethPrice), 2)),
-    Number(formatUnits(BigInt(position?.ethPrice || 0), 2))
-  );
 
   const totalAmintAmnt =
     lastCumulativeRate === undefined
@@ -249,15 +234,6 @@ export function WithdrawFund({
           ? Number(position.depositedAmount) * (Number(currentPrice) / 100) -
             Number(position.depositedAmount) * Number(ethPriceAtDep)
           : 0;
-
-      console.log(
-        priceDef,
-        upsideAt,
-        ethPriceAtDep,
-        upsideAt < priceDef,
-        currentPrice,
-        "priceDef"
-      );
 
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
 
@@ -328,8 +304,6 @@ export function WithdrawFund({
       tooltipText: "",
     },
   ];
-
-  console.log(repayAmountDetails, "repayMountDetails");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
@@ -504,12 +478,6 @@ export function WithdrawFund({
       }, 1000);
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
-
-  console.log(
-    lastCumulativeRate,
-    position.normalizedAmount,
-    "lastCumulativeRate"
-  );
 
   const handleRepay = async () => {
     if (balance < repayAmount) {

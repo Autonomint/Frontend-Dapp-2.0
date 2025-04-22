@@ -61,8 +61,6 @@ function FarmYourLuckTemplate() {
   const { data: walletAddress, isLoading: isLoadingWalletAddress } =
     useFarmYourLuckWalletAddress();
 
-  console.log(luckPrice, walletAddress, "luckPrice");
-
   const {
     data: farmLuckDetails,
     isLoading,
@@ -73,7 +71,6 @@ function FarmYourLuckTemplate() {
 
   const [payLoading, setPayLoading] = useState(false);
   const { usdValue: ethPrice } = useGetUsdValue();
-  console.log(ethPrice, "ethPrice");
 
   useEffect(() => {
     if ((farmLuckDetails?.totalLuck || 0) > 0 && !isRevealed) {
@@ -277,7 +274,7 @@ function FarmYourLuckTemplate() {
       ));
     }
   };
-  console.log(ethPrice, "ethPrice");
+
 
   const handleButtonClick = async () => {
     if ((farmLuckDetails?.totalLuck || 0) === 0 && !isPayed) {

@@ -81,8 +81,6 @@ function InputForm({ currency }: { currency: string }) {
 
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
-  console.log(ethPrice, assetPrice, "eth");
-
   const [usdaToBeMinted, setUsdaToBeMinted] = useState("0");
   const [downsideProtectionAmnt, setDownsideProtectionAmnt] = useState("0");
   const [upsideCollateral, setUpsideCollateral] = useState(0);
@@ -149,13 +147,7 @@ function InputForm({ currency }: { currency: string }) {
     validationSchema: formSchema,
     onSubmit: handleSubmit,
   });
-  console.log(
-    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
-    ethBalance,
-    formik.values.balance,
-    formattedBalance,
-    "bal"
-  );
+
   useEffect(() => {
     formik.setFieldValue("balance", formattedBalance);
   }, [formattedBalance]);
@@ -217,8 +209,6 @@ function InputForm({ currency }: { currency: string }) {
     queryFn: () => fetchWalletAddress(chainId),
     enabled: Boolean(chainId),
   });
-
-  console.log(minUSDAforLuck, "minUSDAforLuck");
 
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
@@ -384,9 +374,7 @@ function InputForm({ currency }: { currency: string }) {
         10000;
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   /**

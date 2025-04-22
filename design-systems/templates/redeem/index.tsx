@@ -381,8 +381,6 @@ const RedeemContainer = () => {
     // Handle errors during the CDS deposit process
     mutation: {
       onError: (error: any) => {
-        // console.log(error.message);
-        console.log("MESSAGE", error.cause);
         handleFail();
         // Show a custom toast notification for the error
 
@@ -473,8 +471,6 @@ const RedeemContainer = () => {
     // }
     return options;
   }, [chainId]);
-
-  console.log(RedeemTokenDropdownItems, "RedeemTokenDropdownItems");
 
   const pathname = usePathname();
 

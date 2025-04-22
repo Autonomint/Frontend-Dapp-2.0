@@ -3,7 +3,10 @@ import { useEthersSigner } from "@/blockchain/WalletConfigs/EtherSigner";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI } from "@/utils/constants";
+import {
+  CARD_ID_NOTIFI_VALUE,
+  DAPP_ADDRESS_NOTIFI_VALUE,
+} from "@/utils/constants";
 
 import { arrayify } from "@ethersproject/bytes";
 import {
@@ -70,7 +73,7 @@ const NotificationPopupMobile: React.FC<NotificationPopupProps> = ({
               </Typography>
             </div>
             <NotifiContext
-              dappAddress={DAPP_ADDRESS_NOTIFI}
+              dappAddress={DAPP_ADDRESS_NOTIFI_VALUE}
               env="Production"
               signMessage={async (message: Uint8Array) => {
                 const result = await signer.signMessage(message);
@@ -83,7 +86,7 @@ const NotificationPopupMobile: React.FC<NotificationPopupProps> = ({
                 classNames={{
                   container: "!bg-transparent",
                 }}
-                cardId={CARD_ID_NOTIFI}
+                cardId={CARD_ID_NOTIFI_VALUE}
                 inputLabels={inputLabels}
                 darkMode={resolvedTheme == "dark" ? true : false}
               />

@@ -33,7 +33,6 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const { usdValue: ethPrice } = useGetUsdValue();
-  console.log(ethPrice, "ethPrice");
 
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
@@ -45,7 +44,6 @@ export default function HomeTemplate() {
   // const { data } = useEthOptionFees(
   //   `ETH-${expirations?.eth?.option?.[5]}-2800-P`
   // );
-  // console.log(expirations, expirations?.eth?.option?.[0], "expirations");
 
   const feesList = [
     {
@@ -150,12 +148,10 @@ export default function HomeTemplate() {
         bodyElement.scrollHeight;
 
       if (isAtBottom) {
-        console.log("User has scrolled to the bottom");
         setIsScrollBottom(true);
         // Perform any action you want when the user reaches the bottom
       } else {
         setIsScrollBottom(false);
-        console.log("User has NOT scrolled to the bottom yet");
       }
     }
   };

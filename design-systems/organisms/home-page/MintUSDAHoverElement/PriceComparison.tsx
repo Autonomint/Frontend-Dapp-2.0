@@ -31,8 +31,6 @@ function PriceComparison({
     "(prefers-color-scheme: dark)"
   ).matches;
 
-  console.log(prefersDarkMode, theme, "theme");
-
   return (
     <div
       // xl:w-[60%]w-[40%] xl:flex-1

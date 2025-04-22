@@ -379,14 +379,6 @@ export function getTotalDepositingAmount(
   const prices = getPrices;
   for (let i = 0; i < tokenAmounts.length; i++) {
     if (tokenAddress[i] != zeroAddress) {
-      console.log(
-        tokenAmounts[i],
-        prices[i + 1],
-        assetDetails[i].LTV,
-        assetDetails[i].priceDecimals,
-        assetDetails[i].tokenDecimals,
-        "getTotalDepositingAmount"
-      );
       totalDepositingAmount +=
         (Number(tokenAmounts[i]) *
           Number(prices[i + 1]) *

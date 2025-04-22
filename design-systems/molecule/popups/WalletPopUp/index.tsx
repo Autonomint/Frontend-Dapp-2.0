@@ -83,7 +83,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
       loading: chainId != NetworkId.Optimism && isPending,
     },
   ];
-  console.log(chains, "chains");
+
 
   const MobileNavOption = () => {
     return (

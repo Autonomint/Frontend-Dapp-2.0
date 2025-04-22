@@ -30,7 +30,6 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
     query: { enabled: !!address && !!chainId },
   });
 
-  console.log(usdValue, "usdValue");
 
   return {
     isUsdValuePending,

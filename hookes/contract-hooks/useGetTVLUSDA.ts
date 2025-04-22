@@ -30,7 +30,7 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   const cdsContract = new ethers.Contract(
     cdsAddress[
       chainId === NetworkId.BaseSepolia
-        ? NetworkId.Optimism
+        ? (NetworkId.Optimism as keyof typeof cdsAddress)
         : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
     ],
     cdsAbi,
@@ -45,25 +45,11 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
     setOtherChainUSDa(0);
     const usdaTvl2 = await cdsContract.tokenDepositedTillNow(
       chainId === NetworkId.BaseSepolia
-        ? usDaAddress[NetworkId.Optimism]
-        : usDaAddress[NetworkId.BaseSepolia]
+        ? usDaAddress[NetworkId.Optimism as keyof typeof usDaAddress]
+        : usDaAddress[NetworkId.BaseSepolia as keyof typeof usDaAddress]
     );
     setOtherChainUSDa(usdaTvl2);
   };
-
-  console.log(
-    otherChainUDSa,
-    tokenAddress,
-    chainId === NetworkId.BaseSepolia
-      ? usDaAddress[NetworkId.Optimism]
-      : usDaAddress[NetworkId.BaseSepolia],
-    cdsAddress[
-      chainId === NetworkId.BaseSepolia
-        ? NetworkId.Optimism
-        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
-    ],
-    "usdaTvl2"
-  );
 
   return {
     isTVLPending,

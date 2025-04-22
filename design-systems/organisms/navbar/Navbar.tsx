@@ -62,7 +62,6 @@ function Navbar() {
           localStorage.removeItem("verified");
           disconnect();
         }
-        console.log(data, ">>>>");
       },
     });
 

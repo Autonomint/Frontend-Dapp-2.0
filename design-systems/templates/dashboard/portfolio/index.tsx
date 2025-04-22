@@ -76,11 +76,6 @@ function PortfolioTemplate() {
     totalPages: dcdsTotalPages,
   } = useGetDcdsDepositList();
 
-  console.log(
-    pagedPositionList,
-    dcdsPagedDcdsPositionList,
-    "pagedPositionList"
-  );
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
@@ -155,11 +150,6 @@ function PortfolioTemplate() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  console.log(
-    Number(referralPoints || 0) + Number(points || 0),
-    "pagedPositionList"
-  );
 
   return (
     <div className="flex sm:px-4 flex-col">

@@ -57,7 +57,7 @@ export const useInviteCodeMutation = (onError: (error: AxiosError) => void) => {
     mutationFn: getInviteCode,
     onSuccess: (data: InviteCodeApiRes) => {
       // Handle success, e.g., show a success message or update the cache
-      console.log("Game borrowed successfully:", data);
+
     },
     onError: (error: AxiosError) => {
       onError(error);
@@ -73,11 +73,9 @@ export const useInviteCodeMutation = (onError: (error: AxiosError) => void) => {
     mutationFn: validateInviteCode,
     onSuccess: (data) => {
       // Handle success, e.g., show a success message or update the cache
-      console.log("Game borrowed successfully:", data);
     },
     onError: (error: AxiosError) => {
       // Handle error, e.g., show an error message
-      // console.error("Error borrowing game:", error.message);
     },
   });
 

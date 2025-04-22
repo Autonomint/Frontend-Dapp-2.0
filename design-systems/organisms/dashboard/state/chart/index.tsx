@@ -108,10 +108,7 @@ export function ChartComponent({
       const data = await res.json();
       data.reverse();
       setChartData(data);
-    } catch (error) {
-      console.log(error);
-      // setChartData(AmintData);
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {

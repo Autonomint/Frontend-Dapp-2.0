@@ -251,9 +251,6 @@ function DCDSTemplate() {
   const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
     useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
 
-  console.log(isTVLPendingUsd, "tvlValue");
-
-  // console.log(omniChainData, "omniChainData");
   const { balanceString: usdtBalance } = useGetBalance("USDT");
   const { balanceString: usdaBalance } = useGetBalance("USDa");
   const { balance: opBalance } = useGetBalance("OP");
@@ -303,12 +300,6 @@ function DCDSTemplate() {
     refetchCurrentData: refetchCurrentDataUSDT,
   } = useTokenDetails(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-  );
-
-  console.log(
-    getOraclePriceUSDa[0],
-    getOraclePriceUSDT[0],
-    "getOraclePriceUSDa"
   );
 
   // getting current LTV value
@@ -431,8 +422,6 @@ function DCDSTemplate() {
     getOraclePrice,
   ]);
 
-  console.log(tokenList, "tokenList");
-
   const {
     approveUsda,
     approveUsdaDynamic,
@@ -507,8 +496,6 @@ function DCDSTemplate() {
     query: {},
   });
 
-  console.log(nativeApprovalSuccessReceipt, nativeApprovalErrorReceipt, ">>>");
-
   // useEffect to check the status of the usdt approval transaction
   const usdtAmountLocal = formik.values.usdtAmount;
   const usdaAmountLocal = formik.values.usdaAmount;
@@ -528,14 +515,6 @@ function DCDSTemplate() {
         1e18
       : ((Number(formik.values.opAmount) || 0) * Number(getOraclePrice[0])) /
         1e18;
-
-  console.log(
-    formik.values.aeroAmount,
-    nativeTokenAmount,
-    "nativeTokenAmount",
-    getOraclePrice[0],
-    nativeTokenAmountDollor
-  );
 
   const usdaTokenAdds = usDaAddress[chainId as keyof typeof usDaAddress];
 
@@ -620,30 +599,6 @@ function DCDSTemplate() {
     formik.values.usdaAmount,
     formik.values.usdtAmount,
   ]);
-
-  console.log(
-    liqAmnt,
-    getPrices,
-    [
-      formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
-      formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-      formik.values.opFlag || formik.values.aeroFlag
-        ? nativeTokenAdds
-        : zeroAddress,
-    ],
-    [
-      BigInt(usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0),
-      BigInt(usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0),
-      BigInt(
-        formik.values.opFlag || formik.values.aeroFlag
-          ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
-          : 0
-      ),
-    ],
-    [assetDetailsUSDa, assetDetailsUSDT, assetDetailsMode],
-    nativeTokenAddress[NetworkId.BaseSepolia],
-    "liqAmnt"
-  );
 
   useEffect(() => {
     if (nativeApprovalSuccessReceipt) {
@@ -972,7 +927,6 @@ function DCDSTemplate() {
   const showBack = deviceType === "mobile" || deviceType === "tablet";
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
-  console.log(isAtBottom, "isAtBottom");
 
   const handleScrollDown = () => {
     if (scrollRef.current) {
@@ -1022,8 +976,6 @@ function DCDSTemplate() {
         Number(formatUnits(BigInt(getOraclePrice[0]), 18))
     );
   }, [formik.values]);
-
-  console.log(formik, depositValue, "depositValue");
 
   return (
     <div>
@@ -1301,7 +1253,7 @@ function DCDSTemplate() {
                 isLoading={usdtApproveLoadingLocal}
                 isFailure={UsdtApprovalErrorReceipt || usdtApproveError}
                 isSuccess={Boolean(UsdtApprovalSuccessReceipt)}
-                setSuccessLoading={() => console.log(true)}
+                setSuccessLoading={() => console.log()}
                 heading="Approving USDT"
                 loadingCount={
                   selectedTokens.length === 3
@@ -1320,7 +1272,7 @@ function DCDSTemplate() {
                 isLoading={usdaApproveLoadingLocal}
                 isFailure={usdaApprovalErrorReceipt || usdaApproveError}
                 isSuccess={Boolean(usdaApprovalReceiptReceipt)}
-                setSuccessLoading={() => console.log(true)}
+                setSuccessLoading={() => console.log()}
                 heading="Approving USDA+"
                 loadingCount={
                   selectedTokens.length === 3
@@ -1341,7 +1293,7 @@ function DCDSTemplate() {
                   nativeApprovalErrorReceipt || nativeTokenApproveError
                 }
                 isSuccess={Boolean(nativeApprovalSuccessReceipt)}
-                setSuccessLoading={() => console.log(true)}
+                setSuccessLoading={() => console.log()}
                 heading={`Approving ${
                   chainId === NetworkId.BaseSepolia ? "AERO" : "OP"
                 }`}
@@ -1359,7 +1311,7 @@ function DCDSTemplate() {
                 isLoading={dcdsDepositLoadingLocal}
                 isFailure={dcdsDepositeError || cdsDepositErrorReceipt}
                 isSuccess={Boolean(DepositdataReceipt)}
-                setSuccessLoading={() => console.log(true)}
+                setSuccessLoading={() => console.log()}
                 heading="Depositing"
                 loadingCount={
                   selectedTokens.length === 3

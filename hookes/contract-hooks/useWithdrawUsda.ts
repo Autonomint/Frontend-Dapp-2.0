@@ -44,9 +44,7 @@ const useWithdrawUsda = (mutation: any) => {
         ],
         value: nativeFee,
       });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return {

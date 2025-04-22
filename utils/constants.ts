@@ -19,9 +19,12 @@ export const DEFAULT_TOAST_POSITION_VALUE =
   process.env.NEXT_PUBLIC_DEFAULT_TOAST_POSITION;
 
 export const DAPP_ADDRESS_NOTIFI_VALUE =
-  process.env.NEXT_PUBLIC_DAPP_ADDRESS_NOTIFI;
+  process.env.NEXT_PUBLIC_DAPP_ADDRESS_NOTIFI || "";
 
-export const CARD_ID_NOTIFI_VALUE = process.env.NEXT_PUBLIC_CARD_ID_NOTIFI;
+export const CARD_ID_NOTIFI_VALUE =
+  process.env.NEXT_PUBLIC_CARD_ID_NOTIFI || "";
+
+export const CARD_ID_NOTIFI_ENV = process.env.NEXT_PUBLIC_NOTIFI_ENV || "";
 
 export enum StrikePrice {
   FIVE,

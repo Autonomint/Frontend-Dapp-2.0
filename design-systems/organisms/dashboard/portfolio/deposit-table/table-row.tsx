@@ -107,14 +107,6 @@ const DepositTableRow = ({
     }
   };
 
-  console.log(
-    amountProtected,
-    ethPrice,
-    position.ethPrice,
-    position.depositedAmount,
-    position.index
-  );
-
   useEffect(() => {
     amountProtectedFunction();
     return () => {

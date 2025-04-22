@@ -29,13 +29,10 @@ function TradingViewWidget({ currency }: { currency: string }) {
     }
   };
 
-  console.log(theme, "theme");
-
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
-    console.log(prefersDarkMode, "prefersDarkMode");
 
     const script = document.createElement("script");
     script.src =
@@ -157,8 +154,6 @@ function ChartComponent({ currency }: { currency: string }) {
 
   const { data: walletClient } = useWalletClient();
   const tokenConfig = useTokenConfig(currency);
-
-  console.log(tokenConfig, "tokenConfig");
 
   const handleAddToken = async () => {
     if (!walletClient) return console.error("Wallet client not available");

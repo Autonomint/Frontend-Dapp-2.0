@@ -374,8 +374,6 @@ export function DcdsWithdrawModal({
     }
   }
 
-  console.log(apy, "apy");
-
   useEffect(() => {
     setSpinner(true);
     handleDepositData();
@@ -404,8 +402,6 @@ export function DcdsWithdrawModal({
     resetDcdsWithdrawGain,
   } = useDcdsWithdrawGain({
     onError: (error: any) => {
-      console.log(error, "error");
-
       setTimeout(() => {
         setDcdsFundWithdrawLoadingLocal(false);
       }, 1000);
