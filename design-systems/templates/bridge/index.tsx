@@ -69,16 +69,16 @@ function BridgeTemplate() {
   const chainId = useChainId();
 
   useEffect(() => {
-    if (chainId2 === 84532) {
+    if (chainId2 === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
     }
-    if (chainId2 === 11155111) {
+    if (chainId2 === NetworkId.EthereumSepolia) {
       setSendNetwork("Sepolia");
     }
-    if (chainId2 === 919) {
+    if (chainId2 === NetworkId.Mode) {
       setSendNetwork("Mode");
     }
-    if (chainId2 === 11155420) {
+    if (chainId2 === NetworkId.Optimism) {
       setSendNetwork("OP");
     }
   }, [chainId2]);
@@ -103,9 +103,9 @@ function BridgeTemplate() {
   }, [sendAmount]);
 
   useEffect(() => {
-    if (chainId === 11155111) {
+    if (chainId === NetworkId.EthereumSepolia) {
       setSendNetwork("Sepolia");
-    } else if (chainId === 84532) {
+    } else if (chainId === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
     }
   }, [chainId]);

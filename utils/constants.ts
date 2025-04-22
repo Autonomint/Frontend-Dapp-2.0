@@ -1,10 +1,12 @@
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 export enum NetworkId {
-  EthereumSepolia = 11155111,
-  BaseSepolia = 84532,
-  Optimism = 11155420,
-  Mode = 919,
+  EthereumSepolia = Number(
+    process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA || 11155111
+  ),
+  BaseSepolia = Number(process.env.NEXT_PUBLIC_BASE_SEPOLIA || 84532),
+  Optimism = Number(process.env.NEXT_PUBLIC_OPTIMISM_SEPOLIA || 11155420),
+  Mode = Number(process.env.NEXT_PUBLIC_MODE || 919),
 }
 
 export const BorrowStatus = {
@@ -13,11 +15,13 @@ export const BorrowStatus = {
   LIQUIDATED: "LIQUIDATED",
 } as const;
 
-export const DEFAULT_TOAST_POSITION = "top-right";
+export const DEFAULT_TOAST_POSITION_VALUE =
+  process.env.NEXT_PUBLIC_DEFAULT_TOAST_POSITION;
 
-export const DAPP_ADDRESS_NOTIFI = "9xu0e0btkv6g71ypagwo";
+export const DAPP_ADDRESS_NOTIFI_VALUE =
+  process.env.NEXT_PUBLIC_DAPP_ADDRESS_NOTIFI;
 
-export const CARD_ID_NOTIFI = "fb7bcc660ddb4d6e99703595e6eed049";
+export const CARD_ID_NOTIFI_VALUE = process.env.NEXT_PUBLIC_CARD_ID_NOTIFI;
 
 export enum StrikePrice {
   FIVE,
@@ -53,21 +57,38 @@ export const RedeemAssets = {
 };
 
 // urls
-export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
-export const BRAND_ICON_URL =
-  "https://avatars.githubusercontent.com/u/37784886";
+export const TESTNET_URL = process.env.NEXT_PUBLIC_TESTNET_URL || "";
+export const BRAND_ICON_URL = process.env.NEXT_PUBLIC_BRAND_ICON_URL || "";
 
+// Updated scanUrls using environment variables and NetworkId enum
 export const scanUrls = {
-  919: "https://sepolia.explorer.mode.network/",
-  11155420: "https://sepolia-optimism.etherscan.io/",
-  11155111: `https://sepolia.etherscan.io/`,
-  84532: `https://sepolia.basescan.org/`,
+  [NetworkId.Mode]:
+    process.env.NEXT_PUBLIC_MODE_SEPOLIA_SCAN_URL ||
+    "https://sepolia.explorer.mode.network/", // Fallback
+  [NetworkId.Optimism]:
+    process.env.NEXT_PUBLIC_OPTIMISM_SEPOLIA_SCAN_URL ||
+    "https://sepolia-optimism.etherscan.io/", // Fallback
+  [NetworkId.EthereumSepolia]:
+    process.env.NEXT_PUBLIC_ETHEREUM_SEPOLIA_SCAN_URL ||
+    `https://sepolia.etherscan.io/`, // Fallback
+  [NetworkId.BaseSepolia]:
+    process.env.NEXT_PUBLIC_BASE_SEPOLIA_SCAN_URL ||
+    `https://sepolia.basescan.org/`, // Fallback
 } as Record<number, string>;
 
-export const eidOpSepolia = 40232;
-export const eidModeSepolia = 40260;
-export const eidSepolia = 40161;
-export const eidBaseSepolia = 40245;
+// LayerZero Endpoint IDs (eIDs) from environment variables
+export const eidOpSepolia = Number(
+  process.env.NEXT_PUBLIC_EID_OP_SEPOLIA || 40232 // Fallback
+);
+export const eidModeSepolia = Number(
+  process.env.NEXT_PUBLIC_EID_MODE_SEPOLIA || 40260 // Fallback
+);
+export const eidSepolia = Number(
+  process.env.NEXT_PUBLIC_EID_SEPOLIA || 40161 // Fallback
+);
+export const eidBaseSepolia = Number(
+  process.env.NEXT_PUBLIC_EID_BASE_SEPOLIA || 40245 // Fallback
+);
 
 export const eId = {
   OP: eidOpSepolia,

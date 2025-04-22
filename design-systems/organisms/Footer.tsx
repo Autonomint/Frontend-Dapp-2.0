@@ -10,6 +10,12 @@ import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
 
 export default function Footer() {
+  // Define fallback URLs in case environment variables are not set
+  const docsUrl = process.env.NEXT_PUBLIC_LINK_DOCS || "#";
+  const discordUrl = process.env.NEXT_PUBLIC_LINK_DISCORD || "#";
+  const twitterUrl = process.env.NEXT_PUBLIC_LINK_TWITTER || "#";
+  const telegramUrl = process.env.NEXT_PUBLIC_LINK_TELEGRAM || "#";
+
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">
       <div className="relative w-full flex flex-col-reverse justify-between gap-2 mx-auto sm:flex-row mdb-5 lg:ml-5 ">
@@ -38,51 +44,39 @@ export default function Footer() {
               </div>
             </div>
             <div className="lg:w-[20%] w-full flex gap-6 justify-center lg:justify-end mr-4">
+              {/* Docs Link */}
               <Button
                 variant={"shadowOutline"}
                 className=" lg:p-[10px] w-[44px] h-[44px]"
               >
-                <a
-                  href="https://docs.autonomint.com/autonomint/autonomint-1"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={docsUrl} target="_blank" rel="noreferrer">
                   <StickyNote style={{ width: "24px", height: "24px" }} />
                 </a>
               </Button>
+              {/* Discord Link */}
               <Button
                 variant={"shadowOutline"}
                 className="border-[#041A50]  lg:p-[10px] w-[44px] h-[44px]"
               >
-                <a
-                  href="https://discord.com/invite/4QFaUTwjkU"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={discordUrl} target="_blank" rel="noreferrer">
                   <AiOutlineDiscord style={{ width: "24px", height: "24px" }} />
                 </a>
               </Button>
+              {/* Twitter/X Link */}
               <Button
                 variant={"shadowOutline"}
                 className="border-[#041A50]  lg:p-[10px] w-[44px] h-[44px]"
               >
-                <a
-                  href="https://x.com/autonomint"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={twitterUrl} target="_blank" rel="noreferrer">
                   <BsTwitterX style={{ width: "24px", height: "24px" }} />
                 </a>
               </Button>
+              {/* Telegram Link */}
               <Button
                 variant={"shadowOutline"}
                 className="border-[#041A50]  lg:p-[10px] w-[44px] h-[44px]"
               >
-                <a
-                  href="https://t.me/+lBgFePSf6982ZDA9"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href={telegramUrl} target="_blank" rel="noreferrer">
                   <PiTelegramLogo style={{ width: "24px", height: "24px" }} />
                 </a>
               </Button>

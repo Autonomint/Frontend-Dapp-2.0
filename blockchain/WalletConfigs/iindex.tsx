@@ -5,12 +5,19 @@ import {
   modeTestnet,
   optimismSepolia,
   sepolia,
+  mainnet,
+  base,
+  optimism,
+  mode,
+  AppKitNetwork,
 } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { defineChain, http } from "viem";
 import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
+
+const chainList: AppKitNetwork[] = [mainnet, base, optimism, mode];
 
 export const opSepolia = defineChain({
   id: 11155420,
@@ -42,15 +49,12 @@ const metadata = {
 };
 
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
+  networks: chainList,
   projectId,
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
-  transports: {
-    [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
-  },
 });
 
 export const config = wagmiAdapter.wagmiConfig;
@@ -58,13 +62,12 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
-  defaultNetwork: baseSepolia,
+  networks: [mainnet, base, optimism, mode],
   metadata: metadata,
   features: {
     email: false,
     socials: false,
     analytics: false, // Optional - defaults to your Cloud configuration
   },
-  debug: true,
+  debug: false,
 });

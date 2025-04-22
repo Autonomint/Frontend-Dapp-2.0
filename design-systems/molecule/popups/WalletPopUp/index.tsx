@@ -195,7 +195,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
             <div className="flex-col md:flex-row md:justify-between flex mt-8 flex- justify-center gap-2 items-center">
               <a
-                href={`${scanUrls[Number(chainId || 919)]}/address/${address}`}
+                href={`${
+                  scanUrls[Number(chainId || NetworkId.BaseSepolia)]
+                }/address/${address}`}
                 target="__blank"
               >
                 <Typography
