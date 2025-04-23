@@ -59,7 +59,7 @@ export default function RootLayout({
                   >
                     {children}
                     <Footer />
-                    <InviteCodePopup />
+                    {/* <InviteCodePopup /> */}
                     <SwitchChainPopup />
                     <BetaConfirmation />
                   </div>

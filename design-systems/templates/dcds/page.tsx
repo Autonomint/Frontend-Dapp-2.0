@@ -1029,6 +1029,8 @@ function DCDSTemplate() {
 
   console.log(formik, depositValue, "depositValue");
 
+  const { theme } = useTheme();
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
