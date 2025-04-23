@@ -3,6 +3,12 @@ import autonomintTxtImage from "@/app/assets/autonomint.svg";
 import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
 import { Button } from "@/design-systems/atoms/button";
+import {
+  NEXT_PUBLIC_LINK_DISCORD,
+  NEXT_PUBLIC_LINK_DOCS,
+  NEXT_PUBLIC_LINK_TELEGRAM,
+  NEXT_PUBLIC_LINK_TWITTER,
+} from "@/utils/constants";
 import { StickyNote } from "lucide-react";
 import Image from "next/image";
 import { AiOutlineDiscord } from "react-icons/ai";
@@ -11,10 +17,10 @@ import { PiTelegramLogo } from "react-icons/pi";
 
 export default function Footer() {
   // Define fallback URLs in case environment variables are not set
-  const docsUrl = process.env.NEXT_PUBLIC_LINK_DOCS || "#";
-  const discordUrl = process.env.NEXT_PUBLIC_LINK_DISCORD || "#";
-  const twitterUrl = process.env.NEXT_PUBLIC_LINK_TWITTER || "#";
-  const telegramUrl = process.env.NEXT_PUBLIC_LINK_TELEGRAM || "#";
+  const docsUrl = NEXT_PUBLIC_LINK_DOCS || "#";
+  const discordUrl = NEXT_PUBLIC_LINK_DISCORD || "#";
+  const twitterUrl = NEXT_PUBLIC_LINK_TWITTER || "#";
+  const telegramUrl = NEXT_PUBLIC_LINK_TELEGRAM || "#";
 
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">

@@ -442,10 +442,10 @@ const RedeemContainer = () => {
   }
 
   const dropdownItems = [
-    {
-      label: "USDa",
-      onClick: () => formik.setFieldValue("inputCollateral", "amint"),
-    },
+    // {
+    //   label: "USDa",
+    //   onClick: () => formik.setFieldValue("inputCollateral", "amint"),
+    // },
     {
       label: "ABond",
       onClick: () => formik.setFieldValue("inputCollateral", "abond"),

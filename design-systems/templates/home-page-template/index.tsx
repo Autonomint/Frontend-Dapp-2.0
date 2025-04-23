@@ -58,7 +58,7 @@ export default function HomeTemplate() {
         ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
       ).toFixed(2)}`,
     },
-    { title: "Bridge", subtitle: "" },
+    { title: "Bridge", subtitle: "Coming soon" },
     { title: "Farm Your Luck", subtitle: "Earn Option Fee" },
     { title: "Redeem ABOND", subtitle: "" },
     { title: "Buy", subtitle: "" },

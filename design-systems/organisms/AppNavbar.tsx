@@ -19,6 +19,7 @@ interface TabOption {
   isActive: boolean;
   isFeatureActive?: boolean;
   InActiveHeading?: string;
+  isComingSoon?: boolean;
 }
 const AppNavbar: React.FC<AppNavbarProps> = ({
   tabOptions = [],
@@ -43,6 +44,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               pathname === "/mintUSDaWithCollateral/ETH",
             isFeatureActive: !isFunctionPausedBorrow_Deposit,
             InActiveHeading: "Borrow is paused now",
+            isComingSoon: false,
           },
           {
             nameA: "dCDS",
@@ -50,6 +52,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             isActive: pathname === "/dcds",
             isFeatureActive: !isFunctionPausedCDS_Deposit,
             InActiveHeading: "CDS Deposit is paused now",
+            isComingSoon: false,
           },
           {
             nameA: "Bridge",
@@ -57,6 +60,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             isActive: pathname === "/bridge",
             isFeatureActive: true,
             InActiveHeading: "",
+            isComingSoon: true,
           },
           {
             nameA: "Dashboard",
@@ -67,6 +71,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               pathname === "/dashboard/stats",
             isFeatureActive: true,
             InActiveHeading: "",
+            isComingSoon: false,
           },
         ]
       : tabOptions;
@@ -90,10 +95,17 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
 
       <div className="hidden lg:flex w-full border-b border-grayLight">
         {navList?.map(
-          ({ nameA, path, isActive, isFeatureActive, InActiveHeading }) => (
+          ({
+            nameA,
+            path,
+            isActive,
+            isFeatureActive,
+            InActiveHeading,
+            isComingSoon,
+          }) => (
             <Link
               prefetch={true}
-              href={path}
+              href={isComingSoon ? "" : path}
               key={nameA}
               className={`flex-1 px-5  py-[8px] md:py-[13px] cursor-pointer text-2xl sm:text-[32px] font-medium border-r border-grayLight last:border-r-0   ${
                 isActive && navList.length > 1
@@ -103,6 +115,9 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               // hover:cursor-pointer dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]
             >
               {nameA}{" "}
+              {isComingSoon && (
+                <span className="text-grayLight text-base">(Coming Soon)</span>
+              )}
               <span className="text-[14px] text-grayLight">
                 {!isFeatureActive && `(${InActiveHeading})`}
               </span>

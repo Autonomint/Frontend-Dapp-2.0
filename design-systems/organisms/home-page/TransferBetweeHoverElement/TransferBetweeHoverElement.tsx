@@ -18,9 +18,9 @@ function TransferBetweeHoverElement() {
   const router = useRouter();
   return (
     <div
-      onClick={() => {
-        router.push("/bridge");
-      }}
+      // onClick={() => {
+      //   router.push("/bridge");
+      // }}
       className="flex  border-[1px] border-top border-grayLight flex-col  gap-4 lg:gap-8 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-2 lg:p-8 relative  dark:bg-custom-gradient-to-top"
     >
       <div className=" text-textBlack text-[24px] lg:text-[38px] font-medium dark:text-white bg-none">
@@ -85,7 +85,9 @@ function TransferBetweeHoverElement() {
         </div>
       </div>
       <Button className="absolute bottom-0 lg:px-6 px-3  left-0 w-full mt-13 bg-textBlack text-white text-[24px] lg:text-[32px] flex justify-between h-[60px] lg:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
-        Bridge
+        <div>
+          Bridge <span className="text-grayLight text-lg">(Coming Soon)</span>
+        </div>
         <Image
           src={arrow}
           width={42}
