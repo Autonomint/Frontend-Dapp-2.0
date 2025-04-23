@@ -20,20 +20,43 @@ function InputMetics({
       </div>
       <div className="flex flex-col mt-3">
         {[
-          { label: "Deposit", value: `$${deposit}`, color: "#2DDA95" },
-          { label: "Option Fee", value: `$${optionFees}`, color: "#FF5270" },
+          {
+            label: "Deposit",
+            value: `$${deposit}`,
+            color: "#2DDA95",
+            isToolTip: false,
+            toolTipText: "",
+          },
+          {
+            label: "Option Fee",
+            value: `$${optionFees}`,
+            color: "#FF5270",
+            isToolTip: true,
+            toolTipText:
+              "You won’t pay anything upfront, the option fee comes out of your LTV",
+          },
           {
             label: "USDA+ borrowed",
             value: `$${usdaBorrowed}`,
             color: "#627EEA",
+            isToolTip: false,
+            toolTipText: "",
           },
-          { label: "Downside Protection", value: `$${Dp}`, color: "#05A552" },
+          {
+            label: "Downside Protection",
+            value: `$${Dp}`,
+            color: "#05A552",
+            isToolTip: false,
+            toolTipText: "",
+          },
         ].map((metric, index) => (
           <MetricFields
             key={index}
             label={metric.label}
             value={metric.value}
             color={metric.color}
+            isToolTip={metric.isToolTip}
+            toolTipText={metric.toolTipText}
           />
         ))}
         <div className="w-full h-[80px]">

@@ -14,12 +14,51 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import { nativeTokenAddress, usDaAddress } from "@/blockchain/contracts";
+import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import { useAccount } from "wagmi";
+import { formatUnits, zeroAddress } from "viem";
+import { formatNumber } from "@/utils/helpers";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 
 export default function HomeTemplate() {
+  const { chainId } = useAccount();
+
+  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
+    useGetUsdtAmountDepositedTillNow();
+
+  const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
+    nativeTokenAddress[chainId as keyof typeof usDaAddress]
+  );
+
+  const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
+    useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
+  const { getOraclePrice, getOraclePriceRefetch } =
+    useMasterPriceOracle(nativeTokenAdds);
+
   const items = [
-    { title: "Mint USDA+", subtitle: "TVL - $100,000" },
-    { title: "dCDS", subtitle: "TVL - $100,000" },
-    { title: "Bridge", subtitle: "TVL - $100,000" },
+    {
+      title: "Mint USDA+",
+      subtitle: `TVL - $${(
+        Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
+        1e20
+      ).toFixed(2)}`,
+    },
+    {
+      title: "dCDS",
+      subtitle: `TVL - $${(
+        Number(
+          formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
+        ) +
+        Number(Number(tvlValueUSDa || 0) / 1e6) +
+        ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
+      ).toFixed(2)}`,
+    },
+    { title: "Bridge", subtitle: "" },
     { title: "Farm Your Luck", subtitle: "Earn Option Fee" },
     { title: "Redeem ABOND", subtitle: "" },
     { title: "Buy", subtitle: "" },

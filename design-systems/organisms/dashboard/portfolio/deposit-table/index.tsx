@@ -253,7 +253,7 @@ function DepositTable({
               className="pl-5 whitespace-nowrap cursor-pointer font-normal"
             >
               <div className="flex gap-2 items-center">
-                <span>Abond Minted</span>
+                <span>ABond Minted</span>
                 <span>
                   {sortAsc && sortBy === "abond" ? (
                     <ChevronDown
