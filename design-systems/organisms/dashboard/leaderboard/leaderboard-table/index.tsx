@@ -35,7 +35,7 @@ function LeaderboardTable({
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
             <th className="pl-5  table-cell font-normal">Borrowed</th>
             <th className="pl-5  table-cell font-normal">Deposited</th>
-            <th className="pl-5  table-cell font-normal">LTV Ration</th>
+            <th className="pl-5  table-cell font-normal">LTV Ratio</th>
             <th className="pl-5  table-cell font-normal">Type</th>
             <th className="pr-5  table-cell text-right font-normal">Points</th>
           </tr>

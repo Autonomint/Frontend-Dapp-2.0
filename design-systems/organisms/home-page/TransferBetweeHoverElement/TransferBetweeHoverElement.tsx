@@ -30,9 +30,9 @@ function TransferBetweeHoverElement() {
         <div className="flex gap-3 bg-none">
           <div className="flex flex-col bg-none">
             <Image
-              src={ModeImage}
-              alt="Price Graph"
               className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
+              src={OptimismImage}
+              alt="Price Graph"
               style={{
                 backgroundColor: theme == "dark" ? "unset !important" : "",
               }}
@@ -54,9 +54,9 @@ function TransferBetweeHoverElement() {
           </div>
           <div className="flex flex-col bg-none">
             <Image
-              className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
-              src={OptimismImage}
+              src={ModeImage}
               alt="Price Graph"
+              className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
               style={{
                 backgroundColor: theme == "dark" ? "unset !important" : "",
               }}

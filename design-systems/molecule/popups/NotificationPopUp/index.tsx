@@ -39,6 +39,8 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     },
   };
 
+  console.log(CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI, "DAPP_ADDRESS_NOTIFI");
+
   return (
     <div className={wrapperClassName}>
       <Popup
@@ -56,7 +58,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
         <div className="pb-2">
           <NotifiContext
             dappAddress={DAPP_ADDRESS_NOTIFI}
-            env="Development"
+            env="Production"
             signMessage={async (message: Uint8Array) => {
               const result = await signer.signMessage(message);
               return arrayify(result);
@@ -79,4 +81,13 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   );
 };
 
+// <NotifiContext
+//   dappAddress="9xu0e0btkv6g71ypagwo"
+//   env="Production"
+//   walletBlockchain="BASE"
+//   walletPublicKey="string"
+//   signMessage={async (msg: Uint8Array) => msg}
+// >
+//   <NotifiSubscriptionCard cardId="fb7bcc660ddb4d6e99703595e6eed049" />
+// </NotifiContext>;
 export default NotificationPopup;
