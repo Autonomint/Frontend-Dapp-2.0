@@ -11,6 +11,7 @@ import { useWalletClient } from "wagmi";
 import { useTokenConfig } from "@/utils/token-config";
 import { toast } from "sonner";
 import Spinner from "@/design-systems/atoms/Spinner";
+import { CircleFadingPlus } from "lucide-react";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -184,13 +185,16 @@ function ChartComponent({ currency }: { currency: string }) {
         </Typography>
 
         {/* {currency !== "ETH" && (
-          <Button
-            onClick={handleAddToken}
-            variant={"shadowOutline"}
-            className="text-lg"
-          >
-            {isAddingToken ? <Spinner /> : "Add Token"}
-          </Button>
+          <div className="flex gap-2 items-center">
+            <div onClick={handleAddToken} className="cursor-pointer">
+              {isAddingToken ? (
+                <Spinner />
+              ) : (
+                <CircleFadingPlus className="stroke-black dark:stroke-white " />
+              )}
+            </div>
+            <div className="text-md text-grayLight">Add token to wallet</div>
+          </div>
         )} */}
       </div>
 

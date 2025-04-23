@@ -49,7 +49,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       <div className=" hidden xl:block text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">
         Fee Comparison{" "}
         <span className="lg:text-lg text-grayLight">
-          (Option fee per 1 ETH At the Money prices)
+          (1-month option premium to hedge 1 ETH at current price)
         </span>
       </div>
       <div className="  xl:hidden text-[20px] lg:text-[32px] text-textBlack font-medium dark:text-white bg-none">

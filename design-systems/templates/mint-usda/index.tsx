@@ -37,7 +37,7 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
               <li className="mb-2 text-lg">
-                Deposit ETH/LTRs as collateral and mint USDA+ (up to 80% of
+                Deposit ETH/LRTs as collateral and mint USDA+ (up to 80% of
                 collateral value).
               </li>
               <li className="mb-2 text-lg">
@@ -45,7 +45,7 @@ function MintUSDa({ currency }: { currency: string }) {
                 month expiry, with option to renew every month.
               </li>
               <li className="mb-2 text-lg">
-                Pay a closing option fee, ~50% lower than charged in any
+                Pay a closing option fee, ~60% lower than charged in any
                 derivative platform.
               </li>
               <li className="mb-2 text-lg">

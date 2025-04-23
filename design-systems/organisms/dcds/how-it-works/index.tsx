@@ -42,20 +42,19 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
               </Typography>
             </div>
             <div className=" text-textBlack text-center  text-[16px] md:text-[20px] font-normal mt-4 dark:text-white">
-              Deposit in dCDS to earn option fees while hedging up to{" "}
-              {downsideProtection}% of ETH downside. Gains and losses from ETH
-              price movements are distributed based on collateral to dCDS funds
-              ratio
+              Deposit into dCDS to earn option premiums while offering downside
+              protection of up to {downsideProtection}% on ETH. Profits and
+              losses from ETH price changes are allocated across dCDS
+              participants based on the ratio of total borrower collateral to
+              dCDS pool funds.
             </div>
             <ol className="list-decimal list-outside pl-4 mt-8 text-grayLight">
               <li className="mb-3 text-[14px] md:text-lg">
                 Deposit Any Token – Click ‘+’ to deposit stablecoins or tokens.
-                Some limits apply—for example, if you deposit $100 in USDA+, you
-                can add $20 in USDT.
               </li>
               <li className="mb-3 text-[14px] md:text-lg">
                 Set Lock Period – Choose how long your funds stay locked to
-                provide collateral protection.
+                provide collateral protection and earn option premiums.
               </li>
               <li className="mb-3 text-[14px] md:text-lg">
                 Enable Liquidation Gains – Opt-in to let the protocol use your

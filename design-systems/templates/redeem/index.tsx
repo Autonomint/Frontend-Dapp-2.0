@@ -447,7 +447,7 @@ const RedeemContainer = () => {
       onClick: () => formik.setFieldValue("inputCollateral", "amint"),
     },
     {
-      label: "Abond",
+      label: "ABond",
       onClick: () => formik.setFieldValue("inputCollateral", "abond"),
     },
   ];
@@ -527,7 +527,7 @@ const RedeemContainer = () => {
                       ? `${
                           formik.values.inputCollateral === "amint"
                             ? "USDA+"
-                            : "Abond"
+                            : "ABond"
                         }`
                       : "Select"
                   }
@@ -551,7 +551,7 @@ const RedeemContainer = () => {
                   <span className="text-grayLight">
                     {formik.values.inputCollateral == "amint"
                       ? `${usdabalance?.formatted || 0} USDA+`
-                      : `${abondbalance?.formatted || 0}  Abond`}
+                      : `${abondbalance?.formatted || 0}  ABond`}
                   </span>
                 </div>
               </div>
@@ -631,7 +631,7 @@ const RedeemContainer = () => {
         {isFunctionPausedBorrow_Redeem &&
           formik.values.inputCollateral === "abond" && (
             <div className="text-red-600 text-center lg:mb-2  ">
-              {"Abond redeem is paused now"}
+              {"ABond redeem is paused now"}
             </div>
           )}
         {isFunctionPausedCDS_Redeem &&
@@ -667,7 +667,7 @@ const RedeemContainer = () => {
                   <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
                     <p>
                       {formik.values.inputCollateral === "abond"
-                        ? "Abond redeem is pause now"
+                        ? "ABond redeem is pause now"
                         : "USDa redeem is paused now"}
                     </p>
                   </TooltipContent>
@@ -687,7 +687,7 @@ const RedeemContainer = () => {
               isFailure={abondIsError || abondApproveError}
               isSuccess={Boolean(abondApproveSuccess)}
               setSuccessLoading={() => console.log()}
-              heading="Approving Abond"
+              heading="Approving ABond"
               loadingCount="1/2"
             />
             <LoadingBox

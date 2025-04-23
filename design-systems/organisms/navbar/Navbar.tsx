@@ -1,6 +1,6 @@
 "use client";
-import autonomintTxtImage from "@/app/assets/autonomint.svg";
-import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
+import autonomintTxtImage from "@/app/assets/brand-logo-white.svg";
+import autonomintTxtImageDark from "@/app/assets/brand-logo-white-pink.svg";
 import logo from "@/app/assets/logo.svg";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { Button } from "@/design-systems/atoms/button";
@@ -14,12 +14,13 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount, useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
+import twitter from "@/app/assets/x-social-media-black-icon.svg";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -84,6 +85,37 @@ function Navbar() {
 
   const isPolicyPage = pathName == "/terms-policy";
 
+  function shareOnTwitter(
+    text: string,
+    url?: string,
+    hashtags?: string,
+    via?: string
+  ): void {
+    // Construct the base Twitter intent URL
+    let shareUrl = "https://twitter.com/intent/tweet?";
+
+    // Add the text parameter
+    shareUrl += `text=${encodeURIComponent(text)}`;
+
+    // Add the URL parameter if provided
+    if (url) {
+      shareUrl += `&url=${encodeURIComponent(url)}`;
+    }
+
+    // Add the hashtags parameter if provided
+    if (hashtags) {
+      shareUrl += `&hashtags=${encodeURIComponent(hashtags)}`;
+    }
+
+    // Add the via parameter if provided
+    if (via) {
+      shareUrl += `&via=${encodeURIComponent(via)}`;
+    }
+
+    // Open the Twitter share URL in a new window
+    window.open(shareUrl, "_blank");
+  }
+
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
       <div className="ml-4 flex-row flex gap-2">
@@ -100,7 +132,7 @@ function Navbar() {
 
         <Link onClick={closeMenu} href="/">
           <div className="flex justify-start  items-center  gap-4">
-            <div className="w-[3rem] h-[3rem]">
+            {/* <div className="w-[3rem] h-[3rem]">
               <Image
                 src={logo}
                 alt="autonomint-dapp"
@@ -111,8 +143,8 @@ function Navbar() {
                   flexShrink: 0,
                 }}
               />
-            </div>
-            <div className="text-xl hidden lg:block  tracking-tighter text-[#020202]">
+            </div> */}
+            <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
               <Image
                 className=" dark:block hidden w-full  shrink-0"
                 src={autonomintTxtImageDark}
@@ -156,7 +188,15 @@ function Navbar() {
           </Button>
 
           <NotificationPopup wrapperClassName={"hidden lg:block"} />
-          <ReferPopup wrapperClassName={"hidden lg:block"} />
+          {/* <ReferPopup wrapperClassName={"hidden lg:block"} /> */}
+
+          <Button
+            onClick={() => shareOnTwitter("")}
+            variant={"shadowOutline"}
+            className="border-[#041A50]  h-fit text-[18px] font-normal  w-full p-[8px] dark:bg-custom-gradient-to-bottom"
+          >
+            <Image width={24} height={24} alt="twitter" src={twitter} /> Share
+          </Button>
         </div>
       )}
 
@@ -264,7 +304,14 @@ function Navbar() {
               )}
             </Button>
           )}
-          <ReferPopupMobile />
+          {/* <ReferPopupMobile /> */}
+          {/* <Button
+            onClick={() => shareOnTwitter("")}
+            variant={"shadowOutline"}
+            className="border-[#041A50]  h-fit text-[18px] font-normal  w-full p-[8px] dark:bg-custom-gradient-to-bottom"
+          >
+            <Image width={24} height={24} alt="twitter" src={twitter} /> Share
+          </Button> */}
         </div>
       </div>
     </div>

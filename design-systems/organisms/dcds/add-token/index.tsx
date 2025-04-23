@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useWalletClient } from "wagmi";
 import { useTokenConfig } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
+import { CircleFadingPlus } from "lucide-react";
 
 function AddToken({
   tokenDetails,
@@ -95,8 +96,8 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        <div className="flex  gap-5 w-full items-start">
-          <div className="flex w-[40%] md:w-[30%] flex-row items-center lg:items-start lg:flex-col gap-5">
+        <div className="flex  gap-5 w-full items-center">
+          <div className="flex w-[40%] md:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -130,13 +131,16 @@ function AddToken({
               )}
             </div>
           </div>
-          {/* <Button
-            onClick={handleAddToken}
-            variant={"shadowOutline"}
-            className="text-lg"
-          >
-            {isAddingToken ? <Spinner /> : "Add Token"}
-          </Button> */}
+          {/* <div className="flex flex-col justify-center h-full gap-2 items-center">
+            <div onClick={handleAddToken} className="cursor-pointer">
+              {isAddingToken ? (
+                <Spinner />
+              ) : (
+                <CircleFadingPlus className="stroke-black dark:stroke-white " />
+              )}
+            </div>
+            <div className="text-md text-grayLight ">Add token</div>
+          </div> */}
         </div>
 
         <Tooltip>

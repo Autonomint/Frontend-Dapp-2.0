@@ -126,7 +126,7 @@ export function WithdrawFund({
       tooltipText: "",
     },
     {
-      headline: "Abond Minted",
+      headline: "ABond Minted",
       value: "-",
       tooltip: false,
       tooltipText: "",
