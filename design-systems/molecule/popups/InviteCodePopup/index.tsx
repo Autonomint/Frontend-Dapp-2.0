@@ -83,7 +83,6 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   };
 
   const handleSubmit = async () => {
-    debugger;
     setInputError("");
     try {
       if (!isConnected) return open();
