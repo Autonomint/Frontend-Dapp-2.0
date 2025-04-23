@@ -11,6 +11,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { useState } from "react";
+import { useWalletClient } from "wagmi";
+import { useTokenConfig } from "@/utils/token-config";
+import Spinner from "@/design-systems/atoms/Spinner";
+import { CircleFadingPlus } from "lucide-react";
 
 function AddToken({
   tokenDetails,
@@ -56,6 +61,36 @@ function AddToken({
     });
   };
 
+  const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
+
+  const { data: walletClient } = useWalletClient();
+  const tokenConfig = useTokenConfig(
+    tokenDetails.tokenLabel || tokenDetails.tokenName
+  );
+
+  console.log(tokenConfig, "tokenConfig");
+
+  const handleAddToken = async () => {
+    if (!walletClient) return console.error("Wallet client not available");
+    setIsAddingToken(true);
+    try {
+      const wasAdded = await walletClient.request({
+        method: "wallet_watchAsset",
+        params: tokenConfig,
+      });
+
+      if (wasAdded) {
+        toast.success("✅ Token added successfully");
+      } else {
+        toast.error("❌ Token was not added");
+      }
+      setIsAddingToken(false);
+    } catch (error) {
+      setIsAddingToken(false);
+      console.error("Error adding token:", error);
+    }
+  };
+
   return (
     <div
       className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
@@ -63,8 +98,8 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
-        <div className="flex  gap-5 w-full items-start">
-          <div className="flex w-[40%] md:w-[30%] flex-row items-center lg:items-start lg:flex-col gap-5">
+        <div className="flex  gap-5 w-full items-center">
+          <div className="flex w-[40%] md:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -97,6 +132,16 @@ function AddToken({
                 </span>
               )}
             </div>
+          </div>
+          <div className="flex flex-col justify-center h-full gap-2 items-center">
+            <div onClick={handleAddToken} className="cursor-pointer">
+              {isAddingToken ? (
+                <Spinner />
+              ) : (
+                <CircleFadingPlus className="stroke-black dark:stroke-white " />
+              )}
+            </div>
+            <div className="text-md text-grayLight ">Add token</div>
           </div>
         </div>
 

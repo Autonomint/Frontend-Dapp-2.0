@@ -197,9 +197,7 @@ export function WithdrawFund({
           ) * lastCumulativeRate
         ) / BigInt(10 ** 27);
 
-  const repayAmount = Math.round(
-    Number(totalAmintAmnt) / 1e6 - Number(downsideProtection)
-  );
+  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
 
   // getting current APR value
   const { data: currentAPR } = useReadContract({
@@ -306,10 +304,14 @@ export function WithdrawFund({
     },
     {
       headline: "Total Interest",
-      value: `$${(
-        Number(totalAmintAmnt) / 10 ** 6 -
-        Number(position.noOfUSDaMinted)
-      ).toFixed(4)}`,
+      value: `$${
+        Number(totalAmintAmnt) / 10 ** 6 < Number(position.noOfUSDaMinted)
+          ? 0
+          : (
+              Number(totalAmintAmnt) / 10 ** 6 -
+              Number(position.noOfUSDaMinted)
+            ).toFixed(4)
+      }`,
       tooltip: false,
       tooltipText: "",
     },
@@ -521,7 +523,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      approveUsda(BigInt(repayAmount * 1e6));
+      approveUsda(BigInt(Math.round(repayAmount * 1e6)));
     }
   };
 

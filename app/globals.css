@@ -297,3 +297,6 @@ input[type="number"]:-webkit-autofill {
 .beta-confirmation .popup-close-icon {
   visibility: hidden;
 }
+.invite_code_popup_container .popup-close-icon {
+  visibility: hidden;
+}

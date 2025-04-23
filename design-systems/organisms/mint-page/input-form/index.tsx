@@ -48,6 +48,8 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Network } from "ethers";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -200,6 +202,24 @@ function InputForm({ currency }: { currency: string }) {
 
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
 
+  const fetchWalletAddress = async (chainId?: number) => {
+    const response = await axios.post(
+      `${BACKEND_API_URL}/global/get-min-usda-mint-for-luck`,
+      {
+        chainId,
+      }
+    );
+    return response.data;
+  };
+
+  const { data: minUSDAforLuck, isLoading } = useQuery({
+    queryKey: ["farmYourLuckWalletAddress", chainId],
+    queryFn: () => fetchWalletAddress(chainId),
+    enabled: Boolean(chainId),
+  });
+
+  console.log(minUSDAforLuck, "minUSDAforLuck");
+
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
       setPortfolioTab("Borrowed");
@@ -226,7 +246,8 @@ function InputForm({ currency }: { currency: string }) {
       });
       setMintLoading(false);
       handleResetPage();
-      router.push("/farmyourluck");
+      if (minUSDAforLuck <= Number(usdaToBeMinted))
+        router.push("/farmyourluck");
     } else if (depositHashError) {
       setMintLoading(false);
       toast.custom((t) => {

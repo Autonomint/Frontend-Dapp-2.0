@@ -85,7 +85,7 @@ function BridgeTemplate() {
 
   // Option Fees to be added to the transaction parameters (200000)
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(60000, 0)
+    .addExecutorLzReceiveOption(85000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
@@ -191,20 +191,6 @@ function BridgeTemplate() {
   useEffect(() => {
     if (usdaApproveSuccess && accountAddress) {
       setUsdaApproveLoading(false);
-      setTimeout(() => {
-        setSendLoading(true);
-      }, 1000);
-      usdaApproveWrite({
-        abi: usDaAbi,
-        address: usDaAddress[chainId as keyof typeof usDaAddress],
-        functionName: "send",
-        args: [
-          transactionParams as never,
-          { nativeFee: nativeFee1?.nativeFee ?? 0n, lzTokenFee: 0n },
-          accountAddress,
-        ],
-        value: nativeFee1?.nativeFee,
-      });
     } else if (usdaErrorApprove) {
       handleTransferFail();
     }
@@ -332,15 +318,17 @@ function BridgeTemplate() {
     if (accountAddress) {
       setTransferLoadingLocal(true);
       if (sendToken === "USDa") {
-        setUsdaApproveLoading(true);
-        amintApproveWrite({
+        setSendLoading(true);
+        usdaApproveWrite({
           abi: usDaAbi,
           address: usDaAddress[chainId as keyof typeof usDaAddress],
-          functionName: "approve",
+          functionName: "send",
           args: [
-            usDaAddress[chainId as keyof typeof usDaAddress] as `0x${string}`,
-            BigInt((Number(sendAmount) || 0) * 10 ** 6),
+            transactionParams as never,
+            { nativeFee: nativeFee1?.nativeFee ?? 0n, lzTokenFee: 0n },
+            accountAddress,
           ],
+          value: nativeFee1?.nativeFee,
         });
       }
     }
@@ -391,28 +379,32 @@ function BridgeTemplate() {
     {
       label: "Sepolia",
       onClick: () => {
-        switchChain({ chainId: 11155111 });
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.EthereumSepolia });
         setSendNetwork("Sepolia");
       },
     },
     {
       label: "Base",
       onClick: () => {
-        switchChain({ chainId: 84532 });
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.BaseSepolia });
         setSendNetwork("Base");
       },
     },
     {
       label: "Mode",
       onClick: () => {
-        switchChain({ chainId: 919 });
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.Mode });
         setSendNetwork("Mode");
       },
     },
     {
       label: "OP",
       onClick: () => {
-        switchChain({ chainId: 11155420 });
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.Optimism });
         setSendNetwork("OP");
       },
     },
@@ -507,21 +499,11 @@ function BridgeTemplate() {
           )}
 
           <LoadingBox
-            isLoading={usdaApproveLoadingLocal}
-            isFailure={depositError || usdaErrorApprove}
-            isSuccess={Boolean(usdaApproveSuccess)}
-            setSuccessLoading={() => console.log()}
-            heading="Approving USDA+"
-            loadingCount="1/2"
-          />
-
-          <LoadingBox
             isLoading={sendLoading && sendToken === "USDa"}
             isFailure={usdaErrorApproveFn || usdaIsError}
             isSuccess={Boolean(usdaIsSuccess)}
             setSuccessLoading={() => console.log()}
             heading={"Transferring " + `${sendToken}+`}
-            loadingCount="2/2"
           />
         </div>
       </div>
