@@ -35,7 +35,6 @@ const useWithdrawUsda = (mutation: any) => {
           address as `0x${string}`,
           BigInt(index),
           odosAssembledData,
-          usdtFromOdos,
           {
             nonce,
             deadline,

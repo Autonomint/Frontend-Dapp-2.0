@@ -516,7 +516,6 @@ export function DcdsWithdrawModal({
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
           res.data?.odosAssembledData,
-          res.data?.usdtFromOdos,
           res.data?.nonce,
           res.data?.deadline,
           res.data?.signature,
@@ -557,8 +556,6 @@ export function DcdsWithdrawModal({
           [
             BigInt(position.index),
             res.data?.excessProfitCumulativeValue,
-            // res.data?.odosAssembledData,
-            // res.data?.usdtFromOdos,
             res.data?.nonce,
             res.data?.deadline,
             res.data?.signature,
@@ -572,7 +569,6 @@ export function DcdsWithdrawModal({
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
         res.data?.odosAssembledData,
-        res.data?.usdtFromOdos,
         res.data?.nonce,
         res.data?.deadline,
         res.data?.signature,

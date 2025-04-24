@@ -9,25 +9,31 @@ import { useEffect } from "react";
 const InvitedTemplate = () => {
   const users = [
     {
-      name: "Alex",
-      handle: "@alex_eth",
-      avatar: "https://unavatar.io/twitter/alex_eth",
-      quote: "Just tried the new stablecoin — super smooth!",
-      link: "https://twitter.com/alex_eth",
+      name: "Deez",
+      handle: "@D333z",
+      avatar:
+        "https://pbs.twimg.com/profile_images/1907854423440732160/kGrXX_Gw_400x400.jpg",
+      quote: "Dark horse incoming @autonomint",
+      link: "https://x.com/D333z",
+      twitLink: "https://x.com/D333z/status/1909322407447257193",
     },
     {
-      name: "Sara",
-      handle: "@saraonchain",
-      avatar: "https://unavatar.io/twitter/saraonchain",
-      quote: "Loved the UX. Excited to see where this goes 🚀",
-      link: "https://twitter.com/saraonchain",
+      name: "SafeYields",
+      handle: "SafeYields",
+      avatar:
+        "https://pbs.twimg.com/profile_images/1719312271166345216/BQeF6FMI_400x400.jpg",
+      quote: "Internal hedging done right by USDA+ from autonomint",
+      link: "https://x.com/SafeYields",
+      twitLink: "https://x.com/SafeYields/status/1912089150133514251",
     },
     {
-      name: "Dev",
-      handle: "@devmint",
-      avatar: "https://unavatar.io/twitter/devmint",
-      quote: "One of the cheapest hedging tools I’ve seen",
-      link: "https://twitter.com/devmint",
+      name: "Arunphilips",
+      handle: "@arunphilips",
+      avatar:
+        "https://pbs.twimg.com/profile_images/1679896857420480512/gbpdLI2q_400x400.png",
+      quote: "Betting on Autonomint to make stablecoins fun again",
+      link: "https://x.com/arunphilips",
+      twitLink: "https://x.com/communitybuidl/status/1911377083680370925",
     },
   ];
 
@@ -94,9 +100,13 @@ const InvitedTemplate = () => {
                 </svg>
                 {user.handle}
               </a>
-              <p className="mt-5 text-grayLight  text-[14px] italic">
+              <a
+                target="_blank"
+                href={user.twitLink}
+                className="mt-5 text-grayLight underline  text-[14px] italic"
+              >
                 “{user.quote}”
-              </p>
+              </a>
             </div>
           ))}
         </div>
@@ -131,25 +141,25 @@ const InvitedTemplate = () => {
           <section className="max-w-3xl mx-auto text-left">
             <h2 className="text-2xl font-semibold mb-4">🔐 Why Trust Us?</h2>
             <ul className="list-disc pl-6 text-grayLight  text-lg space-y-2">
+              <li>The code has been audited by 350+ auditors via Sherlock.</li>
               <li>
-                Built on audited smart contracts with transparency at the core
+                Validated by the Optimism team through a $110k security grant.
+              </li>
+              <li>
+                Our team has been shipping products across Defi and risk
+                verticals for 7+ years.
               </li>
               <li>
                 Backed by decentralized credit default swaps (dCDS) — minimizing
                 protocol risk
               </li>
-              <li>
-                Community governance + real-time risk visibility for users
-              </li>
-              <li>
-                Our team has shipped across DeFi, risk, and TradFi for years
-              </li>
+              <li>Real-time visibility into system health and risk</li>
               <li>
                 Zero interest at mint — giving you leverage with peace of mind
               </li>
               <li>
-                Launch partner with Sonic — the fastest chain for real-time
-                on-chain finance
+                Millions in Liquidity anticipated from yard[hub] and 2 hedge
+                funds
               </li>
             </ul>
           </section>
