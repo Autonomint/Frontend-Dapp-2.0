@@ -977,6 +977,10 @@ function DCDSTemplate() {
     );
   }, [formik.values]);
 
+  console.log(formik, depositValue, "depositValue");
+
+  const { theme } = useTheme();
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />

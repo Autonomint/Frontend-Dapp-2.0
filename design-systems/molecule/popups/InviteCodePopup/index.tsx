@@ -8,8 +8,8 @@ import { useInviteCodeMutation } from "@/hookes/api-hooks/useInvite";
 import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowRight } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
+
 import { useEffect, useRef, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 interface InviteCodePopup {}
@@ -22,6 +22,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   const [inputError, setInputError] = useState("");
   const [isMounted, setIsMounted] = useState(false);
   const { disconnect } = useDisconnect();
+  const router = useRouter();
 
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputsRef = useRef<HTMLInputElement[]>([]);
@@ -103,6 +104,10 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
           localStorage.setItem("inviteCode", otp.join(""));
           localStorage.setItem("AddressForInviteCode", address);
           setOtp(Array(6).fill(""));
+          const isVisited = localStorage.getItem("invited-page-visited");
+          if (!isVisited) {
+            router.push("/invited");
+          }
         } else {
           disconnect();
           localStorage.setItem("verified", "false");

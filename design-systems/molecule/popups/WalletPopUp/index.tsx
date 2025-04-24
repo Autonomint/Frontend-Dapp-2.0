@@ -399,7 +399,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 >
                   {Number(chainId) === Number(NetworkId.BaseSepolia)
                     ? "Base "
-                    : "Op "}
+                    : "OP "}
                 </Typography>
               </div>
               <div className="flex mt-3 flex-row justify-start items-center">
