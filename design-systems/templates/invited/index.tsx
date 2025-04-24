@@ -44,8 +44,8 @@ const InvitedTemplate = () => {
           </h1>
         </div>
         <p className="text-lg mb-8">
-          Mint early. Hedge better. Join the next-gen stablecoin launch — even
-          Black-Scholes would want a look.
+          Mint early. Hedge better. Join the next-gen stablecoin launch that
+          even Black-Scholes would want a look.
         </p>
         {/* 
         <button className="mb-12 bg-[#abffde] hover:bg-[#38c38c] text-black text-lg px-6 py-3 rounded-xl">
@@ -109,10 +109,11 @@ const InvitedTemplate = () => {
               🤔 Who is this App For?
             </h2>
             <p className="text-grayLight  text-lg">
-              Whether you're a DeFi native, a cautious first-timer, or a hedge
-              fund looking for cheaper protection — USDA+ is designed to provide
-              you with a safe, yield-generating stablecoin experience without
-              the complex overhead.
+              Whether you're a DeFi native, a cautious first-timer, an option
+              derivative trader or a hedge fund looking for a cheaper hedge on
+              crypto assets, USDA+ is designed to provide you with a safe
+              stablecoin experience and get you access to unexplored derivative
+              strategies without the complex overhead.
             </p>
           </section>
 
