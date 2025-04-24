@@ -232,6 +232,7 @@ function Navbar() {
                 alt="light-mode-image"
               />
             </div>
+            <div className="mt-4 ml-[-8px] text-lg  font-medium">BETA</div>
           </div>
         </Link>
       </div>
