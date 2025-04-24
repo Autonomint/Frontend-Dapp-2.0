@@ -230,7 +230,7 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit),
+      value: Number(position?.nativeTokenPriceAtDeposit).toFixed(4),
       tooltip: false,
       tooltipText: "",
     },
