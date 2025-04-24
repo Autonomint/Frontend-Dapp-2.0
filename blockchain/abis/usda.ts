@@ -1885,7 +1885,7 @@ export const usDaAbi = [
         type: "string",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
     type: "function",
   },
   {

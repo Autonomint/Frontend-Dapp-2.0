@@ -562,6 +562,25 @@ export const cdsAbi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+    ],
+    name: "WithdrewGains",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "UPGRADE_INTERFACE_VERSION",
     outputs: [
@@ -1195,11 +1214,6 @@ export const cdsAbi = [
         type: "address[]",
       },
       {
-        internalType: "uint128",
-        name: "usdtFromOdos",
-        type: "uint128",
-      },
-      {
         internalType: "bytes",
         name: "odosAssembledData",
         type: "bytes",
@@ -1334,11 +1348,6 @@ export const cdsAbi = [
         internalType: "address",
         name: "_address",
         type: "address",
-      },
-      {
-        internalType: "uint64",
-        name: "ethPrice",
-        type: "uint64",
       },
     ],
     name: "setGlobalVariables",
@@ -1665,11 +1674,6 @@ export const cdsAbi = [
         internalType: "bytes",
         name: "odosAssembledData",
         type: "bytes",
-      },
-      {
-        internalType: "uint128",
-        name: "usdtFromOdos",
-        type: "uint128",
       },
       {
         internalType: "uint256",

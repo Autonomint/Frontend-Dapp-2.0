@@ -1073,11 +1073,6 @@ export const borrowingContractAbi = [
   {
     inputs: [
       {
-        internalType: "uint128",
-        name: "tokenAmountFromOdos",
-        type: "uint128",
-      },
-      {
         components: [
           {
             internalType: "address",
@@ -1100,11 +1095,6 @@ export const borrowingContractAbi = [
             type: "bytes",
           },
           {
-            internalType: "bytes",
-            name: "oneInchSwapData",
-            type: "bytes",
-          },
-          {
             components: [
               {
                 internalType: "uint256",
@@ -1124,28 +1114,6 @@ export const borrowingContractAbi = [
             ],
             internalType: "struct IBorrowing.EIP712VerifyParams",
             name: "verifyParams",
-            type: "tuple",
-          },
-          {
-            components: [
-              {
-                internalType: "string",
-                name: "name",
-                type: "string",
-              },
-              {
-                internalType: "address",
-                name: "solver",
-                type: "address",
-              },
-              {
-                internalType: "bytes4[]",
-                name: "selectors",
-                type: "bytes4[]",
-              },
-            ],
-            internalType: "struct IBorrowLiquidation.ModeLiquidationParams",
-            name: "modeParams",
             type: "tuple",
           },
         ],
@@ -1517,11 +1485,6 @@ export const borrowingContractAbi = [
         internalType: "bytes",
         name: "odosAssembledData",
         type: "bytes",
-      },
-      {
-        internalType: "uint128",
-        name: "usdtFromOdos",
-        type: "uint128",
       },
       {
         components: [

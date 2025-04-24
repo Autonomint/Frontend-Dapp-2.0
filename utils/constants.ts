@@ -69,10 +69,10 @@ export const scanUrls = {
   8453: `https://basescan.org/`,
 } as Record<number, string>;
 
-export const eidOpSepolia = 111; // Optimism Mainnet
-export const eidModeSepolia = 302; // Mode Mainnet
-export const eidSepolia = 101; // Ethereum Mainnet
-export const eidBaseSepolia = 184; // Base Mainnet
+export const eidOpSepolia = 30111; // Optimism Mainnet
+export const eidModeSepolia = 30260; // Mode Mainnet
+export const eidSepolia = 30101; // Ethereum Mainnet
+export const eidBaseSepolia = 30184; // Base Mainnet
 
 export const eId = {
   OP: eidOpSepolia,
