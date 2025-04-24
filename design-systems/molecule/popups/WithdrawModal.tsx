@@ -230,7 +230,7 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit),
+      value: Number(position?.nativeTokenPriceAtDeposit).toFixed(4),
       tooltip: false,
       tooltipText: "",
     },
@@ -385,7 +385,7 @@ export function DcdsWithdrawModal({
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(305000000, 0)
+    .addExecutorLzReceiveOption(5000000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
