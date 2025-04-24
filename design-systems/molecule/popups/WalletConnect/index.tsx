@@ -84,7 +84,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
             >
               <div>
                 <BaseIcon
-                  className=" stroke-black  "
+                  className=" stroke-black dark:stroke-white  "
                   style={{ width: "50px", height: "50px" }}
                 />
               </div>
