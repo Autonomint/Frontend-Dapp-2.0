@@ -377,7 +377,7 @@ function BridgeTemplate() {
 
   const fromNetworkOption = [
     {
-      label: "Sepolia",
+      label: "Ethereum",
       onClick: () => {
         setSendAmount(0);
         switchChain({ chainId: NetworkId.EthereumSepolia });

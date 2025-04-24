@@ -1,10 +1,10 @@
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 export enum NetworkId {
-  EthereumSepolia = 11155111,
-  BaseSepolia = 84532,
-  Optimism = 11155420,
-  Mode = 919,
+  EthereumSepolia = 1,
+  BaseSepolia = 8453,
+  Optimism = 10,
+  Mode = 34443,
 }
 
 export const BorrowStatus = {
@@ -63,16 +63,16 @@ export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
 export const scanUrls = {
-  919: "https://sepolia.explorer.mode.network/",
-  11155420: "https://sepolia-optimism.etherscan.io/",
-  11155111: `https://sepolia.etherscan.io/`,
-  84532: `https://sepolia.basescan.org/`,
+  919: "https://explorer.mode.network/",
+  10: "https://optimistic.etherscan.io/",
+  1: `https://etherscan.io/`,
+  8453: `https://basescan.org/`,
 } as Record<number, string>;
 
-export const eidOpSepolia = 40232;
-export const eidModeSepolia = 40260;
-export const eidSepolia = 40161;
-export const eidBaseSepolia = 40245;
+export const eidOpSepolia = 111; // Optimism Mainnet
+export const eidModeSepolia = 302; // Mode Mainnet
+export const eidSepolia = 101; // Ethereum Mainnet
+export const eidBaseSepolia = 184; // Base Mainnet
 
 export const eId = {
   OP: eidOpSepolia,

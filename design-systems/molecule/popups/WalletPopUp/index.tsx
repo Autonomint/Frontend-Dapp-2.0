@@ -84,7 +84,6 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
     },
   ];
 
-
   const MobileNavOption = () => {
     return (
       <>
@@ -173,9 +172,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 <Typography variant="regular" size="subtitle"></Typography>$
                 {data?.formatted.slice(0, 8)}
                 <span className="text-[#7A7A7A] text-[14px]">
-                  {chainId === NetworkId.Optimism
-                    ? "OP Sepolia"
-                    : "Base Sepolia"}
+                  {chainId === NetworkId.Optimism ? "OP " : "Base "}
                 </span>
               </div>
             </div>
@@ -401,8 +398,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   variant="regular"
                 >
                   {Number(chainId) === Number(NetworkId.BaseSepolia)
-                    ? "Base Sepolia"
-                    : "Op Sepolia"}
+                    ? "Base "
+                    : "Op "}
                 </Typography>
               </div>
               <div className="flex mt-3 flex-row justify-start items-center">
