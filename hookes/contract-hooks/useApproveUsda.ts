@@ -25,7 +25,7 @@ const useApproveUsda = (mutation: any) => {
           chainId as keyof typeof borrowingContractAddress
         ] as `0x${string}`, // address of borrowing contract based on chainId
 
-        repayAmount + 1000000n, // Total usda amount
+        repayAmount, // Total usda amount
       ],
     });
   };

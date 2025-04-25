@@ -505,7 +505,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      approveUsda(BigInt(Math.round(repayAmount)));
+      approveUsda(BigInt(Math.round(repayAmount * 1e6)));
     }
   };
 
