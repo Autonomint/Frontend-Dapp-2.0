@@ -1,6 +1,7 @@
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  cdsAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -43,6 +44,8 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Network } from "ethers";
+import { cdsAbi } from "@/blockchain/abis/dcds";
+import { InfoIcon } from "lucide-react";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -110,8 +113,9 @@ export function WithdrawFund({
     {
       headline: "Collateral Upside till now",
       value: "20%",
-      tooltip: false,
-      tooltipText: "",
+      tooltip: true,
+      tooltipText:
+        "The final upside value might be slightly different due to slippage",
     },
     {
       headline: "Liquidated?",
@@ -161,6 +165,15 @@ export function WithdrawFund({
   const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
     useState<boolean>(false);
 
+  const { data: optionsFeesTimeLimits } = useReadContract({
+    functionName: "optionsFeesTimeLimits",
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    abi: borrowingContractAbi,
+  });
+
   const downsideProtection =
     (ethPrice || 0) < (position?.ethPrice || 0)
       ? (
@@ -197,7 +210,10 @@ export function WithdrawFund({
           ) * lastCumulativeRate
         ) / BigInt(10 ** 27);
 
-  const repayAmount = Number(totalAmintAmnt) / 1e6 - Number(downsideProtection);
+  const repayAmount =
+    Number(totalAmintAmnt) / 1e6 -
+    Number(downsideProtection) -
+    Number(position?.optionFees);
 
   // getting current APR value
   const { data: currentAPR } = useReadContract({
@@ -745,8 +761,24 @@ export function WithdrawFund({
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight text-[16px] md:text-[20px] font-medium">
+                    <span className="text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium">
                       {item.headline}
+                      {item.tooltip && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon
+                              className="w-5 text-lg h-5  "
+                              width={24}
+                              height={24}
+                            />
+                          </TooltipTrigger>
+                          {
+                            <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                              <p>{item.tooltipText}</p>
+                            </TooltipContent>
+                          }
+                        </Tooltip>
+                      )}
                     </span>
                     <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
                       {item.value}
@@ -836,7 +868,10 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            isFifteenDaysCompleted(position.validTill)
+                            isFifteenDaysCompleted(
+                              position.validTill,
+                              Number(optionsFeesTimeLimits?.[0]) / 86400
+                            )
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
@@ -945,7 +980,10 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isFifteenDaysCompleted(position.validTill)
+                      isFifteenDaysCompleted(
+                        position.validTill,
+                        Number(optionsFeesTimeLimits?.[0]) / 86400
+                      )
                         ? calculateRemainingDays(Number(position.validTill))
                         : 15
                     ),
@@ -957,7 +995,10 @@ export function WithdrawFund({
                     value:
                       Number(calculateRemainingDays(position.validTill) || 0) -
                       15,
-                    color: !isFifteenDaysCompleted(position.validTill)
+                    color: !isFifteenDaysCompleted(
+                      position.validTill,
+                      Number(optionsFeesTimeLimits?.[0]) / 86400
+                    )
                       ? "#2563eb"
                       : "#05a552",
                   },
@@ -1083,7 +1124,11 @@ export function WithdrawFund({
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
-                            isFunctionPausedBorrow_Renew
+                            isFunctionPausedBorrow_Renew ||
+                            !isFifteenDaysCompleted(
+                              position.validTill,
+                              Number(optionsFeesTimeLimits?.[0]) / 86400
+                            )
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"

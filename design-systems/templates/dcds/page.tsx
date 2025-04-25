@@ -90,8 +90,15 @@ const formSchema = Yup.object().shape({
   usdaAmount: Yup.mixed()
     .test("is-required", "USDA amount is required", function (value) {
       return this.parent.usdaFlag
-        ? value !== null && value !== undefined
+        ? value !== null && value !== undefined && value !== 0
         : true;
+    })
+    .test("max", "max", function (value) {
+      const { usdaAmount, usdaBalance } = this.parent;
+      if (usdaAmount && usdaBalance) {
+        return Number(value) <= usdaBalance;
+      }
+      return true; // No validation if usdaFlag is false
     })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
@@ -104,14 +111,13 @@ const formSchema = Yup.object().shape({
   usdtAmount: Yup.mixed()
     .test("is-required", "USDT amount is required", function (value) {
       return this.parent.usdtFlag
-        ? value !== null && value !== undefined
+        ? value !== null && value !== undefined && value !== 0
         : true;
     })
-    .test("usdt-max", "usdt-max", function (value) {
-      const { usdaAmount, usdaFlag } = this.parent;
-      if (usdaFlag && usdaAmount) {
-        const maxAllowed = Number(usdaAmount) * 0.2;
-        return Number(value) <= maxAllowed;
+    .test("max", "max", function (value) {
+      const { usdtAmount, usdtBalance } = this.parent;
+      if (usdtAmount && usdtBalance) {
+        return Number(value) <= usdtBalance;
       }
       return true; // No validation if usdaFlag is false
     })
@@ -123,33 +129,47 @@ const formSchema = Yup.object().shape({
     })
     .nullable(),
 
-  // opAmount: Yup.mixed()
-  //   .test("is-required"mode amount is required", function (value) {
-  //     return this.parent.usdcFlag
-  //       ? value !== null && value !== undefined
-  //       : true;
-  //   })
-  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
-  //     if (value === null || value === undefined) {
-  //       return true;
-  //     }
-  //     return Number(value) >= 0;
-  //   })
-  //   .nullable(),
+  opAmount: Yup.mixed()
+    .test("is-required", "OP amount is required", function (value) {
+      return this.parent.opFlag
+        ? value !== null && value !== undefined && value !== 0
+        : true;
+    })
+    .test("max", "max", function (value) {
+      const { opAmount, nativeBalance } = this.parent;
+      if (opAmount && nativeBalance) {
+        return Number(value) <= nativeBalance;
+      }
+      return true; // No validation if usdaFlag is false
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
 
-  // modeAmount: Yup.mixed()
-  //   .test("is-required", "USDE amount is required", function (value) {
-  //     return this.parent.usdeFlag
-  //       ? value !== null && value !== undefined
-  //       : true;
-  //   })
-  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
-  //     if (value === null || value === undefined) {
-  //       return true;
-  //     }
-  //     return Number(value) >= 0;
-  //   })
-  //   .nullable(),
+  aeroAmount: Yup.mixed()
+    .test("is-required", "AERO amount is required", function (value) {
+      return this.parent.aeroFlag
+        ? value !== null && value !== undefined && value !== 0
+        : true;
+    })
+    .test("max", "max", function (value) {
+      const { aeroAmount, nativeBalance } = this.parent;
+      if (aeroAmount && nativeBalance) {
+        return Number(value) <= nativeBalance;
+      }
+      return true; // No validation if usdaFlag is false
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
 
   // lockInPeriod: Yup.string().required("Lock-in period is required"),
 
@@ -191,12 +211,17 @@ function DCDSTemplate() {
       aeroAmount: null,
       lockInPeriod: null,
       liquidationGains: false,
+      usdaBalance: null,
+      usdtBalance: null,
+      nativeBalance: null,
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
       handleDeposit();
     },
   });
+
+  console.log(formik.values, "formik.values");
 
   const dropdownItems = [
     {
@@ -322,6 +347,21 @@ function DCDSTemplate() {
     functionName: "usdtLimit",
   });
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
+
+  useEffect(() => {
+    formik.setFieldValue(
+      "usdaBalance",
+      Number(usdaBalance.replaceAll("$", ""))
+    );
+    formik.setFieldValue(
+      "usdtBalance",
+      Number(usdtBalance.replaceAll("$", ""))
+    );
+    formik.setFieldValue(
+      "nativeBalance",
+      chainId == NetworkId.Optimism ? opBalance : modeBalance
+    );
+  }, [usdaBalance, usdtBalance, opBalance, modeBalance]);
 
   const tokenList: TokenDetails[] = useMemo(() => {
     const tokenList = [
@@ -1181,34 +1221,32 @@ function DCDSTemplate() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[18px] font-medium text-grayLight">
-                      Min $100
+                      {/* Min $100 */}
+                      <Typography
+                        size="sm"
+                        variant="regular"
+                        className="text-red-500"
+                      >
+                        {formik.errors?.[
+                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                        ] &&
+                        formik.touched?.[
+                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                        ]
+                          ? formik.errors?.[
+                              `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                            ] === "max"
+                            ? `Amount exceeded balance`
+                            : formik.errors?.[
+                                `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                              ]
+                          : ""}
+                      </Typography>
                     </span>
                     <span className="text-[18px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}
                     </span>
                   </div>
-                  <Typography
-                    size="sm"
-                    variant="regular"
-                    className="text-red-500"
-                  >
-                    {formik.errors?.[
-                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                    ] &&
-                    formik.touched?.[
-                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                    ]
-                      ? formik.errors?.[
-                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                        ] === "usdt-max"
-                        ? `USDT Amount must be less than or equal to $${(
-                            Number(formik.values.usdaAmount) * 0.2
-                          ).toFixed(2)} of USDa Amount `
-                        : formik.errors?.[
-                            `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                          ]
-                      : ""}
-                  </Typography>
                 </div>
               ))}
             </div>
