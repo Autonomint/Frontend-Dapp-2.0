@@ -93,6 +93,13 @@ const formSchema = Yup.object().shape({
         ? value !== null && value !== undefined && value !== 0
         : true;
     })
+    .test("max", "max", function (value) {
+      const { usdaAmount, usdaBalance } = this.parent;
+      if (usdaAmount && usdaBalance) {
+        return Number(value) <= usdaBalance;
+      }
+      return true; // No validation if usdaFlag is false
+    })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
         return true; // Skip this test if the value is not present (handled by the required test)
@@ -107,14 +114,13 @@ const formSchema = Yup.object().shape({
         ? value !== null && value !== undefined && value !== 0
         : true;
     })
-    // .test("usdt-max", "usdt-max", function (value) {
-    //   const { usdaAmount, usdaFlag } = this.parent;
-    //   if (usdaFlag && usdaAmount) {
-    //     const maxAllowed = Number(usdaAmount) * 0.2;
-    //     return Number(value) <= maxAllowed;
-    //   }
-    //   return true; // No validation if usdaFlag is false
-    // })
+    .test("max", "max", function (value) {
+      const { usdtAmount, usdtBalance } = this.parent;
+      if (usdtAmount && usdtBalance) {
+        return Number(value) <= usdtBalance;
+      }
+      return true; // No validation if usdaFlag is false
+    })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
         return true; // Skip if value is not present
@@ -129,6 +135,13 @@ const formSchema = Yup.object().shape({
         ? value !== null && value !== undefined && value !== 0
         : true;
     })
+    .test("max", "max", function (value) {
+      const { opAmount, nativeBalance } = this.parent;
+      if (opAmount && nativeBalance) {
+        return Number(value) <= nativeBalance;
+      }
+      return true; // No validation if usdaFlag is false
+    })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
         return true;
@@ -142,6 +155,13 @@ const formSchema = Yup.object().shape({
       return this.parent.aeroFlag
         ? value !== null && value !== undefined && value !== 0
         : true;
+    })
+    .test("max", "max", function (value) {
+      const { aeroAmount, nativeBalance } = this.parent;
+      if (aeroAmount && nativeBalance) {
+        return Number(value) <= nativeBalance;
+      }
+      return true; // No validation if usdaFlag is false
     })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
@@ -191,6 +211,9 @@ function DCDSTemplate() {
       aeroAmount: null,
       lockInPeriod: null,
       liquidationGains: false,
+      usdaBalance: null,
+      usdtBalance: null,
+      nativeBalance: null,
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
@@ -324,6 +347,21 @@ function DCDSTemplate() {
     functionName: "usdtLimit",
   });
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
+
+  useEffect(() => {
+    formik.setFieldValue(
+      "usdaBalance",
+      Number(usdaBalance.replaceAll("$", ""))
+    );
+    formik.setFieldValue(
+      "usdtBalance",
+      Number(usdtBalance.replaceAll("$", ""))
+    );
+    formik.setFieldValue(
+      "nativeBalance",
+      chainId == NetworkId.Optimism ? opBalance : modeBalance
+    );
+  }, [usdaBalance, usdtBalance, opBalance, modeBalance]);
 
   const tokenList: TokenDetails[] = useMemo(() => {
     const tokenList = [
@@ -1197,10 +1235,8 @@ function DCDSTemplate() {
                         ]
                           ? formik.errors?.[
                               `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                            ] === "usdt-max"
-                            ? `USDT Amount must be less than or equal to $${(
-                                Number(formik.values.usdaAmount) * 0.2
-                              ).toFixed(2)} of USDa Amount `
+                            ] === "max"
+                            ? `Amount exceeded balance`
                             : formik.errors?.[
                                 `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
                               ]

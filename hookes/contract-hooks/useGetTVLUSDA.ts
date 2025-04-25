@@ -23,8 +23,8 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
 
   const provider = new ethers.JsonRpcProvider(
     chainId === NetworkId.BaseSepolia
-      ? "https://opt-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
-      : "https://base-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
+      ? "https://optimism-sepolia.infura.io/v3/e9cf275f1ddc4b81aa62c5aa0b11ac0f"
+      : "sepolia.base.org/"
   );
 
   const cdsContract = new ethers.Contract(
