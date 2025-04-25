@@ -660,18 +660,18 @@ const RedeemContainer = () => {
                     </Button>
                   </div>
                 </TooltipTrigger>
-                {((isFunctionPausedBorrow_Redeem &&
-                  formik.values.inputCollateral === "abond") ||
-                  (isFunctionPausedCDS_Redeem &&
-                    formik.values.inputCollateral)) && (
-                  <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                    <p>
-                      {formik.values.inputCollateral === "abond"
-                        ? "ABond redeem is pause now"
-                        : "USDa redeem is paused now"}
-                    </p>
-                  </TooltipContent>
-                )}
+                {isFunctionPausedBorrow_Redeem &&
+                  formik.values.inputCollateral === "abond" && (
+                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                      <p>{"ABond redeem is pause now"}</p>
+                    </TooltipContent>
+                  )}
+                {isFunctionPausedCDS_Redeem &&
+                  formik.values.inputCollateral === "amint" && (
+                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                      <p>{"USDa redeem is paused now"}</p>
+                    </TooltipContent>
+                  )}
               </Tooltip>
             )}
             <LoadingBox
