@@ -20,8 +20,10 @@ import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { NetworkId } from "@/utils/constants";
+import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
