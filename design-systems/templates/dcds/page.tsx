@@ -1181,36 +1181,36 @@ function DCDSTemplate() {
                       </span>
                     </div>
                   </div>
-                  {/* <div className="flex justify-between">
+                  <div className="flex justify-between">
                     <span className="text-[18px] font-medium text-grayLight">
-                      Min $100
+                      {/* Min $100 */}
+                      <Typography
+                        size="sm"
+                        variant="regular"
+                        className="text-red-500"
+                      >
+                        {formik.errors?.[
+                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                        ] &&
+                        formik.touched?.[
+                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                        ]
+                          ? formik.errors?.[
+                              `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                            ] === "usdt-max"
+                            ? `USDT Amount must be less than or equal to $${(
+                                Number(formik.values.usdaAmount) * 0.2
+                              ).toFixed(2)} of USDa Amount `
+                            : formik.errors?.[
+                                `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                              ]
+                          : ""}
+                      </Typography>
                     </span>
                     <span className="text-[18px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}
                     </span>
-                  </div> */}
-                  <Typography
-                    size="sm"
-                    variant="regular"
-                    className="text-red-500"
-                  >
-                    {formik.errors?.[
-                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                    ] &&
-                    formik.touched?.[
-                      `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                    ]
-                      ? formik.errors?.[
-                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                        ] === "usdt-max"
-                        ? `USDT Amount must be less than or equal to $${(
-                            Number(formik.values.usdaAmount) * 0.2
-                          ).toFixed(2)} of USDa Amount `
-                        : formik.errors?.[
-                            `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                          ]
-                      : ""}
-                  </Typography>
+                  </div>
                 </div>
               ))}
             </div>
