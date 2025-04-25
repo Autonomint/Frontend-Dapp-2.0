@@ -24,4 +24,7 @@ export interface FormValues {
   opAmount: string | number | null;
   lockInPeriod: string | null;
   liquidationGains: boolean;
+  usdaBalance: string | number | null;
+  usdtBalance: string | number | null;
+  nativeBalance: string | number | null;
 }

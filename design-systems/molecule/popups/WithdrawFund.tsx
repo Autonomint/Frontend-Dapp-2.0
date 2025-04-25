@@ -45,6 +45,7 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import { Network } from "ethers";
 import { cdsAbi } from "@/blockchain/abis/dcds";
+import { InfoIcon } from "lucide-react";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -112,8 +113,9 @@ export function WithdrawFund({
     {
       headline: "Collateral Upside till now",
       value: "20%",
-      tooltip: false,
-      tooltipText: "",
+      tooltip: true,
+      tooltipText:
+        "The final upside value might be slightly different due to slippage",
     },
     {
       headline: "Liquidated?",
@@ -727,8 +729,24 @@ export function WithdrawFund({
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight text-[16px] md:text-[20px] font-medium">
+                    <span className="text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium">
                       {item.headline}
+                      {item.tooltip && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon
+                              className="w-5 text-lg h-5  "
+                              width={24}
+                              height={24}
+                            />
+                          </TooltipTrigger>
+                          {
+                            <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                              <p>{item.tooltipText}</p>
+                            </TooltipContent>
+                          }
+                        </Tooltip>
+                      )}
                     </span>
                     <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
                       {item.value}
