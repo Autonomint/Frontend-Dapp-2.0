@@ -86,7 +86,7 @@ const formSchema = Yup.object().shape({
   usdaAmount: Yup.mixed()
     .test("is-required", "USDA amount is required", function (value) {
       return this.parent.usdaFlag
-        ? value !== null && value !== undefined
+        ? value !== null && value !== undefined && value !== 0
         : true;
     })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
@@ -100,7 +100,7 @@ const formSchema = Yup.object().shape({
   usdtAmount: Yup.mixed()
     .test("is-required", "USDT amount is required", function (value) {
       return this.parent.usdtFlag
-        ? value !== null && value !== undefined
+        ? value !== null && value !== undefined && value !== 0
         : true;
     })
     // .test("usdt-max", "usdt-max", function (value) {
@@ -119,33 +119,33 @@ const formSchema = Yup.object().shape({
     })
     .nullable(),
 
-  // opAmount: Yup.mixed()
-  //   .test("is-required"mode amount is required", function (value) {
-  //     return this.parent.usdcFlag
-  //       ? value !== null && value !== undefined
-  //       : true;
-  //   })
-  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
-  //     if (value === null || value === undefined) {
-  //       return true;
-  //     }
-  //     return Number(value) >= 0;
-  //   })
-  //   .nullable(),
+  opAmount: Yup.mixed()
+    .test("is-required", "OP amount is required", function (value) {
+      return this.parent.opFlag
+        ? value !== null && value !== undefined && value !== 0
+        : true;
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
 
-  // modeAmount: Yup.mixed()
-  //   .test("is-required", "USDE amount is required", function (value) {
-  //     return this.parent.usdeFlag
-  //       ? value !== null && value !== undefined
-  //       : true;
-  //   })
-  //   .test("is-valid-number", "Value must be greater than 0", (value) => {
-  //     if (value === null || value === undefined) {
-  //       return true;
-  //     }
-  //     return Number(value) >= 0;
-  //   })
-  //   .nullable(),
+  aeroAmount: Yup.mixed()
+    .test("is-required", "AERO amount is required", function (value) {
+      return this.parent.aeroFlag
+        ? value !== null && value !== undefined && value !== 0
+        : true;
+    })
+    .test("is-valid-number", "Value must be greater than 0", (value) => {
+      if (value === null || value === undefined) {
+        return true;
+      }
+      return Number(value) >= 0;
+    })
+    .nullable(),
 
   // lockInPeriod: Yup.string().required("Lock-in period is required"),
 
@@ -193,6 +193,8 @@ function DCDSTemplate() {
       handleDeposit();
     },
   });
+
+  console.log(formik.values, "formik.values");
 
   const dropdownItems = [
     {

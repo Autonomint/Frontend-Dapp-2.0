@@ -236,8 +236,11 @@ function InputForm({ currency }: { currency: string }) {
       });
       setMintLoading(false);
       handleResetPage();
-      if (minUSDAforLuck <= Number(usdaToBeMinted))
+      if (minUSDAforLuck <= Number(usdaToBeMinted)) {
         router.push("/farmyourluck");
+      } else {
+        router.push("/dashboard/portfolio");
+      }
     } else if (depositHashError) {
       setMintLoading(false);
       toast.custom((t) => {
