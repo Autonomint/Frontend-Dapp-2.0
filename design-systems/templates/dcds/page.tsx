@@ -107,14 +107,14 @@ const formSchema = Yup.object().shape({
         ? value !== null && value !== undefined
         : true;
     })
-    .test("usdt-max", "usdt-max", function (value) {
-      const { usdaAmount, usdaFlag } = this.parent;
-      if (usdaFlag && usdaAmount) {
-        const maxAllowed = Number(usdaAmount) * 0.2;
-        return Number(value) <= maxAllowed;
-      }
-      return true; // No validation if usdaFlag is false
-    })
+    // .test("usdt-max", "usdt-max", function (value) {
+    //   const { usdaAmount, usdaFlag } = this.parent;
+    //   if (usdaFlag && usdaAmount) {
+    //     const maxAllowed = Number(usdaAmount) * 0.2;
+    //     return Number(value) <= maxAllowed;
+    //   }
+    //   return true; // No validation if usdaFlag is false
+    // })
     .test("is-valid-number", "Value must be greater than 0", (value) => {
       if (value === null || value === undefined) {
         return true; // Skip if value is not present
@@ -1179,14 +1179,14 @@ function DCDSTemplate() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span className="text-[18px] font-medium text-grayLight">
                       Min $100
                     </span>
                     <span className="text-[18px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}
                     </span>
-                  </div>
+                  </div> */}
                   <Typography
                     size="sm"
                     variant="regular"

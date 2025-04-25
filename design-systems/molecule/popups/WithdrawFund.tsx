@@ -1,6 +1,7 @@
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  cdsAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -43,6 +44,7 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Network } from "ethers";
+import { cdsAbi } from "@/blockchain/abis/dcds";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -160,6 +162,15 @@ export function WithdrawFund({
     useState<boolean>(false);
   const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
     useState<boolean>(false);
+
+  const { data: optionsFeesTimeLimits } = useReadContract({
+    functionName: "optionsFeesTimeLimits",
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    abi: borrowingContractAbi,
+  });
 
   const downsideProtection =
     (ethPrice || 0) < (position?.ethPrice || 0)
@@ -526,7 +537,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      approveUsda(BigInt(Math.round(repayAmount * 1e6)));
+      approveUsda(BigInt(Math.round(repayAmount)));
     }
   };
 
@@ -839,7 +850,10 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            isFifteenDaysCompleted(position.validTill)
+                            isFifteenDaysCompleted(
+                              position.validTill,
+                              Number(optionsFeesTimeLimits?.[0]) / 86400
+                            )
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
@@ -948,7 +962,10 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isFifteenDaysCompleted(position.validTill)
+                      isFifteenDaysCompleted(
+                        position.validTill,
+                        Number(optionsFeesTimeLimits?.[0]) / 86400
+                      )
                         ? calculateRemainingDays(Number(position.validTill))
                         : 15
                     ),
@@ -960,7 +977,10 @@ export function WithdrawFund({
                     value:
                       Number(calculateRemainingDays(position.validTill) || 0) -
                       15,
-                    color: !isFifteenDaysCompleted(position.validTill)
+                    color: !isFifteenDaysCompleted(
+                      position.validTill,
+                      Number(optionsFeesTimeLimits?.[0]) / 86400
+                    )
                       ? "#2563eb"
                       : "#05a552",
                   },
@@ -1086,7 +1106,11 @@ export function WithdrawFund({
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
-                            isFunctionPausedBorrow_Renew
+                            isFunctionPausedBorrow_Renew ||
+                            !isFifteenDaysCompleted(
+                              position.validTill,
+                              Number(optionsFeesTimeLimits?.[0]) / 86400
+                            )
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
