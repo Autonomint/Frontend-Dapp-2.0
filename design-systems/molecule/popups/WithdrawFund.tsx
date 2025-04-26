@@ -801,7 +801,13 @@ export function WithdrawFund({
                   </div>
                 ))}
               </div>
-              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6">
+              <div
+                className={` h-[50px] ${
+                  position.status !== BorrowStatus.DEPOSITED
+                    ? "md:h-[100px]"
+                    : "md:h-[70px]"
+                } mt-4 md:mt-6`}
+              >
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -813,7 +819,7 @@ export function WithdrawFund({
                             !hasFiveMinutesPassed(position?.depositedTime)
                           }
                           onClick={handleRepay}
-                          className="w-full flex  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                          className="w-full h-full gap-0 flex flex-col justify-center  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
                         >
                           <div>
                             {repayLoading
@@ -825,7 +831,11 @@ export function WithdrawFund({
                                 } ${position.collateralType}`}{" "}
                           </div>
                           {position.status !== BorrowStatus.DEPOSITED && (
-                            <div className="text-sm">(The final amount) </div>
+                            <div className="text-sm break-all text-wrap">
+                              (Final ETH amount may be lower due to option fees,
+                              5% price upside share, and conversion based on
+                              current ETH/USD value){" "}
+                            </div>
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
