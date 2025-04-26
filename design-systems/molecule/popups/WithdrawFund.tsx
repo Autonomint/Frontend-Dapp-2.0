@@ -17,6 +17,8 @@ import { BorrowStatus, NetworkId, scanUrls } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
+  getMinutesPassed,
+  hasFiveMinutesPassed,
   isFifteenDaysCompleted,
 } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
@@ -539,7 +541,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     if (position.status === "DEPOSITED") {
-      approveUsda(BigInt(Math.round(repayAmount * 1e6)));
+      approveUsda(BigInt(Math.round(repayAmount + 0.0001 * 1e6)));
     }
   };
 
@@ -807,16 +809,31 @@ export function WithdrawFund({
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
-                            isFunctionPausedBorrow_Withdraw
+                            isFunctionPausedBorrow_Withdraw ||
+                            !hasFiveMinutesPassed(position?.depositedTime)
                           }
                           onClick={handleRepay}
-                          className="w-full py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                          className="w-full flex  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
                         >
-                          {repayLoading
-                            ? "Loading..."
-                            : position.status == BorrowStatus.DEPOSITED
-                            ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                            : `Withdrawn ${position.depositedAmount} ${position.collateralType}`}
+                          <div>
+                            {repayLoading
+                              ? "Loading..."
+                              : position.status == BorrowStatus.DEPOSITED
+                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                              : `Withdrawn ${
+                                  Number(position.depositedAmount) / 2
+                                } ${position.collateralType}`}{" "}
+                          </div>
+                          {position.status !== BorrowStatus.DEPOSITED && (
+                            <div className="text-sm">(The final amount) </div>
+                          )}
+                          {!hasFiveMinutesPassed(position?.depositedTime) && (
+                            <div className="text-sm">
+                              {`(Repay will active in ${
+                                5 - getMinutesPassed(position?.depositedTime)
+                              } min)`}{" "}
+                            </div>
+                          )}
                           <span className="text-base">
                             {isFunctionPausedBorrow_Withdraw && "(Paused)"}
                           </span>
