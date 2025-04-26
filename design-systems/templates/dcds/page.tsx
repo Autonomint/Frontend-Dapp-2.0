@@ -573,7 +573,7 @@ function DCDSTemplate() {
   //     1e6
   // );
 
-  const { data: getPrices } = useReadContract({
+  const { data: getPrices, error: errorGetPrices } = useReadContract({
     address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
     abi: cdsAbi,
     functionName: "getPrices",
@@ -597,11 +597,14 @@ function DCDSTemplate() {
 
   const liqAmnt = useMemo(() => {
     let res = 0;
+
+    const priceActive = Boolean(getPrices);
     if (
-      formik.values.aeroAmount ||
-      formik.values.opAmount ||
-      formik.values.usdaAmount ||
-      formik.values.usdtAmount
+      (formik.values.aeroAmount ||
+        formik.values.opAmount ||
+        formik.values.usdaAmount ||
+        formik.values.usdtAmount) &&
+      priceActive
     ) {
       res = getTotalDepositingAmount(
         getPrices,
@@ -638,6 +641,7 @@ function DCDSTemplate() {
     formik.values.opAmount,
     formik.values.usdaAmount,
     formik.values.usdtAmount,
+    getPrices,
   ]);
 
   useEffect(() => {
