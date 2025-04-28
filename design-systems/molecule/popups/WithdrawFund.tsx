@@ -2,6 +2,7 @@ import {
   borrowAssetsAddress,
   borrowingContractAddress,
   cdsAddress,
+  usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -36,7 +37,7 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
-import { formatUnits } from "viem";
+import { formatUnits, zeroAddress } from "viem";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
@@ -48,6 +49,7 @@ import {
 import { Network } from "ethers";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { InfoIcon } from "lucide-react";
+import { usDaAbi } from "@/blockchain/abis/usda";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -68,6 +70,8 @@ export function WithdrawFund({
     useBorrowPause();
 
   const [spinner, setSpinner] = useState(false);
+
+  const { address } = useAccount();
 
   const depositDetails = [
     {
@@ -186,18 +190,18 @@ export function WithdrawFund({
         ).toFixed(2)
       : 0;
 
-  console.log(
-    Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-      Number(position?.depositedAmountInETH),
-    Number(formatUnits(BigInt(ethPrice), 2)) *
-      Number(position?.depositedAmountInETH),
-    downsideProtection,
-    position?.depositedAmountInETH,
-    "downsideProtection",
-    position.index,
-    Number(formatUnits(BigInt(ethPrice), 2)),
-    Number(formatUnits(BigInt(position?.ethPrice || 0), 2))
-  );
+  // fetching allowance
+  const { data: allowance } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    ],
+  }) as { data: number | undefined };
 
   const totalAmintAmnt =
     lastCumulativeRate === undefined
@@ -534,15 +538,41 @@ export function WithdrawFund({
       toast.error("You don't have enough USDa to repay");
       return;
     }
-    setIsApproveLoadingLocal(true);
     setRepayLoading(true);
     setOpenConfirmNotice(false);
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    if (position.status === "DEPOSITED") {
-      approveUsda(BigInt(Math.round(repayAmount + 0.0001 * 1e6)));
+
+    const approveRepayAmount = BigInt(Math.round(repayAmount + 0.0001 * 1e6));
+    if (
+      position.status === "DEPOSITED" &&
+      BigInt(allowance || 0) < approveRepayAmount
+    ) {
+      setIsApproveLoadingLocal(true);
+      approveUsda(approveRepayAmount);
+    } else {
+      callRepayInContract();
     }
+  };
+
+  const callRepayInContract = async () => {
+    setIsApproveLoadingLocal(false);
+    setTimeout(() => {
+      setWithdrawLoadingLocal(true);
+    }, 800);
+
+    const borrowSignedData = await refetchBorrowWithDrawSignedData();
+
+    withdrawUsda(
+      position.index,
+      nativeFee?.nativeFee || BigInt(0n),
+      borrowSignedData.data?.odosAssembledData,
+      borrowSignedData.data?.usdtFromOdos,
+      BigInt(borrowSignedData.data?.nonce || 0),
+      BigInt(borrowSignedData.data?.deadline || 0),
+      (borrowSignedData.data?.signature || "") as `0x${string}`
+    );
   };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
@@ -679,15 +709,30 @@ export function WithdrawFund({
 
   const handleRenew = () => {
     setRenewLoading(true);
-    setRenewApproveLoading(true);
     approveReset?.();
     resetBorrowRenew?.();
-    approveUsdaDynamic(
-      BigInt(Number(payableOptionFees || 0n) + 1e6),
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-      ] as `0x${string}`
-    );
+
+    const renewAmount = BigInt(Number(payableOptionFees || 0n) + 1e6);
+    if ((allowance || 0) < renewAmount) {
+      setRenewApproveLoading(true);
+      approveUsdaDynamic(
+        renewAmount,
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ] as `0x${string}`
+      );
+    } else {
+      callRenewInContract();
+    }
+  };
+
+  const callRenewInContract = () => {
+    setRenewApproveLoading(false);
+    setTimeout(() => {
+      setRenewLoadingSM(true);
+    }, 800);
+
+    renewBorrow(BigInt(position.index), nativeFee?.nativeFee || BigInt(0n));
   };
 
   return (

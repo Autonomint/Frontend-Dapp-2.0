@@ -97,7 +97,35 @@ const RedeemContainer = () => {
   // getting cds pause data
   const { isFunctionPausedCDS_Redeem } = useCdsPause();
 
-  const chainId = useChainId();
+  const { address, chainId } = useAccount();
+
+  // fetching allowance USDA
+  const { data: allowanceUSDa } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+      cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    ],
+    query: {
+      enabled: !!address,
+    },
+  }) as { data: number | undefined };
+
+  // fetching allowance ABond
+  const { data: allowanceABond } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ] as `0x${string}`,
+    ],
+  }) as { data: number | undefined };
 
   const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
     address: abondAddress ? accountAddress : undefined,
@@ -149,26 +177,7 @@ const RedeemContainer = () => {
 
   useEffect(() => {
     if (usdaApproveSuccess) {
-      setUsdaApproveLocal(false);
-      setTimeout(() => {
-        setRedeemFnLoadingLocal(true);
-      }, 1000);
-      redeemUsdt?.({
-        abi: cdsAbi,
-        address: cdsAddress[chainId as keyof typeof cdsAddress],
-        functionName: "redeemAssets",
-        args: [
-          BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
-          formik.values.redeemTokenName === "USDT"
-            ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-            : formik.values.redeemTokenName === "USDC"
-            ? usdcAddress[chainId as keyof typeof usdcAddress]
-            : formik.values.redeemTokenName === "sUSD"
-            ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-            : zeroAddress,
-        ],
-        // value: nativeFee1.nativeFee,
-      });
+      callRedeemUSDaInContract();
     } else if (usdaErrorApprove) {
       handleFail();
     }
@@ -353,19 +362,7 @@ const RedeemContainer = () => {
 
   useEffect(() => {
     if (abondApproveSuccess) {
-      setAbondApproveLoadingLocal(false);
-      setTimeout(() => {
-        setRedeemFnLoadingLocal(true);
-      }, 1000);
-      redeemEth?.({
-        abi: borrowingContractAbi,
-        address:
-          borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ],
-        functionName: "redeemYields",
-        args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
-      });
+      callRedeemABondInContract();
     }
     if (abondApproveError) {
     }
@@ -416,33 +413,82 @@ const RedeemContainer = () => {
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      setUsdaApproveLocal(true);
-      amintApproveWrite({
-        abi: usDaAbi,
-        address: usDaAddress[chainId as keyof typeof usDaAddress],
-        functionName: "approve",
-        args: [
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-          BigInt((values.collateralAmount || 0) * 10 ** 6),
-        ],
-      });
+      const redeemAmountUSDa = BigInt((values.collateralAmount || 0) * 10 ** 6);
+      if ((allowanceUSDa || 0) < redeemAmountUSDa) {
+        setUsdaApproveLocal(true);
+        amintApproveWrite({
+          abi: usDaAbi,
+          address: usDaAddress[chainId as keyof typeof usDaAddress],
+          functionName: "approve",
+          args: [
+            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            redeemAmountUSDa,
+          ],
+        });
+      } else {
+        callRedeemUSDaInContract();
+      }
     } else if (values.inputCollateral === "abond") {
-      setRedeemLoadingLocal(true);
-      setAbondApproveLoadingLocal(true);
-      abondApproveWrite({
-        abi: abondAbi,
-        address: abondAddress[chainId as keyof typeof abondAddress],
-        functionName: "approve",
-        args: [
-          borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ] as `0x${string}`,
-          BigInt((values.collateralAmount || 0) * 10 ** 18),
-        ],
-      });
+      const redeemAmountABond = BigInt(
+        (values.collateralAmount || 0) * 10 ** 18
+      );
+      if ((allowanceABond || 0) < redeemAmountABond) {
+        setAbondApproveLoadingLocal(true);
+        abondApproveWrite({
+          abi: abondAbi,
+          address: abondAddress[chainId as keyof typeof abondAddress],
+          functionName: "approve",
+          args: [
+            borrowingContractAddress[
+              chainId as keyof typeof borrowingContractAddress
+            ] as `0x${string}`,
+            redeemAmountABond,
+          ],
+        });
+      } else {
+        callRedeemABondInContract();
+      }
     }
   }
 
+  const callRedeemABondInContract = () => {
+    setAbondApproveLoadingLocal(false);
+    setTimeout(() => {
+      setRedeemFnLoadingLocal(true);
+    }, 1000);
+    redeemEth?.({
+      abi: borrowingContractAbi,
+      address:
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+      functionName: "redeemYields",
+      args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
+    });
+  };
+
+  const callRedeemUSDaInContract = () => {
+    setUsdaApproveLocal(false);
+    setTimeout(() => {
+      setRedeemFnLoadingLocal(true);
+    }, 1000);
+    redeemUsdt?.({
+      abi: cdsAbi,
+      address: cdsAddress[chainId as keyof typeof cdsAddress],
+      functionName: "redeemAssets",
+      args: [
+        BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
+        formik.values.redeemTokenName === "USDT"
+          ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+          : formik.values.redeemTokenName === "USDC"
+          ? usdcAddress[chainId as keyof typeof usdcAddress]
+          : formik.values.redeemTokenName === "sUSD"
+          ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+          : zeroAddress,
+      ],
+      // value: nativeFee1.nativeFee,
+    });
+  };
   const dropdownItems = [
     {
       label: "USDa",

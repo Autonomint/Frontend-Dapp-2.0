@@ -28,6 +28,7 @@ import {
   useAccount,
   useBalance,
   useChainId,
+  useReadContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
@@ -50,6 +51,8 @@ import {
 import { Network } from "ethers";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number()
@@ -103,6 +106,23 @@ function InputForm({ currency }: { currency: string }) {
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
   const { isScroll, setIsScroll } = useScroll();
 
+  // fetching allowance
+  const { data: allowance } = useReadContract({
+    abi: wrsETHABI,
+    address:
+      borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
+        chainId || NetworkId.BaseSepolia
+      ],
+    functionName: "allowance",
+    args: [
+      address,
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    ],
+  }) as { data: number | undefined };
+
+  // handle mint btn click
   const handleSubmit = async (values: any) => {
     if (!address) {
       toast.custom((t) => (
@@ -126,7 +146,13 @@ function InputForm({ currency }: { currency: string }) {
 
     reset();
 
-    if (["wrsETH", "weETH"].includes(currency)) {
+    const approveAmount = parseEther(formik.values.collateralAmount.toString());
+
+    // check if allowance is less than approve amount
+    if (
+      ["wrsETH", "weETH"].includes(currency) &&
+      BigInt(allowance || 0) < approveAmount
+    ) {
       setApproveLoading(true);
       await approveWrapETHDynamic(
         borrowingContractAddress[
@@ -134,6 +160,7 @@ function InputForm({ currency }: { currency: string }) {
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
+      // else mining direct
     } else {
       handleMint(formik.values);
     }
