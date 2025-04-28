@@ -707,10 +707,7 @@ export function DcdsWithdrawModal({
                   Price Gains
                 </Label>
                 <Label className=" text-[14px] font-medium dark:text-white">
-                  {(
-                    Number(apy == undefined ? 0 : apy[1]) +
-                    Number(apy == undefined ? 0 : apy[2])
-                  ).toFixed(2)}
+                  {Number(apy == undefined ? 0 : apy[2]).toFixed(4)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">

@@ -273,6 +273,7 @@ function DCDSTemplate() {
 
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
+
   const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
     nativeTokenAddress[chainId as keyof typeof usDaAddress]
   );
@@ -280,9 +281,12 @@ function DCDSTemplate() {
   const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
     useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
 
-  console.log(isTVLPendingUsd, "tvlValue");
-
   // console.log(omniChainData, "omniChainData");
+  const { isTVLPending: isTVLPendingUsdt, tvlValue: tvlValueUSDT } =
+    useGetTVLUSDA(
+      testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+    );
+
   const { balanceString: usdtBalance } = useGetBalance("USDT");
   const { balanceString: usdaBalance } = useGetBalance("USDa");
   const { balance: opBalance } = useGetBalance("OP");
@@ -1422,10 +1426,8 @@ function DCDSTemplate() {
       <TokenTvlDetails
         icon={UsdtIcon}
         tokenName="USDT"
-        tvl={`${formatNumber(
-          Number(
-            formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
-          )
+        tvl={`$${formatNumber(
+          Number(formatUnits(BigInt(tvlValueUSDT || 0n), 6))
         )}`}
       />
       <TokenTvlDetails

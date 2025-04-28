@@ -16,7 +16,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import { nativeTokenAddress, usDaAddress } from "@/blockchain/contracts";
+import {
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
 import { useAccount } from "wagmi";
 import { formatUnits, zeroAddress } from "viem";
@@ -40,6 +44,11 @@ export default function HomeTemplate() {
   const { getOraclePrice, getOraclePriceRefetch } =
     useMasterPriceOracle(nativeTokenAdds);
 
+  const { isTVLPending: isTVLPendingUsdt, tvlValue: tvlValueUSDT } =
+    useGetTVLUSDA(
+      testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+    );
+
   const items = [
     {
       title: "Mint USDA+",
@@ -51,9 +60,7 @@ export default function HomeTemplate() {
     {
       title: "dCDS",
       subtitle: `TVL - $${(
-        Number(
-          formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
-        ) +
+        Number(formatUnits(BigInt(tvlValueUSDT || 0n), 6)) +
         Number(Number(tvlValueUSDa || 0) / 1e6) +
         ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
       ).toFixed(2)}`,
