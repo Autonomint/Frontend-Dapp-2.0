@@ -178,7 +178,7 @@ function DcdsDepositTable({
               Lock In period
             </th>
             <th className="pl-5 whitespace-nowrap text-right pr-5  font-normal">
-              Withdraw
+              Action
             </th>
           </tr>
         </thead>

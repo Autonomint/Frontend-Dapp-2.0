@@ -1,4 +1,5 @@
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { useEffect, useState } from "react";
@@ -168,9 +169,9 @@ const DepositTableRow = ({
           }}
           className="font-bold cursor-pointer text-[20px] underline "
         >
-          Repay/Renew
+          {position.status == BorrowStatus.WITHDREW ? "Repaid" : "Repay/Renew"}
         </span>
-        {/* <span
+        {/* <spans
             onClick={() => {
               setViewPosition(true);
               handleRowClick();
@@ -178,7 +179,7 @@ const DepositTableRow = ({
             className="font-bold cursor-pointer text-[20px] underline   md:inline"
           >
             View
-          </span> */}
+          </spans> */}
       </td>
 
       <td

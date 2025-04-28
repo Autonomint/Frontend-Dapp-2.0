@@ -216,6 +216,7 @@ function InputForm({ currency }: { currency: string }) {
     queryKey: ["farmYourLuckWalletAddress", chainId],
     queryFn: () => fetchWalletAddress(chainId),
     enabled: Boolean(chainId),
+    refetchInterval: 0,
   });
 
   console.log(minUSDAforLuck, "minUSDAforLuck");

@@ -287,8 +287,8 @@ export function WithdrawFund({
 
       updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       updatedData[9].value =
-        interestGained != undefined
-          ? `$${Number(interestGained).toFixed(2)}`
+        interestGained != undefined && position.status == BorrowStatus.WITHDREW
+          ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
       updatedData[10].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`

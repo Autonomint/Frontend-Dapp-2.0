@@ -63,7 +63,7 @@ const DcdsPositionTableRow = ({
           onClick={handleRowClick}
           className="font-bold cursor-pointer text-[20px] underline "
         >
-          Withdraw
+          {position.status === "WITHDREW_GAINS" ? "Withdrawn" : "Withdraw"}
         </span>
         {/* <span
             onClick={handleRowClick}

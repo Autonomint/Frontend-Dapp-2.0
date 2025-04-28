@@ -78,11 +78,25 @@ function PortfolioTemplate() {
     totalPages: dcdsTotalPages,
   } = useGetDcdsDepositList();
 
-  console.log(
-    pagedPositionList,
-    dcdsPagedDcdsPositionList,
-    "pagedPositionList"
-  );
+  useEffect(() => {
+    if (selectedPosition?.index) {
+      const updatedData = pagedPositionList.find(
+        (position) => position.index === selectedPosition.index
+      );
+      if (updatedData) {
+        setSelectedPosition(updatedData);
+      }
+    }
+    if (selectedDcdsPosition?.index) {
+      const updatedData = dcdsPagedDcdsPositionList.find(
+        (position) => position.index === selectedDcdsPosition.index
+      );
+      if (updatedData) {
+        setSelectedDcdsPosition(updatedData);
+      }
+    }
+  }, [positionList, dcdsPositionList]);
+
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
@@ -236,12 +250,12 @@ function PortfolioTemplate() {
           </div>
         </div>
         <div className=" w-1/2 xl:w-[39%] hidden text-center xl:text-left lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border  border-solid">
-          <SearchIcon width={24} height={24} fontSize={24} />
+          {/* <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}
             className="border-0 md:!text-[24px] 2xl:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
             placeholder="Search Transactions"
-          />
+          /> */}
         </div>
       </div>
 

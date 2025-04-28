@@ -8,6 +8,8 @@ import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import dcdsDark from "@/app/assets/dcds-ring-dark.svg";
 import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
 import USDaIcon from "@/app/assets/logo.svg";
+import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
+
 import ModeIcon from "@/app/assets/mode.png";
 import OPIcon from "@/app/assets/optimism.png";
 import AEROIcon from "@/app/assets/aero-icon.png";
@@ -192,6 +194,8 @@ function DCDSTemplate() {
   const [nativeTokenLoadingLocal, setNativeTokenLoadingLocal] =
     useState<boolean>(false);
 
+  const { theme } = useTheme();
+
   const [isOptionHowItWork, setIsOpenHowItWork] = useState(false);
 
   const { chainId, isConnected, address } = useAccount();
@@ -370,7 +374,7 @@ function DCDSTemplate() {
   const tokenList: TokenDetails[] = useMemo(() => {
     const tokenList = [
       {
-        tokenImage: USDaIcon,
+        tokenImage: theme === "dark" ? USDaIconGreen : USDaIcon,
         tokenName: "USDa",
         tokenLabel: "USDA+",
         isLoading: false,
@@ -477,6 +481,7 @@ function DCDSTemplate() {
     modeBalance,
     opBalance,
     getOraclePrice,
+    theme,
   ]);
 
   console.log(tokenList, "tokenList");
@@ -1073,8 +1078,6 @@ function DCDSTemplate() {
 
   console.log(formik, depositValue, "depositValue");
 
-  const { theme } = useTheme();
-
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1133,7 +1136,11 @@ function DCDSTemplate() {
                       }}
                     >
                       <Image
-                        src={token?.tokenImage}
+                        src={
+                          theme === "dark" && token.tokenName === "USDa"
+                            ? USDaIconGreen
+                            : token?.tokenImage
+                        }
                         alt={token?.tokenName}
                         width={80}
                         height={80}
@@ -1431,7 +1438,7 @@ function DCDSTemplate() {
         )}`}
       />
       <TokenTvlDetails
-        icon={USDaIcon}
+        icon={theme === "dark" ? USDaIconGreen : USDaIcon}
         tokenName="USDA+"
         tvl={`$${formatNumber(Number(tvlValueUSDa || 0) / 1e6)} `}
       />
