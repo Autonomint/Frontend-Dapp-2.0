@@ -208,7 +208,7 @@ export function WithdrawFund({
     ],
   }) as { data: number | undefined };
 
-  const totalAmintAmnt =
+  const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
       ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
       : BigInt(
@@ -221,9 +221,12 @@ export function WithdrawFund({
           ) * lastCumulativeRate
         ) / BigInt(10 ** 27);
 
+  // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
-      ? Number(totalAmintAmnt) / 1e6
+      ? Number(totalUsdaAmntWithCumulativeRate) / 1e6 -
+        Number(downsideProtection) -
+        Number(position?.optionFees)
       : Number(position.totalDebtAmount) -
         Number(downsideProtection) -
         Number(position?.optionFees);
@@ -239,70 +242,73 @@ export function WithdrawFund({
   });
 
   function handleDepositData() {
-    // Calculate the totalAmintAmnt
+    // Calculate the totalUsdaAmntWithCumulativeRate
     if (position && lastCumulativeRate) {
-      totalAmintAmount.current = Number(totalAmintAmnt);
+      totalAmintAmount.current = Number(totalUsdaAmntWithCumulativeRate);
 
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
+      // set deposited amount
       updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
         position.collateralType
       }`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
+      // set eth price at deposit
       const ethPriceAtDep =
         (Number(position.ethPrice) *
           Number(position.exchangeRateAtDeposit || 0)) /
         100;
       updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
-      // updatedData[2].value = `${Number(position.noOfUSDaMinted).toFixed(
-      //   2
-      // )} USDa`;
-      // updatedData[3].value = `$${(
-      //   parseFloat(totalAmintAmnt.toString()) /
-      //   10 ** 6
-      // ).toFixed(2)}`;
+      // set apr at deposit
       updatedData[2].value = `${position.aprAtDeposit}%`;
+      // set current apr
       updatedData[3].value = `${Number(currentAPR || 0) / 10}%`;
       updatedData[4].value = new Date(
+        // set deposited time
         position.depositedTime * 1000
       ).toLocaleString();
+      // downside protection percentage
       updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
+      // current price of eth
       const currentPrice =
         position.status == BorrowStatus.DEPOSITED
           ? ethPrice
           : position.ethPriceAtWithdraw;
 
+      // calculate upside at deposit time
       const upsideAt =
         (Number(position.depositedAmountInETH) * Number(ethPriceAtDep) * 5) /
         100;
 
+      // calculate price difference
       const priceDef =
+        // check if eth price at deposit time is less then current price
+        // if yes then calculate the difference
+        // else set 0
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? Number(position.depositedAmountInETH) *
               (Number(currentPrice) / 100) -
             Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
-      console.log(
-        priceDef,
-        upsideAt,
-        ethPriceAtDep,
-        upsideAt < priceDef,
-        currentPrice,
-        "priceDef"
-      );
-
+      // if upside is more than 5% so showing 5% max upside or else showing calculated amount that
+      // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
-
+      // set collateral upside at deposit
       updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      // set collateral upside till now
       updatedData[7].value =
+        // check if eth price at deposit time is less then current price
+        // if yes then set curtUpside
+        // else set -
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? `${curtUpside.toFixed(2)}`
           : "-";
-
+      // check is position is liquidated or not
       updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      // set interest gain
       updatedData[9].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
@@ -312,6 +318,7 @@ export function WithdrawFund({
         : "-";
       setDepositData(updatedData);
     } else {
+      // if position and lastCumulativeRate is not available then set -
       // If details are not available, set each value in the depositData array to '-'
       const updatedData = [...depositData];
       updatedData[0].value = "-";
@@ -340,11 +347,12 @@ export function WithdrawFund({
     {
       headline: "Total Interest",
       value: `$${
-        Number(totalAmintAmnt) / 10 ** 6 < Number(position.noOfUSDaMinted)
+        Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
+        Number(position.noOfUSDaMinted)
           ? 0
           : position.status === BorrowStatus.DEPOSITED
           ? (
-              Number(totalAmintAmnt) / 10 ** 6 -
+              Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
           : Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
