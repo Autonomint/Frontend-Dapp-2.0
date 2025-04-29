@@ -10,7 +10,7 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
 import { calculateTimeDifference } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { Info } from "lucide-react";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 export function DcdsWithdrawModal({
   position,
@@ -342,19 +343,37 @@ export function DcdsWithdrawModal({
         position.depositedTime + "000"
       );
       // Update time difference value
-      updatedData[6].value = `${Number(apy == undefined ? 0 : apy[5]).toFixed(
-        2
-      )}%`;
+      updatedData[6].value = `${Number(
+        apy == undefined
+          ? 0
+          : position.status !== "DEPOSITED"
+          ? position?.apys?.liquidatedETHValue
+          : apy[5]
+      ).toFixed(2)}%`;
       // Update aprAtDeposit value
-      updatedData[7].value = `${Number(apy == undefined ? 0 : apy[0]).toFixed(
-        2
-      )}%`;
+      updatedData[7].value = `${Number(
+        apy == undefined
+          ? 0
+          : position.status !== "DEPOSITED"
+          ? position?.apys?.APY
+          : apy[0]
+      ).toFixed(2)}%`;
       // Update optedForLiquidation value
       updatedData[8].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[9].value = `${Number(apy == undefined ? 0 : apy[3]).toFixed(
-        2
-      )} ETH (${Number(apy == undefined ? 0 : apy[4]).toFixed(2)}$)`;
+      updatedData[9].value = `${Number(
+        apy == undefined
+          ? 0
+          : position.status !== "DEPOSITED"
+          ? position?.apys?.currentTimeAPYTillNow
+          : apy[3]
+      ).toFixed(2)} ETH (${Number(
+        apy == undefined
+          ? 0
+          : position.status !== "DEPOSITED"
+          ? position?.apys?.liquidatedCollateralInETH
+          : apy[4]
+      ).toFixed(2)}$)`;
       // Update optedForLiquidation value
       setDepositData(updatedData);
       // Update the depositData state with updatedData
@@ -700,14 +719,26 @@ export function DcdsWithdrawModal({
                   Option Fee + Liquidation Gains
                 </Label>
                 <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
-                  {Number(apy == undefined ? 0 : apy[1]).toFixed(4)}
+                  {Number(
+                    apy == undefined
+                      ? 0
+                      : position.status !== "DEPOSITED"
+                      ? position?.apys?.amountAccured
+                      : apy[1]
+                  ).toFixed(4)}
                 </Label>
                 <div className="h-2"></div>
                 <Label className=" text-[12px] font-normal text-[#777777]">
                   Price Gains
                 </Label>
                 <Label className=" text-[14px] font-medium dark:text-white">
-                  {Number(apy == undefined ? 0 : apy[2]).toFixed(4)}
+                  {Number(
+                    apy == undefined
+                      ? 0
+                      : position.status !== "DEPOSITED"
+                      ? position?.apys?.liquidatedCollateralInETH
+                      : apy[2]
+                  ).toFixed(4)}
                 </Label>
               </div>
               <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
@@ -715,7 +746,13 @@ export function DcdsWithdrawModal({
                   Yields
                 </Label>
                 <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
-                  {`${Number(apy == undefined ? 0 : apy[5]).toFixed(2)}%`}
+                  {`${Number(
+                    apy == undefined
+                      ? 0
+                      : position.status !== "DEPOSITED"
+                      ? position?.apys?.liquidatedETHValue
+                      : apy[5]
+                  ).toFixed(2)}%`}
                 </Label>
               </div>
             </div>

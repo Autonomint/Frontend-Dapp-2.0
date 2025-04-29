@@ -33,6 +33,16 @@ export interface dcdsDepositDetails {
   };
   nativeTokenPriceAtDeposit: number;
   liquidationPrice: number;
+  apys: CdsWithdrawAPYs;
+}
+
+export interface CdsWithdrawAPYs {
+  APY: number | Number;
+  amountAccured: number | Number;
+  priceChangePL: number | Number;
+  liquidatedCollateralInETH: number | Number;
+  liquidatedETHValue: number | Number;
+  currentTimeAPYTillNow: number | Number;
 }
 
 export interface DcdsDetailsResponse {

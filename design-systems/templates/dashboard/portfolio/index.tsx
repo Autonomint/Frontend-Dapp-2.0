@@ -19,11 +19,12 @@ import { handleWheel } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { NetworkId } from "@/utils/constants";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 function PortfolioTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -177,6 +178,52 @@ function PortfolioTemplate() {
     "pagedPositionList"
   );
 
+  const { omniChainData } = useGetOmniChainData();
+
+  const cdsTotalProfits = useMemo(() => {
+    if (omniChainData) {
+      const upside =
+        Number(omniChainData?.cdsPoolValue) / Number(1e6) -
+        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
+
+      const optionsFees =
+        Number(omniChainData?.totalCdsDepositedAmountWithOptionFees) /
+          Number(1e6) -
+        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
+
+      console.log(
+        Number(omniChainData?.lastCumulativeRate) / Number(1e12),
+        "lastCumulativeRate"
+      );
+      let liqGains =
+        (Number(omniChainData?.liquidationCumulativeValues.liqAmountUsedCV) *
+          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
+        (Number(10000000e6) * Number(1e6));
+
+      liqGains =
+        (((liqGains * Number(100)) / Number(82)) * Number(18)) / Number(100);
+      const liquidatedETH =
+        (Number(omniChainData?.liquidationCumulativeValues.liqCollateralCV) *
+          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
+        Number(1e6);
+
+      return {
+        upside: upside,
+        optionsFees: optionsFees,
+        liqGains: liqGains,
+        liquidatedETH: liquidatedETH,
+      };
+    }
+    return {
+      upside: 0,
+      optionsFees: 0,
+      liqGains: 0,
+      liquidatedETH: 0,
+    };
+  }, [omniChainData]);
+
+  console.log(cdsTotalProfits, omniChainData, "cdsTotalProfits");
+
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
@@ -193,7 +240,10 @@ function PortfolioTemplate() {
           />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Fee Earned (All Chain)" value="$0" />
+          <PortfolioMetrics
+            subHeading="Fee Earned (All Chain)"
+            value={`$${cdsTotalProfits.optionsFees?.toFixed(2)}`}
+          />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
