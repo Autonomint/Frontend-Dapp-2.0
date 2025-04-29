@@ -82,6 +82,9 @@ import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { get } from "http";
+import { usDaAbi } from "@/blockchain/abis/usda";
+import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
+import Spinner from "@/design-systems/atoms/Spinner";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -265,6 +268,84 @@ function DCDSTemplate() {
     getOraclePriceRefetch: getOraclePriceRefetchUSDT,
   } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
+
+  // flag for skipping allowance approve
+  const [usdaAllowanceDone, setUsdaAllowanceDone] = useState<Boolean>(false);
+  const [usdtAllowanceDone, setUsdtAllowanceDone] = useState<Boolean>(false);
+  const [nativeAllowanceDone, setNativeAllowanceDone] =
+    useState<Boolean>(false);
+
+  const resetAllowanceDone = () => {
+    setUsdaAllowanceDone(false);
+    setUsdtAllowanceDone(false);
+    setNativeAllowanceDone(false);
+  };
+
+  // fetching allowance usda
+  const { data: allowanceUSDa, refetch: refetchAllowanceUSDa } =
+    useReadContract({
+      abi: usDaAbi,
+      address: usDaAddress[chainId as keyof typeof usDaAddress],
+      functionName: "allowance",
+      args: [
+        address || zeroAddress,
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      ],
+    }) as { data: number | undefined; refetch: any };
+  // fetching allowance USDT
+  const { data: allowanceUSDT, refetch: refetchAllowanceUSDT } =
+    useReadContract({
+      abi: testusdtAbiAbi,
+      address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+      functionName: "allowance",
+      args: [
+        address || zeroAddress,
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      ],
+    }) as { data: number | undefined; refetch: any };
+
+  // fetching allowance op
+  const { data: allowanceOP, refetch: refetchAllowanceOP } = useReadContract({
+    abi: usDaAbi,
+    address: nativeTokenAddress[NetworkId.Optimism as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+      cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    ],
+  }) as { data: number | undefined; refetch: any };
+
+  // fetching allowance usda
+  const { data: allowanceAERO, refetch: refetchAllowanceAERO } =
+    useReadContract({
+      abi: usDaAbi,
+      address:
+        nativeTokenAddress[NetworkId.BaseSepolia as keyof typeof usDaAddress],
+      functionName: "allowance",
+      args: [
+        address || zeroAddress,
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      ],
+    }) as { data: number | undefined; refetch: any };
+
+  const [allowanceLoading, setAllowanceLoading] = useState<boolean>(false);
+
+  const refetchAllowance = async () => {
+    setAllowanceLoading(true);
+    await refetchAllowanceUSDa();
+    await refetchAllowanceUSDT();
+    await refetchAllowanceOP();
+    await refetchAllowanceAERO();
+    setAllowanceLoading(false);
+  };
+
+  console.log(
+    allowanceAERO,
+    allowanceOP,
+    allowanceUSDT,
+    allowanceUSDa,
+    "allowance"
   );
 
   // Define the initial state for the options variable
@@ -699,99 +780,43 @@ function DCDSTemplate() {
   );
 
   useEffect(() => {
-    if (nativeApprovalSuccessReceipt) {
+    if (nativeApprovalSuccessReceipt || nativeAllowanceDone) {
       setNativeTokenLoadingLocal(false);
-      setTimeout(() => {
-        setDcdsDepositLoadingLocal(true);
-      }, 600);
-
-      if (nativeFee) {
-        handleDcdsDeposit?.(
-          [
-            [
-              formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
-              formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.aeroFlag
-                ? nativeTokenAdds
-                : zeroAddress,
-            ],
-            [
-              BigInt(
-                usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
-              ),
-              BigInt(
-                usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
-              ),
-              BigInt(
-                formik.values.opFlag || formik.values.aeroFlag
-                  ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
-                  : 0
-              ),
-            ],
-            liquidationGains,
-            liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-            BigInt(Number(lockInPeriodLocal || 0) * 86400000),
-          ],
-          nativeFee.nativeFee
-        );
-      }
+      callDepositFnInContract();
     }
-  }, [nativeApprovalSuccessReceipt]);
+  }, [nativeApprovalSuccessReceipt, nativeAllowanceDone]);
 
   useEffect(() => {
-    if (UsdtApprovalSuccessReceipt) {
+    if (UsdtApprovalSuccessReceipt || usdtAllowanceDone) {
       setUsdtApproveLoadingLocal(false);
 
       if (formik.values.opAmount || formik.values.aeroAmount) {
         if (formik.values.aeroFlag || formik.values.opFlag) {
-          setNativeTokenLoadingLocal(true);
-          approveNativeTokenDynamic(
-            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-            BigInt(
-              formik?.values?.aeroFlag
-                ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-                : formik?.values?.opFlag
-                ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-                : 0
-            )
+          const allowanceAmount = BigInt(
+            formik?.values?.aeroFlag
+              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+              : formik?.values?.opFlag
+              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+              : 0
           );
+          const allowanceNativeToken =
+            chainId == NetworkId.BaseSepolia ? allowanceAERO : allowanceOP;
+          if ((allowanceNativeToken || 0) < allowanceAmount) {
+            setNativeTokenLoadingLocal(true);
+            approveNativeTokenDynamic(
+              cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+              allowanceAmount
+            );
+            refetchAllowance();
+          } else {
+            setNativeAllowanceDone(true);
+          }
         }
       } else if (nativeFee) {
-        setTimeout(() => {
-          setDcdsDepositLoadingLocal(true);
-        }, 600);
-        handleDcdsDeposit?.(
-          [
-            [
-              formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
-              formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-              formik.values.opFlag || formik.values.aeroFlag
-                ? nativeTokenAdds
-                : zeroAddress,
-            ],
-            [
-              BigInt(
-                usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
-              ),
-              BigInt(
-                usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
-              ),
-              BigInt(
-                formik.values.opFlag || formik.values.aeroFlag
-                  ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
-                  : 0
-              ),
-            ],
-            liquidationGains,
-            liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-            // BigInt(Number(lockInPeriodLocal || 0) * 86400000),
-            BigInt(Number(0) * 86400000),
-          ],
-          nativeFee.nativeFee
-        );
+        callDepositFnInContract();
       }
     }
-  }, [UsdtApprovalSuccessReceipt]);
+  }, [UsdtApprovalSuccessReceipt, usdtAllowanceDone]);
 
   const {
     dcdsDepositHash,
@@ -827,84 +852,97 @@ function DCDSTemplate() {
 
   // useEffect to check the status of the usda approval transaction
   useEffect(() => {
-    if (usdaApprovalSuccessReceipt) {
+    if (usdaApprovalSuccessReceipt || usdaAllowanceDone) {
       setUsdaApproveLoadingLocal(false);
       if (
         Number(formik.values.usdtAmount) &&
         (Number(formik.values.usdaAmount) ?? 0) > 0
       ) {
-        setTimeout(() => {
-          setUsdtApproveLoadingLocal(true);
-        }, 600);
-        handleUsdtApprove([
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-          BigInt(
-            formik.values.usdtAmount
-              ? parseUnits(formik.values.usdtAmount.toString(), 6)
-              : 0
-          ),
-        ]);
-      } else if (formik.values.opAmount || formik.values.aeroAmount) {
-        setTimeout(() => {
-          setNativeTokenLoadingLocal(true);
-        }, 600);
-        // setNativeTokenLoadingLocal(true);
-        approveNativeTokenDynamic(
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-          BigInt(
-            formik?.values?.aeroFlag
-              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-              : formik?.values?.opFlag
-              ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-              : 0
-          )
+        const allowanceAmount = BigInt(
+          formik.values.usdtAmount
+            ? parseUnits(formik.values.usdtAmount.toString(), 6)
+            : 0
         );
-      } else {
-        setTimeout(() => {
-          setDcdsDepositLoadingLocal(true);
-        }, 600);
-        if (nativeFee?.nativeFee) {
-          handleDcdsDeposit?.(
-            [
-              [
-                formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
-                formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
-                formik.values.opFlag || formik.values.aeroFlag
-                  ? nativeTokenAdds
-                  : zeroAddress,
-              ],
-              [
-                BigInt(
-                  usdaAmountLocal
-                    ? parseUnits(usdaAmountLocal.toString(), 6)
-                    : 0
-                ),
-                BigInt(
-                  usdtAmountLocal
-                    ? parseUnits(usdtAmountLocal.toString(), 6)
-                    : 0
-                ),
-                BigInt(
-                  formik.values.opFlag || formik.values.aeroFlag
-                    ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
-                    : 0
-                ),
-              ],
-              liquidationGains,
-              liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-              BigInt(Number(lockInPeriodLocal || 0) * 86400000),
-            ],
-            nativeFee.nativeFee
-          );
+        if ((allowanceUSDT || 0) < allowanceAmount) {
+          setTimeout(() => {
+            setUsdtApproveLoadingLocal(true);
+          }, 600);
+          handleUsdtApprove([
+            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            allowanceAmount,
+          ]);
+          refetchAllowance();
+        } else {
+          setUsdtAllowanceDone(true);
         }
+      } else if (formik.values.opAmount || formik.values.aeroAmount) {
+        const allowanceAmount = BigInt(
+          formik?.values?.aeroFlag
+            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+            : formik?.values?.opFlag
+            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+            : 0
+        );
+        const allowanceNativeToken =
+          chainId == NetworkId.BaseSepolia ? allowanceAERO : allowanceOP;
+        if ((allowanceNativeToken || 0) < allowanceAmount) {
+          setTimeout(() => {
+            setNativeTokenLoadingLocal(true);
+          }, 600);
+          approveNativeTokenDynamic(
+            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            allowanceAmount
+          );
+          refetchAllowance();
+        } else {
+          setNativeAllowanceDone(true);
+        }
+      } else {
+        callDepositFnInContract();
       }
 
       // );
       // showCustomToast(toastId, 1, "Approved USDa", "success", amintApproveData);
     }
-  }, [usdaApprovalReceiptReceipt]);
+  }, [usdaApprovalReceiptReceipt, usdaAllowanceDone]);
 
-  const handleDeposit = () => {
+  const callDepositFnInContract = () => {
+    setTimeout(() => {
+      setDcdsDepositLoadingLocal(true);
+    }, 600);
+    if (nativeFee?.nativeFee) {
+      handleDcdsDeposit?.(
+        [
+          [
+            formik.values.usdaFlag ? usdaTokenAdds : zeroAddress,
+            formik.values.usdtFlag ? usdtTokenAdds : zeroAddress,
+            formik.values.opFlag || formik.values.aeroFlag
+              ? nativeTokenAdds
+              : zeroAddress,
+          ],
+          [
+            BigInt(
+              usdaAmountLocal ? parseUnits(usdaAmountLocal.toString(), 6) : 0
+            ),
+            BigInt(
+              usdtAmountLocal ? parseUnits(usdtAmountLocal.toString(), 6) : 0
+            ),
+            BigInt(
+              formik.values.opFlag || formik.values.aeroFlag
+                ? parseUnits(nativeTokenAmount?.toString() || "0", 18)
+                : 0
+            ),
+          ],
+          liquidationGains,
+          liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
+          BigInt(Number(lockInPeriodLocal || 0) * 86400000),
+        ],
+        nativeFee.nativeFee
+      );
+    }
+  };
+
+  const handleDeposit = async () => {
     if (!isConnected || !address) {
       openWalletPopup();
     }
@@ -918,6 +956,7 @@ function DCDSTemplate() {
       return;
     }
     resetFunctionState();
+    await refetchAllowance();
     setDcdsLoadingLocal(true);
 
     if (
@@ -931,43 +970,65 @@ function DCDSTemplate() {
       ) {
         return;
       } else {
-        setUsdaApproveLoadingLocal(true);
-        approveUsdaDynamic(
-          BigInt(
-            formik.values.usdaAmount
-              ? parseUnits(formik.values.usdaAmount.toString(), 6)
-              : 0
-          ),
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`
+        const allowanceAmount = BigInt(
+          formik.values.usdaAmount
+            ? parseUnits(formik.values.usdaAmount.toString(), 6)
+            : 0
         );
+        if ((allowanceUSDa || 0) < allowanceAmount) {
+          setUsdaApproveLoadingLocal(true);
+          approveUsdaDynamic(
+            allowanceAmount,
+            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`
+          );
+          refetchAllowance();
+        } else {
+          setUsdaAllowanceDone(true);
+        }
 
         return;
       }
     }
     if (formik.values.usdtFlag) {
-      setUsdtApproveLoadingLocal(true);
-      handleUsdtApprove([
-        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-        BigInt(
-          formik.values.usdtAmount
-            ? parseUnits(formik.values.usdtAmount.toString(), 6)
-            : 0
-        ),
-      ]);
+      const allowanceAmount = BigInt(
+        formik.values.usdtAmount
+          ? parseUnits(formik.values.usdtAmount.toString(), 6)
+          : 0
+      );
+      if ((allowanceUSDT || 0) < allowanceAmount) {
+        setUsdtApproveLoadingLocal(true);
+        handleUsdtApprove([
+          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+          allowanceAmount,
+        ]);
+        refetchAllowance();
+      } else {
+        setUsdtAllowanceDone(true);
+      }
+
       return;
     }
     if (formik.values.aeroFlag || formik.values.opFlag) {
-      setNativeTokenLoadingLocal(true);
-      approveNativeTokenDynamic(
-        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-        BigInt(
-          formik?.values?.aeroFlag
-            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-            : formik?.values?.opFlag
-            ? parseUnits(nativeTokenAmount.toString() || "0", 18)
-            : 0
-        )
+      const allowanceAmount = BigInt(
+        formik?.values?.aeroFlag
+          ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+          : formik?.values?.opFlag
+          ? parseUnits(nativeTokenAmount.toString() || "0", 18)
+          : 0
       );
+      const allowanceNativeToken =
+        chainId == NetworkId.BaseSepolia ? allowanceAERO : allowanceOP;
+      if ((allowanceNativeToken || 0) < allowanceAmount) {
+        setNativeTokenLoadingLocal(true);
+        approveNativeTokenDynamic(
+          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+          allowanceAmount
+        );
+        refetchAllowance();
+      } else {
+        setNativeAllowanceDone(true);
+      }
+
       return;
     }
   };
@@ -980,6 +1041,8 @@ function DCDSTemplate() {
     setIsScroll(true);
     setPortfolioTab("Deposited");
     resetLoadings();
+    resetAllowanceDone();
+    refetchAllowance();
     toast.custom((t) => {
       const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
         DepositdataReceipt?.transactionHash
@@ -1003,6 +1066,8 @@ function DCDSTemplate() {
 
   const handleDepositFailure = () => {
     resetLoadings();
+    resetAllowanceDone();
+    refetchAllowance();
     toast.custom((t) => (
       <ToastNotificationError
         title="Transaction failed, Please try again"
@@ -1329,12 +1394,18 @@ function DCDSTemplate() {
                     <TooltipTrigger asChild>
                       <div className="h-full">
                         <Button
-                          disabled={isFunctionPausedCDS_Deposit}
+                          disabled={
+                            isFunctionPausedCDS_Deposit || allowanceLoading
+                          }
                           type="submit"
                           onClick={() => formik.handleSubmit()}
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
-                          Deposit
+                          {allowanceLoading ? (
+                            <Spinner color="#fff" />
+                          ) : (
+                            "Deposit"
+                          )}
                           <span className="text-base">
                             {isFunctionPausedCDS_Deposit && "(Paused)"}
                           </span>
