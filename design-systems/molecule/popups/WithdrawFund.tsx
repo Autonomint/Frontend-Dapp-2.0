@@ -180,12 +180,17 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
   });
 
+  const currentEthPrice =
+    position.status == BorrowStatus.DEPOSITED
+      ? ethPrice
+      : position.ethPriceAtWithdraw;
+
   const downsideProtection =
-    (ethPrice || 0) < (position?.ethPrice || 0)
+    (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? (
           Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
             Number(position?.depositedAmountInETH) -
-          Number(formatUnits(BigInt(ethPrice), 2)) *
+          Number(formatUnits(BigInt(currentEthPrice), 2)) *
             Number(position?.depositedAmountInETH)
         ).toFixed(2)
       : 0;
@@ -217,9 +222,11 @@ export function WithdrawFund({
         ) / BigInt(10 ** 27);
 
   const repayAmount =
-    Number(totalAmintAmnt) / 1e6 -
-    Number(downsideProtection) -
-    Number(position?.optionFees);
+    position.status == BorrowStatus.DEPOSITED
+      ? Number(totalAmintAmnt) / 1e6
+      : Number(position.totalDebtAmount) -
+        Number(downsideProtection) -
+        Number(position?.optionFees);
 
   // getting current APR value
   const { data: currentAPR } = useReadContract({
@@ -262,14 +269,20 @@ export function WithdrawFund({
       ).toLocaleString();
       updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
-      const currentPrice = ethPrice;
+      const currentPrice =
+        position.status == BorrowStatus.DEPOSITED
+          ? ethPrice
+          : position.ethPriceAtWithdraw;
+
       const upsideAt =
-        (Number(position.depositedAmount) * Number(ethPriceAtDep) * 5) / 100;
+        (Number(position.depositedAmountInETH) * Number(ethPriceAtDep) * 5) /
+        100;
 
       const priceDef =
         Number(ethPriceAtDep) < Number(currentPrice) / 100
-          ? Number(position.depositedAmount) * (Number(currentPrice) / 100) -
-            Number(position.depositedAmount) * Number(ethPriceAtDep)
+          ? Number(position.depositedAmountInETH) *
+              (Number(currentPrice) / 100) -
+            Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
       console.log(
@@ -329,10 +342,12 @@ export function WithdrawFund({
       value: `$${
         Number(totalAmintAmnt) / 10 ** 6 < Number(position.noOfUSDaMinted)
           ? 0
-          : (
+          : position.status === BorrowStatus.DEPOSITED
+          ? (
               Number(totalAmintAmnt) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
+          : Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
       }`,
       tooltip: false,
       tooltipText: "",

@@ -61,6 +61,7 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  ethPriceAtWithdraw: number;
   depositedAmountInETH?: string;
   exchangeRateAtDeposit?: string | number;
   noOfUSDaMinted: number;
@@ -86,6 +87,7 @@ export interface PositionData {
   amountYetToWithdraw: string;
   noOfAbondMinted: string;
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
+  totalDebtAmount: string;
 }
 
 export interface LeaderboardDetails {
