@@ -16,6 +16,7 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 
+// Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
   visible: {
@@ -29,7 +30,7 @@ const farmTextVariants = {
 
 function MintEthListTemplate() {
   const { chainId } = useAccount();
-
+  // Custom hook to fetch the LTV value
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
   // Calculate the downside protection amount
@@ -45,9 +46,11 @@ function MintEthListTemplate() {
     functionName: "APR",
   });
 
+  // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
   console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
 
+  // List of tokens with their respective data
   const list = [
     {
       token: "ETH",
@@ -78,7 +81,10 @@ function MintEthListTemplate() {
     },
   ];
 
+  // Custom hook to detect device type
   const deviceType = useDeviceType();
+
+  // Show back button for mobile and tablet devices
   const showBack = deviceType === "mobile" || deviceType === "tablet";
 
   return (

@@ -5,13 +5,16 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import ChartComponent from "@/design-systems/organisms/mint-page/chart-wrapper";
 import InputForm from "@/design-systems/organisms/mint-page/input-form";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { useRouter } from "next/navigation";
 
+/**
+ * Mint USDA component
+ * @param {Object} props - Component props
+ * @param {string} props.currency - The currency to display in the chart (default: "eth") value is coming from the url
+ * @returns {JSX.Element} The MintUSDa component
+ */
 function MintUSDa({ currency }: { currency: string }) {
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
   const router = useRouter();
-  // const currency = "eth";
 
   return (
     <>

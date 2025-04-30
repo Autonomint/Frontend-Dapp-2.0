@@ -1,7 +1,13 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 
+/**
+ * Custom hook to fetch the LTV (Loan-to-Value) value 
+ * @returns {Object} Object containing:
+ *   - isTvlPending: boolean indicating if the TVL is being fetched
+ *   - tvlValue: number representing the TVL value
+ */
 const useGetLtv = () => {
   const { address, chainId } = useAccount();
   const { isPending: isTvlPending, data: tvlValue } = useReadContract({

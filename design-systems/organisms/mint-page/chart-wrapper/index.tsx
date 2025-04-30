@@ -16,6 +16,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
+  // Function to get the token symbol for the chart 
+  // The symbol is copied from trading view widget config website page
   const getTokenSymbol = () => {
     switch (currency) {
       case "ETH":
@@ -140,6 +142,9 @@ function TradingViewWidget({ currency }: { currency: string }) {
 }
 
 function ChartComponent({ currency }: { currency: string }) {
+  // Loading state for adding token to wallet
+  const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
+
   const getTokenSymbolIcon = () => {
     switch (currency) {
       case "ETH":
@@ -154,13 +159,15 @@ function ChartComponent({ currency }: { currency: string }) {
     }
   };
 
-  const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
-
+  // Wallet client for adding token to wallet
   const { data: walletClient } = useWalletClient();
+
+  // Token config for adding token to wallet based on the selected token
   const tokenConfig = useTokenConfig(currency);
 
   console.log(tokenConfig, "tokenConfig");
 
+  // Function to add token to wallet
   const handleAddToken = async () => {
     if (!walletClient) return console.error("Wallet client not available");
     setIsAddingToken(true);
