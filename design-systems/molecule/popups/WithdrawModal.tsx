@@ -404,7 +404,7 @@ export function DcdsWithdrawModal({
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
-    .addExecutorLzReceiveOption(5000000, 0)
+    .addExecutorLzReceiveOption(305000000, 0)
     .toHex()
     .toString() as `0x${string}`;
 

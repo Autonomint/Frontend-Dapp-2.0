@@ -76,25 +76,25 @@ export function WithdrawFund({
   const depositDetails = [
     {
       headline: "ETH Deposited",
-      value: "0.00123",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "ETH Price at Deposit",
-      value: "$1645.121",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Deposit Time APR",
-      value: "5%",
+      value: "0%",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Current APR",
-      value: "5%",
+      value: "0%",
       tooltip: false,
       tooltipText: "",
     },
@@ -106,19 +106,19 @@ export function WithdrawFund({
     },
     {
       headline: "Downside Percentage At Deposit",
-      value: "20%",
+      value: "0%",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Collateral Upside At Deposit",
-      value: "20%",
+      value: "0%",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Collateral Upside till now",
-      value: "20%",
+      value: "0%",
       tooltip: true,
       tooltipText:
         "The final upside value might be slightly different due to slippage",
@@ -142,18 +142,20 @@ export function WithdrawFund({
       tooltipText: "",
     },
   ];
+
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
     useLastCumulativeRate();
 
+  // interest gain from backend
   const { interestGained } = useInterestGain(position.index);
   console.log(interestGained, "interestGained");
 
-  const totalAmintAmount = useRef<Number>(Number(0));
   const { usdValue: ethPrice } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
+
   console.log(ethPrice, "ethPrice");
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -164,6 +166,7 @@ export function WithdrawFund({
 
   const { chainId } = useAccount();
 
+  // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
     useState<boolean>(false);
   const [isApproveLoadingLocal, setIsApproveLoadingLocal] =
@@ -171,6 +174,7 @@ export function WithdrawFund({
   const [withdrawLoadingLocal, setWithdrawLoadingLocal] =
     useState<boolean>(false);
 
+  // fetching renew enable time
   const { data: optionsFeesTimeLimits } = useReadContract({
     functionName: "optionsFeesTimeLimits",
     address:
@@ -180,11 +184,14 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
   });
 
+  // if position withdrawn using withdrawn time eth price as current eth price else using
+  // current eth price
   const currentEthPrice =
     position.status == BorrowStatus.DEPOSITED
-      ? ethPrice
-      : position.ethPriceAtWithdraw;
+      ? ethPrice || 0
+      : position.ethPriceAtWithdraw || 0;
 
+  // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? (
@@ -195,7 +202,7 @@ export function WithdrawFund({
         ).toFixed(2)
       : 0;
 
-  // fetching allowance
+  // fetching allowance of usda for repay
   const { data: allowance } = useReadContract({
     abi: usDaAbi,
     address: usDaAddress[chainId as keyof typeof usDaAddress],
@@ -208,6 +215,7 @@ export function WithdrawFund({
     ],
   }) as { data: number | undefined };
 
+  // usda amount multiply by cumulative rate
   const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
       ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
@@ -244,8 +252,6 @@ export function WithdrawFund({
   function handleDepositData() {
     // Calculate the totalUsdaAmntWithCumulativeRate
     if (position && lastCumulativeRate) {
-      totalAmintAmount.current = Number(totalUsdaAmntWithCumulativeRate);
-
       // If details are available, update each value in the depositData array
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
@@ -337,6 +343,7 @@ export function WithdrawFund({
     }
   }
 
+  // repay amount details for showing in popup
   const repayAmountDetails = [
     {
       headline: "USDA+ Amount Minted",
@@ -351,7 +358,8 @@ export function WithdrawFund({
         Number(position.noOfUSDaMinted)
           ? 0
           : position.status === BorrowStatus.DEPOSITED
-          ? (
+          ? // if position withdrawn using totalDebtAmount else total usda with cumulative
+            (
               Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
@@ -566,8 +574,8 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-
-    const approveRepayAmount = BigInt(Math.round(repayAmount + 0.0001 * 1e6));
+    debugger;
+    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.0001) * 1e6));
     if (
       position.status === "DEPOSITED" &&
       BigInt(allowance || 0) < approveRepayAmount
