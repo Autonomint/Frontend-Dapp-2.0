@@ -239,6 +239,13 @@ export function WithdrawFund({
         Number(downsideProtection) -
         Number(position?.optionFees);
 
+  console.log(
+    downsideProtection,
+    position?.optionFees,
+    position?.normalizedAmount,
+    "position"
+  );
+
   // getting current APR value
   const { data: currentAPR } = useReadContract({
     abi: borrowingContractAbi,
@@ -574,17 +581,17 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    debugger;
     const approveRepayAmount = BigInt(Math.round((repayAmount + 0.0001) * 1e6));
     if (
-      position.status === "DEPOSITED" &&
-      BigInt(allowance || 0) < approveRepayAmount
+      position.status === "DEPOSITED"
+      // BigInt(allowance || 0) < approveRepayAmount
     ) {
       setIsApproveLoadingLocal(true);
       approveUsda(approveRepayAmount);
-    } else {
-      callRepayInContract();
     }
+    // else {
+    //   callRepayInContract();
+    // }
   };
 
   const callRepayInContract = async () => {
