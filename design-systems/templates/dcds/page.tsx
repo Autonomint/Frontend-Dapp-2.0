@@ -100,8 +100,8 @@ const formSchema = Yup.object().shape({
     })
     .test("max", "max", function (value) {
       const { usdaAmount, usdaBalance } = this.parent;
-      if (usdaAmount && usdaBalance) {
-        return Number(value) <= usdaBalance;
+      if (usdaAmount) {
+        return Number(value) <= (usdaBalance || 0);
       }
       return true; // No validation if usdaFlag is false
     })
@@ -121,8 +121,8 @@ const formSchema = Yup.object().shape({
     })
     .test("max", "max", function (value) {
       const { usdtAmount, usdtBalance } = this.parent;
-      if (usdtAmount && usdtBalance) {
-        return Number(value) <= usdtBalance;
+      if (usdtAmount) {
+        return Number(value) <= (usdtBalance || 0);
       }
       return true; // No validation if usdaFlag is false
     })
@@ -142,8 +142,8 @@ const formSchema = Yup.object().shape({
     })
     .test("max", "max", function (value) {
       const { opAmount, nativeBalance } = this.parent;
-      if (opAmount && nativeBalance) {
-        return Number(value) <= nativeBalance;
+      if (opAmount) {
+        return Number(value) <= (nativeBalance || 0);
       }
       return true; // No validation if usdaFlag is false
     })
@@ -163,8 +163,8 @@ const formSchema = Yup.object().shape({
     })
     .test("max", "max", function (value) {
       const { aeroAmount, nativeBalance } = this.parent;
-      if (aeroAmount && nativeBalance) {
-        return Number(value) <= nativeBalance;
+      if (aeroAmount) {
+        return Number(value) <= (nativeBalance || 0);
       }
       return true; // No validation if usdaFlag is false
     })
@@ -1304,9 +1304,6 @@ function DCDSTemplate() {
                         className="text-red-500"
                       >
                         {formik.errors?.[
-                          `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                        ] &&
-                        formik.touched?.[
                           `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
                         ]
                           ? formik.errors?.[
