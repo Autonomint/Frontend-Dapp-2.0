@@ -73,8 +73,11 @@ const initialValues = {
 };
 
 const RedeemContainer = () => {
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+  const { address: accountAddress } = useAccount();
 
+  const { address, chainId } = useAccount();
+
+  // loading state for the redeem process
   const [redeemLoadingLocal, setRedeemLoadingLocal] = useState<boolean>(false);
   const [redeemFnLoadingLocal, setRedeemFnLoadingLocal] =
     useState<boolean>(false);
@@ -83,7 +86,6 @@ const RedeemContainer = () => {
   const [abondApproveLoadingLocal, setAbondApproveLoadingLocal] =
     useState<boolean>(false);
 
-  const { address: accountAddress } = useAccount();
   const formik = useFormik({
     initialValues,
     validationSchema: formSchema,
@@ -96,8 +98,6 @@ const RedeemContainer = () => {
   const { isFunctionPausedBorrow_Redeem } = useBorrowPause();
   // getting cds pause data
   const { isFunctionPausedCDS_Redeem } = useCdsPause();
-
-  const { address, chainId } = useAccount();
 
   // fetching allowance USDA
   const { data: allowanceUSDa } = useReadContract({
@@ -127,6 +127,7 @@ const RedeemContainer = () => {
     ],
   }) as { data: number | undefined };
 
+  // fetching the abond balance
   const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
     address: abondAddress ? accountAddress : undefined,
     token: abondAddress
@@ -134,6 +135,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
+  // fetching the usda balance
   const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
     token: usDaAddress
@@ -141,6 +143,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
+  // setting the usda , abond balance for the formik based on the input collateral
   useEffect(() => {
     if (formik.values.inputCollateral == "abond") {
       formik.setFieldValue("usdaBalance", Number(abondbalance?.formatted));
@@ -149,6 +152,7 @@ const RedeemContainer = () => {
     }
   }, [abondbalance, usdabalance, formik.values.inputCollateral]);
 
+  // usda approve function
   const {
     isPending: amintApproveLoading,
     data: amintApproveData,
@@ -166,6 +170,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the usda approve transaction receipt
   const {
     data: amintTransactionAllowed,
     isLoading: isAmintTransactionLoading,
@@ -175,6 +180,7 @@ const RedeemContainer = () => {
     hash: amintApproveData,
   });
 
+  // calling the redeem usda in contract if the transaction is successful
   useEffect(() => {
     if (usdaApproveSuccess) {
       callRedeemUSDaInContract();
@@ -183,6 +189,7 @@ const RedeemContainer = () => {
     }
   }, [amintTransactionAllowed]);
 
+  // redeem usdt function hook
   const {
     writeContract: redeemUsdt,
     data: redeemUsdtData,
@@ -200,6 +207,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the redeem usdt transaction receipt
   const {
     data: redeemdataUsdt,
     isLoading: isRedeemUsdtTransactionLoading,
@@ -210,6 +218,7 @@ const RedeemContainer = () => {
     hash: redeemUsdtData,
   });
 
+  // calling the redeem usdt in contract if the transaction is successful
   useEffect(() => {
     if (redeemUsdtSuccess) {
       handleSuccess();
@@ -218,6 +227,7 @@ const RedeemContainer = () => {
     }
   }, [redeemdataUsdt]);
 
+  // function to handle the fail case
   const handleFail = () => {
     toast.custom((t) => (
       <ToastNotificationError
@@ -229,6 +239,7 @@ const RedeemContainer = () => {
     refetchBlAbond();
     refetchBlAmint();
   };
+  // function to handle the success case
   const handleSuccess = () => {
     toast.custom((t) => {
       const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
@@ -248,6 +259,7 @@ const RedeemContainer = () => {
         />
       );
     });
+    // resetting the page data
     refetchBlAbond();
     refetchBlAmint();
     handleClearLoading();
@@ -258,6 +270,7 @@ const RedeemContainer = () => {
       outputCollateralAmount: false,
     });
   };
+  // clearing the loading state
   const handleClearLoading = () => {
     setTimeout(() => {
       setRedeemLoadingLocal(false);
@@ -268,7 +281,7 @@ const RedeemContainer = () => {
     setAbondApproveLoadingLocal(false);
     setUsdaApproveLocal(false);
   };
-
+  //  fetching the redeem values that user will get after redeeming
   const { data: outputData, error } = useReadContract({
     abi: borrowingContractAbi,
     address:
@@ -283,10 +296,12 @@ const RedeemContainer = () => {
   });
 
   useEffect(() => {
+    // checking if the input collateral is abond and the collateral amount is greater than 0
     if (
       formik.values.inputCollateral === "abond" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
+      // checking if the collateral amount is greater than the abond balance
       if (
         (formik.values.collateralAmount || 0) >
         Number(abondbalance?.formatted.slice(0, 8))
@@ -295,10 +310,13 @@ const RedeemContainer = () => {
           collateralAmount: "Insufficient Balance",
         });
       } else {
+        // clearing the error
         formik.setErrors({
           collateralAmount: "",
         });
+        // checking if the output data is available
         if (outputData) {
+          // setting the output collateral amount
           formik.setFieldValue(
             "outputCollateralAmount",
             Number(formatEther(outputData[0]) || 1)
@@ -306,16 +324,20 @@ const RedeemContainer = () => {
         }
       }
     } else if (
+      // checking if the input collateral is amint and the collateral amount is greater than 0
       formik.values.inputCollateral === "amint" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
+      // checking if the collateral amount is greater than the usda balance
       if (
         (formik.values.collateralAmount || 0) >
         Number(usdabalance?.formatted.slice(0, 9))
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
+        // clearing the error
         formik.setErrors({ collateralAmount: "" });
+        // setting the output collateral amount
         formik.setFieldValue(
           "outputCollateralAmount",
           Number(formik.values.collateralAmount)
@@ -326,6 +348,7 @@ const RedeemContainer = () => {
     }
   }, [formik.values, outputData]);
 
+  // abond approve function
   const {
     isPending: abondApproveLoading,
     data: abondApproveData,
@@ -348,6 +371,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the abond approve transaction receipt
   const {
     data: abondTransactionAllowed,
     isLoading: isAbondTransactionLoading,
@@ -360,6 +384,7 @@ const RedeemContainer = () => {
     // Display a custom toast notification
   });
 
+  // calling the redeem abond in contract if the transaction is successful
   useEffect(() => {
     if (abondApproveSuccess) {
       callRedeemABondInContract();
@@ -368,6 +393,7 @@ const RedeemContainer = () => {
     }
   }, [abondTransactionAllowed]);
 
+  // redeem eth function hook
   const {
     writeContract: redeemEth,
     data: redeemEthData,
@@ -392,6 +418,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the redeem eth transaction receipt
   const {
     data: redeemdataEth,
     isLoading: isRedeemEthTransactionLoading,
@@ -402,6 +429,7 @@ const RedeemContainer = () => {
     hash: redeemEthData,
   });
 
+  // calling the redeem abond in contract if the transaction is successful
   useEffect(() => {
     if (redeemEthSuccess) {
       handleSuccess();
@@ -410,10 +438,12 @@ const RedeemContainer = () => {
     }
   }, [redeemdataEth]);
 
+  // function to handle the redeem process
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
       const redeemAmountUSDa = BigInt((values.collateralAmount || 0) * 10 ** 6);
+      // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
         setUsdaApproveLocal(true);
         amintApproveWrite({
@@ -426,12 +456,15 @@ const RedeemContainer = () => {
           ],
         });
       } else {
+        // calling the redeem usda in contract
         callRedeemUSDaInContract();
       }
     } else if (values.inputCollateral === "abond") {
+      // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
         (values.collateralAmount || 0) * 10 ** 18
       );
+      // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
         setAbondApproveLoadingLocal(true);
         abondApproveWrite({
@@ -446,11 +479,13 @@ const RedeemContainer = () => {
           ],
         });
       } else {
+        // calling the redeem abond in contract
         callRedeemABondInContract();
       }
     }
   }
 
+  // function to call the redeem abond in contract
   const callRedeemABondInContract = () => {
     setAbondApproveLoadingLocal(false);
     setTimeout(() => {
@@ -467,6 +502,7 @@ const RedeemContainer = () => {
     });
   };
 
+  // function to call the redeem usda in contract
   const callRedeemUSDaInContract = () => {
     setUsdaApproveLocal(false);
     setTimeout(() => {
@@ -489,6 +525,7 @@ const RedeemContainer = () => {
       // value: nativeFee1.nativeFee,
     });
   };
+  // dropdown items for the input collateral
   const dropdownItems = [
     {
       label: "USDa",
@@ -499,7 +536,7 @@ const RedeemContainer = () => {
       onClick: () => formik.setFieldValue("inputCollateral", "abond"),
     },
   ];
-
+  // dropdown items for the redeem token
   const RedeemTokenDropdownItems = useMemo(() => {
     const options = [
       {
@@ -523,10 +560,6 @@ const RedeemContainer = () => {
   console.log(RedeemTokenDropdownItems, "RedeemTokenDropdownItems");
 
   const pathname = usePathname();
-
-  const handleChange = (event: any) => {
-    formik.setFieldValue("redeemTokenName", event.target.value);
-  };
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
