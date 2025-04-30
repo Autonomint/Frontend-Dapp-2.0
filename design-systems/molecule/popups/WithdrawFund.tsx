@@ -194,12 +194,10 @@ export function WithdrawFund({
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     (currentEthPrice || 0) < (position?.ethPrice || 0)
-      ? (
-          Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-            Number(position?.depositedAmountInETH) -
-          Number(formatUnits(BigInt(currentEthPrice), 2)) *
-            Number(position?.depositedAmountInETH)
-        ).toFixed(2)
+      ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+          Number(position?.depositedAmountInETH) -
+        Number(formatUnits(BigInt(currentEthPrice), 2)) *
+          Number(position?.depositedAmountInETH)
       : 0;
 
   // fetching allowance of usda for repay
@@ -377,7 +375,7 @@ export function WithdrawFund({
     },
     {
       headline: "Downside Protection till now",
-      value: `$${downsideProtection}`,
+      value: `$${downsideProtection.toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
@@ -1162,7 +1160,7 @@ export function WithdrawFund({
                     {
                       heading: "Downside Protection till now",
 
-                      value: "$" + downsideProtection,
+                      value: "$" + downsideProtection.toFixed(2),
                     },
                     {
                       heading: "Option Fees paid",
