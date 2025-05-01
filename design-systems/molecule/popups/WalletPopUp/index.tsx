@@ -39,6 +39,13 @@ interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
 }
 
+/**
+ * WalletPopup is a component that allows the user to connect to the wallet.
+ * It is used to connect to the wallet.
+ * It is used in the WalletPopup component.
+ *
+ *
+ */
 const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
@@ -65,6 +72,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleClosePolicyDialog = () => {
     setIsPolicyDialogOpen(false);
   };
+
+  // chains is an array of chains
   const chains = [
     {
       id: Number(NetworkId.BaseSepolia),
@@ -224,6 +233,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
   return (
     <div>
+      {/* if the user is not connected, then the user can connect the wallet */}
       {!isConnected ? (
         <Button
           onClick={handleBtnClick}

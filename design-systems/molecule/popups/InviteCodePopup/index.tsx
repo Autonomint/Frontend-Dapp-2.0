@@ -15,17 +15,27 @@ import { useAccount, useDisconnect } from "wagmi";
 interface InviteCodePopup {}
 
 const InviteCodePopup = ({}: InviteCodePopup) => {
+  // invite code popup is a component that allows the user to enter an invite code
   const { isInviteCodePopupOpen, setIsInviteCodePopupOpen } =
     useInviteCodePopup();
+  // useAppKit is a hook that allows the user to connect to the appkit
   const { open, close } = useAppKit();
+  // useAccount is a hook that allows the user to connect to the account
   const { address, isConnected, chainId } = useAccount();
+  // inputError is a state that allows the user to enter an invite code
   const [inputError, setInputError] = useState("");
+  // isMounted is a state that allows the user to mount the component
   const [isMounted, setIsMounted] = useState(false);
+  // disconnect is a hook that allows the user to disconnect from the account
   const { disconnect } = useDisconnect();
+  // router is a hook that allows the user to navigate to the invited page
   const router = useRouter();
 
+  // otp is a state that allows the user to enter an invite code
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  // inputsRef is a ref that allows the user to focus on the input field
   const inputsRef = useRef<HTMLInputElement[]>([]);
+  // assignInviteCodeAsync is a hook that allows the user to assign an invite code
   const {
     assignInviteCodeAsync,
     assignInviteCodeError,
@@ -33,7 +43,9 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   } = useInviteCodeMutation(() => {
     setInputError("Please enter a valid invite code");
   });
+  // pathname is a hook that allows the user to navigate to the invited page
   const pathname = usePathname();
+  // handleChange is a function that allows the user to change the invite code
   const handleChange = (value: string, index: number) => {
     // if (!/^\d$/.test(value) && value !== "") return; // Only allow digits
 
@@ -47,6 +59,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
     }
   };
 
+  // handleBackspace is a function that allows the user to backspace the invite code
   const handleBackspace = (
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number
@@ -57,11 +70,14 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   };
 
   useEffect(() => {
+    // handleAutoInviteCodeLogin is a function that allows the user to auto login the invite code
     handleAutoInviteCodeLogin();
   }, [address, isConnected]);
 
+  // handleAutoInviteCodeLogin is a function that allows the user to auto login the invite code
   const handleAutoInviteCodeLogin = async () => {
     const inviteCode = localStorage.getItem("inviteCode");
+    // if the invite code is not connected and the user is connected, then the user can auto login the invite code
     if (inviteCode && isConnected) {
       if (address) {
         const res = await assignInviteCodeAsync({
@@ -69,12 +85,14 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
           inviteCode: inviteCode,
         });
 
+        // if the invite code is assigned, then the user can auto login the invite code
         if (!!res) {
           setIsInviteCodePopupOpen(false);
           localStorage.setItem("verified", "true");
           localStorage.setItem("AddressForInviteCode", address);
           localStorage.setItem("inviteCode", otp.join(""));
         } else {
+          // if the invite code is not assigned, then the user can remove the invite code
           localStorage.setItem("verified", "false");
           localStorage.removeItem("AddressForInviteCode");
         }
@@ -84,21 +102,26 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
 
   const handleSubmit = async () => {
     setInputError("");
+    // if the invite code is not connected, then the user can connect the wallet
     try {
       if (!isConnected) return open();
+      // if the invite code is not valid, then the user can enter a valid invite code
       if (otp.join("").length < 6) {
         setInputError("Please enter a valid invite code");
         return;
       } else {
+        // if the invite code is valid, then the user can assign the invite code
         setInputError("");
       }
       if (address) {
+        // if the address is not valid, then the user can enter a valid address
         const res = await assignInviteCodeAsync({
           address,
           inviteCode: otp.join(""),
         });
 
         if (!!res) {
+          // if the invite code is assigned, then the user can auto login the invite code
           setIsInviteCodePopupOpen(false);
           localStorage.setItem("verified", "true");
           localStorage.setItem("inviteCode", otp.join(""));
@@ -109,12 +132,14 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
             router.push("/invited");
           }
         } else {
+          // if the invite code is not assigned, then the user can disconnect the wallet
           disconnect();
           localStorage.setItem("verified", "false");
           setInputError("Please enter a valid invite code");
         }
       }
     } catch (error) {
+      // if the invite code is not valid, then the user can enter a valid invite code
       disconnect();
       localStorage.setItem("verified", "false");
       // setIsInviteCodePopupOpen(false);
@@ -123,6 +148,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
   };
 
   if (isMounted) {
+    // if the invite code popup is open, then the user can close the popup
     const closeElement =
       window.document.querySelector<HTMLElement>(".popup-close-icon");
 
@@ -130,11 +156,13 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
       // Hide the element (using `display` or `visibility`)
       closeElement.style.display = "none";
     } else if (closeElement) {
+      // if the invite code popup is not open, then the user can show the popup
       closeElement.style.display = "block";
     }
   }
 
   useEffect(() => {
+    // if the invite code popup is mounted, then the user can set the isMounted to true
     setIsMounted(true);
   }, []);
 
