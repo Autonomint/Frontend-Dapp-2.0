@@ -18,7 +18,12 @@ export interface TokenConfig {
     // image: string;
   };
 }
-
+/**
+ * React hook to retrieve and manage token configuration for a given token name.
+ *
+ * @param tokenName - The name of the token to retrieve configuration for.
+ * @returns Object containing the token configuration.
+ */
 export const useTokenConfig = (tokenName: string): TokenConfig => {
   const { chainId } = useAccount();
   const tokenNameLowerCase = tokenName.toLocaleLowerCase();

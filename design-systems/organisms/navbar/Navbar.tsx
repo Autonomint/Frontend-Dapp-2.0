@@ -34,9 +34,6 @@ function Navbar() {
 
   const { address } = useAccount();
 
-  // Use this code snippet in your app.
-  // If you need more information about configurations or implementing the sample code, visit the AWS docs:
-  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
 
   useAccountEffect({
     onConnect(data) {
