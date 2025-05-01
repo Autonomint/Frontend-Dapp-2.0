@@ -422,12 +422,12 @@ function InputForm({ currency }: { currency: string }) {
       // calling the mint usda function in the contract
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
-        volatility: BigInt(borrowSignedData.data?.volatility || 0),
+        volatility: BigInt(borrowSignedData?.volatility || 0),
         depositingAmount: parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        deadline: BigInt(borrowSignedData.data?.deadline || 0),
-        nonce: BigInt(borrowSignedData.data?.nonce || 0),
-        signature: borrowSignedData.data?.signature || ("" as `0x${string}`),
+        deadline: BigInt(borrowSignedData?.deadline || 0),
+        nonce: BigInt(borrowSignedData?.nonce || 0),
+        signature: borrowSignedData?.signature || ("" as `0x${string}`),
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
@@ -598,7 +598,7 @@ function InputForm({ currency }: { currency: string }) {
           </div>
         </div>
 
-        // displaying the input metrics
+        {/*  displaying the input metrics */}
         <InputMetics
           deposit={(
             (Number(selectedAssetPrice || 0) / 100) *

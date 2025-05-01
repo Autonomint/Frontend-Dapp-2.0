@@ -605,11 +605,11 @@ export function WithdrawFund({
     withdrawUsda(
       position.index,
       nativeFee?.nativeFee || BigInt(0n),
-      borrowSignedData.data?.odosAssembledData,
-      borrowSignedData.data?.usdtFromOdos,
-      BigInt(borrowSignedData.data?.nonce || 0),
-      BigInt(borrowSignedData.data?.deadline || 0),
-      (borrowSignedData.data?.signature || "") as `0x${string}`
+      borrowSignedData?.odosAssembledData,
+      borrowSignedData?.usdtFromOdos,
+      BigInt(borrowSignedData?.nonce || 0),
+      BigInt(borrowSignedData?.deadline || 0),
+      (borrowSignedData?.signature || "") as `0x${string}`
     );
   };
 
@@ -657,11 +657,11 @@ export function WithdrawFund({
           withdrawUsda(
             position.index,
             nativeFee?.nativeFee || BigInt(0n),
-            borrowSignedData.data?.odosAssembledData,
-            borrowSignedData.data?.usdtFromOdos,
-            BigInt(borrowSignedData.data?.nonce || 0),
-            BigInt(borrowSignedData.data?.deadline || 0),
-            (borrowSignedData.data?.signature || "") as `0x${string}`
+            borrowSignedData?.odosAssembledData,
+            borrowSignedData?.usdtFromOdos,
+            BigInt(borrowSignedData?.nonce || 0),
+            BigInt(borrowSignedData?.deadline || 0),
+            (borrowSignedData?.signature || "") as `0x${string}`
           );
         }
         if (toggleView == "renew") {

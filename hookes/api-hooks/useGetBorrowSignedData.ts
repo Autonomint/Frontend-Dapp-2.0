@@ -1,5 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
 export interface SignedDataReturn {
@@ -48,17 +48,14 @@ const useGetBorrowSignedData = (index?: number) => {
   const {
     data: BorrowSignedData,
     isPending: isPendingBorrowSignedData,
-    refetch: refetchBorrowSignedData,
-  } = useQuery({
-    queryKey: ["APY", index || 0],
-    queryFn: () =>
+    mutateAsync: refetchBorrowSignedData,
+  } = useMutation({
+    mutationFn: () =>
       signedDataForBorrowDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0
       ),
-    select: (data) => data,
-    enabled: !!address && !!chainId,
   });
   return {
     BorrowSignedData,

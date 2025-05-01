@@ -561,11 +561,11 @@ export function DcdsWithdrawModal({
         // If close position is success then call withdraw gain function
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
-          res.data?.odosAssembledData,
-          res.data?.usdtFromOdos,
-          res.data?.nonce,
-          res.data?.deadline,
-          res.data?.signature,
+          res?.odosAssembledData,
+          res?.usdtFromOdos,
+          res?.nonce,
+          res?.deadline,
+          res?.signature,
         ]);
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
@@ -606,10 +606,10 @@ export function DcdsWithdrawModal({
         handleDcdsFundWithdraw?.(
           [
             BigInt(position.index),
-            res.data?.excessProfitCumulativeValue,
-            res.data?.nonce,
-            res.data?.deadline,
-            res.data?.signature,
+            res?.excessProfitCumulativeValue,
+            res?.nonce,
+            res?.deadline,
+            res?.signature,
           ],
           nativeFee.nativeFee
         );
@@ -620,11 +620,11 @@ export function DcdsWithdrawModal({
       const res = await refetchBorrowWithDrawGainsSignedData();
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
-        res.data?.odosAssembledData,
-        res.data?.usdtFromOdos,
-        res.data?.nonce,
-        res.data?.deadline,
-        res.data?.signature,
+        res?.odosAssembledData,
+        res?.usdtFromOdos,
+        res?.nonce,
+        res?.deadline,
+        res?.signature,
       ]);
     }
   };

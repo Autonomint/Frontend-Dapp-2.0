@@ -1,5 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
 export interface SignedDataReturn {
@@ -52,33 +52,27 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
   const {
     data: BorrowWithdrawSignedData,
     isPending: isPendingBorrowWithDrawSignedData,
-    refetch: refetchBorrowWithDrawSignedData,
-  } = useQuery({
-    queryKey: ["useGetDcdsWithdrawSignedData"],
-    queryFn: () =>
+    mutateAsync: refetchBorrowWithDrawSignedData,
+  } = useMutation({
+    mutationFn: () =>
       signedDataForDcdsWithDrawDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0
       ),
-    select: (data) => data,
-    enabled: !!address && !!chainId,
   });
 
   const {
     data: BorrowWithdrawGainsSignedData,
     isPending: isPendingBorrowWithDrawGainsSignedData,
-    refetch: refetchBorrowWithDrawGainsSignedData,
-  } = useQuery({
-    queryKey: ["useGetDcdsWithdrawSignedData"],
-    queryFn: () =>
+    mutateAsync: refetchBorrowWithDrawGainsSignedData,
+  } = useMutation({
+    mutationFn: () =>
       signedDataForDcdsWithGainsDrawDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0
       ),
-    select: (data) => data,
-    enabled: !!address && !!chainId,
   });
 
   return {
