@@ -37,7 +37,7 @@ function PortfolioTemplate() {
   const [refreshLoading, setRefreshLoading] = useState(false);
   // portfolio tab global state
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
-  // selected position for repay renew 
+  // selected position for repay renew
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
     null
   );
@@ -60,7 +60,7 @@ function PortfolioTemplate() {
   // get user point
   const { points, referralPoints } = useGetUserPoint();
 
-  // get borrowed position list 
+  // get borrowed position list
   const {
     positionList,
     positionListError,
@@ -110,9 +110,9 @@ function PortfolioTemplate() {
         setSelectedDcdsPosition(updatedData);
       }
     }
-  }, [positionList, dcdsPositionList]);
+  }, [pagedPositionList, dcdsPagedDcdsPositionList]);
 
-  // handle initial portfolio tab setting based on global tab state 
+  // handle initial portfolio tab setting based on global tab state
   // this will be when user deposits or borrows and redirect to this page
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
@@ -223,7 +223,7 @@ function PortfolioTemplate() {
         (Number(omniChainData?.liquidationCumulativeValues.liqAmountUsedCV) *
           Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
         (Number(10000000e6) * Number(1e6));
-        
+
       // calculate liquidated eth
       liqGains =
         (((liqGains * Number(100)) / Number(82)) * Number(18)) / Number(100);

@@ -537,7 +537,9 @@ export function WithdrawFund({
           />
         );
       });
-      positionListRefetech();
+      setTimeout(() => {
+        positionListRefetech();
+      }, 3000);
       setWithdrawLoadingLocal(false);
       setTimeout(() => {
         setRepayLoading(false);

@@ -491,7 +491,7 @@ export function DcdsWithdrawModal({
       });
       setTimeout(() => {
         dcdsPositionListRefetch();
-      }, 1000);
+      }, 3000);
       dcdsPositionListRefetch();
       handleCloseDialog();
     }
