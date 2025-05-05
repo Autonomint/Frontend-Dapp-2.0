@@ -36,6 +36,7 @@ function AddToken({
   const { theme } = useTheme();
 
   const toggleToken = () => {
+    // check if the token is active or not
     if (!tokenDetails.active) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -53,6 +54,25 @@ function AddToken({
       `${tokenDetails.tokenName.toLocaleLowerCase()}Amount`,
       0
     );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}Balance`,
+      tokenDetails.balanceAvailable
+    );
+
+    // Set approval flags in formik
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}Approving`,
+      false
+    );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}ApproveSuccess`,
+      false
+    );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}ApproveFailure`,
+      false
+    );
+
     setSelectedTokens?.((prev: TokenDetails[]) => {
       if (isSelected) {
         return prev.filter(
@@ -102,7 +122,7 @@ function AddToken({
         className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
       >
         <div className="flex  gap-5 w-full items-center">
-          <div className="flex w-[40%] md:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
+          <div className="flex w-[40%] md:w-[20%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -131,7 +151,8 @@ function AddToken({
               </span>
               {tokenDetails.tokenCount && (
                 <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
-                  {tokenDetails.tokenCount} {` ${tokenDetails.tokenName}`}
+                  {tokenDetails?.tokenCount?.toFixed(2)}{" "}
+                  {` ${tokenDetails.tokenName}`}
                 </span>
               )}
             </div>
