@@ -1,73 +1,68 @@
 "use client";
+import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
+import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
+import dcdsDark from "@/app/assets/dcds-ring-dark.svg";
+import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
+import USDaIcon from "@/app/assets/logo.svg";
 import { Button } from "@/design-systems/atoms/button";
 import { Input } from "@/design-systems/atoms/input";
 import { Label } from "@/design-systems/atoms/label";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
-import dcdsDark from "@/app/assets/dcds-ring-dark.svg";
-import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
-import USDaIcon from "@/app/assets/logo.svg";
-import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
 
-import ModeIcon from "@/app/assets/mode.png";
-import OPIcon from "@/app/assets/optimism.png";
 import AEROIcon from "@/app/assets/aero-icon.png";
-import {
-  cdsAddress,
-  mpoAddress,
-  nativeTokenAddress,
-  testusdtAbiAddress,
-  usDaAddress,
-} from "@/blockchain/contracts";
+import OPIcon from "@/app/assets/optimism.png";
+import { cdsAbi } from "@/blockchain/abis/dcds";
+import { mpoABI } from "@/blockchain/abis/mpo";
+import { cdsAddress, mpoAddress } from "@/blockchain/contracts";
+import { config } from "@/blockchain/WalletConfigs/iindex";
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { useScroll } from "@/contexts/scroll";
 import { Checkbox } from "@/design-systems/atoms/checkbox";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
+import Spinner from "@/design-systems/atoms/Spinner";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { usePortfolioTab } from "@/contexts/portfolio-tab";
-import { useScroll } from "@/contexts/scroll";
-import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";
+import PageLoader from "@/design-systems/molecule/page-loader";
+import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
-import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import AddToken from "@/design-systems/organisms/dcds/add-token";
 import DepositSummary from "@/design-systems/organisms/dcds/deposit-summary";
 import HowItWorksPopUp from "@/design-systems/organisms/dcds/how-it-works";
 import HowItWorksButton from "@/design-systems/organisms/dcds/how-it-works-button";
 import TokenTvlDetails from "@/design-systems/organisms/dcds/TokenTvlDetails";
-import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
-import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
-import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import {
-  AssetStatus,
-  NetworkId,
-  scanUrls,
-  USDT_DEPOSIT_LIMIT_IN_DCDS,
-} from "@/utils/constants";
+import { AssetStatus, NetworkId, scanUrls } from "@/utils/constants";
 import {
   formatNumber,
   getTotalDepositingAmount,
   handleWheel,
 } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { waitForTransactionReceipt } from "@wagmi/core";
 import { useFormik } from "formik";
-import { Info, Network } from "lucide-react";
+import { Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem";
+import { Abi, erc20Abi, formatUnits, parseUnits } from "viem";
 import {
   useAccount,
-  useBalance,
   useReadContract,
   useReadContracts,
   useWaitForTransactionReceipt,
@@ -75,27 +70,6 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
-import PageLoader from "@/design-systems/molecule/page-loader";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
-import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
-import useApproveNativeToken from "@/hookes/contract-hooks/useApproveNativeToken";
-import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import useGetTVLUSDA, {
-  useGetTVLBothChain,
-} from "@/hookes/contract-hooks/useGetTVLUSDA";
-import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
-import { cdsAbi } from "@/blockchain/abis/dcds";
-import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { get } from "http";
-import { usDaAbi } from "@/blockchain/abis/usda";
-import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import Spinner from "@/design-systems/atoms/Spinner";
-import { mpoABI } from "@/blockchain/abis/mpo";
-import { optimismSepolia } from "viem/chains";
-import { config } from "@/blockchain/WalletConfigs/iindex";
-import { waitForTransactionReceipt } from "@wagmi/core";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -211,25 +185,6 @@ function DCDSTemplate() {
     // if the chain id changes, reset the selected tokens
     setSelectedTokens([]);
   }, [chainId]);
-
-  const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
-  // getting the oracle price for the native token
-  const { getOraclePrice, getOraclePriceRefetch } =
-    useMasterPriceOracle(nativeTokenAdds);
-
-  // getting the oracle price for the usda token
-  const {
-    getOraclePrice: getOraclePriceUSDa,
-    getOraclePriceRefetch: getOraclePriceRefetchUSDa,
-  } = useMasterPriceOracle(usDaAddress[chainId as keyof typeof usDaAddress]);
-
-  // getting the oracle price for the usdt token
-  const {
-    getOraclePrice: getOraclePriceUSDT,
-    getOraclePriceRefetch: getOraclePriceRefetchUSDT,
-  } = useMasterPriceOracle(
-    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-  );
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
@@ -598,13 +553,7 @@ function DCDSTemplate() {
 
       return total + amount * price;
     }, 0);
-  }, [
-    formik.values,
-    selectedTokens,
-    getOraclePriceUSDa,
-    getOraclePriceUSDT,
-    getOraclePrice,
-  ]);
+  }, [formik.values, selectedTokens]);
 
   console.log(formik, depositValue, "depositValue");
 
@@ -838,8 +787,7 @@ function DCDSTemplate() {
 
   console.log(tokenAddress, "tokenAddress");
 
-  // Create form schema based on token list
-  const formSchema = useMemo(() => createFormSchema(tokenList), [tokenList]);
+
 
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
