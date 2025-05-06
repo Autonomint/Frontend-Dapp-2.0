@@ -15,7 +15,8 @@ import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-
+import { usePoint } from "@/hookes/api-hooks/usePoint";
+import { STRATEGY_LINK } from "@/utils/urls";
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -50,6 +51,8 @@ function MintEthListTemplate() {
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
   console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
 
+  const { ethPoints, isLoading, error } = usePoint();
+
   // List of tokens with their respective data
   const list = [
     {
@@ -60,6 +63,9 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "ETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
     {
       token: "wrsETH",
@@ -69,6 +75,9 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
     {
       token: "weETH",
@@ -78,6 +87,9 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
   ];
 

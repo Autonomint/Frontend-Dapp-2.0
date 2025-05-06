@@ -70,6 +70,7 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
+import { usePoint } from "@/hookes/api-hooks/usePoint";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -750,6 +751,8 @@ function DCDSTemplate() {
 
   console.log(tokenAddress, "tokenAddress");
 
+  const { usdaPoints, usdtPoints, isLoading, error } = usePoint();
+
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
       (token) =>
@@ -802,7 +805,7 @@ function DCDSTemplate() {
 
         <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
-            <div className="2xl:w-[600px] 3xl:w-[550px] 3xl:h-[550px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[600px] h-[400px] flex items-center justify-center relative">
+            <div className="2xl:w-[550px] 3xl:w-[550px] 3xl:h-[550px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[580px] h-[400px] flex items-center justify-center relative">
               <Image
                 className="hidden dark:block w-full h-full"
                 src={dcdsDark}
@@ -883,20 +886,20 @@ function DCDSTemplate() {
         </div>
 
         <div className="lg:col-span-2 xl:col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
-          <div className=" p-5 md:px-16 md:py-5  lg:p-5 lg:pb-0">
+          <div className=" p-5 md:px-16 md:py-5  lg:p-5 lg:pt-4 lg:pb-0">
             <span className="text-textBlack text-[24px] font-medium dark:text-white">
               Deposit Funds
             </span>
             <div
               ref={scrollRef}
-              className="h-[200px]  2xl:h-[250px] overflow-y-auto no-scrollbar"
+              className="h-[200px]  2xl:h-[170px] overflow-y-auto no-scrollbar"
             >
               {/* mapping the selected tokens in the ui */}
               {selectedTokens.map((token, key) => (
-                <div key={key} className="mt-4">
+                <div key={key} className="mt-1">
                   <Label
                     htmlFor={`token-${key}`}
-                    className="text-grayLight text-lg font-medium"
+                    className="text-grayLight text-base font-medium"
                   >
                     {token.tokenLabel || token.tokenName}
                   </Label>
@@ -906,7 +909,7 @@ function DCDSTemplate() {
                       type="number"
                       name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                       id={`token-${key}`}
-                      className="flex items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
+                      className="flex  py-1 items-center h-[44px] border border-grayLight font-medium md:text-[20px] dark:text-[20px]"
                       placeholder="0"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -915,7 +918,7 @@ function DCDSTemplate() {
                       ]?.toString()}
                     />
                     {/* showing the token value in usd */}
-                    <div className="p-1 flex justify-center items-center border-[1px] border-y border-x border-grayLight font-medium md:text-[20px] dark:text-[20px] border-l-0 text-grayLight">
+                    <div className="p-1 flex justify-center items-center border-[1px] border-y border-x border-grayLight font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight">
                       <span>
                         $
                         {(
@@ -947,7 +950,7 @@ function DCDSTemplate() {
                         })()}
                       </Typography>
                     </span>
-                    <span className="text-[18px] font-medium text-grayLight">
+                    <span className="text-[16px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}
                     </span>
                   </div>
@@ -971,7 +974,7 @@ function DCDSTemplate() {
                     : "Lock-in Period"
                 }
                 items={dropdownItems}
-                className="w-full text-[20px] 2xl:text-[24px] border border-grayLight"
+                className="w-full text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
                 iconWrapBg="bg-white dark:bg-black"
               />
               <Typography size="sm" variant="regular" className="text-red-500">
@@ -1016,6 +1019,10 @@ function DCDSTemplate() {
               <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
+                usdaPoints={Number(usdaPoints?.pointsToBeGiven || 0)}
+                usdtPoints={Number(usdtPoints?.pointsToBeGiven || 0)}
+                minUsdaDeposit={Number(usdaPoints?.minAmount || 0)}
+                minUsdtDeposit={Number(usdtPoints?.minAmount || 0)}
               />
             </div>
             {/* showing the deposit button */}

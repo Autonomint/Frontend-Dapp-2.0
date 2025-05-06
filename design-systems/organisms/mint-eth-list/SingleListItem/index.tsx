@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { Info } from "lucide-react";
+import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -45,6 +45,35 @@ function SingleListItem({
       tooltipText:
         "Current %age of price fall protection provided on collaterals",
     },
+    {
+      label: "Point",
+      value: (
+        <div>
+          <div className="flex items-center justify-between gap-2 text-lg">
+            <p>Min Amount :</p>
+            <p>{item.minAmount}</p>
+          </div>
+          <div className="flex items-center justify-between gap-2 text-lg">
+            <p>Points :</p>
+            <p>{item.pointsToBeGiven}</p>
+          </div>
+        </div>
+      ),
+      tooltipText: "Points to be given for depositing the token",
+    },
+    {
+      label: "Strategies",
+      value: (
+        <div className="flex mb-4 items-center justify-center gap-2 text-lg">
+          <a href={item.link} target="_blank">
+            Open Link
+          </a>
+
+          <SquareArrowOutUpRight />
+        </div>
+      ),
+      tooltipText: "Points to be given for depositing the token",
+    },
   ];
 
   return (
@@ -55,7 +84,7 @@ function SingleListItem({
         animate="visible"
         variants={listItemVariants}
       >
-        <div className="flex lg:w-[75%]   flex-col lg:flex-row w-full">
+        <div className="flex lg:w-[85%]   flex-col lg:flex-row w-full">
           <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
           <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-md h-[120px] lg:h-[160px]">
             {metrics.map((metric, index) => (
