@@ -558,55 +558,16 @@ function DCDSTemplate() {
   console.log(formik, depositValue, "depositValue");
 
   // fetching the token addresses
-  const { data: tokenAddress } = useReadContracts({
-    contracts: [
-      {
-        address: cdsAddress[
-          chainId as keyof typeof cdsAddress
-        ] as `0x${string}`,
-        abi: cdsAbi,
-        functionName: "supportedTokenAddresses",
-        args: [0],
-      },
-      {
-        address: cdsAddress[
-          chainId as keyof typeof cdsAddress
-        ] as `0x${string}`,
-        abi: cdsAbi,
-        functionName: "supportedTokenAddresses",
-        args: [1],
-      },
-      {
-        address: cdsAddress[
-          chainId as keyof typeof cdsAddress
-        ] as `0x${string}`,
-        abi: cdsAbi,
-        functionName: "supportedTokenAddresses",
-        args: [2],
-      },
-    ],
+  const { data: tokenAddress } = useReadContract({
+    address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    abi: cdsAbi,
+    functionName: "getSupportedTokenAddresses",
     query: {
-      placeholderData: [
-        {
-          result: "",
-          status: "success",
-        },
-        {
-          result: "",
-          status: "success",
-        },
-        {
-          result: "",
-          status: "success",
-        },
-      ],
-      select: (data) => {
-        return data
-          .map((item) => item.result)
-          .filter(Boolean) as `0x${string}`[];
-      },
+      placeholderData: [],
     },
-  });
+  }) as { data: `0x${string}`[] };
+
+  console.log(tokenAddress, "tokenAddress");
 
   const { data: tokenDetailsList } = useReadContracts({
     contracts: tokenAddress?.flatMap((address) => [
@@ -750,7 +711,9 @@ function DCDSTemplate() {
       return {
         tokenImage: iconMapping[index],
         tokenName: String(token.symbol || ""),
-        tokenLabel: String(token.symbol || ""),
+        tokenLabel: String(
+          token.symbol === "USDa" ? "USDA+" : token.symbol || ""
+        ),
         isLoading: false,
         active: true,
         errorMessage: `Token ${token.symbol} not active now`,
@@ -786,8 +749,6 @@ function DCDSTemplate() {
   console.log(tokenList, tokensPauseState, "calls");
 
   console.log(tokenAddress, "tokenAddress");
-
-
 
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
@@ -1160,7 +1121,7 @@ function DCDSTemplate() {
         <TokenTvlDetails
           key={token.tokenName}
           icon={token.tokenImage}
-          tokenName={token.tokenName}
+          tokenName={token.tokenLabel}
           tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
         />
       ))}
