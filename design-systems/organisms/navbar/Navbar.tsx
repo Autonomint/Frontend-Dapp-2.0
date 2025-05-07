@@ -270,7 +270,7 @@ function Navbar() {
           <Button
             onClick={() =>
               shareOnTwitter(
-                "Just tried @autonomint and I'm impressed. I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...I face no loss. Really Curious how it hedges ETH downside with no upfront cost. Also, tried on-chain CDS and it's giving me highest pure stablecoin yields.  The team is onto something big here!"
+                "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
               )
             }
             variant={"shadowOutline"}
