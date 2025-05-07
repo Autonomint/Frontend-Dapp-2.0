@@ -34,7 +34,6 @@ function Navbar() {
 
   const { address } = useAccount();
 
-
   useAccountEffect({
     onConnect(data) {
       localStorage.setItem("currentAddress", data.address as string);
@@ -269,7 +268,11 @@ function Navbar() {
           {/* <ReferPopup wrapperClassName={"hidden lg:block"} /> */}
 
           <Button
-            onClick={() => shareOnTwitter("")}
+            onClick={() =>
+              shareOnTwitter(
+                "Just tried @autonomint and I'm impressed. I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...I face no loss. Really Curious how it hedges ETH downside with no upfront cost. Also, tried on-chain CDS and it's giving me highest pure stablecoin yields.  The team is onto something big here!"
+              )
+            }
             variant={"shadowOutline"}
             className=" h-fit text-[18px] font-normal  w-full p-[8px] "
           >
