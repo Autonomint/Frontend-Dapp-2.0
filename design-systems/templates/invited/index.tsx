@@ -5,8 +5,10 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import { useAccount } from "wagmi";
 
 const InvitedTemplate = () => {
+  const { address } = useAccount();
   const users = [
     {
       name: "Alex",
@@ -32,7 +34,17 @@ const InvitedTemplate = () => {
   ];
 
   useEffect(() => {
-    localStorage.setItem("invited-page-visited", "true");
+    // if the user is not in the list, then add them to the list
+    const currentAddress = localStorage.getItem("invited-page-visited-address");
+    // parse the current address
+    const parsedCurrentAddress = JSON.parse(currentAddress || "[]");
+    // if the user is not in the list, then add them to the list
+    if (!parsedCurrentAddress.includes(address)) {
+      localStorage.setItem(
+        "invited-page-visited-address",
+        JSON.stringify([...parsedCurrentAddress, address])
+      );
+    }
   }, []);
 
   return (

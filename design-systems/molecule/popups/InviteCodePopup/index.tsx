@@ -127,8 +127,12 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
           localStorage.setItem("inviteCode", otp.join(""));
           localStorage.setItem("AddressForInviteCode", address);
           setOtp(Array(6).fill(""));
-          const isVisited = localStorage.getItem("invited-page-visited");
-          if (!isVisited) {
+
+          const currentAddress = localStorage.getItem(
+            "invited-page-visited-address"
+          );
+          const parsedCurrentAddress = JSON.parse(currentAddress || "[]");
+          if (!parsedCurrentAddress.includes(address)) {
             router.push("/invited");
           }
         } else {
