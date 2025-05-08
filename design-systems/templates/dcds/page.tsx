@@ -71,6 +71,7 @@ import {
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
+import { getIconMapping } from "@/utils/token-config";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -703,14 +704,11 @@ function DCDSTemplate() {
       // Calculate USD value of balance
       const balanceInUSD = Number(formattedBalance) * Number(formattedPrice);
 
-      const iconMapping = [
-        theme === "dark" ? USDaIconGreen : USDaIcon,
-        UsdtIcon,
-        ...(chainId === NetworkId.BaseSepolia ? [AEROIcon] : [OPIcon]),
-      ];
-
       return {
-        tokenImage: iconMapping[index],
+        tokenImage: getIconMapping(
+          theme || "dark",
+          token.symbol?.toString().toLowerCase() || "usda"
+        ),
         tokenName: String(token.symbol || ""),
         tokenLabel: String(
           token.symbol === "USDa" ? "USDA+" : token.symbol || ""
