@@ -421,18 +421,6 @@ export function DcdsWithdrawModal({
   console.log(transactionParamsCDS, "transactionParamsCDS");
 
   const {
-    data: nativeFeeWeETH,
-    error: WeETHQuoteError,
-    refetch: refetchnativeFeeWeETH,
-  } = useReadContract({
-    abi: usDaAbi,
-    address: weETHAddress[chainId as keyof typeof weETHAddress],
-    functionName: "quoteSend",
-    args: [transactionParamsCDS as any, false],
-    query: { placeholderData: { nativeFee: 0n, lzTokenFee: 0n } },
-  });
-
-  const {
     data: nativeFeeUSDA,
     error: UsdaQuoteError,
     refetch: refetchnativeFeeUSDA,
@@ -451,19 +439,33 @@ export function DcdsWithdrawModal({
 
   options = Options.newOptions()
     .addExecutorLzReceiveOption(
-      2e6,
+      700000,
       Math.floor(Number(nativeFeeUSDA?.nativeFee) * 2.5).toString()
     )
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
+  const { quoteValue: nativeFeeOFT, quoteError: quoteErrorOFT } =
+    useGetGlobalQuote(options, 5, 0);
+  console.log("nativeFeeOFT", nativeFeeOFT);
+
+  // Define the initial state for the options variable
+  options = Options.newOptions()
+    .addExecutorLzReceiveOption(400000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const { quoteValue: nativeFeeWithdraw, quoteError } = useGetGlobalQuote(
     options,
-    5,
-    0
+    1
   );
 
-  console.log("nativeFee", nativeFee);
+  console.log("nativeFeeWithdraw", nativeFeeWithdraw);
+
+  const nativeFeeAll =
+    Number(nativeFeeWithdraw?.nativeFee) + Number(nativeFeeOFT?.nativeFee);
+
+  console.log("nativeFeeAll", nativeFeeAll);
 
   const {
     dcdsFundWithdrawGainAsync,
@@ -621,8 +623,8 @@ export function DcdsWithdrawModal({
   const handleWithdrawFund = async () => {
     setDcdsFundWithdrawLoadingLocal(true);
     if (position.status == "DEPOSITED") {
-      if (nativeFee) {
-        console.log("nativeFee deposit", nativeFee);
+      if (nativeFeeAll) {
+        console.log("nativeFee withdraw", nativeFeeAll);
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
@@ -633,7 +635,7 @@ export function DcdsWithdrawModal({
             res.data?.deadline,
             res.data?.signature,
           ],
-          nativeFee.nativeFee
+          nativeFeeAll
         );
       }
     } else if (position.status == "WITHDREW") {

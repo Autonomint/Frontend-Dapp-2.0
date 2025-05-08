@@ -267,6 +267,7 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
+  console.log("nativeFee", nativeFee);
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
   const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
