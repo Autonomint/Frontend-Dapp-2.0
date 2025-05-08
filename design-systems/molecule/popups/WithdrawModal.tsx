@@ -11,7 +11,11 @@ import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
 import { calculateTimeDifference } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useRef, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import LoadingBox from "../LoadingBox";
 import { toast } from "sonner";
 import { Typography } from "@/design-systems/atoms/Typography";
@@ -19,12 +23,14 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { dcdsDepositDetails } from "@/utils/interface";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
-import { NetworkId, scanUrls } from "@/utils/constants";
+import { eId, NetworkId, scanUrls } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   nativeTokenAddress,
   testusdtAbiAddress,
+  treasuryAddress,
   usDaAddress,
+  weETHAddress,
 } from "@/blockchain/contracts";
 import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
@@ -35,6 +41,9 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { Info } from "lucide-react";
+import { padHex } from "viem";
+import { TransactionParams } from "@/design-systems/templates/bridge/interfaces";
+import { usDaAbi } from "@/blockchain/abis/usda";
 
 export function DcdsWithdrawModal({
   position,
@@ -382,8 +391,65 @@ export function DcdsWithdrawModal({
   }, [position, lastCumulativeRate, interestGained, apy]);
 
   // Define the initial state for the options variable
-  const options = Options.newOptions()
-    .addExecutorLzReceiveOption(5000000, 0)
+  let options = Options.newOptions()
+    .addExecutorLzReceiveOption(85000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const transactionParamsCDS: TransactionParams = {
+    dstEid:
+      chainId === NetworkId.BaseSepolia
+        ? eId.Base
+        : chainId === NetworkId.Optimism
+        ? eId.OP
+        : eId.Base,
+    to: padHex(
+      treasuryAddress[
+        (chainId || NetworkId.BaseSepolia) as keyof typeof treasuryAddress
+      ],
+      {
+        size: 32,
+      }
+    ) as `0x${string}`,
+    amountLD: BigInt(0),
+    minAmountLD: BigInt(0),
+    extraOptions: options,
+    composeMsg: `0x${"".padEnd(64, "0")}`,
+    oftCmd: `0x${"".padEnd(64, "0")}`,
+  };
+
+  const {
+    data: nativeFeeWeETH,
+    error: WeETHQuoteError,
+    refetch: refetchnativeFeeWeETH,
+  } = useReadContract({
+    abi: usDaAbi,
+    address: weETHAddress[chainId as keyof typeof weETHAddress],
+    functionName: "quoteSend",
+    args: [transactionParamsCDS as any, false],
+    query: { placeholderData: { nativeFee: 0n, lzTokenFee: 0n } },
+  });
+
+  const {
+    data: nativeFeeUSDA,
+    error: UsdaQuoteError,
+    refetch: refetchnativeFeeUSDA,
+  } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "quoteSend",
+    args: [transactionParamsCDS as any, false],
+    query: {
+      placeholderData: { nativeFee: 0n, lzTokenFee: 0n },
+      enabled: !!chainId && !!address,
+    },
+  });
+
+  options = Options.newOptions()
+    .addExecutorLzReceiveOption(
+      1e6,
+      Math.floor(Number(nativeFeeUSDA?.nativeFee) * 2.5).toString()
+    )
     .toHex()
     .toString() as `0x${string}`;
 
