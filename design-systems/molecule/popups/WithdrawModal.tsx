@@ -418,6 +418,8 @@ export function DcdsWithdrawModal({
     oftCmd: `0x${"".padEnd(64, "0")}`,
   };
 
+  console.log(transactionParamsCDS, "transactionParamsCDS");
+
   const {
     data: nativeFeeWeETH,
     error: WeETHQuoteError,
@@ -445,6 +447,8 @@ export function DcdsWithdrawModal({
     },
   });
 
+  console.log("nativeFeeUSDA", nativeFeeUSDA);
+
   options = Options.newOptions()
     .addExecutorLzReceiveOption(
       1e6,
@@ -458,6 +462,8 @@ export function DcdsWithdrawModal({
     5,
     0
   );
+
+  console.log("nativeFee", nativeFee);
 
   const {
     dcdsFundWithdrawGainAsync,
@@ -616,6 +622,7 @@ export function DcdsWithdrawModal({
     setDcdsFundWithdrawLoadingLocal(true);
     if (position.status == "DEPOSITED") {
       if (nativeFee) {
+        console.log("nativeFee deposit", nativeFee);
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
