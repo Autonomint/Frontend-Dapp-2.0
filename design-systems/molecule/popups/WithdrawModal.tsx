@@ -451,7 +451,7 @@ export function DcdsWithdrawModal({
 
   options = Options.newOptions()
     .addExecutorLzReceiveOption(
-      1e6,
+      2e6,
       Math.floor(Number(nativeFeeUSDA?.nativeFee) * 2.5).toString()
     )
     .toHex()
