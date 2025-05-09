@@ -5,8 +5,10 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   abondAddress,
+  borrowAssetsAddress,
   borrowingContractAddress,
   cdsAddress,
+  mpoAddress,
   sUSDAddress,
   testusdtAbiAddress,
   usDaAddress,
@@ -27,6 +29,7 @@ import ToastNotification from "@/design-systems/molecule/toasts/ToastNotificatio
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { NetworkId, scanUrls } from "@/utils/constants";
@@ -36,7 +39,7 @@ import { useFormik } from "formik";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { formatEther, formatUnits, zeroAddress } from "viem";
+import { Abi, formatEther, formatUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useBalance,
@@ -45,6 +48,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { mpoABI } from "@/blockchain/abis/mpo";
 import * as Yup from "yup";
 
 // Define the validation schema using Yup
@@ -528,7 +532,7 @@ const RedeemContainer = () => {
   // dropdown items for the input collateral
   const dropdownItems = [
     {
-      label: "USDa",
+      label: "USDA+",
       onClick: () => formik.setFieldValue("inputCollateral", "amint"),
     },
     {
@@ -560,6 +564,124 @@ const RedeemContainer = () => {
   console.log(RedeemTokenDropdownItems, "RedeemTokenDropdownItems");
 
   const pathname = usePathname();
+
+  // Custom hook to fetch the Price of the selected asset
+  const { assetPrice: rsEthPrice } = useGetUsdValue(
+    borrowAssetsAddress["wrsETH" as keyof typeof borrowAssetsAddress]
+  );
+  // fetching the price of the weETH
+  const { assetPrice: weEthPrice } = useGetUsdValue(
+    borrowAssetsAddress["weETH" as keyof typeof borrowAssetsAddress]
+  );
+  // fetching the price of the eth
+  const { assetPrice: ethPrice } = useGetUsdValue(
+    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+  );
+
+  // fetching the usda+ prices
+  const { data: usdaPrice, isPending: isLoadingUsdaPrice } = useReadContract({
+    address: mpoAddress[chainId as keyof typeof mpoAddress],
+    abi: mpoABI,
+    functionName: "price",
+    args: [usDaAddress[chainId as keyof typeof usDaAddress]],
+    query: {
+      select: (data: any) => {
+        return Number(formatUnits(BigInt(data[0] || 0n), 18));
+      },
+      placeholderData: 0,
+    },
+  }) as { data: number; isPending: boolean };
+
+  console.log(usdaPrice, "usdaPrice");
+
+  // fetching the yield percentage
+  const yieldPercentage = useMemo(() => {
+    // dollar value of the all redeemable assets
+    const redeemableEthDollarValue =
+      Number(formatEther(outputData?.[3] || 0n)) *
+      Number(formatUnits(BigInt(ethPrice || 0n), 2));
+    const redeemableWeEthDollarValue =
+      Number(formatEther(outputData?.[1] || 0n)) *
+      Number(formatUnits(BigInt(weEthPrice || 0n), 2));
+    const redeemableRsEthDollarValue =
+      Number(formatEther(outputData?.[2] || 0n)) *
+      Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+    const redeemableUsdaDollarValue =
+      Number(formatUnits(outputData?.[4] || 0n, 6)) * usdaPrice;
+
+    // calculating the yield percentage
+    const x =
+      (Number(formatEther(outputData?.[3] || 0n)) -
+        Number(formatEther(outputData?.[0] || 0n))) *
+        Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
+      redeemableUsdaDollarValue;
+
+    const y =
+      redeemableEthDollarValue +
+      redeemableWeEthDollarValue +
+      redeemableRsEthDollarValue;
+
+    const yieldValue = x / y || 0;
+    console.table(
+      {
+        ethPrice,
+        weEthPrice,
+        rsEthPrice,
+        redeemableEthDollarValue,
+        redeemableWeEthDollarValue,
+        redeemableRsEthDollarValue,
+        redeemableUsdaDollarValue,
+        x,
+        y,
+        yieldValue,
+      },
+      ["osd"]
+    );
+
+    return yieldValue;
+  }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
+
+  //  fetching the redeem values that user will get after redeeming
+  const { data: allABondYields } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "getAbondYields",
+    args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
+    query: {
+      placeholderData: [0n, 0n, 0n, 0n, 0n],
+    },
+  });
+
+  console.log(allABondYields, "allABondYields", abondbalance);
+
+  const ABondPrice = useMemo(() => {
+    // dollar value of the all redeemable assets
+    const redeemableEthDollarValue =
+      Number(formatEther(allABondYields?.[3] || 0n)) *
+      Number(formatUnits(BigInt(ethPrice || 0n), 2));
+    const redeemableWeEthDollarValue =
+      Number(formatEther(allABondYields?.[1] || 0n)) *
+      Number(formatUnits(BigInt(weEthPrice || 0n), 2));
+    const redeemableRsEthDollarValue =
+      Number(formatEther(allABondYields?.[2] || 0n)) *
+      Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+    const redeemableUsdaDollarValue =
+      Number(formatUnits(allABondYields?.[4] || 0n, 6)) * usdaPrice;
+
+    // calculating the abond price
+    const value =
+      (redeemableEthDollarValue +
+        redeemableWeEthDollarValue +
+        redeemableRsEthDollarValue +
+        redeemableUsdaDollarValue) /
+      Number(abondbalance?.formatted || 0);
+
+    console.log(value, "ABondPrice");
+    return value;
+  }, [allABondYields, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
@@ -619,23 +741,41 @@ const RedeemContainer = () => {
                 />
               </div>
               <div className="text-black flex justify-between dark:text-white md:text-lg text-right mb-4 text-[14px]">
-                <Typography
-                  size="sm"
-                  variant="regular"
-                  className="text-red-500"
-                >
-                  {formik.errors.inputCollateral &&
-                  formik.touched.inputCollateral
-                    ? formik.errors.inputCollateral
-                    : ""}
-                </Typography>
+                {formik.errors.inputCollateral ? (
+                  <Typography
+                    size="sm"
+                    variant="regular"
+                    className="text-red-500"
+                  >
+                    {formik.errors.inputCollateral &&
+                    formik.touched.inputCollateral
+                      ? formik.errors.inputCollateral
+                      : ""}
+                  </Typography>
+                ) : formik.values.inputCollateral === "abond" ? (
+                  <div className="text-grayLight">
+                    ABond Price:{" "}
+                    <span className="dark:text-white text-black">
+                      ${ABondPrice.toFixed(2)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-grayLight">
+                    USDA+ Price:{" "}
+                    <span className="dark:text-white text-black">
+                      ${usdaPrice.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div>
-                  Balance{" "}
-                  <span className="text-grayLight">
-                    {formik.values.inputCollateral == "amint"
-                      ? `${usdabalance?.formatted || 0} USDA+`
-                      : `${abondbalance?.formatted || 0}  ABond`}
-                  </span>
+                  <div className="text-grayLight">
+                    Balance{" "}
+                    <span className="dark:text-white text-black">
+                      {formik.values.inputCollateral == "amint"
+                        ? `${usdabalance?.formatted || 0} USDA+`
+                        : `${abondbalance?.formatted || 0}  ABond`}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -666,9 +806,9 @@ const RedeemContainer = () => {
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (
-                  <div className="text-sm text-black mt-2 font-medium dark:text-[#FFFF] flex ">
+                  <div className="text-sm  justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
                     <div className="flex justify-start items-center gap-2 mr-1 ">
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[3])).toFixed(5)
                           : 0}{" "}
@@ -676,26 +816,32 @@ const RedeemContainer = () => {
                       </div>
                       <div className="text-xl">+</div>
 
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[1])).toFixed(5)
                           : 0}{" "}
                         WeETH
                       </div>
                       <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[2])).toFixed(5)
                           : 0}{" "}
-                        WrsETH
+                        rsETH
                       </div>
 
                       <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatUnits(outputData[4], 6)).toFixed(2)
                           : 0}{" "}
-                        USDa
+                        USDA+
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center p-1 text-xl  text-grayLight text-bold">
+                        Yield Percentage: {yieldPercentage.toFixed(4)}%
                       </div>
                     </div>
                   </div>

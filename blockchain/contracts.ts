@@ -80,7 +80,7 @@ export const weETHAddress: ChainAddresses = {
 
 // Addresses for the rsETH contract
 export const rsETHAddress: ChainAddresses = {
-  84532: "0xaDfAcE640Adee8a6253237256194BF5A120Af0D0",
+  84532: "0x7118Ee6D6eBeb3028FFc885b2f62Cf7264c2168F",
   11155420: "0x101ddb5026322f42E0F133352c115AD4B40B9412",
 } as const;
 

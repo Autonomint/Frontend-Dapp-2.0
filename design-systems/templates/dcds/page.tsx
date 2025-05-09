@@ -559,7 +559,7 @@ function DCDSTemplate() {
 
   console.log(formik, depositValue, "depositValue");
 
-  // fetching the token addresses
+  // fetching list of the token addresses for the deposit
   const { data: tokenAddress } = useReadContract({
     address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
     abi: cdsAbi,
@@ -571,6 +571,7 @@ function DCDSTemplate() {
 
   console.log(tokenAddress, "tokenAddress");
 
+  // fetching the token details for the deposit (name, symbol, decimals)
   const { data: tokenDetailsList } = useReadContracts({
     contracts: tokenAddress?.flatMap((address) => [
       {
@@ -607,7 +608,7 @@ function DCDSTemplate() {
     },
   });
 
-  // Read balances for all tokens
+  // fetching the token balances for the deposit
   const { data: tokenBalances } = useReadContracts({
     contracts: tokenAddress
       ? tokenAddress.map((contractAddress) => ({
@@ -624,7 +625,7 @@ function DCDSTemplate() {
     },
   });
 
-  // Read prices for all tokens
+  // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
     useReadContracts({
       contracts: tokenAddress?.map((address) => ({
