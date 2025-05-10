@@ -211,6 +211,7 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
             <div className="h-full flex-row flex justify-between">
               {otp.map((value, index) => (
                 <Input
+                  disabled={!isConnected}
                   className="rounded-none md:text-subtitle placeholder:text-subtitle h-12 px-4 w-[15%]"
                   key={index}
                   type="text"
@@ -236,6 +237,15 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
               >
                 {inputError}
               </Typography>
+              {!isConnected && (
+                <Typography
+                  size="sm"
+                  variant="regular"
+                  className="text-red-500 text-left"
+                >
+                  {"Please connect your wallet to continue"}
+                </Typography>
+              )}
             </div>
 
             <Button

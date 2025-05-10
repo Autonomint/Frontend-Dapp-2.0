@@ -32,6 +32,7 @@ import {
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
 
@@ -49,7 +50,7 @@ interface WalletPopupProps {
 const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
-
+  const router = useRouter();
   const { open, close } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
@@ -194,6 +195,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Button
               onClick={() => {
                 disconnect();
+                router.push("/");
                 localStorage.removeItem("verified");
               }}
               variant={"default"}
@@ -422,6 +424,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 onClick={async () => {
                   await disconnect();
                   localStorage.removeItem("verified");
+                  router.push("/");
                 }}
                 variant={"default"}
                 className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"
