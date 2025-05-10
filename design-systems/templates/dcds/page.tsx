@@ -60,7 +60,7 @@ import { Info } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Abi, erc20Abi, formatUnits, parseUnits } from "viem";
+import { Abi, erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -314,19 +314,27 @@ function DCDSTemplate() {
       handleDcdsDeposit?.(
         [
           // token addresses
-          selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+          tokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
+          }),
           // token amount in wei
-          selectedTokens.map((token) => {
-            return BigInt(
-              formik.values[`${token.tokenName.toLowerCase()}Amount`]
-                ? parseUnits(
-                    formik.values[
-                      `${token.tokenName.toLowerCase()}Amount`
-                    ].toString(),
-                    Number(token.tokenDecimals)
-                  )
-                : 0
-            );
+          tokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return formik.values[
+              `${tokenDetail?.tokenName.toLowerCase()}Amount`
+            ]
+              ? parseUnits(
+                  formik.values[
+                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                  ].toString(),
+                  Number(tokenDetail?.tokenDecimals)
+                )
+              : 0n;
           }),
           // liquidation gains
           liquidationGains,
