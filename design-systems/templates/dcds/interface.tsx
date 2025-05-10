@@ -1,3 +1,5 @@
+import { number } from "yup";
+
 export interface TokenDetails {
   errorMessage?: string;
   active?: boolean;
@@ -7,10 +9,17 @@ export interface TokenDetails {
   minTokenAmount: number;
   balanceAvailable: string;
   tokenCount?: number;
+  tvl?: number;
+  tokenAddress?: string;
+  tokenDecimals?: number;
   isTokenPause: boolean;
   tokenPauseMessage: string;
   tokenPrice: string | Number;
   tokenLabel: string;
+  allowance?: string | number | bigint;
+  tokenDetails?: Record<number, string | number>;
+  tokenPauseState?: boolean;
+  
 }
 
 export interface FormValues {

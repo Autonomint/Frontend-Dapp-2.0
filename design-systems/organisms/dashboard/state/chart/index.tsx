@@ -122,11 +122,13 @@ export function ChartComponent({
 
   // Reverse the data array to so correct order
 
+  // getting formatted data for chart by interval
   const formattedData: { labels: string[]; averages: number[] } =
     useMemo(() => {
       return calculateAverages(chartData, time);
     }, [time, chartData]);
 
+    // chart configuration
   const dataLocal = {
     labels: formattedData.labels,
     datasets: [

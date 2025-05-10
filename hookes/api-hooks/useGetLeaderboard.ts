@@ -15,7 +15,11 @@ async function getCdsLeaderboard(): Promise<LeaderboardDetails[]> {
   const response = await fetch(`${BACKEND_API_URL}/cds/cds/leaderboard`);
   return await response.json();
 }
-
+/**
+ * React hook to retrieve and manage leaderboard data for borrow and cds deposits.
+ *
+ * @returns Object containing leaderboard data, pagination state, and functions to navigate through the leaderboard.
+ */
 const useGetLeaderboard = () => {
   const { chainId } = useAccount();
 

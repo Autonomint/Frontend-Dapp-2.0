@@ -378,7 +378,7 @@ export function getTotalDepositingAmount(
   tokenAmounts: any,
   assetDetails: any
 ) {
-  let totalDepositingAmount = 0;
+  let totalDepositingAmount = 0n;
   const prices = getPrices;
   for (let i = 0; i < tokenAmounts.length; i++) {
     if (tokenAddress[i] != zeroAddress) {
@@ -391,13 +391,27 @@ export function getTotalDepositingAmount(
         "getTotalDepositingAmount"
       );
       totalDepositingAmount +=
-        (Number(tokenAmounts[i]) *
-          Number(prices[i + 1]) *
-          Number(assetDetails[i][1]) *
-          1e6) /
-        (Number(assetDetails[i][2]) * Number(assetDetails[i][3]) * 100);
+        (BigInt(tokenAmounts[i]) *
+          BigInt(prices[i + 1]) *
+          BigInt(assetDetails[i][1]) *
+          BigInt(1e6)) /
+        (BigInt(assetDetails[i][2]) * BigInt(assetDetails[i][3]) * BigInt(100));
     }
   }
 
-  return Math.floor(totalDepositingAmount);
+  return Math.floor(Number(totalDepositingAmount));
+}
+
+export function hasFiveMinutesPassed(timestamp: number): boolean {
+  const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
+  const timestampInMs = timestamp * 1000; // Convert from seconds to milliseconds
+  const now = Date.now(); // Current time in milliseconds
+  return now - timestampInMs >= FIVE_MINUTES_IN_MS;
+}
+
+export function getMinutesPassed(timestamp: number): number {
+  const timestampInMs = timestamp * 1000; // Convert from seconds to milliseconds
+  const now = Date.now(); // Current time in milliseconds
+  const diffInMs = now - timestampInMs;
+  return Math.floor(diffInMs / (60 * 1000)); // Convert milliseconds to full minutes
 }

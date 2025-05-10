@@ -12,6 +12,7 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
+// Chain Configurations Optimism Sepolia
 export const opSepolia = defineChain({
   id: 11155420,
   name: "OP Sepolia",
@@ -34,6 +35,7 @@ export const opSepolia = defineChain({
   testnet: true,
 });
 
+// Metadata for the app
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",
@@ -41,6 +43,7 @@ const metadata = {
   icons: [BRAND_ICON_URL],
 };
 
+// Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
   networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
   projectId,
@@ -53,8 +56,10 @@ export const wagmiAdapter = new WagmiAdapter({
   },
 });
 
+// Wagmi Config
 export const config = wagmiAdapter.wagmiConfig;
 
+// AppKit Modal
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,

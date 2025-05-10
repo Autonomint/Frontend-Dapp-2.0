@@ -554,11 +554,42 @@ export const cdsAbi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "optionsFeesWithdrawn",
+        name: "excessProfitCumulativeValue",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "priceChangePL",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "liqUsed",
         type: "uint256",
       },
     ],
     name: "Withdraw",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "index",
+        type: "uint64",
+      },
+    ],
+    name: "WithdrewGains",
     type: "event",
   },
   {
@@ -1079,6 +1110,19 @@ export const cdsAbi = [
   },
   {
     inputs: [],
+    name: "getSupportedTokenAddresses",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getTotalCdsDepositedAmount",
     outputs: [
       {
@@ -1334,11 +1378,6 @@ export const cdsAbi = [
         internalType: "address",
         name: "_address",
         type: "address",
-      },
-      {
-        internalType: "uint64",
-        name: "ethPrice",
-        type: "uint64",
       },
     ],
     name: "setGlobalVariables",

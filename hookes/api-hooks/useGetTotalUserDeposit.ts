@@ -15,6 +15,8 @@ async function getCDSDepositorData(
   ).then((response) => response.json());
 }
 
+// @desc get total user deposit in base and eth sepolia
+// @returns {totalUserDeposit: number, ethSepoliaCDSData: any, baseSepoliaCDSData: any}
 const useGetTotalUserDeposit = () => {
   const { address, chainId } = useAccount();
   // Use the useQuery hook to fetch the data
@@ -52,6 +54,8 @@ const useGetTotalUserDeposit = () => {
     enabled: !!address,
   });
 
+
+  // sum both base and eth sepolia data
   const totalUserDeposit =
     Number(ethSepoliaCDSData?.totalDepositedAmount || 0) +
     Number(baseSepoliaCDSData?.totalDepositedAmount || 0);

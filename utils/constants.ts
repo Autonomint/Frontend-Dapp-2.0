@@ -1,5 +1,6 @@
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
+// network id reference for app
 export enum NetworkId {
   EthereumSepolia = 11155111,
   BaseSepolia = 84532,
@@ -7,12 +8,14 @@ export enum NetworkId {
   Mode = 919,
 }
 
+// borrow status
 export const BorrowStatus = {
   DEPOSITED: "DEPOSITED",
   WITHDREW: "WITHDREW",
   LIQUIDATED: "LIQUIDATED",
 } as const;
 
+// toast position
 export const DEFAULT_TOAST_POSITION = "top-right";
 
 export const USDT_DEPOSIT_LIMIT_IN_DCDS = 20000000000n;

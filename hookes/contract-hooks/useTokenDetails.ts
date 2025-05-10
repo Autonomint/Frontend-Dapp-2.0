@@ -15,7 +15,9 @@ const useTokenDetails = (tokenAddress: Address) => {
     functionName: "assetDetails",
   }) as { data: Record<number, string | number>; refetch: () => void };
 
+  // checking individual token pause state
   const isTokenDepositPaused = assetDetails?.[0] === AssetStatus.DEPOSIT_PAUSED;
+  
   const isTokenWithdrawPaused =
     assetDetails?.[0] === AssetStatus.WITHDRAW_PAUSED;
 

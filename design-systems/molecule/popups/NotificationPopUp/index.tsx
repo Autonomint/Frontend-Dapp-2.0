@@ -22,12 +22,16 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
   wrapperClassName,
 }) => {
   const { address } = useAccount();
+  // useAccount is a hook that allows the user to connect to the account
   const { resolvedTheme } = useTheme();
+  // useTheme is a hook that allows the user to connect to the theme
   const signer = useEthersSigner();
+  // useEthersSigner is a hook that allows the user to connect to the signer
   if (address === undefined || signer === undefined) {
     // account is required
     return null;
   }
+  // inputLabels is a state that allows the user to connect to the input labels
   const inputLabels: NotifiInputFieldsText = {
     label: {
       email: "Email",
@@ -41,6 +45,7 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
 
   console.log(CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI, "DAPP_ADDRESS_NOTIFI");
 
+  // if the address is undefined or the signer is undefined, then the user can return null
   return (
     <div className={wrapperClassName}>
       <Popup

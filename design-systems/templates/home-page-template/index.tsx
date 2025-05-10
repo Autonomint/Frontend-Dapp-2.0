@@ -16,7 +16,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import { nativeTokenAddress, usDaAddress } from "@/blockchain/contracts";
+import {
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
 import { useAccount } from "wagmi";
 import { formatUnits, zeroAddress } from "viem";
@@ -24,22 +28,40 @@ import { formatNumber } from "@/utils/helpers";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 
 export default function HomeTemplate() {
+  const router = useRouter();
+  const { theme } = useTheme();
   const { chainId } = useAccount();
 
+  // scroll down btn state
+  const [isScrollBottom, setIsScrollBottom] = useState<boolean>(false);
+
+  // state for current hover box of navigation
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+
+  // getting omni chain data from blockchain
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
 
-  const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
-    nativeTokenAddress[chainId as keyof typeof usDaAddress]
-  );
-
-  const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
-    useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
-
+  // token address based in chain id
   const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
+  // getting price from oracle blockchain
   const { getOraclePrice, getOraclePriceRefetch } =
     useMasterPriceOracle(nativeTokenAdds);
 
+  // getting TVL for USDA USDT Native Token
+  const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
+    nativeTokenAddress[chainId as keyof typeof usDaAddress]
+  );
+  const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
+    useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
+
+  const { isTVLPending: isTVLPendingUsdt, tvlValue: tvlValueUSDT } =
+    useGetTVLUSDA(
+      testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+    );
+
+  // box option list for navigation
   const items = [
     {
       title: "Mint USDA+",
@@ -51,9 +73,7 @@ export default function HomeTemplate() {
     {
       title: "dCDS",
       subtitle: `TVL - $${(
-        Number(
-          formatUnits(GlobalContractData?.usdtAmountDepositedTillNow || 0n, 6)
-        ) +
+        Number(formatUnits(BigInt(tvlValueUSDT || 0n), 6)) +
         Number(Number(tvlValueUSDa || 0) / 1e6) +
         ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
       ).toFixed(2)}`,
@@ -64,28 +84,18 @@ export default function HomeTemplate() {
     { title: "Buy", subtitle: "" },
   ];
 
-  const router = useRouter();
-  const { theme } = useTheme();
-
-  const [isScrollBottom, setIsScrollBottom] = useState<boolean>(false);
-
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+  // getting eth price from blockchain
   const { usdValue: ethPrice } = useGetUsdValue();
   console.log(ethPrice, "ethPrice");
 
+  // getting option fee for one ETH
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
     (ethPrice || 0) as number,
     5
   );
 
-  // const expirations = useDeribitExpirations("ETH", "option");
-  // const { data } = useEthOptionFees(
-  //   `ETH-${expirations?.eth?.option?.[5]}-2800-P`
-  // );
-  // console.log(expirations, expirations?.eth?.option?.[0], "expirations");
-
+  // fee list for showing in borrow hover box
   const feesList = [
     {
       orgName: "Autonomint",
@@ -120,18 +130,23 @@ export default function HomeTemplate() {
   for (let i = 0; i < items.length; i += 2) {
     pairs.push(items.slice(i, i + 2));
   }
+
+  // Custom hook to detect device type
   const deviceType = useDeviceType();
 
   useEffect(() => {
+    // Select DOM elements for animation control
     const animateMint = document.querySelector(".animateMint");
     const animateDCDS = document.querySelector(".animateDCDS");
     const animateTransfer = document.querySelector(".animateTransfer");
 
+    // Select DOM elements for closing animations
     const closeAnimateDCDS = document.querySelector(".closeAnimateDCDS");
     const closeAnimateMint = document.querySelector(".closeAnimateMint");
     const closeAnimateTop = document.querySelector(".closeAnimateTop");
     const closeAnimateButtom = document.querySelector(".closeAnimateButtom");
 
+    // Remove all animation classes
     animateMint?.classList.remove("animatingLeftOpen");
     closeAnimateDCDS?.classList.remove("animatingRightClose");
     animateDCDS?.classList.remove("animatingRightOpen");
@@ -140,6 +155,7 @@ export default function HomeTemplate() {
     closeAnimateTop?.classList.remove("animatingTopClose");
     closeAnimateButtom?.classList.remove("animatingButtomClose");
 
+    // Add animation classes based on hoveredIndex
     if (hoveredIndex === 0) {
       animateMint?.classList.add("animatingLeftOpen");
       closeAnimateDCDS?.classList.add("animatingRightClose");
@@ -162,6 +178,7 @@ export default function HomeTemplate() {
     }
   }, [hoveredIndex]);
 
+  // Handle scroll to for center btn of home page
   const handleScroll = () => {
     const bodyElement = document.getElementById("body-scroll-container");
 
@@ -174,11 +191,13 @@ export default function HomeTemplate() {
     }
   };
 
+  // Check if the user has scrolled to the bottom
   useEffect(() => {
     const bodyElement = document.getElementById("body-scroll-container");
     bodyElement?.addEventListener("scroll", checkScrollBottom);
   }, []);
 
+  // Check if the user has scrolled to the bottom handler
   const checkScrollBottom = () => {
     const bodyElement = document.getElementById("body-scroll-container");
 
@@ -226,10 +245,12 @@ export default function HomeTemplate() {
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
                 ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[480px]  xl:!h-[550px] 3xl:!h-[620px]"
-                : hoveredIndex === 1
+                : // height and width style based on hoveredIndex
+                hoveredIndex === 1
                 ? "lg:w-[40%]  lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
+              // Border style based on hoveredIndex
               hoveredIndex === null || hoveredIndex === 2
                 ? " border-x border-y lg:border-x lg:border-y-0 border-[1px]  border-grayLight"
                 : " border-x border-y lg:border-b-0 lg:border-r-0 border-[1px]  border-grayLight lg:border-y-0"
@@ -266,11 +287,14 @@ export default function HomeTemplate() {
           <div
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
-                ? "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                ? // height and width style based on hoveredIndex
+                  "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : hoveredIndex === 0
-                ? " w-full lg:w-[30%] lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                ? // height and width style based on hoveredIndex
+                  " w-full lg:w-[30%] lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
+              // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y lg:border-x lg:border-y-0  border-[1px]  border-grayLight"
                 : hoveredIndex === 3
@@ -315,8 +339,10 @@ export default function HomeTemplate() {
           {/* Bridge Section */}
           <div
             className={`relative cursor-pointer ${
+              // height and width style based on hoveredIndex
               hoveredIndex === 3 ? "w-full lg:w-[40%]" : "w-full lg:w-[80%]"
             } ${
+              // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y border-[1px] border-grayLight"
                 : " border-x border-y lg:border-b-[1px] lg:border-l border-[1px] border-grayLight"
@@ -355,8 +381,10 @@ export default function HomeTemplate() {
 
           <div
             className={`relative cursor-pointer ${
+              // height and width style based on hoveredIndex
               hoveredIndex === 3 ? "w-full lg:w-[60%]" : "w-full lg:w-[40%]"
             } ${
+              // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y border-[1px] border-grayLight"
                 : "border-x border-y border-[1px] border-grayLight lg:border-0 "
@@ -409,6 +437,7 @@ export default function HomeTemplate() {
           <div
             className={`flex flex-col lg:flex-row mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
+            {/* Dashboard Section  for mobile and tablet*/}
             <div
               className={`relative lg:hidden cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
               onClick={() => {
@@ -477,6 +506,7 @@ export default function HomeTemplate() {
           </div>
         </div>
       </div>
+      {/* Scroll down arrow button  */}
       {!isScrollBottom && (
         <ScrollDownArrow
           handleClick={() => handleScroll()}
