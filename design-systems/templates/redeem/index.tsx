@@ -752,7 +752,7 @@ const RedeemContainer = () => {
                   <div className="text-grayLight">
                     ABond Price:{" "}
                     <span className="dark:text-white text-black">
-                      ${ABondPrice.toFixed(2)}
+                      ${isNaN(ABondPrice) ? '0' : ABondPrice.toFixed(2)}
                     </span>
                   </div>
                 ) : (

@@ -77,6 +77,7 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { get } from "http";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
+import { getIconMapping } from "@/utils/token-config";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -176,6 +177,7 @@ const formSchema = Yup.object().shape({
 function DCDSTemplate() {
   const { isConnected: isWalletConnected, openWalletPopup } =
     useCheckWalletConnection();
+  const { theme } = useTheme();
 
   const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
   const router = useRouter();
@@ -355,7 +357,7 @@ function DCDSTemplate() {
   const tokenList: TokenDetails[] = useMemo(() => {
     const tokenList = [
       {
-        tokenImage: USDaIcon,
+        tokenImage: getIconMapping(theme || "dark", "usda"),
         tokenName: "USDa",
         tokenLabel: "USDA+",
         isLoading: false,
@@ -462,7 +464,23 @@ function DCDSTemplate() {
     modeBalance,
     opBalance,
     getOraclePrice,
+    theme,
   ]);
+
+  useEffect(() => {
+    // Update selected tokens when theme changes to refresh USDA icon
+    setSelectedTokens((prevTokens) => {
+      return prevTokens.map((token) => {
+        if (token.tokenLabel === "USDA+") {
+          return {
+            ...token,
+            tokenImage: getIconMapping(theme || "dark", "usda"), // Re-assign the icon to trigger re-render
+          };
+        }
+        return token;
+      });
+    });
+  }, [theme]);
 
   const {
     approveUsda,
@@ -1024,8 +1042,6 @@ function DCDSTemplate() {
   }, [formik.values]);
 
   console.log(formik, depositValue, "depositValue");
-
-  const { theme } = useTheme();
 
   const { usdaPoints, usdtPoints, isLoading, error } = usePoint();
 
