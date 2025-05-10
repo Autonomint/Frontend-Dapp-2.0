@@ -15,6 +15,13 @@ import { NetworkId } from "@/utils/constants";
 import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
 interface SwitchChainPopupProps {}
 
+/**
+ * SwitchChainPopup is a component that allows the user to switch the chain.
+ * It is used to switch the chain.
+ * It is used in the SwitchChainPopup component.
+ * 
+ * 
+ */
 const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
@@ -23,6 +30,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [switchingChain, setSwitchingChain] = useState<number>();
 
   useEffect(() => {
+    // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true
     if (
       chainId &&
       !["/bridge", "/"].includes(pathname) &&

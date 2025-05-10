@@ -30,6 +30,11 @@ const useApproveUsda = (mutation: any) => {
     });
   };
 
+  /*
+   * Approve the USDa token for a specific contract address
+   * @param values - The amount of USDa to approve (in wei)
+   * @param contractAddress - The address of the contract to approve
+   */
   const approveUsdaDynamic = async (
     values: bigint,
     contractAddress: `0x${string}`

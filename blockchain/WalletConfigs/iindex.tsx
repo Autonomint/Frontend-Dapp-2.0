@@ -41,6 +41,7 @@ export const opSepolia = defineChain({
   testnet: true,
 });
 
+// Metadata for the app
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",
@@ -48,6 +49,7 @@ const metadata = {
   icons: [BRAND_ICON_URL],
 };
 
+// Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
   networks: chainList,
   projectId,
@@ -57,8 +59,10 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
 });
 
+// Wagmi Config
 export const config = wagmiAdapter.wagmiConfig;
 
+// AppKit Modal
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,

@@ -43,23 +43,6 @@ function BridgeTemplate() {
     "Sepolia" | "Base" | "Mode" | "OP"
   >("Mode");
 
-  const [sendAmount, setSendAmount] = useState<number | string>();
-  const [receiveAmount, setReceiveAmount] = useState<number>(0);
-  const [estimateTime, setEstimateTime] = useState<number>(0);
-  const [amountError, setAmountError] = useState<string>("");
-  const [transferLoadingLocal, setTransferLoadingLocal] =
-    useState<boolean>(false);
-
-  const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
-    useState<boolean>(false);
-
-  const { isConnected: isWalletConnected, address } =
-    useCheckWalletConnection();
-
-  const [sendLoading, setSendLoading] = useState<boolean>(false);
-
-  const { switchChain, isPending: isChainSwitchPending } = useSwitchChain();
-
   const {
     address: accountAddress,
     isConnected,
@@ -67,7 +50,27 @@ function BridgeTemplate() {
   } = useAccount();
 
   const chainId = useChainId();
+  const { switchChain, isPending: isChainSwitchPending } = useSwitchChain();
 
+  const [sendAmount, setSendAmount] = useState<number | string>();
+  const [receiveAmount, setReceiveAmount] = useState<number>(0);
+  const [estimateTime, setEstimateTime] = useState<number>(0);
+  const [amountError, setAmountError] = useState<string>("");
+
+  // loading state for the transfer
+  const [transferLoadingLocal, setTransferLoadingLocal] =
+    useState<boolean>(false);
+
+  const [usdaApproveLoadingLocal, setUsdaApproveLoading] =
+    useState<boolean>(false);
+
+  const [sendLoading, setSendLoading] = useState<boolean>(false);
+
+  // checking if the wallet is connected
+  const { isConnected: isWalletConnected, address } =
+    useCheckWalletConnection();
+
+  // Setting chain in bridge that is already selected
   useEffect(() => {
     if (chainId2 === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
@@ -89,10 +92,12 @@ function BridgeTemplate() {
     .toHex()
     .toString() as `0x${string}`;
 
+  // state for storing send amount formatted for contract
   const [collateralAmountString, setCollateralAmountString] =
     useState<string>("0");
 
   useEffect(() => {
+    // checking if the send amount is greater than the usda balance
     if ((Number(sendAmount) || 0) > Number(usdaBal?.formatted)) {
       setAmountError(
         `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`
@@ -102,6 +107,7 @@ function BridgeTemplate() {
     }
   }, [sendAmount]);
 
+  // setting the send network based on the chain id
   useEffect(() => {
     if (chainId === NetworkId.EthereumSepolia) {
       setSendNetwork("Sepolia");
@@ -110,7 +116,7 @@ function BridgeTemplate() {
     }
   }, [chainId]);
 
-  // Calculation Based on ChainID to bridge amount. It will fetch and update value of outputCollateralAmount (you can change according to your logic and write it clear)
+  // setting the collateral amount string for the contract
   useEffect(() => {
     let letamount = (sendAmount || 0).toString();
     if (!sendAmount) {
@@ -125,6 +131,7 @@ function BridgeTemplate() {
     }
 
     if (sendAmount != null) {
+      // setting the receive amount for ui
       setReceiveAmount(Number(formatUnits(sendAmount == 0 ? 0n : amount, 18)));
     }
   }, [sendAmount]);
@@ -196,6 +203,7 @@ function BridgeTemplate() {
     }
   }, [amintTransactionAllowed]);
 
+  // usda approve function
   const {
     isPending: usdaApproveLoading,
     data: usdaApproveData,
@@ -223,7 +231,7 @@ function BridgeTemplate() {
     hash: usdaApproveData,
   });
 
-  // If the transaction is confirmed, show a toast notification
+  // If the transaction is confirmed, show a toast notification and reset the page data
   useEffect(() => {
     if (usdaIsSuccess) {
       setSendLoading(false);
@@ -319,6 +327,7 @@ function BridgeTemplate() {
       setTransferLoadingLocal(true);
       if (sendToken === "USDa") {
         setSendLoading(true);
+        // calling the usda approve function
         usdaApproveWrite({
           abi: usDaAbi,
           address: usDaAddress[chainId as keyof typeof usDaAddress],
@@ -375,6 +384,7 @@ function BridgeTemplate() {
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
 
+  // from network dropdown options
   const fromNetworkOption = [
     {
       label: "Ethereum",
@@ -410,6 +420,7 @@ function BridgeTemplate() {
     },
   ];
 
+  // to network dropdown options
   const toNetworkOption = useMemo(() => {
     const option = [];
 

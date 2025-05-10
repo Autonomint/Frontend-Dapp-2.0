@@ -13,6 +13,11 @@ const fetchWalletAddress = async (chainId?: number) => {
   return response.data;
 };
 
+/**
+ * Custom hook to fetch the Farm Your Luck wallet address.
+ *
+ * @returns {object} The query object containing the wallet address and its status.
+ */
 export const useFarmYourLuckWalletAddress = () => {
   const { chainId } = useAccount();
 

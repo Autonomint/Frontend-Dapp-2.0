@@ -1,5 +1,6 @@
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
+// network id reference for app
 export enum NetworkId {
   EthereumSepolia = 1,
   BaseSepolia = 8453,
@@ -7,6 +8,7 @@ export enum NetworkId {
   Mode = 34443,
 }
 
+// borrow status
 export const BorrowStatus = {
   DEPOSITED: "DEPOSITED",
   WITHDREW: "WITHDREW",

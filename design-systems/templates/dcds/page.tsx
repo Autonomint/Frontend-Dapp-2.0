@@ -76,6 +76,7 @@ import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { get } from "http";
+import { usePoint } from "@/hookes/api-hooks/usePoint";
 
 const formSchema = Yup.object().shape({
   usdaFlag: Yup.boolean(), // Flag for usdaAmount
@@ -267,6 +268,7 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
+  console.log("nativeFee", nativeFee);
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
   const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
@@ -1025,6 +1027,8 @@ function DCDSTemplate() {
 
   const { theme } = useTheme();
 
+  const { usdaPoints, usdtPoints, isLoading, error } = usePoint();
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1263,6 +1267,10 @@ function DCDSTemplate() {
               <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
+                usdaPoints={Number(usdaPoints?.pointsToBeGiven || 0)}
+                usdtPoints={Number(usdtPoints?.pointsToBeGiven || 0)}
+                minUsdaDeposit={Number(usdaPoints?.minAmount || 0)}
+                minUsdtDeposit={Number(usdtPoints?.minAmount || 0)}
               />
             </div>
             <div className=" h-[86px] overflow-hidden">

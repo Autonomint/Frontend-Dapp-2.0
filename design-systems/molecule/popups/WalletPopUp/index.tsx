@@ -32,6 +32,7 @@ import {
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
 
@@ -39,10 +40,17 @@ interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
 }
 
+/**
+ * WalletPopup is a component that allows the user to connect to the wallet.
+ * It is used to connect to the wallet.
+ * It is used in the WalletPopup component.
+ *
+ *
+ */
 const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
-
+  const router = useRouter();
   const { open, close } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
@@ -65,6 +73,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const handleClosePolicyDialog = () => {
     setIsPolicyDialogOpen(false);
   };
+
+  // chains is an array of chains
   const chains = [
     {
       id: Number(NetworkId.BaseSepolia),
@@ -182,6 +192,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Button
               onClick={() => {
                 disconnect();
+                router.push("/");
                 localStorage.removeItem("verified");
               }}
               variant={"default"}
@@ -223,6 +234,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
   return (
     <div>
+      {/* if the user is not connected, then the user can connect the wallet */}
       {!isConnected ? (
         <Button
           onClick={handleBtnClick}
@@ -411,6 +423,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 onClick={async () => {
                   await disconnect();
                   localStorage.removeItem("verified");
+                  router.push("/");
                 }}
                 variant={"default"}
                 className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px]"

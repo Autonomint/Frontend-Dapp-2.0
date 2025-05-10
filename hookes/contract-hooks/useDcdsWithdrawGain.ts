@@ -2,6 +2,12 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
+/**
+ * React hook to handle withdraw gain for CDS positions.
+ *
+ * @param mutation - The mutation function to use for the withdraw gain.
+ * @returns Object containing the withdraw gain data, error, pending state, and functions to handle the withdraw gain.
+ */
 const useDcdsWithdrawGain = (mutation: any) => {
   const {
     data: dcdsWithdrawGainData,

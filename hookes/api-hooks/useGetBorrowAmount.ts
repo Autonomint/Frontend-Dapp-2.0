@@ -18,6 +18,8 @@ const fetchDepositor = async (
   return response.json();
 };
 
+// @desc get total borrow amount for user in base and eth sepolia
+// @returns {userTotalBorrowAmount: number, ethSepoliaData: any, baseSepoliaData: any}
 const useGetTotalBorrow = () => {
   const { address, chainId } = useAccount();
   // Use the useQuery hook to fetch the data
@@ -51,6 +53,7 @@ const useGetTotalBorrow = () => {
     enabled: !!address,
   });
 
+  // format total borrow amount and adding both base and eth sepolia 
   const userTotalBorrowAmount = formatNumber(
     Number(ethSepoliaData?.totalUSDa || 0) +
       Number(baseSepoliaData?.totalUSDa || 0)

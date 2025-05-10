@@ -1,4 +1,5 @@
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { useEffect, useState } from "react";
@@ -31,19 +32,19 @@ const DepositTableRow = ({
   const depositDetails = [
     {
       headline: "Eth Deposited",
-      value: "0.00123",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "ETH Price at Deposit",
-      value: "$1645.121",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Amint Amount minted",
-      value: "1.234",
+      value: "0",
       tooltip: true,
       tooltipText: "80% of the total deposited amount",
     },
@@ -55,13 +56,13 @@ const DepositTableRow = ({
     },
     {
       headline: "APR at Deposit",
-      value: "5%",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
     {
       headline: "Downside percentage at Deposit",
-      value: "20%",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
@@ -73,7 +74,7 @@ const DepositTableRow = ({
     },
     {
       headline: "Interest rate gained",
-      value: "3%",
+      value: "0",
       tooltip: false,
       tooltipText: "",
     },
@@ -89,6 +90,7 @@ const DepositTableRow = ({
   const { usdValue: ethPrice } = useGetUsdValue();
   const [openChart, setOpenChart] = useState(false);
 
+  // calculating protect amount
   const amountProtectedFunction = () => {
     if (ethPrice === undefined) {
       setAmountProtected(0);
@@ -107,6 +109,7 @@ const DepositTableRow = ({
     }
   };
 
+  // setting protected amount, setting 0 while unmount
   useEffect(() => {
     amountProtectedFunction();
     return () => {
@@ -114,6 +117,7 @@ const DepositTableRow = ({
     };
   }, [position, ethPrice]);
 
+  // selecting position
   const handleRowClick = () => {
     setSelectedPosition(position);
   };
@@ -160,9 +164,9 @@ const DepositTableRow = ({
           }}
           className="font-bold cursor-pointer text-[20px] underline "
         >
-          Repay/Renew
+          {position.status == BorrowStatus.WITHDREW ? "Repaid" : "Repay/Renew"}
         </span>
-        {/* <span
+        {/* <spans
             onClick={() => {
               setViewPosition(true);
               handleRowClick();
@@ -170,7 +174,7 @@ const DepositTableRow = ({
             className="font-bold cursor-pointer text-[20px] underline   md:inline"
           >
             View
-          </span> */}
+          </spans> */}
       </td>
 
       <td

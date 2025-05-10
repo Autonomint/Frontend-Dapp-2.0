@@ -1,39 +1,61 @@
 "use client";
+
 import { OptionFeesRequest, OptionFeesResponse } from "./interface";
 import { useAccount } from "wagmi";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "wagmi/query";
 import { parseUnits } from "viem";
 
-// Define a function to fetch option fees with typed parameters
+/**
+ * Fetches option fees from the backend API using provided parameters.
+ *
+ * @param chainId - The chain/network ID (e.g., Ethereum, Base, etc.).
+ * @param collateralAmount - Amount of collateral (ETH) to be used.
+ * @param ethPrice - Current ETH price in USD.
+ * @param strikePercent - Desired strike percent for the option.
+ *
+ * @returns A Promise that resolves to the OptionFeesResponse.
+ */
 const fetchOptionFees = async ({
   chainId,
   collateralAmount,
   ethPrice,
   strikePercent,
 }: OptionFeesRequest): Promise<OptionFeesResponse> => {
+  // Construct the URL using the backend base URL and query parameters
   const response = await fetch(
     `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${parseUnits(
       collateralAmount.toString(),
-      18
+      18 // Convert collateral amount to 18 decimal units (wei)
     )}/${ethPrice}/${strikePercent}`
   );
 
+  // Throw an error if the response is not OK
   if (!response.ok) {
     throw new Error("Failed to fetch option fees");
   }
 
+  // Parse and return the JSON response
   return response.json();
 };
 
-// Create a typed hook to fetch option fees
+/**
+ * React hook to retrieve and manage option fees from backend.
+ *
+ * @param collateralAmount - Amount of ETH collateral for borrowing.
+ * @param ethPrice - Current ETH price.
+ * @param strikePercent - The strike percentage selected by user.
+ *
+ * @returns Object containing option fees, raw data, loading/error state, and refetch function.
+ */
 const useFetchOptionFees = (
   collateralAmount: number,
   ethPrice: number,
   strikePercent: number
 ) => {
-  const { chainId, isConnected } = useAccount();
+  const { chainId, isConnected } = useAccount(); // Get user's connected chain and status
 
+  // Use wagmi's useQuery to fetch option fees with caching, refetching, etc.
   const {
     data: Fees,
     isPending: isOptionFeePending,
@@ -46,30 +68,30 @@ const useFetchOptionFees = (
       collateralAmount,
       ethPrice,
       strikePercent,
-    ], // Query key
+    ], // Unique key for caching/refetching
     queryFn: () =>
       fetchOptionFees({
         chainId: chainId as number,
         collateralAmount,
         ethPrice,
         strikePercent,
-      }), // Query function
-    // Optional configurations
-    enabled: !!isConnected && !!chainId && !!collateralAmount, // Only run when values are provided
-    refetchOnWindowFocus: true,
-    retry: 1,
+      }), // Function to fetch option fees
+    enabled: !!isConnected && !!chainId && !!collateralAmount, // Enable query only if connected and inputs are valid
+    refetchOnWindowFocus: true, // Refetch when the window regains focus
+    retry: 1, // Retry once on failure
   });
 
+  // Convert fee from micro-units (1e6) to readable format; fallback to 0
   const optionFees = (Fees as number[])?.[1]
     ? (Fees as number[])?.[1] / 10 ** 6
     : 0;
 
   return {
-    optionFees,
-    Fees,
-    refetchOptionFee,
-    isOptionFeeError,
-    isOptionFeePending,
+    optionFees, // Human-readable fee value
+    Fees, // Raw fee data
+    refetchOptionFee, // Manual refetch function
+    isOptionFeeError, // Error flag
+    isOptionFeePending, // Loading flag
   };
 };
 

@@ -19,37 +19,48 @@ import { handleWheel } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { NetworkId } from "@/utils/constants";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 function PortfolioTemplate() {
+  const { address, chainId } = useAccount();
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
 
-  const { address, chainId } = useAccount();
+  // portfolio current tab
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
     "Borrowed"
   );
   const [refreshLoading, setRefreshLoading] = useState(false);
+  // portfolio tab global state
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
+  // selected position for repay renew
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
     null
   );
 
+  // selected cds position for withdraw
   const [selectedDcdsPosition, setSelectedDcdsPosition] =
     useState<dcdsDepositDetails | null>(null);
-
+  // open view position dialog
   const [isViewPositionOpen, setViewPosition] = useState(false);
+  // open renew repay dialog
   const [isRenewRepayOpen, setRenewRepay] = useState(false);
   // will handle all this through redux later
   const [isRebalanceDialogOpen, setIsRebalanceDialogOpen] = useState(false);
+  // open withdraw dialog
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
+  // get total borrow amount
   const { userTotalBorrowAmount } = useGetTotalBorrow();
+  // get total user deposit
   const { totalUserDeposit } = useGetTotalUserDeposit();
+  // get user point
   const { points, referralPoints } = useGetUserPoint();
 
+  // get borrowed position list
   const {
     positionList,
     positionListError,
@@ -65,6 +76,7 @@ function PortfolioTemplate() {
     setCurrentPage,
   } = useGetPositionList();
 
+  // get cds position list
   const {
     dcdsPositionList,
     dcdsPositionListError,
@@ -78,10 +90,35 @@ function PortfolioTemplate() {
     totalPages: dcdsTotalPages,
   } = useGetDcdsDepositList();
 
+  // handle selecting position
+  useEffect(() => {
+    if (selectedPosition?.index) {
+      // find the position in the list
+      const updatedData = pagedPositionList.find(
+        (position) => position.index === selectedPosition.index
+      );
+      if (updatedData) {
+        setSelectedPosition(updatedData);
+      }
+    }
+    if (selectedDcdsPosition?.index) {
+      // find the position in the list
+      const updatedData = dcdsPagedDcdsPositionList.find(
+        (position) => position.index === selectedDcdsPosition.index
+      );
+      if (updatedData) {
+        setSelectedDcdsPosition(updatedData);
+      }
+    }
+  }, [pagedPositionList, dcdsPagedDcdsPositionList]);
+
+  // handle initial portfolio tab setting based on global tab state
+  // this will be when user deposits or borrows and redirect to this page
   useEffect(() => {
     setTabPosition((portfolioTab || "Borrowed") as typeof tabPosition);
   }, [portfolioTab]);
 
+  // refresh borrowed table data for backend data refetch from blockchain
   const RefreshTableData = async () => {
     const res = await fetch(
       `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
@@ -92,6 +129,7 @@ function PortfolioTemplate() {
     return res;
   };
 
+  // refresh cds table data for backend data refetch from blockchain
   const RefreshTableDataCds = async () => {
     const res = await fetch(
       `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
@@ -102,6 +140,7 @@ function PortfolioTemplate() {
     return res;
   };
 
+  // handle refresh table data based on tab position
   const handleRefresh = async () => {
     try {
       setRefreshLoading(true);
@@ -144,6 +183,7 @@ function PortfolioTemplate() {
     }
   };
 
+  // Add event listener to the body element to handle scroll
   useEffect(() => {
     const element = document.getElementById("body-scroll-container");
     element?.addEventListener("scroll", handleScroll);
@@ -152,6 +192,57 @@ function PortfolioTemplate() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // get omni chain data
+  const { omniChainData } = useGetOmniChainData();
+
+  // calculate cds total profits
+  const cdsTotalProfits = useMemo(() => {
+    if (omniChainData) {
+      // calculate upside
+      const upside =
+        Number(omniChainData?.cdsPoolValue) / Number(1e6) -
+        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
+      // calculate options fees
+      const optionsFees =
+        Number(omniChainData?.totalCdsDepositedAmountWithOptionFees) /
+          Number(1e6) -
+        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
+
+      console.log(
+        Number(omniChainData?.lastCumulativeRate) / Number(1e12),
+        "lastCumulativeRate"
+      );
+      // calculate liq gains
+      let liqGains =
+        (Number(omniChainData?.liquidationCumulativeValues.liqAmountUsedCV) *
+          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
+        (Number(10000000e6) * Number(1e6));
+
+      // calculate liquidated eth
+      liqGains =
+        (((liqGains * Number(100)) / Number(82)) * Number(18)) / Number(100);
+      const liquidatedETH =
+        (Number(omniChainData?.liquidationCumulativeValues.liqCollateralCV) *
+          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
+        Number(1e6);
+
+      return {
+        upside: upside,
+        optionsFees: optionsFees,
+        liqGains: liqGains,
+        liquidatedETH: liquidatedETH,
+      };
+    }
+    return {
+      upside: 0,
+      optionsFees: 0,
+      liqGains: 0,
+      liquidatedETH: 0,
+    };
+  }, [omniChainData]);
+
+  console.log(cdsTotalProfits, omniChainData, "cdsTotalProfits");
 
   return (
     <div className="flex sm:px-4 flex-col">
@@ -169,7 +260,10 @@ function PortfolioTemplate() {
           />
         </div>
         <div className="col-span-1">
-          <PortfolioMetrics subHeading="Fee Earned (All Chain)" value="$0" />
+          <PortfolioMetrics
+            subHeading="Fee Earned (All Chain)"
+            value={`$${cdsTotalProfits.optionsFees?.toFixed(2)}`}
+          />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
@@ -226,12 +320,12 @@ function PortfolioTemplate() {
           </div>
         </div>
         <div className=" w-1/2 xl:w-[39%] hidden text-center xl:text-left lg:flex px-5 py-3 flex-row items-center justify-start  text-[32px] font-medium border-grayLight border  border-solid">
-          <SearchIcon width={24} height={24} fontSize={24} />
+          {/* <SearchIcon width={24} height={24} fontSize={24} />
           <Input
             onWheel={handleWheel}
             className="border-0 md:!text-[24px] 2xl:!text-[32px] ml-2  p-0 !font-normal text-grayLight"
             placeholder="Search Transactions"
-          />
+          /> */}
         </div>
       </div>
 
@@ -281,12 +375,14 @@ function PortfolioTemplate() {
         isDialogOpen={true}
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
+      {/* CDS withdraw modal */}
       <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
         setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
         dcdsPositionListRefetch={dcdsPositionListRefetch}
       />
+      {/* Borrow repay renew modal */}
       <WithdrawFund
         setSelectedPosition={setSelectedPosition}
         positionListRefetech={positionListRefetch}

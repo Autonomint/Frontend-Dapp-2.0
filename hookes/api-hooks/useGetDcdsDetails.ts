@@ -18,6 +18,12 @@ function getDeposits(
     `${BACKEND_API_URL}/cds/totalDeposits/${chainId}/${address}`
   ).then((response) => response.json());
 }
+
+/**
+ * @desc get cds position list hook backend api 
+ * with pagination and sorting 
+ * @returns {dcdsPositionList: dcdsDepositDetails[], pagedDcdsPositionList: dcdsDepositDetails[], dcdsPositionListError: Error, dcdsPositionListRefetch: () => void, dcdsPositionListLoading: boolean, currentPage: number, pageSize: number, setPageSize: (size: number) => void, totalPages: number, handleNextPage: () => void, handlePrevPage: () => void, setCurrentPage: (page: number) => void}
+ */
 const useGetDcdsDepositList = () => {
   // Use the useAccount and useChainId hooks
   const { address } = useAccount();
@@ -51,6 +57,7 @@ const useGetDcdsDepositList = () => {
     if (dcdsPositionList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
+      
       setPagedDcdsPositionList(
         [...dcdsPositionList]
           .sort((a, b) => b.index - a.index)

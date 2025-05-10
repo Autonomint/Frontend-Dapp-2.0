@@ -50,6 +50,8 @@ function DcdsDepositTable({
   const { address, isConnected } = useAccount();
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isScroll, setIsScroll } = useScroll();
+
+  // handle scroll for table 
   const scrollToElement = () => {
     if (scrollRef.current) {
       scrollRef.current.scroll({
@@ -59,6 +61,7 @@ function DcdsDepositTable({
     }
   };
 
+  // calling scroll for new deposit 
   useEffect(() => {
     if (isScroll) {
       const scrollContainer = document.getElementById("body-scroll-container");
@@ -76,6 +79,7 @@ function DcdsDepositTable({
     }
   }, [positionList]);
 
+  // sorting position based on selected position 
   const sortedPositionList = useMemo(() => {
     return positionList.sort((a, b) => {
       if (sortBy === "deposit") {
@@ -178,7 +182,7 @@ function DcdsDepositTable({
               Lock In period
             </th>
             <th className="pl-5 whitespace-nowrap text-right pr-5  font-normal">
-              Withdraw
+              Action
             </th>
           </tr>
         </thead>

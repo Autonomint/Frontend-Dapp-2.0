@@ -23,7 +23,7 @@ const fetchReward = async (
   return response.data;
 };
 
-// Create the useQuery hook to fetch reward data
+// Hook to get farm your luck user details 
 export const useFarmLuckDetails = (
   address?: `0x${string}`,
   chainId?: number

@@ -5,7 +5,7 @@ export default function Terms_Privacy() {
     <div className=" w-[80%] my-5 mx-auto  leading-8 dark:text-white">
       <h1 className="mb-6 text-center text-4xl font-bold">Privacy Policy</h1>
 
-      <p className="mb-6">Last updated: February 26, 2024</p>
+      <p className="mb-6">Last updated: February 2025</p>
       <div className="max-h-[calc(100vh-185px)]  overflow-y-scroll no-scrollbar">
         <div className="mb-5 ">
           <p>
@@ -593,17 +593,6 @@ export default function Terms_Privacy() {
 
           <ul className="pl-6 list-disc">
             <li className="">By email: autonomint@gmail.com</li>
-            <li>
-              By visiting this page on our website:{" "}
-              <a
-                href="https://www.autonomint.com/contact-us"
-                className="text-blue-600 underline "
-                rel="external nofollow noopener"
-                target="_blank"
-              >
-                https://www.autonomint.com/contact-us
-              </a>
-            </li>
           </ul>
         </section>
       </div>

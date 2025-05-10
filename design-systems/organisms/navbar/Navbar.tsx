@@ -33,10 +33,6 @@ function Navbar() {
 
   const { address } = useAccount();
 
-  // Use this code snippet in your app.
-  // If you need more information about configurations or implementing the sample code, visit the AWS docs:
-  // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
-
   useAccountEffect({
     onConnect(data) {
       localStorage.setItem("currentAddress", data.address as string);
@@ -268,7 +264,11 @@ function Navbar() {
           {/* <ReferPopup wrapperClassName={"hidden lg:block"} /> */}
 
           <Button
-            onClick={() => shareOnTwitter("")}
+            onClick={() =>
+              shareOnTwitter(
+                "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
+              )
+            }
             variant={"shadowOutline"}
             className=" h-fit text-[18px] font-normal  w-full p-[8px] "
           >

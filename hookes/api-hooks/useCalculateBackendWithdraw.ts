@@ -29,6 +29,11 @@ async function calculateWithdrawAmount(data: calculateData) {
   return result;
 }
 
+/**
+ * React hook to calculate the withdraw amount for a CDS position .
+ *
+ * @returns Object containing the calculateBackendWithdraw function and the withdrawdata.
+ */
 const useCalculateWithdrawAmount = () => {
   const queryClient = useQueryClient();
 

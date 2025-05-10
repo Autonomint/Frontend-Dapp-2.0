@@ -15,6 +15,13 @@ interface ReferPopupProps {
   wrapperClassName?: string;
 }
 
+/**
+ * ReferPopup is a component that allows the user to refer and earn.
+ * It is used to refer and earn points.
+ * It is used in the ReferPopup component.
+ * 
+ * 
+ */
 const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
   const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();

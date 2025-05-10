@@ -34,45 +34,67 @@ import { useFarmYourLuckWalletAddress } from "@/hookes/api-hooks/useFarmYouLuckW
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
+  const { chainId, address } = useAccount();
 
+  // state for the selected index
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  // state for the selected index for the reward after pay
   const [selectedIndexForReward, setSelectedIndexForReward] = useState(-1);
+  // state for the flipped cards
   const [isFlipped, setIsFlipped] = useState(Array.from({ length: 9 }).fill(0));
+  // state for text heading in right top for current step
   const [supportingText, setSupportingText] = useState(
     "Tap a card to view details"
   );
 
-  const { chainId, address } = useAccount();
+  // state for the reward amount after getting luck
   const [rewardAmount, setRewardAmount] = useState("");
+  // state for the button text
   const [buttonText, setButtonText] = useState("Pay $5");
+  // state for the pathname
   const pathname = usePathname();
+  // state for the payed
   const [isPayed, setIsPayed] = useState(false);
+  // state for the payment conformed
   const [isPaymentConformed, setPaymentConformed] = useState(false);
 
+  // toggle for reward details open close
   const [isShowRewardDetails, setIsShowRewardDetails] = useState(false);
 
+  // state for after trying luck got reward or not
   const [gotReward, setGotReward] = useState(false);
 
+  // for revealing the selected card
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
 
+  // hook for play game by backend api
   const { data: luckData, mutateAsync: getLuckAsync } = useBorrowGame();
 
+  // hook for getting the luck price in dollars from the backend api
   const { data: luckPrice, isLoading: isLuckPriceLoading } = useLuckPrice();
+
+  // hook for getting the farm your luck wallet address from the backend api
   const { data: walletAddress, isLoading: isLoadingWalletAddress } =
     useFarmYourLuckWalletAddress();
 
+  // hook for getting the farm your luck data (current reward data) from the backend api
   const {
     data: farmLuckDetails,
     isLoading,
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
 
+  // hook for verifying the game payment from the backend api
   const { data, mutateAsync: verifyGamePayment } = useVerifyGamePay();
 
+  // state for the pay transaction loading
   const [payLoading, setPayLoading] = useState(false);
+  // eth price in dollars
   const { usdValue: ethPrice } = useGetUsdValue();
 
+  // checking is current luck so don't need to pay again
   useEffect(() => {
+    // if the total luck is greater than 0 and the card is not revealed then set the payed to true and the button text to "Select Card"
     if ((farmLuckDetails?.totalLuck || 0) > 0 && !isRevealed) {
       setIsPayed(true);
       setButtonText("Select Card");
@@ -80,11 +102,13 @@ function FarmYourLuckTemplate() {
   }, [farmLuckDetails]);
 
   useEffect(() => {
+    // if the button text is "Claim Reward" and the payed is true and the got reward is true then set the reward amount to "$50"
     if (buttonText === "Claim Reward" && isPayed && gotReward) {
       setRewardAmount("$50");
     }
   }, [buttonText]);
 
+  // animation variants for the text
   const textVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
@@ -109,6 +133,7 @@ function FarmYourLuckTemplate() {
     exit: { opacity: 0, x: 0, y: -100, transition: { duration: 0.3 } },
   };
 
+  // tabs for the navbar
   const tabs = [
     {
       nameA: "Farm Your Luck",
@@ -119,6 +144,7 @@ function FarmYourLuckTemplate() {
     },
   ];
 
+  // hook for sending the transaction
   const {
     sendTransaction,
     data: hash,
@@ -137,14 +163,17 @@ function FarmYourLuckTemplate() {
     },
   });
 
+  // waiting for the transaction receipt
   const result = useWaitForTransactionReceipt({
     hash: hash,
   });
 
+  // handle the game play by backend api
   const handleCheckLuck = async () => {
     let res;
     if (address && chainId) {
       // res = 3;
+      // get the luck from the backend api
       res = await getLuckAsync({
         numberOfBoxes: 9,
         userChosenBoxIndex: selectedIndexForReward,
@@ -155,6 +184,7 @@ function FarmYourLuckTemplate() {
     if (selectedIndexForReward !== -1 && (res || 0) > 0) {
       setSupportingText("Congratulations!");
       setButtonText("Congratulations!");
+
       if (res == 1) setRewardAmount("$50");
       if (res == 2) setRewardAmount("5x Reward Points");
       if (res == 3) setRewardAmount("10x Reward Points");
@@ -181,6 +211,8 @@ function FarmYourLuckTemplate() {
         );
       });
     }
+
+    // if the payed is true and the card is not revealed then flip the card
     if (isPayed && !isRevealed) {
       setIsFlipped((prev) => {
         const newFlipped = [...prev].map((value) => false);
@@ -188,13 +220,17 @@ function FarmYourLuckTemplate() {
         return newFlipped;
       });
 
+      // set the selected index
       setSelectedIndex(index);
 
+      // set the selected index for the reward
       if (isPayed) {
         setSelectedIndexForReward(index);
       }
 
+      // set the button text to "Reveal Reward"
       setButtonText("Reveal Reward");
+      // set the supporting text to "Revealed upon confirmation."
       setSupportingText("Revealed upon confirmation.");
     }
   };
@@ -220,6 +256,7 @@ function FarmYourLuckTemplate() {
   };
 
   const setPayment = async (hash?: string) => {
+    // verify the game payment by backend api with the transaction hash
     try {
       const verifyData = await verifyGamePayment({
         address: address,
@@ -232,6 +269,8 @@ function FarmYourLuckTemplate() {
 
         if (!isPayed) setButtonText("Select Card");
         resetSendTransaction();
+
+        // refetch the farm your luck data
         await refetchFarmLuckDetails();
         setIsPayed(true);
 
@@ -275,8 +314,9 @@ function FarmYourLuckTemplate() {
     }
   };
 
-
+  // handle the button click
   const handleButtonClick = async () => {
+    // if the total luck is 0 and the payed is false then set the pay loading to true and calculate the amount to pay
     if ((farmLuckDetails?.totalLuck || 0) === 0 && !isPayed) {
       setPayLoading(true);
       const amountToPay = calculateEthAmount(
@@ -292,19 +332,24 @@ function FarmYourLuckTemplate() {
         setPayment(txHash);
       }, 5000);
     }
+
+    // if the card is revealed then reset the game
     if (isRevealed) {
       handleReset();
       return;
     }
 
+    // if the payed is false then set the button text to "Pay $5"
     if (!isPayed) {
       setButtonText("Pay $5");
     }
 
+    // if the selected index for the reward is -1 and the payed is true then set the button text to "Select Card"
     if (selectedIndexForReward == -1 && isPayed) {
       setButtonText("Select Card");
     }
 
+    // if the payed is true and the selected index for the reward is not -1 and the card is not revealed then handle the luck check
     if (isPayed && selectedIndexForReward !== -1 && !isRevealed) {
       handleCheckLuck();
     }
