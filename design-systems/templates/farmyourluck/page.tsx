@@ -31,6 +31,9 @@ import { DownArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useLuckPrice } from "@/hookes/api-hooks/useLuckPrice";
 import { useFarmYourLuckWalletAddress } from "@/hookes/api-hooks/useFarmYouLuckWalletAddress";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { BACKEND_API_URL } from "@/utils/urls";
 
 function FarmYourLuckTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -359,6 +362,34 @@ function FarmYourLuckTemplate() {
     }
   };
 
+  // Query to fetch the USD reward amount for luck
+  const {
+    data: rewardAmountData,
+    isLoading: rewardAmountLoading,
+    error: rewardAmountError,
+    refetch: refetchRewardAmount,
+  } = useQuery({
+    queryKey: ["usd-reward-amount-for-luck", farmLuckDetails?.totalLuck],
+    queryFn: async () => {
+      try {
+        const response = await axios.post(
+          `${BACKEND_API_URL}/global/get-usd-reward-amount-for-luck`,
+          {
+            chainId,
+          }
+        );
+
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching reward amount:", error);
+        throw error;
+      }
+    },
+    placeholderData: 0,
+    enabled: !!farmLuckDetails?.totalLuck && farmLuckDetails.totalLuck > 0,
+    refetchOnWindowFocus: false,
+  });
+
   return (
     <div className="min-h-fit xl:min-h-[calc(100vh-160px)] 3xl:min-h-[calc(100vh-268px)]xl:min-h-[calc(100vh-160px)] w-full flex flex-col">
       <AppNavbar tabOptions={tabs} />
@@ -473,7 +504,8 @@ function FarmYourLuckTemplate() {
                   </div>
                   <ol className="list-decimal list-inside mt-2 text-grayLight">
                     <li className="mb-2 text-sm md:text-md 2xl:text-lg">
-                      Pick a card for $5 and you could win $75 in option fees.
+                      Pick a card for $5 and you could win ${rewardAmountData}{" "}
+                      in option fees.
                     </li>
                     <li className="mb-2 text-sm md:text-md 2xl:text-lg">
                       Click ‘Reveal Reward’ to see if you chose correctly.
