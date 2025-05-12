@@ -370,7 +370,9 @@ export function WithdrawFund({
               Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
-          : Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+          : (
+              Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+            ).toFixed(4)
       }`,
       tooltip: false,
       tooltipText: "",
