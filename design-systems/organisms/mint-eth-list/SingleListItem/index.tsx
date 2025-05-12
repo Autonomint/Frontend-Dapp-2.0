@@ -13,6 +13,7 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
+import { usePoint } from "@/hookes/api-hooks/usePoint";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -48,15 +49,9 @@ function SingleListItem({
     {
       label: "Point",
       value: (
-        <div>
-          <div className="flex items-center justify-between gap-2 text-lg">
-            <p>Min Amount :</p>
-            <p>{item.minAmount}</p>
-          </div>
-          <div className="flex items-center justify-between gap-2 text-lg">
-            <p>Points :</p>
-            <p>{item.pointsToBeGiven}</p>
-          </div>
+        <div className="flex items-baseline justify-center flex-row gap-1">
+          <p>{item.pointsToBeGiven}</p>
+          <div className="text-base">{`On per ${item.minAmount} ETH`}</div>
         </div>
       ),
       tooltipText: "Points to be given for depositing the token",
@@ -64,7 +59,7 @@ function SingleListItem({
     {
       label: "Strategies",
       value: (
-        <div className="flex mb-4 items-center justify-center gap-2 text-lg">
+        <div className="flex mb-4 items-center cursor-pointer justify-center gap-2 text-lg">
           <a href={item.link} target="_blank">
             Open Link
           </a>
@@ -72,7 +67,6 @@ function SingleListItem({
           <SquareArrowOutUpRight />
         </div>
       ),
-      tooltipText: "Points to be given for depositing the token",
     },
   ];
 

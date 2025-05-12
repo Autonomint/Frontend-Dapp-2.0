@@ -58,6 +58,10 @@ function AddToken({
       `${tokenDetails.tokenName.toLocaleLowerCase()}Balance`,
       tokenDetails.balanceAvailable
     );
+    formik.setFieldValue(
+      `${tokenDetails.tokenName.toLocaleLowerCase()}MinAmount`,
+      tokenDetails.minTokenAmount
+    );
 
     // Set approval flags in formik
     formik.setFieldValue(

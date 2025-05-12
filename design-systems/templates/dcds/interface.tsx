@@ -19,7 +19,7 @@ export interface TokenDetails {
   allowance?: string | number | bigint;
   tokenDetails?: Record<number, string | number>;
   tokenPauseState?: boolean;
-  
+  pointToGiven: number;
 }
 
 export interface FormValues {

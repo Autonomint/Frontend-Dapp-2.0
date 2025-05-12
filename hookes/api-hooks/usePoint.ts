@@ -59,6 +59,14 @@ const fetchXPostsPoints = async (chainId: number): Promise<PointResponse> => {
   return data;
 };
 
+const fetchNativePoints = async (chainId: number): Promise<PointResponse> => {
+  const { data } = await axios.post(
+    `${BACKEND_API_URL}/global/get-min-native-amount-for-points`,
+    { chainId }
+  );
+  return data;
+};
+
 export const usePoint = () => {
   const chainId = useChainId();
 
@@ -122,6 +130,16 @@ export const usePoint = () => {
     enabled: !!chainId,
   });
 
+  const {
+    data: nativePoints,
+    error: nativePointsError,
+    isLoading: isNativePointsLoading,
+  } = useQuery({
+    queryKey: ["nativePoints", chainId],
+    queryFn: () => fetchNativePoints(chainId),
+    enabled: !!chainId,
+  });
+
   return {
     ethPoints,
     usdaPoints,
@@ -129,19 +147,22 @@ export const usePoint = () => {
     usdaBridgePoints,
     referralPoints,
     xPostsPoints,
+    nativePoints,
     isLoading:
       isEthPointsLoading ||
       isUsdaPointsLoading ||
       isUsdtPointsLoading ||
       isUsdaBridgePointsLoading ||
       isReferralPointsLoading ||
-      isXPostsPointsLoading,
+      isXPostsPointsLoading ||
+      isNativePointsLoading,
     error:
       ethPointsError ||
       usdaPointsError ||
       usdtPointsError ||
       usdaBridgePointsError ||
       referralPointsError ||
-      xPostsPointsError,
+      xPostsPointsError ||
+      nativePointsError,
   };
 };
