@@ -51,7 +51,7 @@ function SingleListItem({
       value: (
         <div className="flex items-baseline justify-center flex-row gap-1">
           <p>{item.pointsToBeGiven}</p>
-          <div className="text-base">{`On per ${item.minAmount} ETH`}</div>
+          <div className="text-base">{`per ${item.minAmount} ETH`}</div>
         </div>
       ),
       tooltipText: "Points to be given for depositing the token",

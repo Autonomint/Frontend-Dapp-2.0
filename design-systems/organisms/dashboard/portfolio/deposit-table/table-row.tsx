@@ -90,10 +90,10 @@ const DepositTableRow = ({
   const { usdValue: ethPrice } = useGetUsdValue();
   const [openChart, setOpenChart] = useState(false);
 
-  // calculating protect amount 
+  // calculating protect amount
   const amountProtectedFunction = () => {
     if (ethPrice === undefined) {
-      setAmountProtected(0);             
+      setAmountProtected(0);
       return;
     }
     if (parseFloat(ethPrice.toString()) > position.ethPrice) {
@@ -125,8 +125,7 @@ const DepositTableRow = ({
     };
   }, [position, ethPrice]);
 
-
-  // selecting position 
+  // selecting position
   const handleRowClick = () => {
     setSelectedPosition(position);
   };
@@ -173,7 +172,11 @@ const DepositTableRow = ({
           }}
           className="font-bold cursor-pointer text-[20px] underline "
         >
-          {position.status == BorrowStatus.WITHDREW ? "Repaid" : "Repay/Renew"}
+          {position.status == BorrowStatus.WITHDREW
+            ? "Repaid"
+            : position.status == BorrowStatus.LIQUIDATED
+            ? "Liquidated"
+            : "Repay/Renew"}
         </span>
         {/* <spans
             onClick={() => {
