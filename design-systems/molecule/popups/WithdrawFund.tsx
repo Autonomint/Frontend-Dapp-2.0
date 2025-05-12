@@ -721,6 +721,9 @@ export function WithdrawFund({
       setTimeout(() => {
         setRenewLoading(false);
       }, 800);
+      setTimeout(() => {
+        positionListRefetech();
+      }, 3000);
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);

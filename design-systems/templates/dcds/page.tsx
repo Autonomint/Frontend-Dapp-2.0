@@ -49,6 +49,7 @@ import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
 import { AssetStatus, NetworkId, scanUrls } from "@/utils/constants";
 import {
+  calculateRemainingTimeDate,
   formatNumber,
   getTotalDepositingAmount,
   handleWheel,
@@ -72,6 +73,7 @@ import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { getIconMapping } from "@/utils/token-config";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -111,6 +113,16 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
           return true;
         }
         return Number(value) >= 0;
+      })
+      .test("min-amount", "Amount below minimum required", function (value) {
+        const tokenName = token.tokenName.toLowerCase();
+        if (this.parent[`${tokenName}Flag`] && value) {
+          const minAmount = token.minTokenAmount;
+          const tokenPrice = Number(token.tokenPrice || 0);
+          const valueInUSD = Number(value) * tokenPrice;
+          return valueInUSD >= minAmount;
+        }
+        return true;
       })
       .nullable();
   });
@@ -684,6 +696,15 @@ function DCDSTemplate() {
     },
   });
 
+  const { usdaPoints, usdtPoints, nativePoints, isLoading, error } = usePoint();
+  //
+  const minTokenAmountAndPointToDeposit = {
+    usda: usdaPoints,
+    usdt: usdtPoints,
+    op: nativePoints,
+    aero: nativePoints,
+  };
+
   // token list for the deposit
   const tokenList: TokenDetails[] = useMemo(() => {
     if (
@@ -726,7 +747,22 @@ function DCDSTemplate() {
         active: true,
         errorMessage: `Token ${token.symbol} not active now`,
         balanceAvailable: `$${balanceInUSD.toFixed(2)}`,
-        minTokenAmount: 500,
+        minTokenAmount: Number(
+          minTokenAmountAndPointToDeposit[
+            (token.symbol === "USDA+"
+              ? "usda"
+              : token.symbol?.toString()?.toLocaleLowerCase() ||
+                "") as keyof typeof minTokenAmountAndPointToDeposit
+          ]?.minAmount || 0
+        ),
+        pointToGiven: Number(
+          minTokenAmountAndPointToDeposit[
+            (token.symbol === "USDA+"
+              ? "usda"
+              : token.symbol?.toString()?.toLocaleLowerCase() ||
+                "") as keyof typeof minTokenAmountAndPointToDeposit
+          ]?.pointsToBeGiven || 0
+        ),
         tokenPauseMessage: ` ${token.symbol} Token not active now`,
         tokenPrice: formattedPrice,
         tokenCount: Number(formattedBalance),
@@ -752,13 +788,49 @@ function DCDSTemplate() {
     tokenAllowanceByUser,
     totalTVLList,
     theme,
+    minTokenAmountAndPointToDeposit,
   ]);
 
-  console.log(tokenList, tokensPauseState, "calls");
+  const pointToGiven = useMemo(() => {
+    const value = selectedTokens.reduce((total, token) => {
+      const tokenAmount = Number(
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+      );
+      const tokenPrice = Number(token.tokenPrice || 0);
+      const valueInUSD = tokenAmount * tokenPrice;
 
+      // Check for NaN values and handle them
+      if (
+        isNaN(valueInUSD) ||
+        isNaN(token.minTokenAmount) ||
+        isNaN(token.pointToGiven) ||
+        token.minTokenAmount === 0
+      ) {
+        return total;
+      }
+
+      const pointsForToken =
+        valueInUSD >= token.minTokenAmount
+          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          : 0;
+
+      return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
+    }, 0);
+
+    return Math.round(value) || 0; // Return 0 if the result is NaN
+  }, [selectedTokens, formik]);
+
+  console.log(tokenList, minTokenAmountAndPointToDeposit, "nativePoints");
+
+  console.log(pointToGiven, "pointToGiven");
   console.log(tokenAddress, "tokenAddress");
 
-  const { usdaPoints, usdtPoints, isLoading, error } = usePoint();
+  // hook for getting the farm your luck data (current reward data) from the backend api
+  const {
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
 
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
@@ -894,9 +966,35 @@ function DCDSTemplate() {
 
         <div className="lg:col-span-2 xl:col-span-1 border border-solid border-grayLight border-t-0 flex flex-col justify-between">
           <div className=" p-5 md:px-16 md:py-5  lg:p-5 lg:pt-4 lg:pb-0">
-            <span className="text-textBlack text-[24px] font-medium dark:text-white">
-              Deposit Funds
-            </span>
+            <div className="flex justify-between items-center">
+              <span className="text-textBlack text-[24px] font-medium dark:text-white">
+                Deposit Funds
+              </span>
+              <div className="flex justify-end items-center gap-1">
+                {calculateRemainingTimeDate(
+                  farmLuckDetails?.deadLine5xTimestamp || ""
+                ).minutes > 0 &&
+                calculateRemainingTimeDate(
+                  farmLuckDetails?.deadLine10xTimestamp || ""
+                ).minutes > 0 ? (
+                  <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                    15x Points
+                  </div>
+                ) : calculateRemainingTimeDate(
+                    farmLuckDetails?.deadLine10xTimestamp || ""
+                  ).minutes > 0 ? (
+                  <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                    10x Points
+                  </div>
+                ) : calculateRemainingTimeDate(
+                    farmLuckDetails?.deadLine5xTimestamp || ""
+                  ).minutes > 0 ? (
+                  <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                    5x Points
+                  </div>
+                ) : null}
+              </div>
+            </div>
             <div
               ref={scrollRef}
               className="h-[200px]  2xl:h-[170px] overflow-y-auto no-scrollbar"
@@ -939,24 +1037,30 @@ function DCDSTemplate() {
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[18px] font-medium text-grayLight">
-                      {/* Min $100 */}
-                      <Typography
-                        size="sm"
-                        variant="regular"
-                        className="text-red-500"
-                      >
-                        {(() => {
-                          const error =
-                            formik.errors?.[
-                              `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
-                            ];
-                          return error === "max"
-                            ? "Amount exceeded balance"
-                            : String(error || "");
-                        })()}
-                      </Typography>
-                    </span>
+                    <div>
+                      {token?.minTokenAmount > 0 && (
+                        <div className="text-[16px] font-medium text-grayLight">
+                          Min ${token?.minTokenAmount}
+                        </div>
+                      )}
+                      <span className="text-[18px] font-medium text-grayLight">
+                        <Typography
+                          size="sm"
+                          variant="regular"
+                          className="text-red-500"
+                        >
+                          {(() => {
+                            const error =
+                              formik.errors?.[
+                                `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                              ];
+                            return error === "max"
+                              ? "Amount exceeded balance"
+                              : String(error || "");
+                          })()}
+                        </Typography>
+                      </span>
+                    </div>
                     <span className="text-[16px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}
                     </span>
@@ -1001,7 +1105,10 @@ function DCDSTemplate() {
                     <Info width={24} height={24} className="ml-2" />
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black">
-                    <p>liquidation gains</p>
+                    <p>
+                      Get discounted ETH and earn USDA+ by backing liquidations
+                      when USDA+ borrowers default
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </span>
@@ -1026,10 +1133,7 @@ function DCDSTemplate() {
               <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
-                usdaPoints={Number(usdaPoints?.pointsToBeGiven || 0)}
-                usdtPoints={Number(usdtPoints?.pointsToBeGiven || 0)}
-                minUsdaDeposit={Number(usdaPoints?.minAmount || 0)}
-                minUsdtDeposit={Number(usdtPoints?.minAmount || 0)}
+                points={pointToGiven}
               />
             </div>
             {/* showing the deposit button */}

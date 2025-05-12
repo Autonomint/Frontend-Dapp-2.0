@@ -53,6 +53,8 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
 
 /**
  * Yup validation schema for the input form
@@ -522,10 +524,43 @@ function InputForm({ currency }: { currency: string }) {
     );
   };
 
+  // hook for getting the farm your luck data (current reward data) from the backend api
+  const {
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
-        <div className=" font-medium text-2xl">Mint USDA+</div>
+        <div className="flex justify-between items-center">
+          <div className=" font-medium text-2xl">Mint USDA+</div>
+          <div className="flex justify-end items-center gap-1">
+            {calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine5xTimestamp || ""
+            ).minutes > 0 &&
+            calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || ""
+            ).minutes > 0 ? (
+              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                15x Points
+              </div>
+            ) : calculateRemainingTimeDate(
+                farmLuckDetails?.deadLine10xTimestamp || ""
+              ).minutes > 0 ? (
+              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                10x Points
+              </div>
+            ) : calculateRemainingTimeDate(
+                farmLuckDetails?.deadLine5xTimestamp || ""
+              ).minutes > 0 ? (
+              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+                5x Points
+              </div>
+            ) : null}
+          </div>
+        </div>
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
@@ -560,7 +595,7 @@ function InputForm({ currency }: { currency: string }) {
 
             <div className="flex justify-between">
               <span className=" font-medium text-lg text-grayLight">
-                Min: 0.05 ETH
+                {/* Min: 0.05 ETH */}
               </span>
               <span className=" font-medium text-lg text-grayLight">
                 Bal: {formattedBalance} {currency}

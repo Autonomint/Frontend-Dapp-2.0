@@ -13,9 +13,11 @@ function ListItemMetric({ label, value, color, tooltipText }: Metric) {
           <TooltipTrigger asChild>
             <div>{label}</div>
           </TooltipTrigger>
-          <TooltipContent className="bg-white dark:bg-black">
-            <p>{tooltipText}</p>
-          </TooltipContent>
+          {tooltipText && (
+            <TooltipContent className="bg-white dark:bg-black">
+              <p>{tooltipText}</p>
+            </TooltipContent>
+          )}
         </Tooltip>
       </div>
       <div

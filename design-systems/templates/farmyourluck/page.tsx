@@ -273,7 +273,7 @@ function FarmYourLuckTemplate() {
         if (!isPayed) setButtonText("Select Card");
         resetSendTransaction();
 
-        // refetch the farm your luck data 
+        // refetch the farm your luck data
         await refetchFarmLuckDetails();
         setIsPayed(true);
 
