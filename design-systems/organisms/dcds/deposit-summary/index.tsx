@@ -1,17 +1,18 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import { Info } from "lucide-react";
+
 export default function DepositSummary({
   apy,
   depositing,
-  usdaPoints,
-  usdtPoints,
-  minUsdaDeposit,
-  minUsdtDeposit,
+  points,
 }: {
   apy: string;
   depositing: string;
-  usdaPoints: number;
-  usdtPoints: number;
-  minUsdaDeposit: number;
-  minUsdtDeposit: number;
+  points: number;
 }) {
   return (
     <div className=" flex flex-col gap-2">
@@ -31,20 +32,20 @@ export default function DepositSummary({
       </div>
 
       <div className="flex justify-between">
-        <span className="text-grayLight text-[16px] font-medium">
-          {`${minUsdaDeposit} Min USDA+ Deposit`}
+        <span className="text-grayLight text-[16px] flex items-center  font-medium">
+          {`Points`}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info width={16} height={16} className="ml-2" />
+            </TooltipTrigger>
+            <TooltipContent className="bg-white dark:bg-black">
+              <p>1 Point per $1 deposit</p>
+            </TooltipContent>
+          </Tooltip>
         </span>
-        <span className="text-black text-[16px] dark:text-white font-medium">
-          {usdaPoints} Points
-        </span>
-      </div>
 
-      <div className="flex justify-between">
-        <span className="text-grayLight text-[16px] font-medium">
-          {`${minUsdtDeposit} Min USDT Deposit`}
-        </span>
         <span className="text-black text-[16px] dark:text-white font-medium">
-          {usdtPoints} Points
+          {points}
         </span>
       </div>
     </div>
