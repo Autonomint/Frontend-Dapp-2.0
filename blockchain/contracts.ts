@@ -103,3 +103,8 @@ export const mpoAddress = {
   8453: "0x715A3B65335FaB8291b77f5A6afa427c8cF2e015",
   10: "0x715A3B65335FaB8291b77f5A6afa427c8cF2e015",
 } as const;
+
+export const treasuryAddress = {
+  8453: "0xB868684d9E37704327436B94912899747690FfEc",
+  10: "0xB868684d9E37704327436B94912899747690FfEc",
+} as const;

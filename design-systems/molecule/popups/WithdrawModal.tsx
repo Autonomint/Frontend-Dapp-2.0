@@ -1,41 +1,48 @@
-import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
-import { Label } from "@/design-systems/atoms/label";
-import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
-import useGetAPY from "@/hookes/api-hooks/useGetAPY";
-import useInterestGain from "@/hookes/api-hooks/useInterateGain";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
-import { calculateTimeDifference } from "@/utils/helpers";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import LoadingBox from "../LoadingBox";
-import { toast } from "sonner";
-import { Typography } from "@/design-systems/atoms/Typography";
-import ToastNotification from "../toasts/ToastNotification";
-import ToastNotificationError from "../toasts/ToastNotificationError";
-import { dcdsDepositDetails } from "@/utils/interface";
-import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
-import { NetworkId, scanUrls } from "@/utils/constants";
+import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
   nativeTokenAddress,
   testusdtAbiAddress,
-  usDaAddress,
+  treasuryAddress,
+  usDaAddress
 } from "@/blockchain/contracts";
-import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
-import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import { Button } from "@/design-systems/atoms/button";
+import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Label } from "@/design-systems/atoms/label";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { Typography } from "@/design-systems/atoms/Typography";
+import { TransactionParams } from "@/design-systems/templates/bridge/interfaces";
+import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
+import useGetAPY from "@/hookes/api-hooks/useGetAPY";
+import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
+import useInterestGain from "@/hookes/api-hooks/useInterateGain";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
+import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
+import { eId, NetworkId, scanUrls } from "@/utils/constants";
+import { calculateTimeDifference } from "@/utils/helpers";
+import { dcdsDepositDetails } from "@/utils/interface";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { Info } from "lucide-react";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { padHex } from "viem";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import LoadingBox from "../LoadingBox";
+import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 
 export function DcdsWithdrawModal({
   position,
@@ -414,18 +421,82 @@ export function DcdsWithdrawModal({
   }, [position, lastCumulativeRate, interestGained, apy]);
 
   // Define the initial state for the options variable
-  const options = Options.newOptions()
-    .addExecutorLzReceiveOption(305000000, 0)
+  let options = Options.newOptions()
+    .addExecutorLzReceiveOption(85000, 0)
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
+  const transactionParamsCDS: TransactionParams = {
+    dstEid:
+      chainId === NetworkId.BaseSepolia
+        ? eId.Base
+        : chainId === NetworkId.Optimism
+        ? eId.OP
+        : eId.Base,
+    to: padHex(
+      treasuryAddress[
+        (chainId || NetworkId.BaseSepolia) as keyof typeof treasuryAddress
+      ],
+      {
+        size: 32,
+      }
+    ) as `0x${string}`,
+    amountLD: BigInt(0),
+    minAmountLD: BigInt(0),
+    extraOptions: options,
+    composeMsg: `0x${"".padEnd(64, "0")}`,
+    oftCmd: `0x${"".padEnd(64, "0")}`,
+  };
+
+  console.log(transactionParamsCDS, "transactionParamsCDS");
+
+  const {
+    data: nativeFeeUSDA,
+    error: UsdaQuoteError,
+    refetch: refetchnativeFeeUSDA,
+  } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "quoteSend",
+    args: [transactionParamsCDS as any, false],
+    query: {
+      placeholderData: { nativeFee: 0n, lzTokenFee: 0n },
+      enabled: !!chainId && !!address,
+    },
+  });
+
+  console.log("nativeFeeUSDA", nativeFeeUSDA);
+
+  options = Options.newOptions()
+    .addExecutorLzReceiveOption(
+      700000,
+      Math.floor(Number(nativeFeeUSDA?.nativeFee) * 2.5).toString()
+    )
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const { quoteValue: nativeFeeOFT, quoteError: quoteErrorOFT } =
+    useGetGlobalQuote(options, 5, 0);
+  console.log("nativeFeeOFT", nativeFeeOFT);
+
+  // Define the initial state for the options variable
+  options = Options.newOptions()
+    .addExecutorLzReceiveOption(400000, 0)
+    .toHex()
+    .toString() as `0x${string}`;
+
+  const { quoteValue: nativeFeeWithdraw, quoteError } = useGetGlobalQuote(
     options,
-    5,
-    0
+    1
   );
 
-  // hook for withdraw gain functions
+  console.log("nativeFeeWithdraw", nativeFeeWithdraw);
+
+  const nativeFeeAll =
+    Number(nativeFeeWithdraw?.nativeFee) + Number(nativeFeeOFT?.nativeFee);
+
+  console.log("nativeFeeAll", nativeFeeAll);
+
   const {
     dcdsFundWithdrawGainAsync,
     dcdsWithdrawGainData,
@@ -595,7 +666,8 @@ export function DcdsWithdrawModal({
     setDcdsFundWithdrawLoadingLocal(true);
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
-      if (nativeFee) {
+      if (nativeFeeAll) {
+        console.log("nativeFee withdraw", nativeFeeAll);
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
@@ -606,7 +678,7 @@ export function DcdsWithdrawModal({
             res?.deadline,
             res?.signature,
           ],
-          nativeFee.nativeFee
+          nativeFeeAll
         );
       }
     } else if (position.status == "WITHDREW") {

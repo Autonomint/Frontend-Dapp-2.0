@@ -1,7 +1,7 @@
 "use client";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import { testusdtAbiAddress, usDaAddress } from "@/blockchain/contracts";
+import { usDaAddress } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";

@@ -433,11 +433,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
 
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
-                  href={
-                    chainId == NetworkId.BaseSepolia
-                      ? `https://sepolia-explorer.base.org/address/${address}`
-                      : `https://sepolia-optimism.etherscan.io/address/${address}`
-                  }
+                  href={`${
+                    scanUrls[Number(chainId || NetworkId.BaseSepolia)]
+                  }/address/${address}`}
                   target="__blank"
                 >
                   <Typography
