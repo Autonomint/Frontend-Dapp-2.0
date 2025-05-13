@@ -164,7 +164,11 @@ const DepositTableRow = ({
           }}
           className="font-bold cursor-pointer text-[20px] underline "
         >
-          {position.status == BorrowStatus.WITHDREW ? "Repaid" : "Repay/Renew"}
+          {position.status == BorrowStatus.WITHDREW
+            ? "Repaid"
+            : position.status == BorrowStatus.LIQUIDATED
+            ? "Liquidated"
+            : "Repay/Renew"}
         </span>
         {/* <spans
             onClick={() => {

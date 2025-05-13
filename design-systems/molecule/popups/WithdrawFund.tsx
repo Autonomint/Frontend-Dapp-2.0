@@ -190,7 +190,9 @@ export function WithdrawFund({
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
-    (currentEthPrice || 0) < (position?.ethPrice || 0)
+    position.status == BorrowStatus.LIQUIDATED
+      ? 0
+      : (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
           Number(position?.depositedAmountInETH) -
         Number(formatUnits(BigInt(currentEthPrice), 2)) *
@@ -365,7 +367,9 @@ export function WithdrawFund({
               Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
-          : Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+          : (
+              Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+            ).toFixed(4)
       }`,
       tooltip: false,
       tooltipText: "",
@@ -891,7 +895,8 @@ export function WithdrawFund({
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
                             isFunctionPausedBorrow_Withdraw ||
-                            !hasFiveMinutesPassed(position?.depositedTime)
+                            !hasFiveMinutesPassed(position?.depositedTime) ||
+                            position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
                           className="w-full h-full gap-0 flex flex-col justify-center  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
@@ -901,11 +906,15 @@ export function WithdrawFund({
                               ? "Loading..."
                               : position.status == BorrowStatus.DEPOSITED
                               ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                              : position.status == BorrowStatus.LIQUIDATED
+                              ? `Liquidated ${Number(
+                                  position.depositedAmount
+                                )} ${position.collateralType}`
                               : `Withdrawn ${
                                   Number(position.depositedAmount) / 2
                                 } ${position.collateralType}`}{" "}
                           </div>
-                          {position.status !== BorrowStatus.DEPOSITED && (
+                          {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm break-all text-wrap">
                               (Final ETH amount may be lower due to option fees,
                               5% price upside share, and conversion based on
@@ -1226,6 +1235,7 @@ export function WithdrawFund({
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
+                            position.status == BorrowStatus.LIQUIDATED ||
                             isFunctionPausedBorrow_Renew ||
                             !isFifteenDaysCompleted(
                               position.validTill,
@@ -1235,7 +1245,7 @@ export function WithdrawFund({
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
                         >
-                          Renew{" "}
+                          {"Renew"}{" "}
                           <span className="text-base mt-1">
                             {isFunctionPausedBorrow_Renew && "(Paused)"}
                           </span>
