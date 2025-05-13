@@ -13,19 +13,31 @@ const PopUpRouteList = [
   "/farmyourluck",
   "/redeem",
 ];
+/**
+ * This hook is used to check if the user is connected to the wallet and if the address is verified
+ * @returns {Object}
+ * @returns {string} address
+ * @returns {boolean} isConnected
+ * @returns {number} chainId
+ * @returns {function} openWalletPopup
+ */
 const useCheckWalletConnection = () => {
   const { address, isConnected, chainId } = useAccount();
-  const { open: openWalletPopup, close: closeWalletPopup } = useAppKit();
   const pathName = usePathname();
+  const { open: openWalletPopup, close: closeWalletPopup } = useAppKit();
+
   useEffect(() => {
+    // checking if the user is connected and the address is verified
     const isVerified = localStorage.getItem("verified");
     if (!isConnected && !address && isVerified) {
+      // if the user is not connected and the address is not verified and the path is in the list of popup routes, open the wallet popup
       if (PopUpRouteList.includes(pathName)) {
         openWalletPopup({
           view: "Connect",
         });
       }
     } else {
+      // if the user is connected and the address is verified, close the wallet popup
       closeWalletPopup();
     }
   }, [isConnected, address]);

@@ -27,6 +27,13 @@ async function getInterestGained(
   }).then((response) => response.json());
 }
 
+/**
+ * React hook to retrieve and manage interest gained from CDS contract.
+ *
+ * @param index - The index of the CDS position.
+ * @returns Object containing interest gained and loading/error state.
+ */
+
 // get total index from CDS contract and store it in totalCDSIndex
 const useInterestGain = (index: number) => {
   const { address, chainId } = useAccount();

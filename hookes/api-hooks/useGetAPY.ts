@@ -28,6 +28,13 @@ async function getAPY(
   }).then((response) => response.json());
 }
 
+/**
+ * React hook to retrieve and manage APY from CDS contract.
+ *
+ * @param index - The index of the CDS position.
+ * @returns Object containing APY and loading/error state.
+ */
+
 // get total index from CDS contract and store it in totalCDSIndex
 const useGetAPY = (index: number) => {
   const { address, chainId } = useAccount();

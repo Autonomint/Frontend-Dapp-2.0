@@ -5,8 +5,10 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   abondAddress,
+  borrowAssetsAddress,
   borrowingContractAddress,
   cdsAddress,
+  mpoAddress,
   sUSDAddress,
   testusdtAbiAddress,
   usDaAddress,
@@ -27,6 +29,7 @@ import ToastNotification from "@/design-systems/molecule/toasts/ToastNotificatio
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { NetworkId, scanUrls } from "@/utils/constants";
@@ -36,7 +39,7 @@ import { useFormik } from "formik";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { formatEther, formatUnits, zeroAddress } from "viem";
+import { Abi, formatEther, formatUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useBalance,
@@ -45,6 +48,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { mpoABI } from "@/blockchain/abis/mpo";
 import * as Yup from "yup";
 
 // Define the validation schema using Yup
@@ -73,8 +77,11 @@ const initialValues = {
 };
 
 const RedeemContainer = () => {
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
+  const { address: accountAddress } = useAccount();
 
+  const { address, chainId } = useAccount();
+
+  // loading state for the redeem process
   const [redeemLoadingLocal, setRedeemLoadingLocal] = useState<boolean>(false);
   const [redeemFnLoadingLocal, setRedeemFnLoadingLocal] =
     useState<boolean>(false);
@@ -83,7 +90,6 @@ const RedeemContainer = () => {
   const [abondApproveLoadingLocal, setAbondApproveLoadingLocal] =
     useState<boolean>(false);
 
-  const { address: accountAddress } = useAccount();
   const formik = useFormik({
     initialValues,
     validationSchema: formSchema,
@@ -97,8 +103,35 @@ const RedeemContainer = () => {
   // getting cds pause data
   const { isFunctionPausedCDS_Redeem } = useCdsPause();
 
-  const chainId = useChainId();
+  // fetching allowance USDA
+  const { data: allowanceUSDa } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+      cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    ],
+    query: {
+      enabled: !!address,
+    },
+  }) as { data: number | undefined };
 
+  // fetching allowance ABond
+  const { data: allowanceABond } = useReadContract({
+    abi: usDaAbi,
+    address: usDaAddress[chainId as keyof typeof usDaAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ] as `0x${string}`,
+    ],
+  }) as { data: number | undefined };
+
+  // fetching the abond balance
   const { data: abondbalance, refetch: refetchBlAbond } = useBalance({
     address: abondAddress ? accountAddress : undefined,
     token: abondAddress
@@ -106,6 +139,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
+  // fetching the usda balance
   const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
     token: usDaAddress
@@ -113,6 +147,7 @@ const RedeemContainer = () => {
       : undefined,
   });
 
+  // setting the usda , abond balance for the formik based on the input collateral
   useEffect(() => {
     if (formik.values.inputCollateral == "abond") {
       formik.setFieldValue("usdaBalance", Number(abondbalance?.formatted));
@@ -121,6 +156,7 @@ const RedeemContainer = () => {
     }
   }, [abondbalance, usdabalance, formik.values.inputCollateral]);
 
+  // usda approve function
   const {
     isPending: amintApproveLoading,
     data: amintApproveData,
@@ -138,6 +174,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the usda approve transaction receipt
   const {
     data: amintTransactionAllowed,
     isLoading: isAmintTransactionLoading,
@@ -147,33 +184,16 @@ const RedeemContainer = () => {
     hash: amintApproveData,
   });
 
+  // calling the redeem usda in contract if the transaction is successful
   useEffect(() => {
     if (usdaApproveSuccess) {
-      setUsdaApproveLocal(false);
-      setTimeout(() => {
-        setRedeemFnLoadingLocal(true);
-      }, 1000);
-      redeemUsdt?.({
-        abi: cdsAbi,
-        address: cdsAddress[chainId as keyof typeof cdsAddress],
-        functionName: "redeemAssets",
-        args: [
-          BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
-          formik.values.redeemTokenName === "USDT"
-            ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-            : formik.values.redeemTokenName === "USDC"
-            ? usdcAddress[chainId as keyof typeof usdcAddress]
-            : formik.values.redeemTokenName === "sUSD"
-            ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-            : zeroAddress,
-        ],
-        // value: nativeFee1.nativeFee,
-      });
+      callRedeemUSDaInContract();
     } else if (usdaErrorApprove) {
       handleFail();
     }
   }, [amintTransactionAllowed]);
 
+  // redeem usdt function hook
   const {
     writeContract: redeemUsdt,
     data: redeemUsdtData,
@@ -191,6 +211,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the redeem usdt transaction receipt
   const {
     data: redeemdataUsdt,
     isLoading: isRedeemUsdtTransactionLoading,
@@ -201,6 +222,7 @@ const RedeemContainer = () => {
     hash: redeemUsdtData,
   });
 
+  // calling the redeem usdt in contract if the transaction is successful
   useEffect(() => {
     if (redeemUsdtSuccess) {
       handleSuccess();
@@ -209,6 +231,7 @@ const RedeemContainer = () => {
     }
   }, [redeemdataUsdt]);
 
+  // function to handle the fail case
   const handleFail = () => {
     toast.custom((t) => (
       <ToastNotificationError
@@ -220,6 +243,7 @@ const RedeemContainer = () => {
     refetchBlAbond();
     refetchBlAmint();
   };
+  // function to handle the success case
   const handleSuccess = () => {
     toast.custom((t) => {
       const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
@@ -239,6 +263,7 @@ const RedeemContainer = () => {
         />
       );
     });
+    // resetting the page data
     refetchBlAbond();
     refetchBlAmint();
     handleClearLoading();
@@ -249,6 +274,7 @@ const RedeemContainer = () => {
       outputCollateralAmount: false,
     });
   };
+  // clearing the loading state
   const handleClearLoading = () => {
     setTimeout(() => {
       setRedeemLoadingLocal(false);
@@ -259,7 +285,7 @@ const RedeemContainer = () => {
     setAbondApproveLoadingLocal(false);
     setUsdaApproveLocal(false);
   };
-
+  //  fetching the redeem values that user will get after redeeming
   const { data: outputData, error } = useReadContract({
     abi: borrowingContractAbi,
     address:
@@ -274,10 +300,12 @@ const RedeemContainer = () => {
   });
 
   useEffect(() => {
+    // checking if the input collateral is abond and the collateral amount is greater than 0
     if (
       formik.values.inputCollateral === "abond" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
+      // checking if the collateral amount is greater than the abond balance
       if (
         (formik.values.collateralAmount || 0) >
         Number(abondbalance?.formatted.slice(0, 8))
@@ -286,10 +314,13 @@ const RedeemContainer = () => {
           collateralAmount: "Insufficient Balance",
         });
       } else {
+        // clearing the error
         formik.setErrors({
           collateralAmount: "",
         });
+        // checking if the output data is available
         if (outputData) {
+          // setting the output collateral amount
           formik.setFieldValue(
             "outputCollateralAmount",
             Number(formatEther(outputData[0]) || 1)
@@ -297,16 +328,20 @@ const RedeemContainer = () => {
         }
       }
     } else if (
+      // checking if the input collateral is amint and the collateral amount is greater than 0
       formik.values.inputCollateral === "amint" &&
       (formik.values.collateralAmount || 0) > 0
     ) {
+      // checking if the collateral amount is greater than the usda balance
       if (
         (formik.values.collateralAmount || 0) >
         Number(usdabalance?.formatted.slice(0, 9))
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
+        // clearing the error
         formik.setErrors({ collateralAmount: "" });
+        // setting the output collateral amount
         formik.setFieldValue(
           "outputCollateralAmount",
           Number(formik.values.collateralAmount)
@@ -317,6 +352,7 @@ const RedeemContainer = () => {
     }
   }, [formik.values, outputData]);
 
+  // abond approve function
   const {
     isPending: abondApproveLoading,
     data: abondApproveData,
@@ -339,6 +375,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the abond approve transaction receipt
   const {
     data: abondTransactionAllowed,
     isLoading: isAbondTransactionLoading,
@@ -351,26 +388,16 @@ const RedeemContainer = () => {
     // Display a custom toast notification
   });
 
+  // calling the redeem abond in contract if the transaction is successful
   useEffect(() => {
     if (abondApproveSuccess) {
-      setAbondApproveLoadingLocal(false);
-      setTimeout(() => {
-        setRedeemFnLoadingLocal(true);
-      }, 1000);
-      redeemEth?.({
-        abi: borrowingContractAbi,
-        address:
-          borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ],
-        functionName: "redeemYields",
-        args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
-      });
+      callRedeemABondInContract();
     }
     if (abondApproveError) {
     }
   }, [abondTransactionAllowed]);
 
+  // redeem eth function hook
   const {
     writeContract: redeemEth,
     data: redeemEthData,
@@ -393,6 +420,7 @@ const RedeemContainer = () => {
     },
   });
 
+  // fetching the redeem eth transaction receipt
   const {
     data: redeemdataEth,
     isLoading: isRedeemEthTransactionLoading,
@@ -403,6 +431,7 @@ const RedeemContainer = () => {
     hash: redeemEthData,
   });
 
+  // calling the redeem abond in contract if the transaction is successful
   useEffect(() => {
     if (redeemEthSuccess) {
       handleSuccess();
@@ -411,36 +440,94 @@ const RedeemContainer = () => {
     }
   }, [redeemdataEth]);
 
+  // function to handle the redeem process
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      setUsdaApproveLocal(true);
-      amintApproveWrite({
-        abi: usDaAbi,
-        address: usDaAddress[chainId as keyof typeof usDaAddress],
-        functionName: "approve",
-        args: [
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-          BigInt((values.collateralAmount || 0) * 10 ** 6),
-        ],
-      });
+      const redeemAmountUSDa = BigInt((values.collateralAmount || 0) * 10 ** 6);
+      // checking if the allowance is less than the redeem amount
+      if ((allowanceUSDa || 0) < redeemAmountUSDa) {
+        setUsdaApproveLocal(true);
+        amintApproveWrite({
+          abi: usDaAbi,
+          address: usDaAddress[chainId as keyof typeof usDaAddress],
+          functionName: "approve",
+          args: [
+            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            redeemAmountUSDa,
+          ],
+        });
+      } else {
+        // calling the redeem usda in contract
+        callRedeemUSDaInContract();
+      }
     } else if (values.inputCollateral === "abond") {
-      setRedeemLoadingLocal(true);
-      setAbondApproveLoadingLocal(true);
-      abondApproveWrite({
-        abi: abondAbi,
-        address: abondAddress[chainId as keyof typeof abondAddress],
-        functionName: "approve",
-        args: [
-          borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ] as `0x${string}`,
-          BigInt((values.collateralAmount || 0) * 10 ** 18),
-        ],
-      });
+      // checking if the input collateral is abond
+      const redeemAmountABond = BigInt(
+        (values.collateralAmount || 0) * 10 ** 18
+      );
+      // checking if the allowance is less than the redeem amount
+      if ((allowanceABond || 0) < redeemAmountABond) {
+        setAbondApproveLoadingLocal(true);
+        abondApproveWrite({
+          abi: abondAbi,
+          address: abondAddress[chainId as keyof typeof abondAddress],
+          functionName: "approve",
+          args: [
+            borrowingContractAddress[
+              chainId as keyof typeof borrowingContractAddress
+            ] as `0x${string}`,
+            redeemAmountABond,
+          ],
+        });
+      } else {
+        // calling the redeem abond in contract
+        callRedeemABondInContract();
+      }
     }
   }
 
+  // function to call the redeem abond in contract
+  const callRedeemABondInContract = () => {
+    setAbondApproveLoadingLocal(false);
+    setTimeout(() => {
+      setRedeemFnLoadingLocal(true);
+    }, 1000);
+    redeemEth?.({
+      abi: borrowingContractAbi,
+      address:
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+      functionName: "redeemYields",
+      args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
+    });
+  };
+
+  // function to call the redeem usda in contract
+  const callRedeemUSDaInContract = () => {
+    setUsdaApproveLocal(false);
+    setTimeout(() => {
+      setRedeemFnLoadingLocal(true);
+    }, 1000);
+    redeemUsdt?.({
+      abi: cdsAbi,
+      address: cdsAddress[chainId as keyof typeof cdsAddress],
+      functionName: "redeemAssets",
+      args: [
+        BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
+        formik.values.redeemTokenName === "USDT"
+          ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+          : formik.values.redeemTokenName === "USDC"
+          ? usdcAddress[chainId as keyof typeof usdcAddress]
+          : formik.values.redeemTokenName === "sUSD"
+          ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+          : zeroAddress,
+      ],
+      // value: nativeFee1.nativeFee,
+    });
+  };
+  // dropdown items for the input collateral
   const dropdownItems = [
     // {
     //   label: "USDa",
@@ -451,7 +538,7 @@ const RedeemContainer = () => {
       onClick: () => formik.setFieldValue("inputCollateral", "abond"),
     },
   ];
-
+  // dropdown items for the redeem token
   const RedeemTokenDropdownItems = useMemo(() => {
     const options = [
       {
@@ -474,9 +561,123 @@ const RedeemContainer = () => {
 
   const pathname = usePathname();
 
-  const handleChange = (event: any) => {
-    formik.setFieldValue("redeemTokenName", event.target.value);
-  };
+  // Custom hook to fetch the Price of the selected asset
+  const { assetPrice: rsEthPrice } = useGetUsdValue(
+    borrowAssetsAddress["wrsETH" as keyof typeof borrowAssetsAddress]
+  );
+  // fetching the price of the weETH
+  const { assetPrice: weEthPrice } = useGetUsdValue(
+    borrowAssetsAddress["weETH" as keyof typeof borrowAssetsAddress]
+  );
+  // fetching the price of the eth
+  const { assetPrice: ethPrice } = useGetUsdValue(
+    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+  );
+
+  // fetching the usda+ prices
+  const { data: usdaPrice, isPending: isLoadingUsdaPrice } = useReadContract({
+    address: mpoAddress[chainId as keyof typeof mpoAddress],
+    abi: mpoABI,
+    functionName: "price",
+    args: [usDaAddress[chainId as keyof typeof usDaAddress]],
+    query: {
+      select: (data: any) => {
+        return Number(formatUnits(BigInt(data[0] || 0n), 18));
+      },
+      placeholderData: 0,
+    },
+  }) as { data: number; isPending: boolean };
+
+  console.log(usdaPrice, "usdaPrice");
+
+  // fetching the yield percentage
+  const yieldPercentage = useMemo(() => {
+    // dollar value of the all redeemable assets
+    const redeemableEthDollarValue =
+      Number(formatEther(outputData?.[3] || 0n)) *
+      Number(formatUnits(BigInt(ethPrice || 0n), 2));
+    const redeemableWeEthDollarValue =
+      Number(formatEther(outputData?.[1] || 0n)) *
+      Number(formatUnits(BigInt(weEthPrice || 0n), 2));
+    const redeemableRsEthDollarValue =
+      Number(formatEther(outputData?.[2] || 0n)) *
+      Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+    const redeemableUsdaDollarValue =
+      Number(formatUnits(outputData?.[4] || 0n, 6)) * usdaPrice;
+
+    // calculating the yield percentage
+    const x =
+      (Number(formatEther(outputData?.[3] || 0n)) -
+        Number(formatEther(outputData?.[0] || 0n))) *
+        Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
+      redeemableUsdaDollarValue;
+
+    const y =
+      redeemableEthDollarValue +
+      redeemableWeEthDollarValue +
+      redeemableRsEthDollarValue;
+
+    const yieldValue = x / y || 0;
+    console.table(
+      {
+        ethPrice,
+        weEthPrice,
+        rsEthPrice,
+        redeemableEthDollarValue,
+        redeemableWeEthDollarValue,
+        redeemableRsEthDollarValue,
+        redeemableUsdaDollarValue,
+        x,
+        y,
+        yieldValue,
+      },
+      ["osd"]
+    );
+
+    return yieldValue;
+  }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
+
+  //  fetching the redeem values that user will get after redeeming
+  const { data: allABondYields } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "getAbondYields",
+    args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
+    query: {
+      placeholderData: [0n, 0n, 0n, 0n, 0n],
+    },
+  });
+
+  console.log(allABondYields, "allABondYields", abondbalance);
+
+  const ABondPrice = useMemo(() => {
+    // dollar value of the all redeemable assets
+    const redeemableEthDollarValue =
+      Number(formatEther(allABondYields?.[3] || 0n)) *
+      Number(formatUnits(BigInt(ethPrice || 0n), 2));
+    const redeemableWeEthDollarValue =
+      Number(formatEther(allABondYields?.[1] || 0n)) *
+      Number(formatUnits(BigInt(weEthPrice || 0n), 2));
+    const redeemableRsEthDollarValue =
+      Number(formatEther(allABondYields?.[2] || 0n)) *
+      Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+    const redeemableUsdaDollarValue =
+      Number(formatUnits(allABondYields?.[4] || 0n, 6)) * usdaPrice;
+
+    // calculating the abond price
+    const value =
+      (redeemableEthDollarValue +
+        redeemableWeEthDollarValue +
+        redeemableRsEthDollarValue +
+        redeemableUsdaDollarValue) /
+      Number(abondbalance?.formatted || 0);
+
+    console.log(value, "ABondPrice");
+    return value;
+  }, [allABondYields, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
@@ -536,23 +737,41 @@ const RedeemContainer = () => {
                 />
               </div>
               <div className="text-black flex justify-between dark:text-white md:text-lg text-right mb-4 text-[14px]">
-                <Typography
-                  size="sm"
-                  variant="regular"
-                  className="text-red-500"
-                >
-                  {formik.errors.inputCollateral &&
-                  formik.touched.inputCollateral
-                    ? formik.errors.inputCollateral
-                    : ""}
-                </Typography>
+                {formik.errors.inputCollateral ? (
+                  <Typography
+                    size="sm"
+                    variant="regular"
+                    className="text-red-500"
+                  >
+                    {formik.errors.inputCollateral &&
+                    formik.touched.inputCollateral
+                      ? formik.errors.inputCollateral
+                      : ""}
+                  </Typography>
+                ) : formik.values.inputCollateral === "abond" ? (
+                  <div className="text-grayLight">
+                    ABond Price:{" "}
+                    <span className="dark:text-white text-black">
+                      ${isNaN(ABondPrice) ? '0' : ABondPrice.toFixed(2)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="text-grayLight">
+                    USDA+ Price:{" "}
+                    <span className="dark:text-white text-black">
+                      ${usdaPrice.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div>
-                  Balance{" "}
-                  <span className="text-grayLight">
-                    {formik.values.inputCollateral == "amint"
-                      ? `${usdabalance?.formatted || 0} USDA+`
-                      : `${abondbalance?.formatted || 0}  ABond`}
-                  </span>
+                  <div className="text-grayLight">
+                    Balance{" "}
+                    <span className="dark:text-white text-black">
+                      {formik.values.inputCollateral == "amint"
+                        ? `${usdabalance?.formatted || 0} USDA+`
+                        : `${abondbalance?.formatted || 0}  ABond`}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -583,9 +802,9 @@ const RedeemContainer = () => {
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (
-                  <div className="text-sm text-black mt-2 font-medium dark:text-[#FFFF] flex ">
+                  <div className="text-sm  justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
                     <div className="flex justify-start items-center gap-2 mr-1 ">
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[3])).toFixed(5)
                           : 0}{" "}
@@ -593,26 +812,32 @@ const RedeemContainer = () => {
                       </div>
                       <div className="text-xl">+</div>
 
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[1])).toFixed(5)
                           : 0}{" "}
                         WeETH
                       </div>
                       <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[2])).toFixed(5)
                           : 0}{" "}
-                        WrsETH
+                        rsETH
                       </div>
 
                       <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-2xl  text-bold">
+                      <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatUnits(outputData[4], 6)).toFixed(2)
                           : 0}{" "}
-                        USDa
+                        USDA+
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center p-1 text-xl  text-grayLight text-bold">
+                        Yield Percentage: {yieldPercentage.toFixed(4)}%
                       </div>
                     </div>
                   </div>

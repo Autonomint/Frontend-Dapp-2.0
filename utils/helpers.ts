@@ -393,3 +393,17 @@ export function getTotalDepositingAmount(
 
   return Math.floor(Number(totalDepositingAmount));
 }
+
+export function hasFiveMinutesPassed(timestamp: number): boolean {
+  const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
+  const timestampInMs = timestamp * 1000; // Convert from seconds to milliseconds
+  const now = Date.now(); // Current time in milliseconds
+  return now - timestampInMs >= FIVE_MINUTES_IN_MS;
+}
+
+export function getMinutesPassed(timestamp: number): number {
+  const timestampInMs = timestamp * 1000; // Convert from seconds to milliseconds
+  const now = Date.now(); // Current time in milliseconds
+  const diffInMs = now - timestampInMs;
+  return Math.floor(diffInMs / (60 * 1000)); // Convert milliseconds to full minutes
+}

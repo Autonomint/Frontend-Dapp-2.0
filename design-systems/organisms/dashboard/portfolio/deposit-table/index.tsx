@@ -52,10 +52,14 @@ function DepositTable({
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
+  // scroll ref for scroll table after deposit
   const scrollRef = useRef<HTMLDivElement>(null);
+  // scroll state for scroll table after deposit
   const { isScroll, setIsScroll } = useScroll();
+  // get eth price
   const { usdValue: ethPrice } = useGetUsdValue();
 
+  // handle scroll to bottom of table after deposit
   const scrollToElement = () => {
     if (scrollRef.current) {
       scrollRef.current.scroll({
@@ -66,15 +70,18 @@ function DepositTable({
   };
 
   useEffect(() => {
+    // if global scroll state is true then scroll to bottom of table and page
     if (isScroll) {
       setCurrentPage(totalPages);
       const scrollContainer = document.getElementById("body-scroll-container");
+      // page scroll to bottom
       if (scrollContainer) {
         scrollContainer.scroll({
           top: scrollContainer.scrollHeight,
           behavior: "smooth",
         });
       }
+      // table scroll to bottom
       scrollToElement();
 
       setTimeout(() => {
@@ -83,6 +90,7 @@ function DepositTable({
     }
   }, [positionList]);
 
+  // calculate position down side protection for every position for sorting in down side protection column
   const positionListDP = positionList.map((position) => {
     let dp = 0;
     if (ethPrice === undefined) {
@@ -91,6 +99,7 @@ function DepositTable({
     if (parseFloat(ethPrice.toString()) > position.ethPrice) {
       dp = 0;
     } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
+      // calculate down side protection by multiplying deposited amount with the difference between eth price and current eth price
       const amountProt =
         parseFloat(position.depositedAmount) *
         (position.ethPrice - parseFloat(ethPrice.toString()));
@@ -105,6 +114,7 @@ function DepositTable({
     };
   });
 
+  // sort position list based on sortBy and sortAsc and selected column
   const sortedPositionList = useMemo(() => {
     return positionListDP.sort((a, b) => {
       if (sortBy === "usda") {
@@ -144,6 +154,7 @@ function DepositTable({
       <table className="table-auto   w-full border-collapse text-[20px]">
         <thead
           className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
+            // if sticky is true then sticky the table header
             isSticky
               ? "sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px] "
               : ""

@@ -1,7 +1,6 @@
 import { useCallback, useReducer } from "react";
 
 /**
- * @author Andy <andy.bell@clubrare.xyz>
  *
  * @description This state manager toggles between `true` and `false` automatically,
  * but it can also force a value when provided.

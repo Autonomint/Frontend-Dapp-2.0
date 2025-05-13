@@ -2,6 +2,7 @@ import { globalAbi } from "@/blockchain/abis/global";
 import { globalAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
+// Hook to get omnichain data from global contract
 const useGetOmniChainData = () => {
   const { address, chainId } = useAccount();
   const {

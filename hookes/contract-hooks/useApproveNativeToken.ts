@@ -8,6 +8,13 @@ import {
 import { NetworkId } from "@/utils/constants";
 import { useAccount, useWriteContract } from "wagmi";
 
+/**
+ * This hook is used to approve the native token for a specific contract.
+ * It uses the `useWriteContract` hook from `wagmi` to interact with the smart contract.
+ *
+ * @param mutation - The mutation object containing options for the write contract operation.
+ * @returns An object containing various states and functions related to the approval process.
+ */
 const useApproveNativeToken = (mutation: any) => {
   const {
     isPending: nativeTokenApproveLoading,
@@ -20,32 +27,6 @@ const useApproveNativeToken = (mutation: any) => {
     mutation,
   });
   const { chainId } = useAccount();
-
-  // const approvenativeToken = async (
-  //   lastCumulativeRate: bigint | undefined,
-  //   normalizedAmount: string
-  // ) => {
-  //   nativeTokenApproveAsync({
-  //     abi: nativeTokenAbi,
-  //     address: nativeTokenAddress[chainId as keyof typeof nativeTokenAddress],
-  //     functionName: "approve",
-  //     args: [
-  //       borrowingContractAddress[
-  //         chainId as keyof typeof borrowingContractAddress
-  //       ] as `0x${string}`, // address of borrowing contract based on chainId
-
-  //       BigInt(
-  //         BigInt(
-  //           parseInt(normalizedAmount)
-  //             ? Number(parseInt(normalizedAmount)) * 10 ** 6
-  //             : 0
-  //         ) * BigInt(lastCumulativeRate ?? 0n)
-  //       ) /
-  //         BigInt(10 ** 27) +
-  //         1000000n, // Total usda amount
-  //     ],
-  //   });
-  // };
 
   const abi = chainId === NetworkId.BaseSepolia ? modeABI : modeABI;
   const tokenContractAddress =

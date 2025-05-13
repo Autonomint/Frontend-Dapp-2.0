@@ -1,5 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
 export interface SignedDataReturn {
@@ -10,6 +10,14 @@ export interface SignedDataReturn {
   odosAssembledData: string;
   usdtFromOdos: string;
 }
+/**
+ *
+ * @param address * @param address
+ * @returns
+ * @param chainId
+ * @param index
+ * @returns
+ */
 
 async function signedDataForDcdsWithDrawDeposit(
   address: `0x${string}` | undefined,
@@ -29,6 +37,11 @@ async function signedDataForDcdsWithDrawDeposit(
   }).then((response) => response.json());
 }
 
+/**
+ * Function to fetch the borrow signed data
+ * @param {string} address - The address of the user
+ * @param {number} chainId - The chain id of the user
+ */
 async function signedDataForDcdsWithGainsDrawDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
@@ -47,38 +60,39 @@ async function signedDataForDcdsWithGainsDrawDeposit(
   }).then((response) => response.json());
 }
 
+/**
+ * Custom hook to fetch the borrow signed data
+ * @param {number} index - The index of the borrow
+ * @returns {Object} Object containing:
+ *   - BorrowWithdrawSignedData: The borrow signed data
+ *   - isPendingBorrowWithDrawSignedData: The pending state of the borrow signed data
+ */
 const useGetDcdsWithdrawSignedData = (index: number) => {
   const { address, chainId } = useAccount();
   const {
     data: BorrowWithdrawSignedData,
     isPending: isPendingBorrowWithDrawSignedData,
-    refetch: refetchBorrowWithDrawSignedData,
-  } = useQuery({
-    queryKey: ["useGetDcdsWithdrawSignedData"],
-    queryFn: () =>
+    mutateAsync: refetchBorrowWithDrawSignedData,
+  } = useMutation({
+    mutationFn: () =>
       signedDataForDcdsWithDrawDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0
       ),
-    select: (data) => data,
-    enabled: !!address && !!chainId,
   });
 
   const {
     data: BorrowWithdrawGainsSignedData,
     isPending: isPendingBorrowWithDrawGainsSignedData,
-    refetch: refetchBorrowWithDrawGainsSignedData,
-  } = useQuery({
-    queryKey: ["useGetDcdsWithdrawSignedData"],
-    queryFn: () =>
+    mutateAsync: refetchBorrowWithDrawGainsSignedData,
+  } = useMutation({
+    mutationFn: () =>
       signedDataForDcdsWithGainsDrawDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0
       ),
-    select: (data) => data,
-    enabled: !!address && !!chainId,
   });
 
   return {

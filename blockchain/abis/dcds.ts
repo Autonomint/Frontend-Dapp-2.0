@@ -554,7 +554,19 @@ export const cdsAbi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "optionsFeesWithdrawn",
+        name: "excessProfitCumulativeValue",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "priceChangePL",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "liqUsed",
         type: "uint256",
       },
     ],
@@ -1091,6 +1103,19 @@ export const cdsAbi = [
         internalType: "uint128[]",
         name: "",
         type: "uint128[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getSupportedTokenAddresses",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
       },
     ],
     stateMutability: "view",

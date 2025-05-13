@@ -2,6 +2,11 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
+/**
+ * React hook to retrieve and manage the last cumulative rate from the borrowing contract.
+ *
+ * @returns Object containing the last cumulative rate and loading/error state.
+ */
 const useLastCumulativeRate = () => {
   const { address, chainId } = useAccount();
 

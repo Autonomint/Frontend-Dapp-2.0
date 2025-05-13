@@ -11,6 +11,7 @@ function Leaderboard() {
   // Fetch the total volume of borrowers amount in USD
   const { omniChainData } = useGetOmniChainData();
 
+  // getting leaderboard data
   const {
     totalBorrowCount,
     totalDepositedCount,
@@ -29,18 +30,21 @@ function Leaderboard() {
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
         <div className="col-span-1">
+          {/* Total number of borrowers */}
           <PortfolioMetrics
             subHeading="Total number of borrowers"
             value={totalBorrowCount.toString() || ""}
           />
         </div>
         <div className="col-span-1">
+          {/* Total number of dcds depositors */}
           <PortfolioMetrics
             subHeading="Total number of dcds depositors"
             value={totalDepositedCount.toString() || ""}
           />
         </div>
         <div className="col-span-1">
+          {/* Total Value Locked (TVL) */}
           <PortfolioMetrics
             subHeading="Total Value Locked (TVL)"
             value={`$${formatNumber(
@@ -58,6 +62,7 @@ function Leaderboard() {
           />
         </div>
         <div className="col-span-1">
+          {/* Total Distributed Points */}
           <PortfolioMetrics
             subHeading="Total Distributed Points"
             value={(
@@ -66,6 +71,7 @@ function Leaderboard() {
           />
         </div>
       </div>
+      {/* Leaderboard Table */}
       <LeaderboardTable
         leaderboardData={pagedLeaderboardData}
         handleNextPage={handleNextPage}

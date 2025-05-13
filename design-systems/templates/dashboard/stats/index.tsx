@@ -38,7 +38,10 @@ function StatsTemplate() {
   const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda();
   const { totalSupplyAbond } = useGetTotalSupplyAbond();
 
+
   const { omniChainData } = useGetomniChainData();
+
+  // getting total borrow amount for user
   const { userTotalBorrowAmount } = useGetTotalBorrow();
   const [feeOption, setFeeOption] = useState("Option Fees");
 
@@ -54,6 +57,7 @@ function StatsTemplate() {
     enabled: !!chainId && !!ethPrice,
   });
 
+  // getting option fees for  1 eth
   const { optionFees: feeOptions, refetchOptionFee: refetch } =
     useFetchOptionFees(1, (ethPrice || 0) as number, 5);
 
@@ -81,17 +85,20 @@ function StatsTemplate() {
       feeOptions != undefined &&
       totalSupplyAbond != undefined
     ) {
+      // total borrow amount for user   
       USDAPrice[0].value = userTotalBorrowAmount;
 
+      // usda+ supply for user  
       usdaValues[0].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
 
+      // usda+ supply for user
       usdaValues[1].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
 
-      // locked values
+      // total borrow amount + cds deposited amount 
       lockedValues[0].value = omniChainData.totalCdsDepositedAmount
         ? formatNumber(
             Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6 +
@@ -102,6 +109,7 @@ function StatsTemplate() {
               )
           )
         : "0";
+      // total cds deposited amount
       lockedValues[1].value = omniChainData.totalCdsDepositedAmount
         ? `${formatNumber(
             Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
@@ -118,8 +126,10 @@ function StatsTemplate() {
       //   : "0";
 
       // ratio values
+      // ratio of collateral for user
       RatioValues[0].value =
         ratioData == undefined ? "-" : ratioData.toFixed(2);
+
       RatioValues[1].value = `$${
         omniChainData.totalCdsDepositedAmount
           ? formatNumber(
@@ -127,6 +137,7 @@ function StatsTemplate() {
             )
           : "0"
       }`;
+      
       RatioValues[2].value = `$${
         omniChainData.cdsPoolValue
           ? formatNumber(Number(omniChainData.cdsPoolValue / BigInt(10 ** 6)))

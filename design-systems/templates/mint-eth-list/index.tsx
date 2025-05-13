@@ -15,7 +15,9 @@ import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-
+import { usePoint } from "@/hookes/api-hooks/usePoint";
+import { STRATEGY_LINK } from "@/utils/urls";
+// Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
   visible: {
@@ -29,7 +31,7 @@ const farmTextVariants = {
 
 function MintEthListTemplate() {
   const { chainId } = useAccount();
-
+  // Custom hook to fetch the LTV value
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
   // Calculate the downside protection amount
@@ -45,8 +47,12 @@ function MintEthListTemplate() {
     functionName: "APR",
   });
 
+  // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
+  const { ethPoints, isLoading, error } = usePoint();
+
+  // List of tokens with their respective data
   const list = [
     {
       token: "ETH",
@@ -56,6 +62,9 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "ETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
     {
       token: "wrsETH",
@@ -65,6 +74,9 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
     {
       token: "weETH",
@@ -74,10 +86,16 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
     },
   ];
 
+  // Custom hook to detect device type
   const deviceType = useDeviceType();
+
+  // Show back button for mobile and tablet devices
   const showBack = deviceType === "mobile" || deviceType === "tablet";
 
   return (

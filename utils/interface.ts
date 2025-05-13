@@ -33,6 +33,16 @@ export interface dcdsDepositDetails {
   };
   nativeTokenPriceAtDeposit: number;
   liquidationPrice: number;
+  apys: CdsWithdrawAPYs;
+}
+
+export interface CdsWithdrawAPYs {
+  APY: number | Number;
+  amountAccured: number | Number;
+  priceChangePL: number | Number;
+  liquidatedCollateralInETH: number | Number;
+  liquidatedETHValue: number | Number;
+  currentTimeAPYTillNow: number | Number;
 }
 
 export interface DcdsDetailsResponse {
@@ -51,6 +61,7 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  ethPriceAtWithdraw: number;
   depositedAmountInETH?: string;
   exchangeRateAtDeposit?: string | number;
   noOfUSDaMinted: number;
@@ -76,6 +87,7 @@ export interface PositionData {
   amountYetToWithdraw: string;
   noOfAbondMinted: string;
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
+  totalDebtAmount: string;
 }
 
 export interface LeaderboardDetails {
