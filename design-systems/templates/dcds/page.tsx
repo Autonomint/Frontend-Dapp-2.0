@@ -861,6 +861,8 @@ function DCDSTemplate() {
     );
   }, [formik.values, selectedTokens]);
 
+  console.log(selectedTokens, "selectedTokens");
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -920,7 +922,7 @@ function DCDSTemplate() {
                     >
                       <Image
                         src={
-                          theme === "dark" && token.tokenName === "USDa"
+                          theme === "dark" && token.tokenName === "USDA+"
                             ? USDaIconGreen
                             : token?.tokenImage
                         }
