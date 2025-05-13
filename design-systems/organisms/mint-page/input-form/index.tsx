@@ -543,19 +543,19 @@ function InputForm({ currency }: { currency: string }) {
             calculateRemainingTimeDate(
               farmLuckDetails?.deadLine10xTimestamp || ""
             ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
                 10x Points
               </div>
             ) : calculateRemainingTimeDate(
                 farmLuckDetails?.deadLine10xTimestamp || ""
               ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
                 10x Points
               </div>
             ) : calculateRemainingTimeDate(
                 farmLuckDetails?.deadLine5xTimestamp || ""
               ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
+              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
                 5x Points
               </div>
             ) : null}
