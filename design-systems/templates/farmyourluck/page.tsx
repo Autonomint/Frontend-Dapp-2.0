@@ -382,7 +382,7 @@ function FarmYourLuckTemplate() {
       }
     },
     placeholderData: 0,
-    enabled: !!farmLuckDetails?.totalLuck && farmLuckDetails.totalLuck > 0,
+    enabled: !!chainId,
     refetchOnWindowFocus: false,
   });
 

@@ -738,7 +738,9 @@ function DCDSTemplate() {
       return {
         tokenImage: getIconMapping(
           theme || "dark",
-          token.symbol?.toString().toLowerCase() || "usda"
+          token.symbol?.toString().toLowerCase() === "usda+"
+            ? "usda"
+            : token.symbol?.toString().toLowerCase() || "usda"
         ),
         tokenName: String(token.symbol || ""),
         tokenLabel: String(
