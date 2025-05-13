@@ -544,7 +544,7 @@ function InputForm({ currency }: { currency: string }) {
               farmLuckDetails?.deadLine10xTimestamp || ""
             ).minutes > 0 ? (
               <div className="text-[14px] font-medium text-black bg-[#abffde] border-black border px-3 py-1 rounded-[24px]">
-                15x Points
+                10x Points
               </div>
             ) : calculateRemainingTimeDate(
                 farmLuckDetails?.deadLine10xTimestamp || ""
