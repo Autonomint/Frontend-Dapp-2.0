@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import displayNumberWithPrecision from "@/utils/helpers";
+import useDeviceType from "@/hookes/useDeviceType";
 
 function DepositTable({
   tabPosition,
@@ -149,206 +150,230 @@ function DepositTable({
     });
   }, [positionList, sortBy, sortAsc]);
 
-  console.log(sortedPositionList, "sortedPositionList");
+  // get device type
+  const deviceType = useDeviceType();
 
   return (
-    <div ref={scrollRef} className="sm:my-4  overflow-x-clip  no-scrollbar">
-      <table className="table-auto   w-full border-collapse text-[20px]">
-        <thead
-          className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
-            // if sticky is true then sticky the table header
-            isSticky
-              ? "sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px] "
-              : ""
-          }`}
-        >
-          <tr>
-            <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
-              ID
-            </th>
-            <th
-              onClick={() => {
-                setSortBy("amount");
-                setSortAsc(!sortAsc);
-              }}
-              className="pl-5 whitespace-nowrap cursor-pointer font-normal w-4/5 lg:w-auto"
-            >
-              <div className="flex gap-2 items-center">
-                <span>Asset Deposited </span>
-                <span>
-                  {sortAsc && sortBy === "amount" ? (
-                    <ChevronDown
-                      className={
-                        sortBy === "amount"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  ) : (
-                    <ChevronUp
-                      className={
-                        sortBy === "amount"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  )}
-                </span>
-              </div>
-            </th>
-            <th
-              onClick={() => {
-                setSortBy("usda");
-                setSortAsc(!sortAsc);
-              }}
-              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-            >
-              <div className="flex gap-2 items-center">
-                <span>USDA+ Minted </span>
-                <span>
-                  {sortAsc && sortBy === "usda" ? (
-                    <ChevronDown
-                      className={
-                        sortBy === "usda"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  ) : (
-                    <ChevronUp
-                      className={
-                        sortBy === "usda"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  )}
-                </span>
-              </div>
-            </th>
-            <th
-              onClick={() => {
-                setSortBy("protected");
-                setSortAsc(!sortAsc);
-              }}
-              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-            >
-              <div className="flex gap-2 items-center">
-                <span>Amount Protected</span>
-                <span>
-                  {sortAsc && sortBy === "protected" ? (
-                    <ChevronDown
-                      className={
-                        sortBy === "protected"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  ) : (
-                    <ChevronUp
-                      className={
-                        sortBy === "protected"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  )}
-                </span>
-              </div>
-            </th>
-            <th
-              onClick={() => {
-                setSortBy("abond");
-                setSortAsc(!sortAsc);
-              }}
-              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-            >
-              <div className="flex gap-2 items-center">
-                <span>ABond Minted</span>
-                <span>
-                  {sortAsc && sortBy === "abond" ? (
-                    <ChevronDown
-                      className={
-                        sortBy === "abond"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  ) : (
-                    <ChevronUp
-                      className={
-                        sortBy === "abond"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  )}
-                </span>
-              </div>
-            </th>
-            <th
-              onClick={() => {
-                setSortBy("liquidation");
-                setSortAsc(!sortAsc);
-              }}
-              className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-            >
-              <div className="flex gap-2 items-center">
-                <span>Liquidation</span>
-                <span>
-                  {sortAsc && sortBy === "liquidation" ? (
-                    <ChevronDown
-                      className={
-                        sortBy === "liquidation"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  ) : (
-                    <ChevronUp
-                      className={
-                        sortBy === "liquidation"
-                          ? "stroke-black dark:stroke-white"
-                          : ""
-                      }
-                    />
-                  )}
-                </span>
-              </div>
-            </th>
-            <th className="pr-5 whitespace-nowrap font-normal lg:w-auto text-right">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody className={`font-normal `}>
-          {sortedPositionList.map((position: PositionData, key: number) => {
-            return (
-              <DepositTableRow
-                key={key}
-                idx={key + 1 + (currentPage - 1) * pageSize}
-                position={position}
-                tabPosition={tabPosition}
-                setSelectedPosition={setSelectedPosition}
-                setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
-                setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
-                isViewPositionOpen={isViewPositionOpen}
-                setViewPosition={setViewPosition}
-                isLast={key === positionList.length - 1}
-                setRenewRepay={setRenewRepay}
-                highlight={
-                  key + 1 === positionList.length &&
-                  isScroll &&
-                  totalPages == currentPage
-                }
-              />
-            );
-          })}
-        </tbody>
-      </table>
+    <>
+      <div
+        ref={scrollRef}
+        className="sm:my-4  overflow-x-scroll xl:overflow-x-clip no-scrollbar"
+      >
+        <table className="table-auto   w-full border-collapse text-[20px]">
+          <thead
+            className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
+              // if sticky is true then sticky the table header
+              isSticky
+                ? "xl:sticky top-[80px] nss:top-[52px] md:top-[62px] lg:top-[128px] xl:top-[66px] hxl:top-[66px] 2xl:top-[74px] left-0  right-0 border-grayLight border border-b-[1px] "
+                : ""
+            }`}
+          >
+            <tr>
+              <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
+                ID
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("amount");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal w-4/5 lg:w-auto"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>Asset Deposited </span>
+                  <span>
+                    {sortAsc && sortBy === "amount" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "amount"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "amount"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("usda");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>USDA+ Minted </span>
+                  <span>
+                    {sortAsc && sortBy === "usda" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "usda"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "usda"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("protected");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>Amount Protected</span>
+                  <span>
+                    {sortAsc && sortBy === "protected" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "protected"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "protected"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("abond");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>ABond Minted</span>
+                  <span>
+                    {sortAsc && sortBy === "abond" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "abond"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "abond"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("liquidation");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>Liquidation</span>
+                  <span>
+                    {sortAsc && sortBy === "liquidation" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "liquidation"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "liquidation"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th className="pr-5 whitespace-nowrap font-normal lg:w-auto text-right">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody className={`font-normal `}>
+            {sortedPositionList.map((position: PositionData, key: number) => {
+              return (
+                <DepositTableRow
+                  key={key}
+                  idx={key + 1 + (currentPage - 1) * pageSize}
+                  position={position}
+                  tabPosition={tabPosition}
+                  setSelectedPosition={setSelectedPosition}
+                  setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
+                  setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
+                  isViewPositionOpen={isViewPositionOpen}
+                  setViewPosition={setViewPosition}
+                  isLast={key === positionList.length - 1}
+                  setRenewRepay={setRenewRepay}
+                  highlight={
+                    key + 1 === positionList.length &&
+                    isScroll &&
+                    totalPages == currentPage
+                  }
+                />
+              );
+            })}
+          </tbody>
+        </table>
 
+        {!positionListLoading && positionList.length === 0 ? (
+          <div className="border-t flex justify-center items-center  h-[400px] border-x-0 border-b-0 border border-grayLight">
+            <Typography size="lg" variant="regular" className="mt-3">
+              {address && isConnected
+                ? "No Data Available"
+                : "Please Connect Wallet"}
+            </Typography>
+          </div>
+        ) : null}
+        {positionListLoading ? (
+          <div className="border-t flex justify-center items-center  h-[400px]  border-x-0 border-b-0 border border-grayLight">
+            <RingLoadingIcon
+              width={50}
+              height={50}
+              className="fill-black dark:fill-white w-8 h-8 "
+            />
+          </div>
+        ) : null}
+      </div>
       {positionList.length > 0 && (
-        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto my-4 md:mb-0 justify-around items-center">
+        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto pb-4  justify-around items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"
@@ -375,26 +400,7 @@ function DepositTable({
           </Button>
         </div>
       )}
-
-      {!positionListLoading && positionList.length === 0 ? (
-        <div className="border-t flex justify-center items-center  h-[400px] border-x-0 border-b-0 border border-grayLight">
-          <Typography size="lg" variant="regular" className="mt-3">
-            {address && isConnected
-              ? "No Data Available"
-              : "Please Connect Wallet"}
-          </Typography>
-        </div>
-      ) : null}
-      {positionListLoading ? (
-        <div className="border-t flex justify-center items-center  h-[400px]  border-x-0 border-b-0 border border-grayLight">
-          <RingLoadingIcon
-            width={50}
-            height={50}
-            className="fill-black dark:fill-white w-8 h-8 "
-          />
-        </div>
-      ) : null}
-    </div>
+    </>
   );
 }
 
