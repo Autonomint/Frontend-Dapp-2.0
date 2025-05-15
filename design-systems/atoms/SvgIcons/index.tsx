@@ -462,6 +462,7 @@ export const MenuIcon: React.FC<SvgIconProps> = (props) => {
     </svg>
   );
 };
+
 export const CloseIcon: React.FC<SvgIconProps> = (props) => {
   return (
     <svg
@@ -477,6 +478,55 @@ export const CloseIcon: React.FC<SvgIconProps> = (props) => {
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+export const BrandLogoSmall = ({ className }: { className?: string }) => {
+  const { theme } = useTheme();
+
+  return (
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 116 156"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+      className={className}
+    >
+      <path
+        d="M0.810303 104.719C38.9786 104.719 76.8445 104.719 115.024 104.719L65.9478 0.617287H50.0351L0.810303 104.719Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M56.5213 120.938L21.8298 103.89L56.9204 48.5617L91.5122 103.99L56.5213 120.938Z"
+        fill="black"
+      />
+      <path
+        d="M56.0358 121.933L20.2322 104.338L56.9281 46.4804L93.1056 104.451C80.9089 110.354 68.7107 116.254 56.5209 122.172L56.0358 121.933ZM23.4276 103.444L56.523 119.708L89.9189 103.532L56.9148 50.646L23.4276 103.444Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M55.51 120.938V49.0525H57.7312V120.938H55.51Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M22.9812 114.322L56.6198 156L90.36 116.025L56.6198 131.533L22.9812 114.322Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M21.3621 102.901L56.1528 86.5451L57.0902 88.55L22.2992 104.906L21.3621 102.901Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M90.9431 104.906L56.1516 88.55L57.089 86.5451L91.8806 102.901L90.9431 104.906Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
       />
     </svg>
   );
