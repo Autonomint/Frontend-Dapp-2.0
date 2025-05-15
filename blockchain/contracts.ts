@@ -84,12 +84,19 @@ export const rsETHAddress: ChainAddresses = {
   11155420: "0x101ddb5026322f42E0F133352c115AD4B40B9412",
 } as const;
 
+// Addresses for the wsuperOETH contract
+export const wsuperOETHAddress: ChainAddresses = {
+  84532: "0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6",
+  11155420: zeroAddress,
+} as const;
+
 // Addresses for the borrow assets
 export const borrowAssetsAddress = {
   ETH: ethAddress,
   wrsETH: wrsETHAddress,
   weETH: weETHAddress,
   rsETH: rsETHAddress,
+  wsuperOETH: wsuperOETHAddress,
 } as const;
 
 // Addresses for the global contract

@@ -12,11 +12,12 @@ import { useTokenConfig } from "@/utils/token-config";
 import { toast } from "sonner";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { CircleFadingPlus } from "lucide-react";
+import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
-  // Function to get the token symbol for the chart 
+  // Function to get the token symbol for the chart
   // The symbol is copied from trading view widget config website page
   const getTokenSymbol = () => {
     switch (currency) {
@@ -26,7 +27,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:RSETHUSD|1D"];
       case "weETH":
         return ["CRYPTO:WEETHUSD|1D"];
-
+      case "wsuperOETH":
+        return ["CRYPTO:WSUPEROETHUSD|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
@@ -153,6 +155,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return WrsETH;
       case "weETH":
         return WeETH;
+      case "wsuperOETH":
+        return WsuperOETHIcon;
 
       default:
         return cryptoEth;
@@ -211,7 +215,13 @@ function ChartComponent({ currency }: { currency: string }) {
       </div>
 
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
-        <TradingViewWidget currency={currency} />
+        {currency.toLocaleLowerCase() == "wsuperoeth" ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-grayLight text-lg">Chart Not Available</p>
+          </div>
+        ) : (
+          <TradingViewWidget currency={currency} />
+        )}
       </div>
     </div>
   );

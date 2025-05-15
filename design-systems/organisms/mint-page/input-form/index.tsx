@@ -183,7 +183,7 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETH"].includes(currency) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount

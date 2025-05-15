@@ -9,6 +9,7 @@ import Link from "next/link";
 import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
+import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
@@ -87,6 +88,18 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven: ethPoints?.pointsToBeGiven,
+      minAmount: ethPoints?.minAmount,
+      link: STRATEGY_LINK,
+    },
+    {
+      token: "wsuperOETH",
+      tokenImage: WsuperOETH,
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "wsuperOETH borrow is paused now",
       pointsToBeGiven: ethPoints?.pointsToBeGiven,
       minAmount: ethPoints?.minAmount,
       link: STRATEGY_LINK,
