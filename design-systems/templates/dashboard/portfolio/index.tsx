@@ -174,11 +174,10 @@ function PortfolioTemplate() {
 
     const bodyElement = document.getElementById("body-scroll-container");
     const mainHeaderTop = bodyElement?.offsetTop || 0;
-
     // Check if we've scrolled past the navbar's original position
-    if (navBarLocal < mainHeaderTop) {
+    if (Math.round(navBarLocal) <= mainHeaderTop) {
       setIsSticky(true);
-    } else if (navBarLocal > mainHeaderTop) {
+    } else if (Math.round(navBarLocal) > mainHeaderTop) {
       setIsSticky(false);
     }
   };
@@ -192,11 +191,6 @@ function PortfolioTemplate() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  console.log(
-    Number(referralPoints || 0) + Number(points || 0),
-    "pagedPositionList"
-  );
 
   // get omni chain data
   const { omniChainData } = useGetOmniChainData();
@@ -246,8 +240,6 @@ function PortfolioTemplate() {
       liquidatedETH: 0,
     };
   }, [omniChainData]);
-
-  console.log(cdsTotalProfits, omniChainData, "cdsTotalProfits");
 
   return (
     <div className="flex sm:px-4 flex-col">
