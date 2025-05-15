@@ -28,8 +28,8 @@ function TokenTvlDetails({
               fill="#A1FFCE"
             />
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M56.5213 164.938L21.8298 147.89L56.9204 92.5617L91.5122 147.99L56.5213 164.938Z"
               fill="black"
             />
@@ -42,8 +42,8 @@ function TokenTvlDetails({
               fill="#A1FFCE"
             />
             <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+              fillRule="evenodd"
+              clipRule="evenodd"
               d="M22.9812 158.322L56.6198 200L90.36 160.025L56.6198 175.533L22.9812 158.322Z"
               fill="#A1FFCE"
             />

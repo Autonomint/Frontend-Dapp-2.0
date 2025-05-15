@@ -99,9 +99,9 @@ const InvitedTemplate = () => {
                 >
                   <path
                     d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
                 {user.handle}

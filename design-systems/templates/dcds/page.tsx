@@ -580,70 +580,74 @@ function DCDSTemplate() {
   console.log(formik, depositValue, "depositValue");
 
   // fetching list of the token addresses for the deposit
-  const { data: tokenAddress } = useReadContract({
-    address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-    abi: cdsAbi,
-    functionName: "getSupportedTokenAddresses",
-    query: {
-      placeholderData: [],
-    },
-  }) as { data: `0x${string}`[] };
+  const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
+    {
+      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      abi: cdsAbi,
+      functionName: "getSupportedTokenAddresses",
+      query: {
+        placeholderData: [],
+      },
+    }
+  ) as { data: `0x${string}`[]; isLoading: boolean };
 
   console.log(tokenAddress, "tokenAddress");
 
   // fetching the token details for the deposit (name, symbol, decimals)
-  const { data: tokenDetailsList } = useReadContracts({
-    contracts: tokenAddress?.flatMap((address) => [
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "name",
+  const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
+    useReadContracts({
+      contracts: tokenAddress?.flatMap((address) => [
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "name",
+        },
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "symbol",
+        },
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "decimals",
+        },
+      ]),
+      query: {
+        select: (data) => {
+          const tokens = [];
+          // Process data in groups of 3 (name, symbol, decimals)
+          for (let i = 0; i < data.length; i += 3) {
+            tokens.push({
+              name: data[i].result,
+              symbol: data[i + 1].result,
+              decimals: data[i + 2].result,
+              address: tokenAddress?.[i],
+            });
+          }
+          console.log(tokens, "tokens");
+          return tokens;
+        },
       },
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "symbol",
-      },
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "decimals",
-      },
-    ]),
-    query: {
-      select: (data) => {
-        const tokens = [];
-        // Process data in groups of 3 (name, symbol, decimals)
-        for (let i = 0; i < data.length; i += 3) {
-          tokens.push({
-            name: data[i].result,
-            symbol: data[i + 1].result,
-            decimals: data[i + 2].result,
-            address: tokenAddress?.[i],
-          });
-        }
-        console.log(tokens, "tokens");
-        return tokens;
-      },
-    },
-  });
+    });
 
   // fetching the token balances for the deposit
-  const { data: tokenBalances } = useReadContracts({
-    contracts: tokenAddress
-      ? tokenAddress.map((contractAddress) => ({
-          address: contractAddress as `0x${string}`,
-          abi: erc20Abi,
-          functionName: "balanceOf",
-          args: [address],
-        }))
-      : [],
-    query: {
-      select: (data) => {
-        return data.map((item) => item.result);
+  const { data: tokenBalances, isLoading: isTokenBalanceLoading } =
+    useReadContracts({
+      contracts: tokenAddress
+        ? tokenAddress.map((contractAddress) => ({
+            address: contractAddress as `0x${string}`,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [address],
+          }))
+        : [],
+      query: {
+        select: (data) => {
+          return data.map((item) => item.result);
+        },
       },
-    },
-  });
+    });
 
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
@@ -661,33 +665,19 @@ function DCDSTemplate() {
       },
     });
 
-  const { data: tokenAllowanceByUser, refetch: refetchAllowanceDynamic } =
-    useReadContracts({
-      contracts: tokenAddress?.map((contractAddress) => ({
-        address: contractAddress as `0x${string}`,
-        abi: erc20Abi,
-        functionName: "allowance",
-        args: [
-          address,
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-        ],
-      })),
-      query: {
-        select: (data) => {
-          return data.map((item) => item.result);
-        },
-      },
-    });
-
-  const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
-
-  // checking the token pause state
-  const { data: tokensPauseState } = useReadContracts({
-    contracts: tokenAddress?.map((address) => ({
-      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-      abi: cdsAbi as Abi,
-      functionName: "assetDetails",
-      args: [address],
+  const {
+    data: tokenAllowanceByUser,
+    refetch: refetchAllowanceDynamic,
+    isLoading: isAllowanceLoading,
+  } = useReadContracts({
+    contracts: tokenAddress?.map((contractAddress) => ({
+      address: contractAddress as `0x${string}`,
+      abi: erc20Abi,
+      functionName: "allowance",
+      args: [
+        address,
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      ],
     })),
     query: {
       select: (data) => {
@@ -696,7 +686,33 @@ function DCDSTemplate() {
     },
   });
 
-  const { usdaPoints, usdtPoints, nativePoints, isLoading, error } = usePoint();
+  const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
+
+  // checking the token pause state
+  const { data: tokensPauseState, isLoading: isTokenStatusLoading } =
+    useReadContracts({
+      contracts: tokenAddress?.map((address) => ({
+        address: cdsAddress[
+          chainId as keyof typeof cdsAddress
+        ] as `0x${string}`,
+        abi: cdsAbi as Abi,
+        functionName: "assetDetails",
+        args: [address],
+      })),
+      query: {
+        select: (data) => {
+          return data.map((item) => item.result);
+        },
+      },
+    });
+
+  const {
+    usdaPoints,
+    usdtPoints,
+    nativePoints,
+    isLoading: isPointLoading,
+    error,
+  } = usePoint();
   //
   const minTokenAmountAndPointToDeposit = {
     usda: usdaPoints,
@@ -704,6 +720,15 @@ function DCDSTemplate() {
     op: nativePoints,
     aero: nativePoints,
   };
+  // Combine loading of all react function for token details
+  const isTokenDataLoading =
+    isTokenListPending ||
+    isPointLoading ||
+    isTokenStatusLoading ||
+    isAllowanceLoading ||
+    isLoadingOraclePrices ||
+    isLoadingOraclePrices ||
+    isTokenBalanceLoading;
 
   // token list for the deposit
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -791,6 +816,7 @@ function DCDSTemplate() {
     minTokenAmountAndPointToDeposit,
   ]);
 
+  // calculating point to be given
   const pointToGiven = useMemo(() => {
     const value = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
@@ -820,11 +846,6 @@ function DCDSTemplate() {
     return Math.round(value) || 0; // Return 0 if the result is NaN
   }, [selectedTokens, formik]);
 
-  console.log(tokenList, minTokenAmountAndPointToDeposit, "nativePoints");
-
-  console.log(pointToGiven, "pointToGiven");
-  console.log(tokenAddress, "tokenAddress");
-
   // hook for getting the farm your luck data (current reward data) from the backend api
   const {
     data: farmLuckDetails,
@@ -832,6 +853,7 @@ function DCDSTemplate() {
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
 
+  // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
       (token) =>
@@ -867,7 +889,7 @@ function DCDSTemplate() {
             <div className="flex w-full h-full text-lg dark:text-white text-center text-black justify-center items-center ">
               Please connect wallet
             </div>
-          ) : isOmniChainDataPending ? (
+          ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
             tokenList.map((token: TokenDetails, key: number) => (
@@ -919,6 +941,8 @@ function DCDSTemplate() {
                         src={
                           theme === "dark" && token.tokenName === "USDa"
                             ? USDaIconGreen
+                            : theme === "light" && token.tokenName === "USDa"
+                            ? USDaIcon
                             : token?.tokenImage
                         }
                         alt={token?.tokenName}
@@ -1019,7 +1043,7 @@ function DCDSTemplate() {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values[
-                        `${token.tokenName}Amount` as keyof FormValues
+                        `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
                       ]?.toString()}
                     />
                     {/* showing the token value in usd */}
@@ -1062,7 +1086,18 @@ function DCDSTemplate() {
                       </span>
                     </div>
                     <span className="text-[16px] font-medium text-grayLight">
-                      Bal {token.balanceAvailable}
+                      Bal {token.balanceAvailable}{" "}
+                      <span
+                        onClick={() => {
+                          formik.setFieldValue(
+                            `${token?.tokenName?.toLocaleLowerCase()}Amount`,
+                            Number(token.tokenCount)
+                          );
+                        }}
+                        className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border px-2 py-[2px] rounded-[24px]"
+                      >
+                        Max
+                      </span>
                     </span>
                   </div>
                 </div>

@@ -22,6 +22,7 @@ import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
 import getSecretVar from "@/services/aws-secret";
 import twitter from "@/app/assets/x-social-media-black-icon.svg";
+import { getIconMapping } from "@/utils/token-config";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -133,9 +134,9 @@ function Navbar() {
 
         <Link onClick={closeMenu} href="/">
           <div className="flex justify-start  items-center  gap-4">
-            {/* <div className="w-[3rem] h-[3rem]">
+            <div className="w-[3rem] lg:hidden h-[3rem]">
               <Image
-                src={logo}
+                src={getIconMapping(theme || "dark", "usda")}
                 alt="autonomint-dapp"
                 style={{
                   width: "100%",
@@ -144,7 +145,7 @@ function Navbar() {
                   flexShrink: 0,
                 }}
               />
-            </div> */}
+            </div>
             <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
               <div
                 className=" dark:block hidden w-full  shrink-0"
@@ -198,8 +199,8 @@ function Navbar() {
                   />
                   <path
                     className="fill-white dark:fill-black"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M27.8555 82.8594L10.5098 74.3359L28.0551 46.6715L45.3509 74.3855L27.8555 82.8594Z"
                   />
                   <path
@@ -211,8 +212,8 @@ function Navbar() {
                     fill="#A1FFCE"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M11.0854 79.5519L27.9048 100.391L44.7749 80.403L27.9048 88.1569L11.0854 79.5519Z"
                     fill="#A1FFCE"
                   />
@@ -274,7 +275,7 @@ function Navbar() {
               )
             }
             variant={"shadowOutline"}
-            className=" h-fit text-[18px] font-normal  w-full p-[8px] "
+            className=" h-fit text-[18px] font-normal hidden lg:flex  w-full p-[8px] "
           >
             <svg
               className="stroke-black dark:stroke-white"
@@ -286,9 +287,9 @@ function Navbar() {
             >
               <path
                 d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>{" "}
             Share
@@ -400,6 +401,33 @@ function Navbar() {
               )}
             </Button>
           )}
+
+          <Button
+            onClick={() =>
+              shareOnTwitter(
+                "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
+              )
+            }
+            variant={"shadowOutline"}
+            className=" h-fit text-[18px]  font-normal flex lg:hidden  w-fit p-[8px] "
+          >
+            <svg
+              className="stroke-black dark:stroke-white"
+              width="14"
+              height="14"
+              viewBox="0 0 20 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>{" "}
+            Share
+          </Button>
           {/* <ReferPopupMobile /> */}
           {/* <Button
             onClick={() => shareOnTwitter("")}

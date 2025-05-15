@@ -80,7 +80,7 @@ function SingleListItem({
       >
         <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full">
           <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[120px] lg:h-[160px]">
+          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[211px] lg:h-[160px]">
             {metrics.map((metric, index) => (
               <div key={index} className="md:flex-1 h-full">
                 <ListItemMetric {...metric} />

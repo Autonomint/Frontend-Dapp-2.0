@@ -64,6 +64,8 @@ export const aws_secret_name = "testingSecret";
 export const sm_accessKeyId = "AKIAQLVQQPQX6XEGOPMA";
 export const sm_secretAccessKey = "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";
 
+export const infuraApiKeys = "p3uGu6Owoecg4A4tSuxz11VTcdXmK00z";
+
 // urls
 export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
 export const BRAND_ICON_URL =

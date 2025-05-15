@@ -10,6 +10,7 @@ import {
   usDaAddress,
   weETHAddress,
   wrsETHAddress,
+  wsuperOETHAddress,
 } from "@/blockchain/contracts";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
@@ -103,6 +104,17 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             address:
               nativeTokenAddress[chainId as keyof typeof nativeTokenAddress],
             symbol: "OP",
+            decimals: 18,
+            // image: "https://yourdomain.com/token-image.png",
+          },
+        };
+      case "wsuperoeth":
+        return {
+          type: "ERC20",
+          options: {
+            address:
+              wsuperOETHAddress[chainId as keyof typeof wsuperOETHAddress],
+            symbol: "wsuperOETH",
             decimals: 18,
             // image: "https://yourdomain.com/token-image.png",
           },

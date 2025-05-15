@@ -139,13 +139,11 @@ function AddToken({
               {tokenDetails.tokenLabel || tokenDetails.tokenName}
             </span>
           </div>
-          <div className="flex flex-row items-center lg:items-start lg:flex-col justify-start  md:gap-0">
-            <div className="hidden md:flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
+          <div className="flex items-start flex-col justify-start  md:gap-0">
+            <div className="flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
               balance
             </div>
-            <div className="flex md:hidden text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
-              bal.
-            </div>
+
             <div className="flex flex-col gap-0">
               <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
                 {tokenDetails.balanceAvailable.replaceAll(
@@ -161,7 +159,7 @@ function AddToken({
               )}
             </div>
           </div>
-          <div className="flex flex-col justify-center h-full gap-2 items-center">
+          <div className=" hidden lg:flex flex-col justify-center h-full gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />

@@ -116,22 +116,22 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     />
                   ) : chainId == NetworkId.Optimism ? (
                     <OptimismIcon
-                      className=" fill-black  "
+                      className=" fill-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.EthereumSepolia ? (
                     <EthereumIcon
-                      className=" stroke-black  "
+                      className=" stroke-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.BaseSepolia ? (
                     <BaseIcon
-                      className=" stroke-black  "
+                      className=" stroke-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
                     <OptimismIcon
-                      className=" fill-black  "
+                      className=" fill-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
@@ -255,22 +255,22 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     />
                   ) : chainId == NetworkId.Optimism ? (
                     <OptimismIcon
-                      className=" fill-black  "
+                      className=" fill-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.EthereumSepolia ? (
                     <EthereumIcon
-                      className=" stroke-black  "
+                      className=" stroke-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.BaseSepolia ? (
                     <BaseIcon
-                      className=" stroke-black  "
+                      className=" stroke-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
                     <OptimismIcon
-                      className=" fill-black  "
+                      className=" fill-black dark:fill-white "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}

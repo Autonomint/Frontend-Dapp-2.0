@@ -15,7 +15,7 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { handleWheel } from "@/utils/helpers";
+import { formatNumber, handleWheel } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
@@ -261,21 +261,21 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Deposited (All Chain)"
-            value={`$${totalUserDeposit?.toFixed(2)}`}
+            value={`$${formatNumber(totalUserDeposit)}`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Fee Earned (All Chain)"
-            value={`$${cdsTotalProfits.optionsFees?.toFixed(2)}`}
+            value={`$${formatNumber(cdsTotalProfits.optionsFees)}`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading={`Points (All Chain)`}
-            value={(
+            value={formatNumber(
               Number(referralPoints || 0) + Number(points || 0)
-            ).toString()}
+            )}
           />
         </div>
       </div>

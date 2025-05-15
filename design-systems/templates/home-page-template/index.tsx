@@ -73,14 +73,13 @@ export default function HomeTemplate() {
     {
       title: "dCDS",
       subtitle: `TVL - $${(
-        Number(formatUnits(BigInt(tvlValueUSDT || 0n), 6)) +
-        Number(Number(tvlValueUSDa || 0) / 1e6) +
-        ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
+        Number(GlobalContractData?.totalCdsDepositedAmount ?? 0n) /
+        10 ** 6
       ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },
-    { title: "Farm Your Luck", subtitle: "Earn Option Fee" },
-    { title: "Redeem ABOND", subtitle: "" },
+    { title: "Farm Your Luck", subtitle: "Win Option Fee And Rewards" },
+    { title: "Redeem", subtitle: "" },
     { title: "Buy", subtitle: "" },
   ];
 
@@ -276,7 +275,7 @@ export default function HomeTemplate() {
                     {items[0].title}
                   </h3>
                   {items[0].subtitle && (
-                    <p className="text-[24px] lg:text-[32px] text-gray-600">
+                    <p className="text-[24px] lg:text-[32px] text-grayLight">
                       {items[0].subtitle}
                     </p>
                   )}
@@ -322,7 +321,7 @@ export default function HomeTemplate() {
                     {items[1].title}
                   </h3>
                   {items[1].subtitle && (
-                    <p className="text-gray-600 text-[24px] lg:text-[32px]">
+                    <p className="text-grayLight text-[24px] lg:text-[32px]">
                       {items[1].subtitle}
                     </p>
                   )}
@@ -370,7 +369,7 @@ export default function HomeTemplate() {
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
-                    <p className="text-gray-600 text-[24px]  lg:text-[32px]">
+                    <p className="text-grayLight text-[24px]  lg:text-[32px]">
                       {items[2].subtitle}
                     </p>
                   )}
@@ -415,7 +414,7 @@ export default function HomeTemplate() {
                     {items[3].title}
                   </h3>
                   {items[3].subtitle && (
-                    <p className="text text-[24px] lg:text-[32px]">
+                    <p className="text-grayLight text-[24px] lg:text-[32px]">
                       {items[3].subtitle}
                     </p>
                   )}
@@ -437,29 +436,7 @@ export default function HomeTemplate() {
           <div
             className={`flex flex-col lg:flex-row mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
-            {/* Dashboard Section  for mobile and tablet*/}
-            <div
-              className={`relative lg:hidden cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
-              onClick={() => {
-                router.push("/dashboard/portfolio");
-              }}
-              style={{
-                transition: "width 0.3s ease-in, height 0.3s ease-in",
-              }}
-            >
-              <div
-                className={
-                  "p-4 h-full flex flex-row  justify-between items-center"
-                }
-              >
-                <h3 className="font-medium text-[32px] lg:text-[42px]  ">
-                  Dashboard
-                </h3>
-                <div className="hidden group-hover:flex items-center">
-                  <LeftArrowIcon width={42} height={42} />
-                </div>
-              </div>
-            </div>{" "}
+            {/* Dashboard Section  for mobile and tablet*/}{" "}
             <div
               className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
               onClick={() => {
@@ -504,13 +481,35 @@ export default function HomeTemplate() {
               </div>
             </div>{" "}
           </div>
+          <div
+            className={`relative  cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full  border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
+            onClick={() => {
+              router.push("/dashboard/portfolio");
+            }}
+            style={{
+              transition: "width 0.3s ease-in, height 0.3s ease-in",
+            }}
+          >
+            <div
+              className={
+                "p-4 h-full flex flex-row  justify-between items-center"
+              }
+            >
+              <h3 className="font-medium text-[32px] lg:text-[42px]  ">
+                Dashboard
+              </h3>
+              <div className="hidden group-hover:flex items-center">
+                <LeftArrowIcon width={42} height={42} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {/* Scroll down arrow button  */}
       {!isScrollBottom && (
         <ScrollDownArrow
           handleClick={() => handleScroll()}
-          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border-grayLight border"
+          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-9  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border-grayLight border"
         />
       )}
     </div>

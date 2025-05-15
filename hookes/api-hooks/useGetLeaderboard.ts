@@ -120,6 +120,7 @@ const useGetLeaderboard = () => {
   const leaderboardData = useMemo(() => {
     return mergeLeaderboardDetails(
       sortLeaderboardDetails([
+        // adding new property points for combine point of cds and borrow
         ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
           ...item,
           points: "0",
