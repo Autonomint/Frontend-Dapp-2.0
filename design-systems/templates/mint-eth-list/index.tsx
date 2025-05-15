@@ -18,6 +18,7 @@ import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { STRATEGY_LINK } from "@/utils/urls";
+import { NetworkId } from "@/utils/constants";
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -92,7 +93,10 @@ function MintEthListTemplate() {
       minAmount: ethPoints?.minAmount,
       link: STRATEGY_LINK,
     },
-    {
+  ];
+
+  if (chainId == NetworkId.BaseSepolia) {
+    list.push({
       token: "wsuperOETH",
       tokenImage: WsuperOETH,
       BorrowRate: `${Number(currentAPR || 0) / 10}%`,
@@ -103,8 +107,8 @@ function MintEthListTemplate() {
       pointsToBeGiven: ethPoints?.pointsToBeGiven,
       minAmount: ethPoints?.minAmount,
       link: STRATEGY_LINK,
-    },
-  ];
+    });
+  }
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();
