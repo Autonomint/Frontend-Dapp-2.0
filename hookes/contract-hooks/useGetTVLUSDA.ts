@@ -29,8 +29,8 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
 
   const provider = new ethers.JsonRpcProvider(
     chainId === NetworkId.BaseSepolia
-      ? "https://opt-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
-      : "https://base-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
+      ? "https://opt-mainnet.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE"
+      : "https://base-mainnet.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE"
   );
 
   const cdsContract = new ethers.Contract(
@@ -83,8 +83,8 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
 
   const provider = new ethers.JsonRpcProvider(
     chainId === NetworkId.BaseSepolia
-      ? "https://opt-sepolia.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
-      : "https://base-sepolia.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
+      ? "https://opt-sepolia.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE"
+      : "https://base-sepolia.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE"
   );
 
   const cdsContract = new ethers.Contract(
