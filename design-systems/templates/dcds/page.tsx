@@ -151,7 +151,7 @@ function DCDSTemplate() {
   const [allowanceLoading, setAllowanceLoading] = useState<boolean>(false);
 
   // state variable to handle the how it works popup
-  const [isOpenHowItWork, setIsOpenHowItWork] = useState(false);
+  const [isOpenHowItWork, setIsOpenHowItWork] = useState(true);
 
   // hook to get the chain id, is connected and address
   const { chainId, isConnected, address } = useAccount();
