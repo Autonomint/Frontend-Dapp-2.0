@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
 import { Input } from "@/design-systems/atoms/input";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useInviteCodeMutation } from "@/hookes/api-hooks/useInvite";
-import useBaseName from "@/hookes/contract-hooks/useBaseName";
+
 import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowRight } from "lucide-react";
@@ -59,10 +59,6 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
       inputsRef.current[index + 1].focus();
     }
   };
-
-  const { baseName, isBaseNamePending } = useBaseName();
-
-  console.log(baseName , "baseName")
 
   // handleBackspace is a function that allows the user to backspace the invite code
   const handleBackspace = (
