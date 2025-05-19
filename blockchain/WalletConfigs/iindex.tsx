@@ -69,7 +69,7 @@ const modal = createAppKit({
   features: {
     email: false,
     socials: false,
-    analytics: false, // Optional - defaults to your Cloud configuration
+    analytics: true, // Optional - defaults to your Cloud configuration
   },
   debug: true,
 });
