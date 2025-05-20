@@ -123,9 +123,9 @@ function AddToken({
       className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
     >
       <div
-        className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
+        className={` border border-solid border-grayLight flex flex-col justify-start items-center h-full relative `}
       >
-        <div className="flex  gap-5 w-full items-center">
+        <div className="flex  p-4 gap-5 w-full items-center">
           <div className="flex w-[40%] md:w-[20%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
@@ -170,14 +170,13 @@ function AddToken({
             <div className="text-md text-grayLight ">Add token</div>
           </div>
         </div>
-
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="  absolute right-0 top-0 h-full">
+            <div className="  w-full right-0 top-0 h-full">
               <Button
                 disabled={tokenDetails.isLoading || tokenDetails.isTokenPause}
                 onClick={toggleToken}
-                className="bg-black h-full dark:bg-custom-gradient-to-bottom"
+                className="bg-black h-full w-full dark:bg-custom-gradient-to-bottom"
               >
                 {isSelected ? (
                   <Image src={minus} alt="minus" />
@@ -194,6 +193,7 @@ function AddToken({
           )}
         </Tooltip>
       </div>
+
       {tokenDetails.isLoading && (
         <div className="top-0 text-white left-0 absolute w-full h-full bg-[#00000080] dark:bg-[#ffffff52] flex items-center justify-center ">
           <RingLoadingIcon width={50} height={50} />
