@@ -3,6 +3,7 @@ import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
 import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import { motion } from "framer-motion";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
 import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
 import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
@@ -216,9 +217,52 @@ export default function HomeTemplate() {
       }
     }
   };
+  useEffect(() => {
+    // Inject keyframes for scrolling
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes scroll-left {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-50%); }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
+  const message = [
+    "🚀 Welcome to our dApp!",
+    "🌐 DeFi made simple.",
+    "📢 Stake, trade, and earn now!",
+    "🔐 Secure. Transparent. Fast.",
+    "🚀 Welcome to our dApp!",
+    "🌐 DeFi made simple.",
+    "📢 Stake, trade, and earn now!",
+    "🔐 Secure. Transparent. Fast.",
+    "🚀 Welcome to our dApp!",
+    "🌐 DeFi made simple.",
+    "📢 Stake, trade, and earn now!",
+    "🔐 Secure. Transparent. Fast.",
+  ];
   return (
     <div className="w-full">
+      <div className="absolute  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
+        <div
+          className="flex whitespace-nowrap animate-scroll-left"
+          style={{
+            animation: "scroll-left 20s linear infinite",
+          }}
+        >
+          {message.map((item, index) => (
+            <div className="flex items-center" key={index}>
+              <span className="font-bold">{item}</span>
+              <span className="text-lg font-bold px-8 mt-2">*</span>
+            </div>
+          ))}
+        </div>
+      </div>
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}
