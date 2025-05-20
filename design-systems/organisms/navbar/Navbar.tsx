@@ -14,7 +14,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
@@ -117,6 +117,39 @@ function Navbar() {
     // Open the Twitter share URL in a new window
     window.open(shareUrl, "_blank");
   }
+
+  const texts = ["Mint 2x Points", "CDS 10x Points"];
+  const [index, setIndex] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Start animation
+      if (containerRef.current) {
+        containerRef.current.style.transition = "transform 0.5s ease-in-out";
+        containerRef.current.style.transform = "translateY(-100%)";
+      }
+
+      const timeout = setTimeout(() => {
+        // After animation
+        setIndex((prev) => (prev + 1) % texts.length);
+
+        if (containerRef.current) {
+          containerRef.current.style.transition = "none";
+          containerRef.current.style.transform = "translateY(0)";
+        }
+      }, 500); // match transition duration
+
+      return () => clearTimeout(timeout);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [containerRef]);
+
+  const nextText = texts[(index + 1) % texts.length];
+
+  console.log(containerRef.current, "containerRef.current");
 
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
@@ -239,7 +272,21 @@ function Navbar() {
       </div>
 
       {!isPolicyPage && isClient && (
-        <div className="flex md:gap-6 sm:gap-2 mr-4">
+        <div className="flex items-center md:gap-6 sm:gap-2 mr-4">
+          <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
+            <div
+              ref={containerRef}
+              className="flex flex-col pt-[40px]"
+              style={{ transform: "translateY(0)" }}
+            >
+              <div className="h-[40px] text-center flex items-center w-full">
+                {texts[index]}
+              </div>
+              <div className="h-[40px] text-center flex items-center w-full">
+                {nextText}
+              </div>
+            </div>
+          </div>
           <WalletPopup />
           <Button
             variant={"shadowOutline"}
@@ -275,7 +322,7 @@ function Navbar() {
               )
             }
             variant={"shadowOutline"}
-            className=" h-fit text-[18px] font-normal hidden lg:flex  w-full p-[8px] "
+            className=" h-fit text-[18px] font-normal hidden lg:flex  p-[8px] "
           >
             <svg
               className="stroke-black dark:stroke-white"
