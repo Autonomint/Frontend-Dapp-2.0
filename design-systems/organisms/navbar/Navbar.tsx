@@ -118,11 +118,16 @@ function Navbar() {
     window.open(shareUrl, "_blank");
   }
 
+  // for ticker badge animation
   const texts = ["Mint 2x Points", "CDS 10x Points"];
+
+  // for ticker badge animation
   const [index, setIndex] = useState(0);
 
+  // ref for ticker badge animation
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // for ticker badge animation
   useEffect(() => {
     const interval = setInterval(() => {
       // Start animation
@@ -147,9 +152,8 @@ function Navbar() {
     return () => clearInterval(interval);
   }, [containerRef]);
 
+  // next for ticker badge animation
   const nextText = texts[(index + 1) % texts.length];
-
-  console.log(containerRef.current, "containerRef.current");
 
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">

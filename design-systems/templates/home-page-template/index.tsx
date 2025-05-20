@@ -217,12 +217,14 @@ export default function HomeTemplate() {
       }
     }
   };
+
+  // ticket bar animation
   useEffect(() => {
     // Inject keyframes for scrolling
     const style = document.createElement("style");
     style.innerHTML = `
       @keyframes scroll-left {
-        0% { transform: translateX(0%); }
+        0% { transform: translateX(30%); }
         100% { transform: translateX(-50%); }
       }
     `;
@@ -232,27 +234,26 @@ export default function HomeTemplate() {
     };
   }, []);
 
+  // Message list for scrolling ticker bar
   const message = [
     "🚀 Welcome to our dApp!",
-    "🌐 DeFi made simple.",
-    "📢 Stake, trade, and earn now!",
-    "🔐 Secure. Transparent. Fast.",
+    "🔐 Audited by Sherlock",
+    "💰 $2M Liquidity Program Coming",
+    "🔍 Hedge ETH with 0 Upfront Cost",
+    "🥇 On-Chain dCDS, First of Its Kind",
     "🚀 Welcome to our dApp!",
-    "🌐 DeFi made simple.",
-    "📢 Stake, trade, and earn now!",
-    "🔐 Secure. Transparent. Fast.",
-    "🚀 Welcome to our dApp!",
-    "🌐 DeFi made simple.",
-    "📢 Stake, trade, and earn now!",
-    "🔐 Secure. Transparent. Fast.",
+    "🔐 Audited by Sherlock",
+    "💰 $2M Liquidity Program Coming",
+    "🔍 Hedge ETH with 0 Upfront Cost",
+    "🥇 On-Chain dCDS, First of Its Kind",
   ];
   return (
     <div className="w-full">
-      <div className="absolute  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
+      <div className="  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
         <div
           className="flex whitespace-nowrap animate-scroll-left"
           style={{
-            animation: "scroll-left 20s linear infinite",
+            animation: "scroll-left 40s linear infinite",
           }}
         >
           {message.map((item, index) => (
