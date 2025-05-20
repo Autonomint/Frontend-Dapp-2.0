@@ -25,6 +25,7 @@ import { NetworkId } from "@/utils/constants";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useUserGains from "@/hookes/contract-hooks/useUserGains";
 
 function PortfolioTemplate() {
   const { address, chainId } = useAccount();
@@ -195,6 +196,22 @@ function PortfolioTemplate() {
   // get omni chain data
   const { omniChainData } = useGetOmniChainData();
 
+  // fetching user chain data
+  const { userGains } = useUserGains();
+
+  const userGainsTotal = useMemo(() => {
+    if (userGains) {
+      return (
+        userGains.priceChangePL +
+        userGains.amountAccured +
+        userGains.liqGains
+      ).toFixed(2);
+    }
+    return 0;
+  }, [userGains]);
+
+  console.log(userGains, "userGains");
+
   // calculate cds total profits
   const cdsTotalProfits = useMemo(() => {
     if (omniChainData) {
@@ -259,7 +276,7 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Fee Earned (All Chain)"
-            value={`$${formatNumber(cdsTotalProfits.optionsFees)}`}
+            value={`$${formatNumber(Number(userGainsTotal))}`}
           />
         </div>
         <div className="col-span-1">
