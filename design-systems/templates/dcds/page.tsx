@@ -14,7 +14,11 @@ import AEROIcon from "@/app/assets/aero-icon.png";
 import OPIcon from "@/app/assets/optimism.png";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { mpoABI } from "@/blockchain/abis/mpo";
-import { cdsAddress, mpoAddress } from "@/blockchain/contracts";
+import {
+  cdsAddress,
+  cdsDepositAddress,
+  mpoAddress,
+} from "@/blockchain/contracts";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useScroll } from "@/contexts/scroll";
@@ -218,7 +222,7 @@ function DCDSTemplate() {
   const { data: usdtLimit, refetch: refetchCurrentData } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof cdsAddress],
-    functionName: "usdtLimit",
+    functionName: "getUsdtLimit",
   });
 
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
@@ -314,7 +318,7 @@ function DCDSTemplate() {
       // handling the deposit success
       handleDepositSuccess();
     }
-  }, [DepositdataReceipt]);
+  }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
   // function to call the deposit function in the contract
   const callDepositFnInContract = () => {
@@ -419,7 +423,9 @@ function DCDSTemplate() {
           address: token?.tokenAddress as `0x${string}`,
           functionName: "approve",
           args: [
-            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            cdsDepositAddress[
+              chainId as keyof typeof cdsDepositAddress
+            ] as `0x${string}`,
             allowanceAmount,
           ],
         });
@@ -520,7 +526,10 @@ function DCDSTemplate() {
   const resetLoadings = () => {
     setTimeout(() => {
       setDcdsLoadingLocal(false);
-    }, 1000);
+    }, 600);
+    setTimeout(() => {
+      setDcdsDepositLoadingLocal(false);
+    }, 600);
   };
 
   // handle show scroll button for desktop of token input section
@@ -689,22 +698,23 @@ function DCDSTemplate() {
   const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
 
   // checking the token pause state
-  const { data: tokensPauseState, isLoading: isTokenStatusLoading } =
-    useReadContracts({
-      contracts: tokenAddress?.map((address) => ({
-        address: cdsAddress[
-          chainId as keyof typeof cdsAddress
-        ] as `0x${string}`,
-        abi: cdsAbi as Abi,
-        functionName: "assetDetails",
-        args: [address],
-      })),
-      query: {
-        select: (data) => {
-          return data.map((item) => item.result);
-        },
+  const {
+    data: tokensPauseState,
+    isLoading: isTokenStatusLoading,
+    error: tokenPauseError,
+  } = useReadContracts({
+    contracts: tokenAddress?.map((address) => ({
+      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      abi: cdsAbi as Abi,
+      functionName: "getAssetDetails",
+      args: [address],
+    })),
+    query: {
+      select: (data) => {
+        return data.map((item) => item.result);
       },
-    });
+    },
+  });
 
   const {
     usdaPoints,

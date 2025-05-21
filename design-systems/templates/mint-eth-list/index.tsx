@@ -46,7 +46,7 @@ function MintEthListTemplate() {
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "APR",
+    functionName: "getAPR",
   });
 
   // Custom hook to check the pause state of borrow functions

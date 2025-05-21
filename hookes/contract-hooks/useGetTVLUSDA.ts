@@ -29,7 +29,7 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   const { isPending: isTVLPending, data: tvlValue } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof borrowingContractAddress],
-    functionName: "tokenDepositedTillNow",
+    functionName: "getTokenDepositedTillNow",
     args: [tokenAddress],
   });
 
@@ -101,7 +101,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     contracts: tokenAddressArr.map((address) => ({
       abi: cdsAbi as Abi,
       address: cdsAddress[chainId as keyof typeof borrowingContractAddress],
-      functionName: "tokenDepositedTillNow",
+      functionName: "getTokenDepositedTillNow",
       args: [address],
     })),
     query: {
@@ -147,7 +147,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       0,
       otherChainAddressList.length - 1
     )) {
-      const tvl = await cdsContract.tokenDepositedTillNow(tokenAddress);
+      const tvl = await cdsContract.getTokenDepositedTillNow(tokenAddress);
       tvls.push(tvl);
     }
     console.log(tvls, otherChainAddressList, "tvlOtherChainLool");

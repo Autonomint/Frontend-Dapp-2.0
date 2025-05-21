@@ -43,9 +43,6 @@ function Navbar() {
       localStorage.removeItem("currentAddress");
     },
   });
-  useEffect(() => {
-    getSecretVar();
-  }, []);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(

@@ -12,7 +12,7 @@ const useTokenDetails = (tokenAddress: Address) => {
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof cdsAddress],
     args: [tokenAddress],
-    functionName: "assetDetails",
+    functionName: "getAssetDetails",
   }) as { data: Record<number, string | number>; refetch: () => void };
 
   // checking individual token pause state

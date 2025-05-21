@@ -1,6 +1,7 @@
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  borrowingWithdrawContractAddress,
   cdsAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
@@ -253,7 +254,7 @@ export function WithdrawFund({
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "APR",
+    functionName: "getAPR",
   });
 
   function handleDepositData() {

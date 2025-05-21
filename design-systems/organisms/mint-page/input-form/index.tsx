@@ -38,6 +38,7 @@ import { BorrowAssetsEnum, NetworkId, scanUrls } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  borrowingDepositContractAddress,
 } from "@/blockchain/contracts";
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
@@ -189,8 +190,8 @@ function InputForm({ currency }: { currency: string }) {
       // check if allowance is less than approve amount
       setApproveLoading(true);
       await approveWrapETHDynamic(
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        borrowingDepositContractAddress[
+          chainId as keyof typeof borrowingDepositContractAddress
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
@@ -267,7 +268,7 @@ function InputForm({ currency }: { currency: string }) {
     isSuccess: isDepositSuccess,
   } = useWaitForTransactionReceipt({
     hash: depositDatahash,
-    confirmations: 2,
+    confirmations: 1,
   });
 
   // function to fetch the min amount for luck
@@ -339,7 +340,7 @@ function InputForm({ currency }: { currency: string }) {
         );
       });
     }
-  }, [Depositdata, isDepositSuccess]);
+  }, [Depositdata, isDepositSuccess, depositHashError]);
 
   const handleResetPage = () => {
     // formik.resetForm();
