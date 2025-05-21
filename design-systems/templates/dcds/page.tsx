@@ -792,7 +792,7 @@ function DCDSTemplate() {
         tokenPrice: formattedPrice,
         tokenCount: Number(formattedBalance),
         tvl:
-          Number(formatUnits(BigInt(tvl), Number(token.decimals))) *
+          Number(formatUnits(BigInt(tvl || 0), Number(token.decimals))) *
           Number(formattedPrice),
         tokenAddress: tokenAddress?.[index],
         tokenDecimals: Number(token.decimals),
