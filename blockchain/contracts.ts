@@ -24,10 +24,34 @@ export const borrowingContractAddress = {
   11155420: "0x10EE8dC1B68039178989fFefeeE791519069e220",
 } as const;
 
+// Addresses for the borrowing deposit contract
+export const borrowingDepositContractAddress = {
+  84532: "0x79b4c9F408702a904ea70bCA538E591d08E33EF0",
+  11155420: "0x0c2A3d2EB1787F05263A9E1E685a5DC0b410E435",
+} as const;
+
+// Addresses for the borrowing withdraw contract
+export const borrowingWithdrawContractAddress = {
+  84532: "0x718BDf21C71ED621bdcc5e33a66e21Bc0D2ebB5b",
+  11155420: "0x6Dca68026a1449e15da3C1D007F36F19b8Ea4A79",
+} as const;
+
 // Addresses for the cds contract
 export const cdsAddress = {
   84532: "0x5aD374eCF70fa4ab23A6B7ac2Cc2Bf11C2A30630",
   11155420: "0xE0828CafCa48aDa33F5353eAE2873097a0c063BF",
+} as const;
+
+// Addresses for the cds deposit contract
+export const cdsDepositAddress = {
+  84532: "0x36E4a1590768477A3cfE2Ca78c3D0fd098855701",
+  11155420: "0x783487b17e7B80d264421a0d52bc5E68a5F36757",
+} as const;
+
+// Addresses for the cds withdraw contract
+export const cdsWithdrawAddress = {
+  84532: "0xc3414FF2bB20A226967DF827267b4F3f465D60f7",
+  11155420: "0xE34D631201720f662f09a500fAE4923fa3bDE6E2",
 } as const;
 
 // Addresses for the USDT contract
@@ -86,7 +110,7 @@ export const rsETHAddress: ChainAddresses = {
 
 // Addresses for the wsuperOETH contract
 export const wsuperOETHAddress: ChainAddresses = {
-  84532: "0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6",
+  84532: "0x7F1Ed7Dcb429ed1Adb93f5d56537c4bDaf54eD50",
   11155420: zeroAddress,
 } as const;
 
