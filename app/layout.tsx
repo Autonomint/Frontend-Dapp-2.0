@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 
+
 const ToasterContainerWrapper = dynamic(
   () => import("@/design-systems/molecule/toaster-container-wrapper")
 );
@@ -16,6 +17,7 @@ import Footer from "@/design-systems/organisms/Footer";
 import InviteCodePopup from "@/design-systems/molecule/popups/InviteCodePopup";
 import SwitchChainPopup from "@/design-systems/molecule/popups/WalletConnect";
 import BetaConfirmation from "@/design-systems/molecule/popups/BetaConfirmation";
+import SupportCall from "@/design-systems/molecule/popups/SupportCall";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +63,7 @@ export default function RootLayout({
                     <Footer />
                     <InviteCodePopup />
                     <SwitchChainPopup />
+                    <SupportCall />
                     {/* <BetaConfirmation /> */}
                   </div>
                 </ThemeProvider>
