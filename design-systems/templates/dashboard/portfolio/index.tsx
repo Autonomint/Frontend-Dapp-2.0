@@ -210,8 +210,6 @@ function PortfolioTemplate() {
     return 0;
   }, [userGains]);
 
-  console.log(userGains, "userGains");
-
   // calculate cds total profits
   const cdsTotalProfits = useMemo(() => {
     if (omniChainData) {
@@ -378,7 +376,7 @@ function PortfolioTemplate() {
           isRenewRepayOpen={isRenewRepayOpen}
           setRenewRepay={setRenewRepay}
           handleNextPage={dcdsHandleNextPage}
-          handlePrevPage={dcdsHandleNextPage}
+          handlePrevPage={dcdsHandlePrevPage}
           currentPage={dcdsPositionCurrentPage}
           totalPages={dcdsTotalPages}
           pageSize={dcdsPageSize}
