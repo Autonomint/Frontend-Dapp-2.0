@@ -234,11 +234,10 @@ export function WithdrawFund({
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
       ? Number(totalUsdaAmntWithCumulativeRate) / 1e6 -
-        Number(downsideProtection) -
-        Number(position?.optionFees)
-      : Number(position.totalDebtAmount) -
-        Number(downsideProtection) -
-        Number(position?.optionFees);
+        Number(downsideProtection)
+      : // Number(position?.optionFees)
+        Number(position.totalDebtAmount) - Number(downsideProtection);
+  // Number(position?.optionFees);
 
   console.log(
     downsideProtection,
