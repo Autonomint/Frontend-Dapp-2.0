@@ -63,7 +63,7 @@ export default function RootLayout({
                     <Footer />
                     <InviteCodePopup />
                     <SwitchChainPopup />
-                    <SupportCall />
+                    {/* <SupportCall /> */}
                     {/* <BetaConfirmation /> */}
                   </div>
                 </ThemeProvider>
