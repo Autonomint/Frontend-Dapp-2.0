@@ -391,7 +391,10 @@ function PortfolioTemplate() {
       <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
-        setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
+        setIsDialogOpen={() => {
+          setIsWithdrawDialogOpen(false);
+          // setSelectedDcdsPosition(null);
+        }}
         dcdsPositionListRefetch={dcdsPositionListRefetch}
       />
       {/* Borrow repay renew modal */}
@@ -400,7 +403,10 @@ function PortfolioTemplate() {
         positionListRefetech={positionListRefetch}
         position={(selectedPosition || []) as PositionData}
         isDialogOpen={isRenewRepayOpen}
-        setIsDialogOpen={() => setRenewRepay(false)}
+        setIsDialogOpen={() => {
+          setRenewRepay(false);
+          // setSelectedPosition(null);
+        }}
       />
     </div>
   );

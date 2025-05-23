@@ -56,6 +56,7 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 
 /**
  * Yup validation schema for the input form
@@ -184,7 +185,7 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETH"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb"].includes(currency) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
@@ -531,6 +532,59 @@ function InputForm({ currency }: { currency: string }) {
     isLoading: isFarmLuckLoading,
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
+
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+  console.log(userTrackingData, "userTrackingData");
+
+  // update user tracking data
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      mintPage: {
+        // previous mint page data
+        ...data?.mintPage,
+
+        // asset related data
+        [currency]: {
+          count: (data?.mintPage?.[currency]?.count || 0) + 1,
+          visited: true,
+          enterTimestamp: data?.mintPage?.[currency]?.count
+            ? data?.mintPage?.[currency]?.enterTimestamp
+            : new Date().toISOString(),
+          exitTimestamp: new Date().toISOString(),
+        },
+        count: (data?.mintPage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.mintPage?.count
+          ? data?.mintPage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+    return () => {
+      // get user tracking data from local storage
+      const data = getUserTrackLocalStorageData();
+      // updating user exit time for selected asset
+      setUserTrackLocalStorageData({
+        ...data,
+        mintPage: {
+          [currency]: {
+            ...data?.mintPage?.[currency],
+            exitTimestamp: new Date().toISOString(),
+          },
+          ...data?.mintPage,
+          exitTimestamp: new Date().toISOString(),
+        },
+      });
+    };
+  }, []);
 
   return (
     <form onSubmit={formik.handleSubmit}>

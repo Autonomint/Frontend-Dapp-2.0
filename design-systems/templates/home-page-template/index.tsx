@@ -27,12 +27,12 @@ import { useAccount } from "wagmi";
 import { formatUnits, zeroAddress } from "viem";
 import { formatNumber } from "@/utils/helpers";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 
 export default function HomeTemplate() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { chainId } = useAccount();
-
+  const { chainId, isConnected, address } = useAccount();
   // scroll down btn state
   const [isScrollBottom, setIsScrollBottom] = useState<boolean>(false);
 
@@ -247,6 +247,39 @@ export default function HomeTemplate() {
     "🔍 Hedge ETH with 0 Upfront Cost",
     "🥇 On-Chain dCDS, First of Its Kind",
   ];
+
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+
+  // update user tracking data
+  useEffect(() => {
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      homePage: {
+        count: (data?.homePage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.homePage?.count
+          ? data?.homePage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+  }, []);
+  // update user tracking data
+  useEffect(() => {
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      userAddress: address,
+      chainId: chainId,
+    });
+  }, [isConnected]);
+
   return (
     <div className="w-full">
       <div className="  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">

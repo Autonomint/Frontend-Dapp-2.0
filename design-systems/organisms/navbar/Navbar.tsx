@@ -9,7 +9,7 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { useDisconnect } from "@reown/appkit/react";
 import { watchAccount } from "@wagmi/core";
-import { Moon, Sun } from "lucide-react";
+import { Headset, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -274,7 +274,7 @@ function Navbar() {
 
       {!isPolicyPage && isClient && (
         <div className="flex items-center md:gap-6 sm:gap-2 mr-4">
-          <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
+          {/* <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
             <div
               ref={containerRef}
               className="flex flex-col pt-[40px]"
@@ -287,7 +287,21 @@ function Navbar() {
                 {nextText}
               </div>
             </div>
-          </div>
+          </div> */}
+          <a
+            href="https://meet.brevo.com/akshit-vig"
+            target="_blank"
+            rel="noopener noreferrer"
+            className=""
+          >
+            <Button
+              variant={"shadowOutline"}
+              className=" h-fit text-[18px] font-normal hidden lg:flex  p-[8px] "
+            >
+              Call
+              <Headset />
+            </Button>
+          </a>
           <WalletPopup />
           <Button
             variant={"shadowOutline"}

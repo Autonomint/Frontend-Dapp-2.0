@@ -51,6 +51,8 @@ import { Network } from "ethers";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { InfoIcon } from "lucide-react";
 import { usDaAbi } from "@/blockchain/abis/usda";
+import PageLoader from "../page-loader";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -69,6 +71,8 @@ export function WithdrawFund({
   // getting value for borrow withdraw and renew pause
   const { isFunctionPausedBorrow_Renew, isFunctionPausedBorrow_Withdraw } =
     useBorrowPause();
+
+  const [isDataUpdating, setIsDataUpdating] = useState(false);
 
   const [spinner, setSpinner] = useState(false);
 
@@ -150,13 +154,14 @@ export function WithdrawFund({
     useLastCumulativeRate();
 
   // interest gain from backend
-  const { interestGained } = useInterestGain(position.index);
+  const { interestGained, isInterestGainedPending } = useInterestGain(
+    position.index
+  );
   console.log(interestGained, "interestGained");
 
-  const { usdValue: ethPrice } = useGetUsdValue(
+  const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
-
   console.log(ethPrice, "ethPrice");
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -176,7 +181,10 @@ export function WithdrawFund({
     useState<boolean>(false);
 
   // fetching renew enable time
-  const { data: optionsFeesTimeLimits } = useReadContract({
+  const {
+    data: optionsFeesTimeLimits,
+    isLoading: isOptionsFeesTimeLimitsPending,
+  } = useReadContract({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
@@ -204,7 +212,7 @@ export function WithdrawFund({
       : 0;
 
   // fetching allowance of usda for repay
-  const { data: allowance } = useReadContract({
+  const { data: allowance, isLoading: isAllowancePending } = useReadContract({
     abi: usDaAbi,
     address: usDaAddress[chainId as keyof typeof usDaAddress],
     functionName: "allowance",
@@ -214,8 +222,7 @@ export function WithdrawFund({
         chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined };
-
+  }) as { data: number | undefined; isLoading: boolean };
   // usda amount multiply by cumulative rate
   const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
@@ -247,7 +254,7 @@ export function WithdrawFund({
   );
 
   // getting current APR value
-  const { data: currentAPR } = useReadContract({
+  const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
@@ -257,6 +264,7 @@ export function WithdrawFund({
   });
 
   function handleDepositData() {
+    setIsDataUpdating(true);
     // Calculate the totalUsdaAmntWithCumulativeRate
     if (position && lastCumulativeRate) {
       // If details are available, update each value in the depositData array
@@ -330,6 +338,7 @@ export function WithdrawFund({
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
+      setIsDataUpdating(false);
     } else {
       // if position and lastCumulativeRate is not available then set -
       // If details are not available, set each value in the depositData array to '-'
@@ -441,11 +450,11 @@ export function WithdrawFund({
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
-    options,
-    3,
-    1
-  );
+  const {
+    quoteValue: nativeFee,
+    quoteError,
+    isUsdValuePending: isQuotePending,
+  } = useGetGlobalQuote(options, 3, 1);
 
   const {
     approveUsda,
@@ -780,6 +789,16 @@ export function WithdrawFund({
     renewBorrow(BigInt(position.index), nativeFee?.nativeFee || BigInt(0n));
   };
 
+  const isPopupLoading =
+    isLastCumulativeRatePending ||
+    isInterestGainedPending ||
+    isUsdValuePending ||
+    isDataUpdating ||
+    isOptionsFeesTimeLimitsPending ||
+    isAllowancePending ||
+    isCurrentAPRPending ||
+    isQuotePending;
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -844,8 +863,16 @@ export function WithdrawFund({
               </label>
             </div>
           </div>
-
-          {toggleView === "repay" && (
+          {isPopupLoading && (
+            <div className="h-[470px] flex justify-center items-center">
+              <RingLoadingIcon
+                width={80}
+                height={80}
+                className="fill-black dark:fill-white w-8 h-8 "
+              />
+            </div>
+          )}
+          {toggleView === "repay" && !isPopupLoading && (
             <>
               <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
                 {depositData.map((item) => (
@@ -980,7 +1007,7 @@ export function WithdrawFund({
             </>
           )}
 
-          {toggleView === "renew" && (
+          {toggleView === "renew" && !isPopupLoading && (
             <>
               <div className="w-full h-[67px]">
                 {

@@ -126,7 +126,7 @@ function AddToken({
         className={` border border-solid border-grayLight flex flex-col justify-start items-center h-full relative `}
       >
         <div className="flex  p-4 gap-5 w-full items-center">
-          <div className="flex w-[40%] md:w-[20%] flex-row items-center lg:items-start lg:flex-col gap-5">
+          <div className="flex w-[40%] md:w-[20%] lg:w-[30%] 2xl:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -159,7 +159,7 @@ function AddToken({
               )}
             </div>
           </div>
-          <div className=" hidden lg:flex flex-col justify-center h-full gap-2 items-center">
+          {/* <div className=" hidden lg:flex flex-col justify-center h-full gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />
@@ -168,7 +168,7 @@ function AddToken({
               )}
             </div>
             <div className="text-md text-grayLight ">Add token</div>
-          </div>
+          </div> */}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>

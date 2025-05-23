@@ -97,7 +97,7 @@ function MintEthListTemplate() {
 
   if (chainId == NetworkId.BaseSepolia) {
     list.push({
-      token: "wsuperOETH",
+      token: "wsuperOETHb",
       tokenImage: WsuperOETH,
       BorrowRate: `${Number(currentAPR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,

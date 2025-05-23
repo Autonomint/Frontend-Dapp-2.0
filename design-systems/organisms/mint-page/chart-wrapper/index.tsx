@@ -27,7 +27,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:RSETHUSD|1D"];
       case "weETH":
         return ["CRYPTO:WEETHUSD|1D"];
-      case "wsuperOETH":
+      case "wsuperOETHb":
         return ["CRYPTO:WSUPEROETHUSD|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
@@ -155,7 +155,7 @@ function ChartComponent({ currency }: { currency: string }) {
         return WrsETH;
       case "weETH":
         return WeETH;
-      case "wsuperOETH":
+      case "wsuperOETHb":
         return WsuperOETHIcon;
 
       default:
@@ -215,7 +215,7 @@ function ChartComponent({ currency }: { currency: string }) {
       </div>
 
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
-        {currency.toLocaleLowerCase() == "wsuperoeth" ? (
+        {currency.toLocaleLowerCase() == "wsuperoethb" ? (
           <div className="w-full h-full flex items-center justify-center">
             <p className="text-grayLight text-lg">Chart Not Available</p>
           </div>

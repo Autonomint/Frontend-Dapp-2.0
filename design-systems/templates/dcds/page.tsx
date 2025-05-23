@@ -78,6 +78,7 @@ import { FormValues, TokenDetails } from "./interface";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { getIconMapping } from "@/utils/token-config";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -118,16 +119,16 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
         }
         return Number(value) >= 0;
       })
-      .test("min-amount", "Amount below minimum required", function (value) {
-        const tokenName = token.tokenName.toLowerCase();
-        if (this.parent[`${tokenName}Flag`] && value) {
-          const minAmount = token.minTokenAmount;
-          const tokenPrice = Number(token.tokenPrice || 0);
-          const valueInUSD = Number(value) * tokenPrice;
-          return valueInUSD >= minAmount;
-        }
-        return true;
-      })
+      // .test("min-amount", "Amount below minimum required", function (value) {
+      //   const tokenName = token.tokenName.toLowerCase();
+      //   if (this.parent[`${tokenName}Flag`] && value) {
+      //     const minAmount = token.minTokenAmount;
+      //     const tokenPrice = Number(token.tokenPrice || 0);
+      //     const valueInUSD = Number(value) * tokenPrice;
+      //     return valueInUSD >= minAmount;
+      //   }
+      //   return true;
+      // })
       .nullable();
   });
 
@@ -889,6 +890,81 @@ function DCDSTemplate() {
         )
     );
   }, [formik.values, selectedTokens]);
+
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+  console.log(userTrackingData, "userTrackingData");
+
+  // update user tracking data
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      cdsPage: {
+        // previous mint page data
+        ...data?.cdsPage,
+        count: (data?.cdsPage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.cdsPage?.count
+          ? data?.cdsPage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+    return () => {
+      // get user tracking data from local storage
+      const data = getUserTrackLocalStorageData();
+      // updating user exit time for selected asset
+      setUserTrackLocalStorageData({
+        ...data,
+        cdsPage: {
+          ...data?.cdsPage,
+          exitTimestamp: new Date().toISOString(),
+        },
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    // updating selected tokens count
+    setUserTrackLocalStorageData({
+      ...data,
+      cdsPage: {
+        ...data?.cdsPage,
+        usda: {
+          count: selectedTokens.find((token) => token.tokenLabel === "USDA+")
+            ?.active
+            ? (data?.cdsPage?.usda?.count || 0) + 1
+            : data?.cdsPage?.usda?.count || 0,
+        },
+        usdt: {
+          count: selectedTokens.find((token) => token.tokenLabel === "USDT")
+            ?.active
+            ? (data?.cdsPage?.usdt?.count || 0) + 1
+            : data?.cdsPage?.usdt?.count || 0,
+        },
+        op: {
+          count: selectedTokens.find((token) => token.tokenLabel === "OP")
+            ?.active
+            ? (data?.cdsPage?.op?.count || 0) + 1
+            : data?.cdsPage?.op?.count || 0,
+        },
+        aero: {
+          count: selectedTokens.find((token) => token.tokenLabel === "AERO")
+            ?.active
+            ? (data?.cdsPage?.aero?.count || 0) + 1
+            : data?.cdsPage?.aero?.count || 0,
+        },
+      },
+    });
+  }, [selectedTokens]);
 
   return (
     <div>

@@ -38,7 +38,7 @@ async function getAPY(
 // get total index from CDS contract and store it in totalCDSIndex
 const useGetAPY = (index: number) => {
   const { address, chainId } = useAccount();
-  const { data: apy } = useQuery({
+  const { data: apy, isLoading : isLoadingAPY } = useQuery({
     queryKey: ["APY", index],
     queryFn: () =>
       getAPY(address ? address : undefined, chainId as number, index),
@@ -46,6 +46,7 @@ const useGetAPY = (index: number) => {
   });
   return {
     apy,
+    isLoadingAPY,
   };
 };
 

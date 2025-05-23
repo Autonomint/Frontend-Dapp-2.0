@@ -51,7 +51,7 @@ export const BorrowAssetsEnum = {
   weETH: AssetName.WeETH,
   wrsETH: AssetName.WrsETH,
   rsETH: AssetName.rsETH,
-  wsuperOETH: AssetName.WSUPER_OETH,
+  wsuperOETHb: AssetName.WSUPER_OETH,
 };
 
 export const RedeemAssets = {

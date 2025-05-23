@@ -120,7 +120,7 @@ export const borrowAssetsAddress = {
   wrsETH: wrsETHAddress,
   weETH: weETHAddress,
   rsETH: rsETHAddress,
-  wsuperOETH: wsuperOETHAddress,
+  wsuperOETHb: wsuperOETHAddress,
 } as const;
 
 // Addresses for the global contract

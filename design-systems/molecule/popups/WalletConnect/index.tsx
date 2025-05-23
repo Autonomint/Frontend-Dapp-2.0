@@ -19,8 +19,8 @@ interface SwitchChainPopupProps {}
  * SwitchChainPopup is a component that allows the user to switch the chain.
  * It is used to switch the chain.
  * It is used in the SwitchChainPopup component.
- * 
- * 
+ *
+ *
  */
 const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
@@ -92,7 +92,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
             >
               <div>
                 <BaseIcon
-                  className=" stroke-black  "
+                  className=" stroke-black dark:stroke-white  "
                   style={{ width: "50px", height: "50px" }}
                 />
               </div>

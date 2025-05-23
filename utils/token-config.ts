@@ -108,7 +108,7 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             // image: "https://yourdomain.com/token-image.png",
           },
         };
-      case "wsuperoeth":
+      case "wsuperoethb":
         return {
           type: "ERC20",
           options: {
