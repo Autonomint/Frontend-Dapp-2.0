@@ -1,7 +1,7 @@
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
-import { AssetNames } from "@/utils/constants";
+import { AssetName } from "@/utils/constants";
 
 interface BorrowInputs {
   strikePercent: bigint; // uint8 can be mapped to the enum
@@ -9,7 +9,7 @@ interface BorrowInputs {
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint; // uint256 can be represented by bigint
-  assetName: AssetNames;
+  assetName: AssetName;
   deadline: bigint;
   signature: `0x${string}`;
   nonce: bigint;
@@ -30,7 +30,6 @@ const useDepositTokens = (mutation: any) => {
     },
   });
 
-  
   const mintUSDa = async ({
     strikePercent,
     volatility,

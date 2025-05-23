@@ -127,7 +127,7 @@ function BridgeTemplate() {
     }
     let amount = 0n;
     if (sendToken === "USDa" && nativeFee1) {
-      amount = parseUnits(letamount, 18) - nativeFee1.nativeFee;
+      amount = parseUnits(letamount, 18) - nativeFee1?.nativeFee;
     }
 
     if (sendAmount != null) {

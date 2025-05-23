@@ -32,7 +32,7 @@ export enum StrikePrice {
   TWENTY_FIVE,
 }
 
-enum AssetName {
+export enum AssetName {
   DUMMY,
   ETH,
   WeETH,
@@ -44,7 +44,7 @@ enum AssetName {
   NativeToken,
   USDC,
   sUSD,
-  WSUPER_OETH
+  WSUPER_OETH,
 }
 export const BorrowAssetsEnum = {
   ETH: AssetName.ETH,
@@ -68,6 +68,8 @@ export const sm_accessKeyId = "AKIAQLVQQPQX6XEGOPMA";
 export const sm_secretAccessKey = "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";
 
 export const infuraApiKeys = "SS28xhM5WTcPjxMPrmDfJICizSZIUWmo";
+
+export const LOCAL_STORAGE_KEY = "userTrackingData";
 
 // urls
 export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";

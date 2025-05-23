@@ -657,7 +657,7 @@ const RedeemContainer = () => {
     functionName: "getAbondYields",
     args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
     query: {
-      placeholderData: [0n, 0n, 0n, 0n, 0n],
+      placeholderData: [0n, 0n, 0n, 0n, 0n, 0n],
     },
   });
 
