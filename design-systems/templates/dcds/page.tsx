@@ -799,6 +799,7 @@ function DCDSTemplate() {
                 "") as keyof typeof minTokenAmountAndPointToDeposit
           ]?.pointsToBeGiven || 0
         ),
+        pointBoaster: 10,
         tokenPauseMessage: ` ${token.symbol} Token not active now`,
         tokenPrice: formattedPrice,
         tokenCount: Number(formattedBalance),
@@ -829,7 +830,7 @@ function DCDSTemplate() {
 
   // calculating point to be given
   const pointToGiven = useMemo(() => {
-    const value = selectedTokens.reduce((total, token) => {
+    const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
         formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
       );
@@ -848,13 +849,50 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          ? (valueInUSD / token.minTokenAmount) *
+            token.pointToGiven *
+            token.pointBoaster
           : 0;
 
       return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
     }, 0);
 
-    return Math.round(value) || 0; // Return 0 if the result is NaN
+    // Calculate individual points for each token
+    const individualPoints = selectedTokens.map((token) => {
+      const tokenAmount = Number(
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+      );
+      const tokenPrice = Number(token.tokenPrice || 0);
+      const valueInUSD = tokenAmount * tokenPrice;
+
+      // Check for NaN values and handle them
+      if (
+        isNaN(valueInUSD) ||
+        isNaN(token.minTokenAmount) ||
+        isNaN(token.pointToGiven) ||
+        token.minTokenAmount === 0
+      ) {
+        return {
+          tokenName: token.tokenName,
+          points: 0,
+        };
+      }
+
+      const pointsForToken =
+        valueInUSD >= token.minTokenAmount
+          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          : 0;
+
+      return {
+        tokenName: token.tokenName,
+        points: isNaN(pointsForToken) ? 0 : pointsForToken,
+      };
+    });
+
+    return {
+      totalPoints: Math.round(totalPoints) || 0,
+      individualPoints,
+    };
   }, [selectedTokens, formik]);
 
   // hook for getting the farm your luck data (current reward data) from the backend api
@@ -1254,7 +1292,8 @@ function DCDSTemplate() {
               <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
-                points={pointToGiven}
+                points={pointToGiven.totalPoints}
+                individualPoints={pointToGiven.individualPoints}
               />
             </div>
             {/* showing the deposit button */}

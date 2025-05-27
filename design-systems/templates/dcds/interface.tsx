@@ -20,6 +20,7 @@ export interface TokenDetails {
   tokenDetails?: Record<number, string | number>;
   tokenPauseState?: boolean;
   pointToGiven: number;
+  pointBoaster: number;
 }
 
 export interface FormValues {

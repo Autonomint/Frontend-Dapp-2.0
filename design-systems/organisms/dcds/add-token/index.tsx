@@ -125,7 +125,7 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight flex flex-col justify-start items-center h-full relative `}
       >
-        <div className="flex  p-4 gap-5 w-full items-center">
+        <div className="flex relative p-4 gap-5 w-full items-start">
           <div className="flex w-[40%] md:w-[20%] lg:w-[30%] 2xl:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
@@ -135,31 +135,48 @@ function AddToken({
                 height={30}
               />
             </div>
-            <span className="text-[24px] text-textBlack dark:text-white">
+            <span className="2xl:text-[24px] text-[20px] text-textBlack dark:text-white">
               {tokenDetails.tokenLabel || tokenDetails.tokenName}
             </span>
           </div>
           <div className="flex items-start flex-col justify-start  md:gap-0">
             <div className="flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
-              balance
+              Balance
             </div>
 
             <div className="flex flex-col gap-0">
-              <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+              <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
                 {tokenDetails.balanceAvailable.replaceAll(
                   tokenDetails.tokenName,
                   ""
                 )}
               </span>
               {tokenDetails.tokenCount && (
-                <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+                <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
                   {tokenDetails?.tokenCount?.toFixed(2)}{" "}
-                  {` ${tokenDetails.tokenName}`}
+                  {/* {` ${tokenDetails.tokenName}`} */}
                 </span>
               )}
             </div>
           </div>
-          {/* <div className=" hidden lg:flex flex-col justify-center h-full gap-2 items-center">
+          <div className="flex ml-2 items-start flex-col justify-start  md:gap-0">
+            <div className="flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
+              Points
+            </div>
+
+            <div className="flex flex-col gap-0">
+              <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
+                {tokenDetails.pointToGiven} Per ${tokenDetails.minTokenAmount}
+              </span>
+              {/* {tokenDetails.tokenCount && (
+                <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+                  {tokenDetails?.tokenCount?.toFixed(2)}{" "}
+                  {` ${tokenDetails.tokenName}`}
+                </span>
+              )} */}
+            </div>
+          </div>
+          <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />
@@ -167,8 +184,7 @@ function AddToken({
                 <CircleFadingPlus className="stroke-black dark:stroke-white " />
               )}
             </div>
-            <div className="text-md text-grayLight ">Add token</div>
-          </div> */}
+          </div>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>

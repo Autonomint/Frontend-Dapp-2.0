@@ -57,6 +57,9 @@ import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import { HoverCard } from "@/design-systems/atoms/hover-card";
+import { Info } from "lucide-react";
+import { usePoint } from "@/hookes/api-hooks/usePoint";
 
 /**
  * Yup validation schema for the input form
@@ -526,12 +529,51 @@ function InputForm({ currency }: { currency: string }) {
     );
   };
 
-  // hook for getting the farm your luck data (current reward data) from the backend api
+  // hook for getting the farm your luck data (current reward data) from the backend api for showing point boaster in ui
   const {
     data: farmLuckDetails,
     isLoading: isFarmLuckLoading,
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
+
+  // getting current point value for eth deposit
+  const { ethPoints, isLoading: isPointLoading, error } = usePoint();
+
+  // dummy point boaster
+  const tokenBoaster = 10;
+
+  // calculate the point based on depositing amount
+  const depositTokenPoint =
+    ethPoints?.minAmount < Number(formik.values.collateralAmount || 0)
+      ? Number(formik.values.collateralAmount / ethPoints?.minAmount || 0) *
+        Number(ethPoints?.pointsToBeGiven || 0)
+      : 0;
+
+  // calculate the point based on farm luck boaster
+  const luckBoasterPoint =
+    depositTokenPoint *
+    Number(
+      (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+        .minutes > 0 &&
+        10) ||
+        (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0 &&
+          5) ||
+        0
+    );
+  // calculate the point based on token boaster
+  const tokenBoasterPoint = depositTokenPoint * tokenBoaster;
+
+  // calculate the total point
+  const totalPoint = tokenBoasterPoint + luckBoasterPoint + depositTokenPoint;
+
+  console.log(
+    depositTokenPoint,
+    luckBoasterPoint,
+    tokenBoasterPoint,
+    farmLuckDetails,
+    "pointsToBeGivenBreakDown"
+  );
 
   // get user tracking data and setter function
   const {
@@ -676,14 +718,64 @@ function InputForm({ currency }: { currency: string }) {
                 </Button>
               </div>
             </div>
+            <div>
+              <div className="flex justify-between">
+                <span className=" font-medium text-lg text-grayLight">
+                  5% of collateral upside
+                </span>
+                <span className=" font-medium text-lg dark:text-white text-black">
+                  ${upsideCollateral.toFixed(2)}
+                </span>
+              </div>
 
-            <div className="flex justify-between">
-              <span className=" font-medium text-lg text-grayLight">
-                5% of collateral upside
-              </span>
-              <span className=" font-medium text-lg text-grayLight">
-                ${upsideCollateral.toFixed(2)}
-              </span>
+              <div className="flex justify-between">
+                <HoverCard
+                  title={
+                    <span className=" flex gap-1 items-center font-medium text-lg text-grayLight">
+                      Points
+                      <Info
+                        id="points-breakdown"
+                        className="stroke-grayLight w-[18px] h-[18px]"
+                      />
+                    </span>
+                  }
+                >
+                  <div>
+                    <div className=" p-3 bg-[#ABFFDE] border-b-[1px] border-grayLight font-medium text-lg text-grayLight">
+                      Points Breakdown
+                    </div>
+                    <div className="flex p-3 mt-2 flex-col gap-2">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-grayLight">
+                          Deposit
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {depositTokenPoint}
+                        </span>
+                      </div>
+                      <div className="flex  justify-between">
+                        <span className="font-medium text-grayLight">
+                          10x Boaster
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {tokenBoasterPoint}
+                        </span>
+                      </div>
+                      <div className="flex  justify-between">
+                        <span className="font-medium text-grayLight">
+                          5x Boaster
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {luckBoasterPoint}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </HoverCard>
+                <span className=" font-medium text-lg dark:text-white text-black">
+                  {totalPoint}
+                </span>
+              </div>
             </div>
           </div>
         </div>
