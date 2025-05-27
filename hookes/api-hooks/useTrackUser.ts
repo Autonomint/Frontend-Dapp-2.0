@@ -1,56 +1,7 @@
 import { LOCAL_STORAGE_KEY } from "@/utils/constants";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-
-// type UserTrackingData = {
-//   homePage?: {
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   borrowPage?: {
-//     asset: string;
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   cdspage?: {
-//     asset: string;
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   portfolioPage?: {
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   leaderboardPage?: {
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   statsPage?: {
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   farmyourLuckPage?: {
-//     count: number;
-//     visited: boolean;
-//     enterTimestamp: string;
-//     exitTimestamp: string;
-//   };
-//   address: string;
-//   userId: string;
-//   sessionId: string;
-// };
+import { BACKEND_API_URL } from "@/utils/urls";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 const getUserTrackLocalStorageData = (): any | null => {
   try {
@@ -76,21 +27,18 @@ const sendUserTrackingData = (): void => {
 
   const payload = {
     ...data,
-    timestamp: new Date().toISOString(),
+    home: true,
+    // Can add here additional data
   };
 
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon("/api/exit", JSON.stringify(payload));
-  } else {
-    fetch("/api/exit", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      keepalive: true,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+  fetch(`${BACKEND_API_URL}/global/user-tracking-data`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+    keepalive: true,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 // Set tracking event on unload and route change start
@@ -101,17 +49,99 @@ export const useTrackUser = () => {
     sendUserTrackingData();
   };
 
-  const handleRouteChangeStart = () => {
-    sendUserTrackingData();
-  };
+  const timeoutRefTabSwitch = useRef<NodeJS.Timeout | null>(null);
+
+  // this useEffect will run the post request after 20 minutes of tab inactivity/switching to another tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        // Tab is inactive — start countdown
+        timeoutRefTabSwitch.current = setTimeout(() => {
+          sendUserTrackingData();
+        }, 1000 * 60 * 20);
+      } else {
+        // Tab is active again — cancel countdown
+        if (timeoutRefTabSwitch.current) {
+          clearTimeout(timeoutRefTabSwitch.current);
+          timeoutRefTabSwitch.current = null;
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (timeoutRefTabSwitch.current) {
+        clearTimeout(timeoutRefTabSwitch.current);
+      }
+    };
+  }, []);
+
+  const timeoutRefWindowSwitch = useRef<NodeJS.Timeout | null>(null);
+
+  // this useEffect will run the post request after 20 minutes of window inactivity/switching to another window
+  useEffect(() => {
+    const handleBlur = () => {
+      // User left the browser (switched app or minimized)
+      timeoutRefWindowSwitch.current = setTimeout(() => {
+        sendUserTrackingData();
+      }, 1000 * 60 * 20);
+    };
+
+    const handleFocus = () => {
+      // User came back to the browser
+      if (timeoutRefWindowSwitch.current) {
+        clearTimeout(timeoutRefWindowSwitch.current);
+        timeoutRefWindowSwitch.current = null;
+      }
+    };
+
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("focus", handleFocus);
+      if (timeoutRefWindowSwitch.current) {
+        clearTimeout(timeoutRefWindowSwitch.current);
+        timeoutRefWindowSwitch.current = null;
+      }
+    };
+  }, []);
+
+  // // this useEffect will run the post request after 20 minutes of user inactivity
+  // useEffect(() => {
+  //   let timeout: NodeJS.Timeout;
+
+  //   const resetTimer = () => {
+  //     clearTimeout(timeout);
+  //     timeout = setTimeout(() => {
+  //       sendUserTrackingData();
+  //     }, 1000 * 60 * 20); // 20 minutes
+  //   };
+
+  //   ["mousemove", "keydown", "scroll"].forEach((event) =>
+  //     window.addEventListener(event, resetTimer)
+  //   );
+
+  //   resetTimer(); // Initialize on mount
+
+  //   return () => {
+  //     clearTimeout(timeout);
+  //     ["mousemove", "keydown", "scroll"].forEach((event) =>
+  //       window.removeEventListener(event, resetTimer)
+  //     );
+  //   };
+  // }, []);
 
   useEffect(() => {
     window.addEventListener("unload", handleUnload);
-    router.events.on("routeChangeStart", handleRouteChangeStart);
+    // router.("routeChangeStart", handleRouteChangeStart);
 
     return () => {
       window.removeEventListener("unload", handleUnload);
-      router.events.off("routeChangeStart", handleRouteChangeStart);
+      // router.events.off("routeChangeStart", handleRouteChangeStart);
     };
   }, [router]);
 };

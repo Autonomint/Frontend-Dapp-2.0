@@ -275,8 +275,8 @@ export default function HomeTemplate() {
     const data = getUserTrackLocalStorageData();
     setUserTrackLocalStorageData({
       ...data,
-      userAddress: address,
-      chainId: chainId,
+      address,
+      chainId,
     });
   }, [isConnected]);
 

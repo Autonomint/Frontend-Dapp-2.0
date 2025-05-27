@@ -23,6 +23,7 @@ import WalletPopup from "../../molecule/popups/WalletPopUp";
 import getSecretVar from "@/services/aws-secret";
 import twitter from "@/app/assets/x-social-media-black-icon.svg";
 import { getIconMapping } from "@/utils/token-config";
+import { useTrackUser } from "@/hookes/api-hooks/useTrackUser";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -33,7 +34,8 @@ function Navbar() {
 
   const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
 
-  const { address } = useAccount();
+  // user activity tracking function
+  useTrackUser();
 
   useAccountEffect({
     onConnect(data) {
