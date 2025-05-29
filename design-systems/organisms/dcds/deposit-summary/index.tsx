@@ -49,7 +49,7 @@ export default function DepositSummary({
             }
           >
             <div>
-              <div className=" p-3 bg-[#ABFFDE] border-b-[1px] border-grayLight font-medium text-lg text-grayLight">
+              <div className=" p-3 bg-[#ABFFDE] border-b-[1px] border-grayLight font-medium text-lg text-black">
                 Points Breakdown
               </div>
               <div className="flex p-3 mt-2 flex-col gap-2">

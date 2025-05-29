@@ -34,7 +34,12 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum, NetworkId, scanUrls } from "@/utils/constants";
+import {
+  assetNameForRewardDataBorrow,
+  BorrowAssetsEnum,
+  NetworkId,
+  scanUrls,
+} from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
@@ -60,6 +65,7 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import { Info } from "lucide-react";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
  * Yup validation schema for the input form
@@ -539,42 +545,6 @@ function InputForm({ currency }: { currency: string }) {
   // getting current point value for eth deposit
   const { ethPoints, isLoading: isPointLoading, error } = usePoint();
 
-  // dummy point boaster
-  const tokenBoaster = 10;
-
-  // calculate the point based on depositing amount
-  const depositTokenPoint =
-    ethPoints?.minAmount < Number(formik.values.collateralAmount || 0)
-      ? Number(formik.values.collateralAmount / ethPoints?.minAmount || 0) *
-        Number(ethPoints?.pointsToBeGiven || 0)
-      : 0;
-
-  // calculate the point based on farm luck boaster
-  const luckBoasterPoint =
-    depositTokenPoint *
-    Number(
-      (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-        .minutes > 0 &&
-        10) ||
-        (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-          .minutes > 0 &&
-          5) ||
-        0
-    );
-  // calculate the point based on token boaster
-  const tokenBoasterPoint = depositTokenPoint * tokenBoaster;
-
-  // calculate the total point
-  const totalPoint = tokenBoasterPoint + luckBoasterPoint + depositTokenPoint;
-
-  console.log(
-    depositTokenPoint,
-    luckBoasterPoint,
-    tokenBoasterPoint,
-    farmLuckDetails,
-    "pointsToBeGivenBreakDown"
-  );
-
   // get user tracking data and setter function
   const {
     userTrackingData,
@@ -628,34 +598,92 @@ function InputForm({ currency }: { currency: string }) {
     };
   }, []);
 
+  const { tokenRewardDetailList } = useGetTokenReward();
+
+  const tokenRewardDetailBorrow =
+    tokenRewardDetailList?.[
+      assetNameForRewardDataBorrow[
+        currency as keyof typeof assetNameForRewardDataBorrow
+      ]
+    ];
+
+  // boaster from farm your luck
+  const luckBoaster =
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+      .minutes > 0 &&
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
+      ? 10
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
+
+  // total boaster for token
+  const totalBooster =
+    (tokenRewardDetailBorrow
+      ? Number(tokenRewardDetailBorrow?.defaultBooster ?? 0)
+      : 0) + luckBoaster;
+
+  // Finding the max timestamp
+  const totalTimeStamp = Math.max(
+    farmLuckDetails?.deadLine5xTimestamp
+      ? // convert date to timestamp
+        new Date(farmLuckDetails.deadLine5xTimestamp).getTime()
+      : 0,
+    farmLuckDetails?.deadLine10xTimestamp
+      ? // convert date to timestamp
+        new Date(farmLuckDetails.deadLine10xTimestamp).getTime()
+      : 0,
+    // timestamp for campaign booster
+    Number(tokenRewardDetailBorrow?.boosterValidity ?? 0)
+  );
+
+  // calculate the point based on depositing amount
+  const depositTokenPoint =
+    (tokenRewardDetailBorrow?.minAmount || 0) <=
+    Number(formik.values.collateralAmount || 0)
+      ? Number(
+          formik.values.collateralAmount /
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+      : 0;
+
+  // // calculate the point based on farm luck boaster
+  // const luckBoasterPoint =
+  //   depositTokenPoint *
+  //   Number(
+  //     (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+  //       .minutes > 0 &&
+  //       10) ||
+  //       (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+  //         .minutes > 0 &&
+  //         5) ||
+  //       0
+  //   );
+
+  // calculate the total point
+  const totalPoint = depositTokenPoint * totalBooster;
+
+  // calculate the point based on token boaster
+  const tokenBoasterPoint = totalPoint - depositTokenPoint;
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
         <div className="flex justify-between items-center">
           <div className=" font-medium text-2xl">Mint USDA+</div>
           <div className="flex justify-end items-center gap-1">
-            {calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine5xTimestamp || ""
-            ).minutes > 0 &&
-            calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine10xTimestamp || ""
-            ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                10x Points
-              </div>
-            ) : calculateRemainingTimeDate(
-                farmLuckDetails?.deadLine10xTimestamp || ""
-              ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                10x Points
-              </div>
-            ) : calculateRemainingTimeDate(
-                farmLuckDetails?.deadLine5xTimestamp || ""
-              ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                5x Points
-              </div>
-            ) : null}
+            {!!totalBooster &&
+              calculateRemainingTimeDate(new Date(totalTimeStamp).toISOString())
+                .minutes > 0 && (
+                <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                  {totalBooster}x Points
+                </div>
+              )}
           </div>
         </div>
         <div className="flex flex-col gap-[18px] ">
@@ -747,7 +775,7 @@ function InputForm({ currency }: { currency: string }) {
                     <div className="flex p-3 mt-2 flex-col gap-2">
                       <div className="flex justify-between">
                         <span className="font-medium text-grayLight">
-                          Deposit
+                          {currency}
                         </span>
                         <span className="font-medium text-black dark:text-white">
                           {depositTokenPoint}
@@ -755,18 +783,10 @@ function InputForm({ currency }: { currency: string }) {
                       </div>
                       <div className="flex  justify-between">
                         <span className="font-medium text-grayLight">
-                          10x Boaster
+                          Boaster
                         </span>
                         <span className="font-medium text-black dark:text-white">
                           {tokenBoasterPoint}
-                        </span>
-                      </div>
-                      <div className="flex  justify-between">
-                        <span className="font-medium text-grayLight">
-                          5x Boaster
-                        </span>
-                        <span className="font-medium text-black dark:text-white">
-                          {luckBoasterPoint}
                         </span>
                       </div>
                     </div>

@@ -79,6 +79,7 @@ import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { getIconMapping } from "@/utils/token-config";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -717,29 +718,28 @@ function DCDSTemplate() {
     },
   });
 
+  // Getting token reward details
+  const { tokenRewardDetailList, tokenRewardDetailLoading } =
+    useGetTokenReward();
+
+
+
+  // hook for getting the farm your luck data (current reward data) from the backend api
   const {
-    usdaPoints,
-    usdtPoints,
-    nativePoints,
-    isLoading: isPointLoading,
-    error,
-  } = usePoint();
-  //
-  const minTokenAmountAndPointToDeposit = {
-    usda: usdaPoints,
-    usdt: usdtPoints,
-    op: nativePoints,
-    aero: nativePoints,
-  };
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
+
   // Combine loading of all react function for token details
   const isTokenDataLoading =
     isTokenListPending ||
-    isPointLoading ||
     isTokenStatusLoading ||
     isAllowanceLoading ||
     isLoadingOraclePrices ||
     isLoadingOraclePrices ||
-    isTokenBalanceLoading;
+    isTokenBalanceLoading ||
+    tokenRewardDetailLoading;
 
   // token list for the deposit
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -769,7 +769,62 @@ function DCDSTemplate() {
 
       // Calculate USD value of balance
       const balanceInUSD = Number(formattedBalance) * Number(formattedPrice);
+      // boaster from farm your luck
+      const luckBoaster =
+        calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0 &&
+        calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+          ? 10
+          : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine5xTimestamp || ""
+            ).minutes > 0
+          ? 5
+          : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || ""
+            ).minutes > 0
+          ? 10
+          : 0;
 
+      // total boaster for token
+      const totalBooster =
+        (token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.defaultBooster ?? 0
+            )
+          : 0) + luckBoaster;
+
+      // Finding the max timestamp
+      const totalTimeStamp = Math.max(
+        farmLuckDetails?.deadLine5xTimestamp
+          ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime()
+          : 0,
+        farmLuckDetails?.deadLine10xTimestamp
+          ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime()
+          : 0,
+        // timestamp for campaign booster
+        Number(
+          token.symbol
+            ? Number(
+                tokenRewardDetailList?.[
+                  token.symbol === "USDa" || token.symbol === "USDA+"
+                    ? "USDA"
+                    : token.symbol === "OP" || token.symbol === "AERO"
+                    ? "NATIVE"
+                    : token.symbol?.toString()
+                ]?.boosterValidity ?? 0
+              )
+            : 0
+        )
+      );
       return {
         tokenImage: getIconMapping(
           theme || "dark",
@@ -783,23 +838,31 @@ function DCDSTemplate() {
         active: true,
         errorMessage: `Token ${token.symbol} not active now`,
         balanceAvailable: `$${balanceInUSD.toFixed(2)}`,
-        minTokenAmount: Number(
-          minTokenAmountAndPointToDeposit[
-            (token.symbol === "USDA+"
-              ? "usda"
-              : token.symbol?.toString()?.toLocaleLowerCase() ||
-                "") as keyof typeof minTokenAmountAndPointToDeposit
-          ]?.minAmount || 0
-        ),
-        pointToGiven: Number(
-          minTokenAmountAndPointToDeposit[
-            (token.symbol === "USDA+"
-              ? "usda"
-              : token.symbol?.toString()?.toLocaleLowerCase() ||
-                "") as keyof typeof minTokenAmountAndPointToDeposit
-          ]?.pointsToBeGiven || 0
-        ),
-        pointBoaster: 10,
+        minTokenAmount: token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.minAmount ?? 0
+            )
+          : 0,
+        pointToGiven: token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.pointsToBeGiven ?? 0
+            )
+          : 0,
+        defaultBooster: totalBooster,
+        boosterValidity: totalTimeStamp,
+
         tokenPauseMessage: ` ${token.symbol} Token not active now`,
         tokenPrice: formattedPrice,
         tokenCount: Number(formattedBalance),
@@ -825,8 +888,11 @@ function DCDSTemplate() {
     tokenAllowanceByUser,
     totalTVLList,
     theme,
-    minTokenAmountAndPointToDeposit,
+    tokenRewardDetailList,
+    farmLuckDetails,
   ]);
+
+
 
   // calculating point to be given
   const pointToGiven = useMemo(() => {
@@ -849,9 +915,9 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? (valueInUSD / token.minTokenAmount) *
+          ? Math.floor(valueInUSD / token.minTokenAmount) *
             token.pointToGiven *
-            token.pointBoaster
+            token.defaultBooster
           : 0;
 
       return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
@@ -880,7 +946,7 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          ? Math.floor(valueInUSD / token.minTokenAmount) * token.pointToGiven
           : 0;
 
       return {
@@ -889,18 +955,31 @@ function DCDSTemplate() {
       };
     });
 
+    // Calculating total point without boaster
+    const totalPointsWithoutBoaster = individualPoints.reduce(
+      (total, token) => {
+        return total + token.points;
+      },
+      0
+    );
+
+    // Calculating Boaster Point
+    individualPoints.push({
+      tokenName: "Boaster Point",
+      points: totalPoints - totalPointsWithoutBoaster,
+    });
+
+    // Calculating Lockin point
+    // individualPoints.push({
+    //   tokenName: "Lockin Point",
+    //   points: totalPointsWithoutBoaster * (formik.values.lockInPeriod / 30),
+    // });
+
     return {
       totalPoints: Math.round(totalPoints) || 0,
       individualPoints,
     };
   }, [selectedTokens, formik]);
-
-  // hook for getting the farm your luck data (current reward data) from the backend api
-  const {
-    data: farmLuckDetails,
-    isLoading: isFarmLuckLoading,
-    refetch: refetchFarmLuckDetails,
-  } = useFarmLuckDetails(address, chainId);
 
   // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {

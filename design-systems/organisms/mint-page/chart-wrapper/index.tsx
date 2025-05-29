@@ -13,6 +13,9 @@ import { toast } from "sonner";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { CircleFadingPlus } from "lucide-react";
 import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { assetNameForRewardDataBorrow } from "@/utils/constants";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -192,6 +195,15 @@ function ChartComponent({ currency }: { currency: string }) {
       console.error("Error adding token:", error);
     }
   };
+
+  const { tokenRewardDetailList } = useGetTokenReward();
+
+  const tokenRewardDetailBorrow =
+    tokenRewardDetailList?.[
+      assetNameForRewardDataBorrow[
+        currency as keyof typeof assetNameForRewardDataBorrow
+      ]
+    ];
   return (
     <div className="lg:p-6 p-2 h-full">
       <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
@@ -212,6 +224,15 @@ function ChartComponent({ currency }: { currency: string }) {
             <div className="text-md text-grayLight">Add token to wallet</div>
           </div>
         )}
+
+        {/* {!!tokenRewardDetail?.defaultBooster &&
+          calculateRemainingTimeDate(
+            new Date(tokenRewardDetail.boosterValidity * 1000).toISOString()
+          ).minutes > 0 && (
+            <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+              {tokenRewardDetail.defaultBooster}x Points
+            </div>
+          )} */}
       </div>
 
       <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">

@@ -300,3 +300,37 @@ input[type="number"]:-webkit-autofill {
 .invite_code_popup_container .popup-close-icon {
   visibility: hidden;
 }
+
+.badge {
+  position: relative;
+}
+
+.pulsate::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -15%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 130%;
+  width: 100%;
+  animation: pulse 1s ease infinite;
+  border: 4px double #00e07c;
+  border-radius: 9999px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}

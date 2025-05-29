@@ -19,6 +19,7 @@ import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { STRATEGY_LINK } from "@/utils/urls";
 import { NetworkId } from "@/utils/constants";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -55,6 +56,8 @@ function MintEthListTemplate() {
 
   const { ethPoints, isLoading, error } = usePoint();
 
+  const { tokenRewardDetailList } = useGetTokenReward();
+
   // List of tokens with their respective data
   const list = [
     {
@@ -65,9 +68,17 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "ETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["ETH"]?.pointsToBeGiven,
+      minAmount:
+        tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.minAmount,
       link: STRATEGY_LINK,
+      boaster:
+        tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.defaultBooster,
+      boasterTime:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["ETH"]?.boosterValidity,
     },
     {
       token: "wrsETH",
@@ -77,9 +88,18 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WrsETH"]?.pointsToBeGiven,
+      minAmount:
+        tokenRewardDetailList && tokenRewardDetailList?.["WrsETH"]?.minAmount,
       link: STRATEGY_LINK,
+      boaster:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WrsETH"]?.defaultBooster,
+      boasterTime:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WrsETH"]?.boosterValidity,
     },
     {
       token: "weETH",
@@ -89,9 +109,18 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WeETH"]?.pointsToBeGiven,
+      minAmount:
+        tokenRewardDetailList && tokenRewardDetailList?.["WeETH"]?.minAmount,
       link: STRATEGY_LINK,
+      boaster:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WeETH"]?.defaultBooster,
+      boasterTime:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WeETH"]?.boosterValidity,
     },
   ];
 
@@ -103,10 +132,20 @@ function MintEthListTemplate() {
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wsuperOETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      InActiveHeading: "wsuperOETHb borrow is paused now",
+      pointsToBeGiven:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WSuperOethB"]?.pointsToBeGiven,
+      minAmount:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WSuperOethB"]?.minAmount,
       link: STRATEGY_LINK,
+      boaster:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WSuperOethB"]?.defaultBooster,
+      boasterTime:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["WSuperOethB"]?.boosterValidity,
     });
   }
 
@@ -122,7 +161,7 @@ function MintEthListTemplate() {
       <div className="md:relative">
         <motion.div className="flex flex-col lg:max-w-[93%]">
           {list.map((item, index) => (
-            <SingleListItem key={index} item={item} indexVal={index} />
+            <SingleListItem key={index} item={item} />
           ))}
         </motion.div>
         <Link prefetch={true} href="/farmyourluck" className="">

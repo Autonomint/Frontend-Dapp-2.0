@@ -17,6 +17,8 @@ import { useTokenConfig } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { CircleFadingPlus } from "lucide-react";
 import { useTheme } from "next-themes";
+import PulsatingBadge from "@/design-systems/atoms/pulsBadge";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
 
 function AddToken({
   tokenDetails,
@@ -46,6 +48,7 @@ function AddToken({
       ));
       return;
     }
+    // Set the flag and field values for the token in formik
     formik.setFieldValue(
       `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
       isSelected ? false : true
@@ -63,7 +66,7 @@ function AddToken({
       tokenDetails.minTokenAmount
     );
 
-    // Set approval flags in formik
+    // Set approval flags in formik for approval transaction status
     formik.setFieldValue(
       `${tokenDetails.tokenName.toLocaleLowerCase()}Approving`,
       false
@@ -140,7 +143,7 @@ function AddToken({
             </span>
           </div>
           <div className="flex items-start flex-col justify-start  md:gap-0">
-            <div className="flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
+            <div className="flex text-[18px] text-black dark:text-[#c2c2c2]">
               Balance
             </div>
 
@@ -159,23 +162,32 @@ function AddToken({
               )}
             </div>
           </div>
-          <div className="flex ml-2 items-start flex-col justify-start  md:gap-0">
-            <div className="flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
-              Points
-            </div>
+          {Boolean(tokenDetails.minTokenAmount) &&
+            Boolean(tokenDetails.pointToGiven) && (
+              <div className="flex ml-2 items-start flex-col justify-start  md:gap-0">
+                <div className="flex text-[18px] text-black dark:text-[#c2c2c2]">
+                  Points
+                </div>
 
-            <div className="flex flex-col gap-0">
-              <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
-                {tokenDetails.pointToGiven} Per ${tokenDetails.minTokenAmount}
-              </span>
-              {/* {tokenDetails.tokenCount && (
-                <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
-                  {tokenDetails?.tokenCount?.toFixed(2)}{" "}
-                  {` ${tokenDetails.tokenName}`}
-                </span>
-              )} */}
-            </div>
-          </div>
+                <div className="flex flex-col gap-0">
+                  <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
+                    {tokenDetails.pointToGiven} Per $
+                    {tokenDetails.minTokenAmount}
+                  </span>
+
+                  {!!tokenDetails.defaultBooster &&
+                    calculateRemainingTimeDate(
+                      new Date(
+                        tokenDetails.boosterValidity * 1000
+                      ).toISOString()
+                    ).minutes > 0 && (
+                      <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                        {tokenDetails.defaultBooster}x Points
+                      </div>
+                    )}
+                </div>
+              </div>
+            )}
           <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (

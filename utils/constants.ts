@@ -123,3 +123,10 @@ export interface AssetDetails {
   tokenDecimals: BigInt;
   priceDecimals: BigInt;
 }
+
+export const assetNameForRewardDataBorrow = {
+  ETH: "ETH",
+  wrsETH: "WrsETH",
+  weETH: "WeETH",
+  wsuperOETHb: "WSuperOethB",
+};

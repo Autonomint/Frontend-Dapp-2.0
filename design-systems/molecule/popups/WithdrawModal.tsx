@@ -219,18 +219,19 @@ export function DcdsWithdrawModal({
       comment: "Will be converted to USDT at 30% price fall",
     },
     {
-      // Adjusted Deposit Value (70% markdown)
+      // Adjusted Deposit Value (Discounted by 30%)
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Adjusted Deposit Value (70% markdown)`,
+      } Adjusted Deposit Value (Discounted by 30%)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
           Number(position?.nativeTokenPriceAtDeposit) *
           70) /
         100
       ).toFixed(2)}`,
-      tooltip: false,
-      tooltipText: "",
+      tooltip: true,
+      tooltipText:
+        "After factoring in volatility, the token is deposited at 30% lower value",
     },
     {
       // Token Price at Deposit
@@ -711,9 +712,19 @@ export function DcdsWithdrawModal({
                       className="flex flex-col justify-between mb-2"
                     >
                       <div className="w-full flex justify-between items-center">
-                        <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                        <span className="text-[16px] md:text-[18px]  flex items-center   font-medium text-grayLight">
                           {" "}
                           {dcdsWidthDrawMetricsObj.headline}
+                          {dcdsWidthDrawMetricsObj.tooltip && (
+                            <Tooltip delayDuration={100}>
+                              <TooltipTrigger asChild>
+                                <Info width={18} height={18} className="ml-2" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white dark:bg-black">
+                                <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
                         </span>
                         <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
                           {dcdsWidthDrawMetricsObj.value}
@@ -781,7 +792,7 @@ export function DcdsWithdrawModal({
                 </div>
                 <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
                   <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-                    Yields
+                    Yields (till now)
                   </Label>
                   <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
                     {`${Number(
