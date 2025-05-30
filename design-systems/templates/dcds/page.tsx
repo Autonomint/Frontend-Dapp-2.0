@@ -75,7 +75,6 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { getIconMapping } from "@/utils/token-config";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";

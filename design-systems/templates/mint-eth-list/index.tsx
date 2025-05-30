@@ -16,7 +16,6 @@ import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { STRATEGY_LINK } from "@/utils/urls";
 import { NetworkId } from "@/utils/constants";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
@@ -54,7 +53,7 @@ function MintEthListTemplate() {
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
   console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
 
-  const { ethPoints, isLoading, error } = usePoint();
+
 
   const { tokenRewardDetailList } = useGetTokenReward();
 

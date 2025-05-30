@@ -64,7 +64,6 @@ import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import { Info } from "lucide-react";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
@@ -542,8 +541,7 @@ function InputForm({ currency }: { currency: string }) {
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
 
-  // getting current point value for eth deposit
-  const { ethPoints, isLoading: isPointLoading, error } = usePoint();
+
 
   // get user tracking data and setter function
   const {

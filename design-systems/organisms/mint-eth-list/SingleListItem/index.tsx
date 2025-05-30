@@ -13,7 +13,7 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
+
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 
 const listItemVariants = {
