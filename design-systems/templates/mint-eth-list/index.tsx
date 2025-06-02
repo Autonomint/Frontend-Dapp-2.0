@@ -99,12 +99,12 @@ function MintEthListTemplate() {
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["ETH"]?.defaultBooster + luckBoaster) ||
+          tokenRewardDetailList?.["ETH"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["ETH"]?.boosterValidity || 0,
+          tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp 
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
@@ -134,12 +134,12 @@ function MintEthListTemplate() {
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WrsETH"]?.defaultBooster + luckBoaster) ||
+          tokenRewardDetailList?.["WrsETH"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WrsETH"]?.boosterValidity || 0,
+          tokenRewardDetailList?.["WrsETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
@@ -168,12 +168,12 @@ function MintEthListTemplate() {
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WeETH"]?.defaultBooster + luckBoaster) ||
+          tokenRewardDetailList?.["WeETH"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WeETH"]?.boosterValidity || 0,
+          tokenRewardDetailList?.["WeETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
@@ -206,13 +206,13 @@ function MintEthListTemplate() {
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WSuperOethB"]?.defaultBooster +
+          tokenRewardDetailList?.["WSuperOethB"]?.assetBooster +
             luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WSuperOethB"]?.boosterValidity || 0,
+          tokenRewardDetailList?.["WSuperOethB"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000

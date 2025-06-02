@@ -622,7 +622,7 @@ function InputForm({ currency }: { currency: string }) {
   // total boaster for token
   const totalBooster =
     (tokenRewardDetailBorrow
-      ? Number(tokenRewardDetailBorrow?.defaultBooster ?? 0)
+      ? Number(tokenRewardDetailBorrow?.assetBooster ?? 0)
       : 0) + luckBoaster;
 
   // Finding the max timestamp
@@ -636,7 +636,7 @@ function InputForm({ currency }: { currency: string }) {
         new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
-    Number(tokenRewardDetailBorrow?.boosterValidity ?? 0)
+    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
   );
 
   // calculate the point based on depositing amount
