@@ -38,6 +38,9 @@ import { Info } from "lucide-react";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import PageLoader from "../page-loader";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { BACKEND_API_URL } from "@/utils/urls";
 
 export function DcdsWithdrawModal({
   position,
@@ -55,6 +58,19 @@ export function DcdsWithdrawModal({
   const { address, chainId } = useAccount();
 
   const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
+
+  const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
+    queryKey: ["getPointEarned", address, chainId, position.index],
+    queryFn: async () => {
+      const response = await axios.post(`${BACKEND_API_URL}/cds/deposit`, {
+        chainId,
+        address,
+        index: position.index,
+      });
+      return response.data;
+    },
+    enabled: !!address && !!chainId && !!position.index,
+  });
 
   // kept this inside because every row is going to have different state
   const depositDetails = [
@@ -75,6 +91,14 @@ export function DcdsWithdrawModal({
       value: "0",
       tooltip: false,
       tooltipText: "",
+    },
+    {
+      headline: "Points accrued till now",
+      value: indexPoint?.[1] || "0",
+      tooltip: false,
+      tooltipText: "",
+      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
+      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time",
@@ -349,20 +373,22 @@ export function DcdsWithdrawModal({
           : position.depositedAmounts.usdt;
       // Update depositedAmint value
       updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
+      // Update points earned till now
+      updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
       // Update ethPriceAtDeposit value
-      updatedData[3].value = new Date(
+      updatedData[4].value = new Date(
         Number(position.depositedTime) * 1000
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[4].value = `${(
+      updatedData[5].value = `${(
         Number(position.lockingPeriod) / 86400000
       ).toFixed(0)} days`;
       // Update lockingPeriod value
-      updatedData[5].value = calculateTimeDifference(
+      updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
       );
       // Update time difference value
-      updatedData[6].value = `${Number(
+      updatedData[7].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -370,7 +396,7 @@ export function DcdsWithdrawModal({
           : apy[5]
       ).toFixed(2)}%`;
       // Update aprAtDeposit value
-      updatedData[7].value = `${Number(
+      updatedData[8].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -378,9 +404,9 @@ export function DcdsWithdrawModal({
           : apy[0]
       ).toFixed(2)}%`;
       // Update optedForLiquidation value
-      updatedData[8].value = position.optedForLiquidation ? "Yes" : "No";
+      updatedData[9].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[9].value = `${Number(
+      updatedData[10].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -741,7 +767,11 @@ export function DcdsWithdrawModal({
                 {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
                   return (
                     <div key={idx} className="flex justify-between mb-2">
-                      <span className="text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight">
+                      <span
+                        className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${
+                          dcdsWidthDrawMetricsObj?.titleColor || ""
+                        }`}
+                      >
                         {" "}
                         {dcdsWidthDrawMetricsObj.headline}
                         {dcdsWidthDrawMetricsObj.tooltip && (
@@ -755,7 +785,11 @@ export function DcdsWithdrawModal({
                           </Tooltip>
                         )}
                       </span>
-                      <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      <span
+                        className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${
+                          dcdsWidthDrawMetricsObj?.valueColor || ""
+                        }`}
+                      >
                         {dcdsWidthDrawMetricsObj.value}
                       </span>
                     </div>

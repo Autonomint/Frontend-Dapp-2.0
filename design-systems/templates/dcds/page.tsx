@@ -210,7 +210,7 @@ function DCDSTemplate() {
       const booster =
         cdsLockinRewardDetailList[
           Number(key) as keyof typeof cdsLockinRewardDetailList
-        ]?.lockingBoosters;
+        ]?.lockingBooster;
       return {
         value: key,
         label: (
@@ -395,7 +395,7 @@ function DCDSTemplate() {
           // liquidation gains
           liquidationGains,
           liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400000),
+          BigInt(Number(lockInPeriodLocal || 0) * 86400),
         ],
         nativeFee.nativeFee
       );

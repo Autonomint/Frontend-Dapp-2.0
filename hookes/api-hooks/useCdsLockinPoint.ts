@@ -36,7 +36,7 @@ export interface TokenRewardDetails {
 }
 
 export interface LockingBoosterEntry {
-  lockingBoosters?: number | string;
+  lockingBooster?: number | string;
   lockingBoosterValidity?: number | string;
 }
 

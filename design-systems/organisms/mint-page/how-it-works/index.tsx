@@ -26,38 +26,31 @@ const HowItWorksBorrowPopUp: React.FC<HowItWorks> = ({
             <div className=" text-textBlack text-center text-[24px] md:text-3xl font-medium dark:text-white">
               How it works?
             </div>
-            <div className="bg-[#FFE0E0] w-fit mx-auto xl:hidden text-center dark:bg-[#380000] mt-6  p-1 2xl:p-2">
-              {/* <Typography
-                size="lg"
-                className="text-[#FF0000] text-center dark:text-[#FF1A1A] !text-[14px] 2xl:!text-[18px] font-medium"
-                variant="regular"
-              >
-                dCDS will be exposed to ETH volatility risks.
-              </Typography> */}
+            <div className=" w-fit mx-auto    mt-6  p-1 2xl:p-2">
+              <div className="flex flex-col justify-start">
+                <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
+                  <li className="mb-2 text-lg">
+                    Deposit ETH/LRTs as collateral and mint USDA+ (up to 80% of
+                    collateral value).
+                  </li>
+                  <li className="mb-2 text-lg">
+                    Get 20% downside price fall protection on collateral with 1
+                    month expiry, with option to renew every month.
+                  </li>
+                  <li className="mb-2 text-lg">
+                    Pay a closing option fee, ~60% lower than charged in any
+                    derivative platform.
+                  </li>
+                  <li className="mb-2 text-lg">
+                    Track and manage positions under ‘Borrowed Position’ in
+                    Portfolio.
+                  </li>
+                  <li className=" text-lg">
+                    Earn yield-bearing ABOND tokens when closing your position.
+                  </li>
+                </ol>
+              </div>
             </div>
-            {/* <div className=" text-textBlack text-center  text-[16px] md:text-[20px] font-normal mt-4 dark:text-white">
-              Deposit into dCDS to earn option premiums while offering downside
-              protection of up to {20}% on ETH. Profits and losses from ETH
-              price changes are allocated across dCDS participants based on the
-              ratio of total borrower collateral to dCDS pool funds.
-            </div>
-            <ol className="list-decimal list-outside pl-4 mt-8 text-grayLight">
-              <li className="mb-3 text-[14px] md:text-lg">
-                Deposit Any Token – Click ‘+’ to deposit stablecoins or tokens.
-              </li>
-              <li className="mb-3 text-[14px] md:text-lg">
-                Set Lock Period – Choose how long your funds stay locked to
-                provide collateral protection and earn option premiums.
-              </li>
-              <li className="mb-3 text-[14px] md:text-lg">
-                Enable Liquidation Gains – Opt-in to let the protocol use your
-                capital for liquidations and earn additional rewards.
-              </li>
-              <li className="mb-3 text-[14px] md:text-lg">
-                Confirm Deposit – Click ‘Deposit’ to finalize your
-                participation.
-              </li>
-            </ol> */}
           </div>
         </div>
       </DialogContent>

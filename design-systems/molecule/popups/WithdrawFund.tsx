@@ -53,6 +53,9 @@ import { InfoIcon } from "lucide-react";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import PageLoader from "../page-loader";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { BACKEND_API_URL } from "@/utils/urls";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -76,8 +79,21 @@ export function WithdrawFund({
 
   const [spinner, setSpinner] = useState(false);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
+  const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
+    queryKey: ["getPointEarned", address, chainId, position.index],
+    queryFn: async () => {
+      const response = await axios.post(`${BACKEND_API_URL}/borrows/deposit`, {
+        chainId,
+        address,
+        index: position.index,
+      });
+      return response.data;
+    },
+    enabled: !!address && !!chainId && !!position.index,
+  });
+  console.log(indexPoint, "indexPoint");
   const depositDetails = [
     {
       headline: "ETH Deposited",
@@ -90,6 +106,14 @@ export function WithdrawFund({
       value: "0",
       tooltip: false,
       tooltipText: "",
+    },
+    {
+      headline: "Points accrued till now",
+      value: indexPoint?.[1] || "0",
+      tooltip: false,
+      tooltipText: "",
+      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
+      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time APR",
@@ -169,8 +193,6 @@ export function WithdrawFund({
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
   const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
-
-  const { chainId } = useAccount();
 
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
@@ -281,16 +303,19 @@ export function WithdrawFund({
           Number(position.exchangeRateAtDeposit || 0)) /
         100;
       updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
+      // set points earned till now
+      updatedData[2].headline = "Points earned till now";
+      updatedData[2].value = `${indexPoint?.[1]}` || "-";
       // set apr at deposit
-      updatedData[2].value = `${position.aprAtDeposit}%`;
+      updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
-      updatedData[3].value = `${Number(currentAPR || 0) / 10}%`;
-      updatedData[4].value = new Date(
+      updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[5].value = new Date(
         // set deposited time
         position.depositedTime * 1000
       ).toLocaleString();
       // downside protection percentage
-      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
 
       // current price of eth
       const currentPrice =
@@ -318,9 +343,9 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[7].value = `${upsideAt.toFixed(2)}`;
       // set collateral upside till now
-      updatedData[7].value =
+      updatedData[8].value =
         // check if eth price at deposit time is less then current price
         // if yes then set curtUpside
         // else set -
@@ -328,13 +353,13 @@ export function WithdrawFund({
           ? `${curtUpside.toFixed(2)}`
           : "-";
       // check is position is liquidated or not
-      updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[9].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       // set interest gain
-      updatedData[9].value =
+      updatedData[10].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[10].value = position.noOfAbondMinted
+      updatedData[11].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -354,6 +379,7 @@ export function WithdrawFund({
       updatedData[8].value = "-";
       updatedData[9].value = "-";
       updatedData[10].value = "-";
+      updatedData[11].value = "-";
 
       setDepositData(updatedData);
     }
@@ -880,7 +906,9 @@ export function WithdrawFund({
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium">
+                    <span
+                      className={`text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium ${item.titleColor}`}
+                    >
                       {item.headline}
                       {item.tooltip && (
                         <Tooltip>
@@ -899,7 +927,9 @@ export function WithdrawFund({
                         </Tooltip>
                       )}
                     </span>
-                    <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
+                    <span
+                      className={`text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px] ${item.valueColor}`}
+                    >
                       {item.value}
                     </span>
                   </div>
@@ -1179,11 +1209,14 @@ export function WithdrawFund({
                   {calculateRemainingDays(Number(position.validTill))} Days
                   remaining till maturity
                 </div>
-                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                  <span className="block w-3 h-3 bg-blue-600"></span>
-                  {calculateRemainingDays(Number(position.validTill)) - 15} Days
-                  remaining to activate renew
-                </div>
+                {calculateRemainingDays(Number(position.validTill)) > 15 && (
+                  <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                    <span className="block w-3 h-3 bg-blue-600"></span>
+                    {calculateRemainingDays(Number(position.validTill)) -
+                      15}{" "}
+                    Days remaining to activate renew
+                  </div>
+                )}
               </div>
               <div className="max-h-[280px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
@@ -1275,6 +1308,9 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW ||
                             position.status == BorrowStatus.LIQUIDATED ||
                             isFunctionPausedBorrow_Renew ||
+                            calculateRemainingDays(
+                              Number(position.validTill)
+                            ) <= 0 ||
                             !isFifteenDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
