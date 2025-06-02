@@ -1043,7 +1043,7 @@ function DCDSTemplate() {
 
     // Calculating Boaster Point
     individualPoints.push({
-      tokenName: "Boaster Point",
+      tokenName: "Boosted Point",
       points: totalPoints - (totalPointsWithoutBoaster + lockInPoint),
     });
 

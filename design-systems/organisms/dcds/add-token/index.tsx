@@ -128,7 +128,7 @@ function AddToken({
       <div
         className={` border border-solid border-grayLight flex flex-col justify-start items-center h-full relative `}
       >
-        <div className="flex relative p-4 gap-5 w-full items-start">
+        <div className="flex relative p-4 gap-2 2xl:gap-5 w-full items-start">
           <div className="flex w-[40%] md:w-[20%] lg:w-[30%] 2xl:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
@@ -181,7 +181,7 @@ function AddToken({
                         new Date(tokenDetails.boosterValidity * 1000)
                       )
                     ).minutes > 0 && (
-                      <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                      <div className="badge mt-1 pulsate w-fit text-[12px] 2xl:text-[16px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                         {tokenDetails.defaultBooster}x Points
                       </div>
                     )}

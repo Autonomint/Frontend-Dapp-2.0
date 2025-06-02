@@ -783,7 +783,7 @@ function InputForm({ currency }: { currency: string }) {
                       </div>
                       <div className="flex  justify-between">
                         <span className="font-medium text-grayLight">
-                          Boaster
+                          Boosted
                         </span>
                         <span className="font-medium text-black dark:text-white">
                           {tokenBoasterPoint}
