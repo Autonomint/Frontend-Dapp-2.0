@@ -18,7 +18,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import { CircleFadingPlus } from "lucide-react";
 import { useTheme } from "next-themes";
 import PulsatingBadge from "@/design-systems/atoms/pulsBadge";
-import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { calculateRemainingTimeDate, toLocalISOString } from "@/utils/helpers";
 
 function AddToken({
   tokenDetails,
@@ -177,9 +177,9 @@ function AddToken({
 
                   {!!tokenDetails.defaultBooster &&
                     calculateRemainingTimeDate(
-                      new Date(
-                        tokenDetails.boosterValidity * 1000
-                      ).toISOString()
+                      toLocalISOString(
+                        new Date(tokenDetails.boosterValidity * 1000)
+                      )
                     ).minutes > 0 && (
                       <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                         {tokenDetails.defaultBooster}x Points

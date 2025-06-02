@@ -270,6 +270,7 @@ export default function HomeTemplate() {
       },
     });
   }, []);
+
   // update user tracking data
   useEffect(() => {
     const data = getUserTrackLocalStorageData();

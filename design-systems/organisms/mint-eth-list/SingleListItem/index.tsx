@@ -14,7 +14,7 @@ import {
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
 
-import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { calculateRemainingTimeDate, toLocalISOString } from "@/utils/helpers";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -22,7 +22,6 @@ const listItemVariants = {
 };
 
 function SingleListItem({ item }: { item: any }) {
- 
   const metrics = [
     {
       label: "Borrow Rate",
@@ -47,7 +46,7 @@ function SingleListItem({ item }: { item: any }) {
         <div className="flex items-center justify-center flex-col gap-1">
           {!!item.boaster &&
             calculateRemainingTimeDate(
-              new Date(item.boasterTime * 1000).toISOString()
+              toLocalISOString(new Date(item.boasterTime * 1000))
             ).minutes > 0 && (
               <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                 {item.boaster}x Points

@@ -19,6 +19,8 @@ import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import { STRATEGY_LINK } from "@/utils/urls";
 import { NetworkId } from "@/utils/constants";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -32,7 +34,7 @@ const farmTextVariants = {
 };
 
 function MintEthListTemplate() {
-  const { chainId } = useAccount();
+  const { chainId, address } = useAccount();
   // Custom hook to fetch the LTV value
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
@@ -53,9 +55,29 @@ function MintEthListTemplate() {
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
   console.log(isFunctionPausedBorrow_Deposit, "isFunctionPausedBorrow_Deposit");
 
-
+  // hook for getting the farm your luck data (current reward data) from the backend api
+  const {
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
 
   const { tokenRewardDetailList } = useGetTokenReward();
+
+  // boaster from farm your luck
+  const luckBoaster =
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+      .minutes > 0 &&
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
+      ? 10
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
 
   // List of tokens with their respective data
   const list = [
@@ -68,16 +90,30 @@ function MintEthListTemplate() {
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "ETH borrow is paused now",
       pointsToBeGiven:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["ETH"]?.pointsToBeGiven,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["ETH"]?.pointsToBeGiven) ||
+        0,
       minAmount:
-        tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.minAmount,
+        (tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
       boaster:
-        tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.defaultBooster,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["ETH"]?.defaultBooster + luckBoaster) ||
+        0,
       boasterTime:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["ETH"]?.boosterValidity,
+        Math.max(
+          tokenRewardDetailList?.["ETH"]?.boosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp 
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
     {
       token: "wrsETH",
@@ -88,17 +124,31 @@ function MintEthListTemplate() {
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
       pointsToBeGiven:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WrsETH"]?.pointsToBeGiven,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WrsETH"]?.pointsToBeGiven) ||
+        0,
       minAmount:
-        tokenRewardDetailList && tokenRewardDetailList?.["WrsETH"]?.minAmount,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WrsETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
       boaster:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WrsETH"]?.defaultBooster,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WrsETH"]?.defaultBooster + luckBoaster) ||
+        0,
       boasterTime:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["WrsETH"]?.boosterValidity,
+        Math.max(
+          tokenRewardDetailList?.["WrsETH"]?.boosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
     {
       token: "weETH",
@@ -112,14 +162,27 @@ function MintEthListTemplate() {
         tokenRewardDetailList &&
         tokenRewardDetailList?.["WeETH"]?.pointsToBeGiven,
       minAmount:
-        tokenRewardDetailList && tokenRewardDetailList?.["WeETH"]?.minAmount,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WeETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
       boaster:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WeETH"]?.defaultBooster,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WeETH"]?.defaultBooster + luckBoaster) ||
+        0,
       boasterTime:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["WeETH"]?.boosterValidity,
+        Math.max(
+          tokenRewardDetailList?.["WeETH"]?.boosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
   ];
 
@@ -133,20 +196,36 @@ function MintEthListTemplate() {
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wsuperOETHb borrow is paused now",
       pointsToBeGiven:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WSuperOethB"]?.pointsToBeGiven,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WSuperOethB"]?.pointsToBeGiven) ||
+        0,
       minAmount:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WSuperOethB"]?.minAmount,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WSuperOethB"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
       boaster:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["WSuperOethB"]?.defaultBooster,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["WSuperOethB"]?.defaultBooster +
+            luckBoaster) ||
+        0,
       boasterTime:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["WSuperOethB"]?.boosterValidity,
+        Math.max(
+          tokenRewardDetailList?.["WSuperOethB"]?.boosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     });
   }
+
+  console.log(list, "list");
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();

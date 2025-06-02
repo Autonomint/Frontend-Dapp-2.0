@@ -31,7 +31,7 @@ function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const { isConnected } = useCheckWalletConnection();
   const { disconnect } = useDisconnect();
-
+  console.log("systemTheme");
   const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
 
   // user activity tracking function
@@ -126,33 +126,33 @@ function Navbar() {
   // ref for ticker badge animation
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // for ticker badge animation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Start animation
-      if (containerRef.current) {
-        containerRef.current.style.transition = "transform 0.5s ease-in-out";
-        containerRef.current.style.transform = "translateY(-100%)";
-      }
+  // // for ticker badge animation
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     // Start animation
+  //     if (containerRef.current) {
+  //       containerRef.current.style.transition = "transform 0.5s ease-in-out";
+  //       containerRef.current.style.transform = "translateY(-100%)";
+  //     }
 
-      const timeout = setTimeout(() => {
-        // After animation
-        setIndex((prev) => (prev + 1) % texts.length);
+  //     const timeout = setTimeout(() => {
+  //       // After animation
+  //       setIndex((prev) => (prev + 1) % texts.length);
 
-        if (containerRef.current) {
-          containerRef.current.style.transition = "none";
-          containerRef.current.style.transform = "translateY(0)";
-        }
-      }, 500); // match transition duration
+  //       if (containerRef.current) {
+  //         containerRef.current.style.transition = "none";
+  //         containerRef.current.style.transform = "translateY(0)";
+  //       }
+  //     }, 500); // match transition duration
 
-      return () => clearTimeout(timeout);
-    }, 2000);
+  //     return () => clearTimeout(timeout);
+  //   }, 2000);
 
-    return () => clearInterval(interval);
-  }, [containerRef]);
+  //   return () => clearInterval(interval);
+  // }, [containerRef]);
 
   // next for ticker badge animation
-  const nextText = texts[(index + 1) % texts.length];
+  // const nextText = texts[(index + 1) % texts.length];
 
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">

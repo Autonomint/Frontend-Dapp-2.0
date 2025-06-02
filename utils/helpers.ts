@@ -381,9 +381,7 @@ export function getTotalDepositingAmount(
   let totalDepositingAmount = 0n;
   const prices = getPrices;
   for (let i = 0; i < tokenAmounts.length; i++) {
-
     if (tokenAddress[i] != zeroAddress) {
-
       totalDepositingAmount +=
         (BigInt(tokenAmounts[i]) *
           BigInt(prices[i + 1]) *
@@ -410,4 +408,14 @@ export function getMinutesPassed(timestamp: number): number {
   const now = Date.now(); // Current time in milliseconds
   const diffInMs = now - timestampInMs;
   return Math.floor(diffInMs / (60 * 1000)); // Convert milliseconds to full minutes
+}
+
+// convert timestamp to local ISO string
+export function toLocalISOString(date: any) {
+  const pad = (n: any) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}.${String(date.getMilliseconds()).padStart(3, "0")}`;
 }

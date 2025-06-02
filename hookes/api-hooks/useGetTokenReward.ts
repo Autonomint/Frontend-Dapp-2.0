@@ -13,8 +13,8 @@ export interface PointDataDetails {
   module: Module;
   minAmount: number;
   pointsToBeGiven: number;
-  defaultBooster: number;
-  boosterValidity: number;
+  assetBooster: number;
+  assetBoosterValidity: number;
 }
 
 export interface PointData {
@@ -42,7 +42,7 @@ export const useGetTokenReward = () => {
   //   This hook is used to get the token reward details
   const { data: tokenRewardDetailList, isLoading: tokenRewardDetailLoading } =
     useQuery({
-      queryKey: ["getTokenReward"],
+      queryKey: ["getTokenReward", chainId],
       queryFn: async () => {
         const response = await axios.post<PointData>(
           `${BACKEND_API_URL}/global/get-points-data`,

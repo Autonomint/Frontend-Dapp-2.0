@@ -57,6 +57,7 @@ import {
   formatNumber,
   getTotalDepositingAmount,
   handleWheel,
+  toLocalISOString,
 } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -79,6 +80,7 @@ import { getIconMapping } from "@/utils/token-config";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useGetCdsLockinPoint } from "@/hookes/api-hooks/useCdsLockinPoint";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -119,16 +121,16 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
         }
         return Number(value) >= 0;
       })
-      // .test("min-amount", "Amount below minimum required", function (value) {
-      //   const tokenName = token.tokenName.toLowerCase();
-      //   if (this.parent[`${tokenName}Flag`] && value) {
-      //     const minAmount = token.minTokenAmount;
-      //     const tokenPrice = Number(token.tokenPrice || 0);
-      //     const valueInUSD = Number(value) * tokenPrice;
-      //     return valueInUSD >= minAmount;
-      //   }
-      //   return true;
-      // })
+      .test("min-amount", "Amount is below minimum required", function (value) {
+        const tokenName = token.tokenName.toLowerCase();
+        if (this.parent[`${tokenName}Flag`] && value) {
+          const minAmount = token.minTokenAmount;
+          const tokenPrice = Number(token.tokenPrice || 0);
+          const valueInUSD = Number(value) * tokenPrice;
+          return valueInUSD >= minAmount;
+        }
+        return true;
+      })
       .nullable();
   });
 
@@ -200,11 +202,48 @@ function DCDSTemplate() {
     },
   ];
 
-  useEffect(() => {
-    // if the chain id changes, reset the selected tokens
-    setSelectedTokens([]);
-  }, [chainId]);
+  const { cdsLockinRewardDetailList } = useGetCdsLockinPoint();
 
+  const lockInPeriodOption = useMemo(() => {
+    if (!cdsLockinRewardDetailList) return [];
+    return Object.keys(cdsLockinRewardDetailList).map((key) => {
+      const booster =
+        cdsLockinRewardDetailList[
+          Number(key) as keyof typeof cdsLockinRewardDetailList
+        ]?.lockingBoosters;
+      return {
+        value: key,
+        label: (
+          <div className="flex w-full justify-start gap-2">
+            <div>{key} Days</div>
+            {!!booster &&
+              calculateRemainingTimeDate(
+                toLocalISOString(
+                  new Date(
+                    Number(
+                      cdsLockinRewardDetailList[
+                        Number(key) as keyof typeof cdsLockinRewardDetailList
+                      ]?.lockingBoosterValidity
+                    ) * 1000
+                  )
+                )
+              ).minutes > 0 && (
+                <div className="dark:text-green-600 text-green-700 font-bold">
+                  ({booster}x Booster)
+                </div>
+              )}
+          </div>
+        ),
+        onClick: () => formik.setFieldValue("lockInPeriod", key),
+        booster,
+        boosterValidity:
+          cdsLockinRewardDetailList[
+            Number(key) as keyof typeof cdsLockinRewardDetailList
+          ]?.lockingBoosterValidity,
+      };
+    });
+  }, [cdsLockinRewardDetailList]);
+  console.log(lockInPeriodOption, "lockInPeriodOption");
   // Define the initial state for the options variable
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(400000, 0)
@@ -721,8 +760,6 @@ function DCDSTemplate() {
   const { tokenRewardDetailList, tokenRewardDetailLoading } =
     useGetTokenReward();
 
-
-
   // hook for getting the farm your luck data (current reward data) from the backend api
   const {
     data: farmLuckDetails,
@@ -795,7 +832,7 @@ function DCDSTemplate() {
                   : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
                   : token.symbol?.toString()
-              ]?.defaultBooster ?? 0
+              ]?.assetBooster ?? 0
             )
           : 0) + luckBoaster;
 
@@ -803,11 +840,11 @@ function DCDSTemplate() {
       const totalTimeStamp = Math.max(
         farmLuckDetails?.deadLine5xTimestamp
           ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime()
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
           : 0,
         farmLuckDetails?.deadLine10xTimestamp
           ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime()
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
           : 0,
         // timestamp for campaign booster
         Number(
@@ -819,7 +856,7 @@ function DCDSTemplate() {
                     : token.symbol === "OP" || token.symbol === "AERO"
                     ? "NATIVE"
                     : token.symbol?.toString()
-                ]?.boosterValidity ?? 0
+                ]?.assetBoosterValidity ?? 0
               )
             : 0
         )
@@ -891,16 +928,48 @@ function DCDSTemplate() {
     farmLuckDetails,
   ]);
 
-
-
   // calculating point to be given
   const pointToGiven = useMemo(() => {
+    const isLockinBoosterActive =
+      calculateRemainingTimeDate(
+        toLocalISOString(
+          new Date(
+            Number(
+              lockInPeriodOption.find(
+                (option) => option.value === formik.values.lockInPeriod
+              )?.boosterValidity
+            ) * 1000
+          )
+        )
+      ).minutes > 0;
+
+    const lockInBooster = isLockinBoosterActive
+      ? Number(
+          lockInPeriodOption.find(
+            (option) => option.value === formik.values.lockInPeriod
+          )?.booster || 0
+        )
+      : 0;
+    console.log(lockInBooster, "lockin booster validity");
     const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
         formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
       );
       const tokenPrice = Number(token.tokenPrice || 0);
       const valueInUSD = tokenAmount * tokenPrice;
+      const isDefaultBoosterActive =
+        calculateRemainingTimeDate(
+          toLocalISOString(new Date(token.boosterValidity * 1000))
+        ).minutes > 0;
+
+      const defaultBooster = isDefaultBoosterActive ? token.defaultBooster : 0;
+
+      const totalBooster =
+        defaultBooster + lockInBooster === 0
+          ? 1
+          : defaultBooster + lockInBooster;
+
+      console.log(defaultBooster, lockInBooster, "default booster validity");
 
       // Check for NaN values and handle them
       if (
@@ -916,7 +985,7 @@ function DCDSTemplate() {
         valueInUSD >= token.minTokenAmount
           ? Math.floor(valueInUSD / token.minTokenAmount) *
             token.pointToGiven *
-            token.defaultBooster
+            totalBooster
           : 0;
 
       return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
@@ -962,23 +1031,29 @@ function DCDSTemplate() {
       0
     );
 
+    // Calculating Lockin Point
+    const lockInPoint =
+      totalPointsWithoutBoaster * (isLockinBoosterActive ? lockInBooster : 0);
+
+    // Calculating Lockin Point
+    individualPoints.push({
+      tokenName: "Lockin Point",
+      points: lockInPoint,
+    });
+
     // Calculating Boaster Point
     individualPoints.push({
       tokenName: "Boaster Point",
-      points: totalPoints - totalPointsWithoutBoaster,
+      points: totalPoints - (totalPointsWithoutBoaster + lockInPoint),
     });
-
-    // Calculating Lockin point
-    // individualPoints.push({
-    //   tokenName: "Lockin Point",
-    //   points: totalPointsWithoutBoaster * (formik.values.lockInPeriod / 30),
-    // });
 
     return {
       totalPoints: Math.round(totalPoints) || 0,
       individualPoints,
     };
-  }, [selectedTokens, formik]);
+  }, [selectedTokens, formik, lockInPeriodOption]);
+
+  console.log(pointToGiven, "pointToGiven");
 
   // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {
@@ -1196,7 +1271,7 @@ function DCDSTemplate() {
               <span className="text-textBlack text-[24px] font-medium dark:text-white">
                 Deposit Funds
               </span>
-              <div className="flex justify-end items-center gap-1">
+              {/* <div className="flex justify-end items-center gap-1">
                 {calculateRemainingTimeDate(
                   farmLuckDetails?.deadLine5xTimestamp || ""
                 ).minutes > 0 &&
@@ -1219,7 +1294,7 @@ function DCDSTemplate() {
                     5x Points
                   </div>
                 ) : null}
-              </div>
+              </div> */}
             </div>
             <div
               ref={scrollRef}
@@ -1321,7 +1396,7 @@ function DCDSTemplate() {
                     ? `${formik.values.lockInPeriod} Days`
                     : "Lock-in Period"
                 }
-                items={dropdownItems}
+                items={lockInPeriodOption}
                 className="w-full text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
                 iconWrapBg="bg-white dark:bg-black"
               />

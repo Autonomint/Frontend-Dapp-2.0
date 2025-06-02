@@ -12,6 +12,7 @@ import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
   getStrikePercent,
   handleWheel,
+  toLocalISOString,
 } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -541,8 +542,6 @@ function InputForm({ currency }: { currency: string }) {
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
 
-
-
   // get user tracking data and setter function
   const {
     userTrackingData,
@@ -630,11 +629,11 @@ function InputForm({ currency }: { currency: string }) {
   const totalTimeStamp = Math.max(
     farmLuckDetails?.deadLine5xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine5xTimestamp).getTime()
+        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
       : 0,
     farmLuckDetails?.deadLine10xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine10xTimestamp).getTime()
+        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
     Number(tokenRewardDetailBorrow?.boosterValidity ?? 0)
@@ -669,6 +668,8 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
 
+  console.log(totalBooster, totalTimeStamp, "totalBooster");
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -676,8 +677,9 @@ function InputForm({ currency }: { currency: string }) {
           <div className=" font-medium text-2xl">Mint USDA+</div>
           <div className="flex justify-end items-center gap-1">
             {!!totalBooster &&
-              calculateRemainingTimeDate(new Date(totalTimeStamp).toISOString())
-                .minutes > 0 && (
+              calculateRemainingTimeDate(
+                toLocalISOString(new Date(totalTimeStamp * 1000))
+              ).minutes > 0 && (
                 <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                   {totalBooster}x Points
                 </div>
