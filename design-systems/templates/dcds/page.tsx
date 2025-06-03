@@ -278,6 +278,7 @@ function DCDSTemplate() {
     formik.values.usdaAmount,
     formik.values.usdtAmount,
     getPrices,
+    liquidationGains,
   ]);
 
   console.log(liqAmnt, "liqAmnt");
