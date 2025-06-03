@@ -679,7 +679,8 @@ function InputForm({ currency }: { currency: string }) {
             {!!totalBooster &&
               calculateRemainingTimeDate(
                 toLocalISOString(new Date(totalTimeStamp * 1000))
-              ).minutes > 0 && (
+              ).minutes > 0 &&
+              totalBooster > 1 && ( 
                 <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                   {totalBooster}x Points
                 </div>

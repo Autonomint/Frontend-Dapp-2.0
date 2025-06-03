@@ -47,7 +47,8 @@ function SingleListItem({ item }: { item: any }) {
           {!!item.boaster &&
             calculateRemainingTimeDate(
               toLocalISOString(new Date(item.boasterTime * 1000))
-            ).minutes > 0 && (
+            ).minutes > 0 &&
+            item.boaster > 1 && (
               <div className="badge mt-1 pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                 {item.boaster}x Points
               </div>

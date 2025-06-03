@@ -305,7 +305,7 @@ export function WithdrawFund({
       updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
       // set points earned till now
       updatedData[2].headline = "Points earned till now";
-      updatedData[2].value = `${indexPoint?.[1]}` || "-";
+      updatedData[2].value = `${indexPoint?.[1] || 0}` || "-";
       // set apr at deposit
       updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
@@ -468,7 +468,7 @@ export function WithdrawFund({
     handleAmountProtected();
     setOpenConfirmNotice(true);
     setSpinner(false);
-  }, [position, lastCumulativeRate, interestGained]);
+  }, [position, lastCumulativeRate, interestGained, indexPoint]);
 
   // Create the options for the contract
   const options = Options.newOptions()
@@ -823,7 +823,8 @@ export function WithdrawFund({
     isOptionsFeesTimeLimitsPending ||
     isAllowancePending ||
     isCurrentAPRPending ||
-    isQuotePending;
+    isQuotePending ||
+    isIndexPointLoading;
 
   return (
     <>

@@ -180,7 +180,8 @@ function AddToken({
                       toLocalISOString(
                         new Date(tokenDetails.boosterValidity * 1000)
                       )
-                    ).minutes > 0 && (
+                    ).minutes > 0 &&
+                    tokenDetails.defaultBooster > 1 && (
                       <div className="badge mt-1 pulsate w-fit text-[12px] 2xl:text-[16px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                         {tokenDetails.defaultBooster}x Points
                       </div>

@@ -983,7 +983,7 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? Math.floor(valueInUSD / token.minTokenAmount) *
+          ? (valueInUSD / token.minTokenAmount) *
             token.pointToGiven *
             totalBooster
           : 0;
@@ -1014,7 +1014,7 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? Math.floor(valueInUSD / token.minTokenAmount) * token.pointToGiven
+          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
           : 0;
 
       return {

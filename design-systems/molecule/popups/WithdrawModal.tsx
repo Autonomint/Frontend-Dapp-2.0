@@ -447,7 +447,7 @@ export function DcdsWithdrawModal({
     handleDepositData();
     setOpenConfirmNotice(true);
     setSpinner(false);
-  }, [position, lastCumulativeRate, interestGained, apy]);
+  }, [position, lastCumulativeRate, interestGained, apy, indexPoint]);
 
   // Define the initial state for the options variable
   const options = Options.newOptions()
@@ -668,7 +668,7 @@ export function DcdsWithdrawModal({
     setWithdrawMethodLoading(false);
   };
 
-  const isPopupLoading = isLoadingAPY || updatingData;
+  const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
