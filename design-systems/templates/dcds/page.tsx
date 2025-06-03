@@ -192,11 +192,11 @@ function DCDSTemplate() {
       onClick: () => formik.setFieldValue("lockInPeriod", "60"),
     },
     {
-      label: "120 days",
-      onClick: () => formik.setFieldValue("lockInPeriod", "120"),
+      label: "90 Days",
+      onClick: () => formik.setFieldValue("lockInPeriod", "90"),
     },
     {
-      label: "180 days",
+      label: "180 Days",
       onClick: () => formik.setFieldValue("lockInPeriod", "180"),
       disabled: false,
     },
@@ -205,12 +205,9 @@ function DCDSTemplate() {
   const { cdsLockinRewardDetailList } = useGetCdsLockinPoint();
 
   const lockInPeriodOption = useMemo(() => {
-    if (!cdsLockinRewardDetailList) return [];
-    return Object.keys(cdsLockinRewardDetailList).map((key) => {
-      const booster =
-        cdsLockinRewardDetailList[
-          Number(key) as keyof typeof cdsLockinRewardDetailList
-        ]?.lockingBooster;
+    const list = cdsLockinRewardDetailList || {};
+    return ["30", "60", "90", "180"].map((key) => {
+      const booster = list[Number(key) as keyof typeof list]?.lockingBooster;
       return {
         value: key,
         label: (
@@ -221,9 +218,8 @@ function DCDSTemplate() {
                 toLocalISOString(
                   new Date(
                     Number(
-                      cdsLockinRewardDetailList[
-                        Number(key) as keyof typeof cdsLockinRewardDetailList
-                      ]?.lockingBoosterValidity
+                      list[Number(key) as keyof typeof list]
+                        ?.lockingBoosterValidity
                     ) * 1000
                   )
                 )
@@ -237,9 +233,7 @@ function DCDSTemplate() {
         onClick: () => formik.setFieldValue("lockInPeriod", key),
         booster,
         boosterValidity:
-          cdsLockinRewardDetailList[
-            Number(key) as keyof typeof cdsLockinRewardDetailList
-          ]?.lockingBoosterValidity,
+          list[Number(key) as keyof typeof list]?.lockingBoosterValidity,
       };
     });
   }, [cdsLockinRewardDetailList]);
