@@ -4,7 +4,7 @@ import {
   nativeTokenAddress,
   testusdtAbiAddress,
   treasuryAddress,
-  usDaAddress
+  usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -495,7 +495,7 @@ export function DcdsWithdrawModal({
       placeholderData: { nativeFee: 0n, lzTokenFee: 0n },
       enabled: !!chainId && !!address,
     },
-  });
+  }) as any;
 
   console.log("nativeFeeUSDA", nativeFeeUSDA);
 
