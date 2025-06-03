@@ -385,9 +385,11 @@ export function getTotalDepositingAmount(
       totalDepositingAmount +=
         (BigInt(tokenAmounts[i]) *
           BigInt(prices[i + 1]) *
-          BigInt(assetDetails[i][1]) *
+          BigInt(assetDetails[i].LTV) *
           BigInt(1e6)) /
-        (BigInt(assetDetails[i][2]) * BigInt(assetDetails[i][3]) * BigInt(100));
+        (BigInt(assetDetails[i].tokenDecimals) *
+          BigInt(assetDetails[i].priceDecimals) *
+          BigInt(100));
     }
   }
 
@@ -406,4 +408,14 @@ export function getMinutesPassed(timestamp: number): number {
   const now = Date.now(); // Current time in milliseconds
   const diffInMs = now - timestampInMs;
   return Math.floor(diffInMs / (60 * 1000)); // Convert milliseconds to full minutes
+}
+
+// convert timestamp to local ISO string
+export function toLocalISOString(date: any) {
+  const pad = (n: any) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}.${String(date.getMilliseconds()).padStart(3, "0")}`;
 }

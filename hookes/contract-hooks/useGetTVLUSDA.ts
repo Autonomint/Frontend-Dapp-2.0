@@ -12,10 +12,16 @@ import {
 } from "wagmi";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { ethers } from "ethers";
-import { NetworkId } from "@/utils/constants";
+import { infuraApiKeys, NetworkId } from "@/utils/constants";
 import { useEffect, useState, useMemo } from "react";
 import { Abi, formatUnits } from "viem";
+import { rpcUrls } from "@/utils/urls";
 
+/**
+ * @description This hook is used to get the TVL of the USDA on both chains
+ * @param tokenAddress token address
+ * @returns {isTVLPending: boolean, tvlValue: number}
+ */
 const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   const { address, chainId } = useAccount();
   const [otherChainUDSa, setOtherChainUSDa] = useState(0);
@@ -23,14 +29,18 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   const { isPending: isTVLPending, data: tvlValue } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof borrowingContractAddress],
-    functionName: "tokenDepositedTillNow",
+    functionName: "getTokenDepositedTillNow",
     args: [tokenAddress],
   });
 
   const provider = new ethers.JsonRpcProvider(
-    chainId === NetworkId.BaseSepolia
-      ? "https://opt-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
-      : "https://base-mainnet.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
+    `${
+      rpcUrls[
+        chainId === NetworkId.BaseSepolia
+          ? NetworkId.Optimism
+          : NetworkId.BaseSepolia
+      ]
+    }/${infuraApiKeys}`
   );
 
   const cdsContract = new ethers.Contract(
@@ -63,15 +73,21 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   };
 };
 
+/**
+ * @description This hook is used to get the TVL of the multiple tokens at once on both chains
+ * @param tokenAddressArr array of token addresses
+ * @returns {isTVLPending: boolean, totalTVLList: number[]}
+ */
 const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
   const { address, chainId } = useAccount();
   const [otherChainTvl, setOtherChainTvl] = useState<number[]>([]);
 
+  // fetching the tvl of the tokens on the current chain
   const { isPending: isTVLPending, data: tvlValue } = useReadContracts({
     contracts: tokenAddressArr.map((address) => ({
       abi: cdsAbi as Abi,
       address: cdsAddress[chainId as keyof typeof borrowingContractAddress],
-      functionName: "tokenDepositedTillNow",
+      functionName: "getTokenDepositedTillNow",
       args: [address],
     })),
     query: {
@@ -81,10 +97,15 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     },
   });
 
+  // Provider for fetching other chain data
   const provider = new ethers.JsonRpcProvider(
-    chainId === NetworkId.BaseSepolia
-      ? "https://opt-sepolia.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
-      : "https://base-sepolia.g.alchemy.com/v2/p3uGu6Owoecg4A4tSuxz11VTcdXmK00z"
+    `${
+      rpcUrls[
+        chainId === NetworkId.BaseSepolia
+          ? NetworkId.Optimism
+          : NetworkId.BaseSepolia
+      ]
+    }/${infuraApiKeys}`
   );
 
   const cdsContract = new ethers.Contract(
@@ -101,23 +122,25 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     getOtherChainData();
   }, [tokenAddressArr, chainId, address]);
 
+  // fetching the tvl of the tokens on the other chain
   const getOtherChainData = async () => {
-    const otherChainAddress1 = await cdsContract.supportedTokenAddresses(0);
-    const otherChainAddress2 = await cdsContract.supportedTokenAddresses(1);
-    const otherChainAddress3 = await cdsContract.supportedTokenAddresses(2);
+    // fetching the list of the token addresses on the other chain
+    const otherChainAddressList =
+      (await cdsContract.getSupportedTokenAddresses()) || [];
     const tvls = [];
-    for (const tokenAddress of [
-      otherChainAddress1,
-      otherChainAddress2,
-      otherChainAddress3,
-    ]) {
-      const tvl = await cdsContract.tokenDepositedTillNow(tokenAddress);
-      console.log(tvl, tokenAddress, "tvlOtherChainLool");
+    // fetching the tvl of the tokens on the other chain
+    for (const tokenAddress of otherChainAddressList.slice(
+      0,
+      otherChainAddressList.length - 1
+    )) {
+      const tvl = await cdsContract.getTokenDepositedTillNow(tokenAddress);
       tvls.push(tvl);
     }
+    console.log(tvls, otherChainAddressList, "tvlOtherChainLool");
     setOtherChainTvl(tvls);
   };
 
+  // calculating the total tvl of the tokens on both chains
   const totalTVLList = useMemo(() => {
     return tvlValue?.map(
       (item: any, index: number) =>

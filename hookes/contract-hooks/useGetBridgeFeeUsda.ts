@@ -17,9 +17,9 @@ const useGetBridgeFeeUsda = (transactionParams: any) => {
   });
 
   return {
-    nativeFee1,
+    nativeFee1: nativeFee1 as any,
     UsdaQuoteError,
-    refetchnativeFee1,
+    refetchnativeFee1: refetchnativeFee1,
   };
 };
 

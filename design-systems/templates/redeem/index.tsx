@@ -530,12 +530,18 @@ const RedeemContainer = () => {
   // dropdown items for the input collateral
   const dropdownItems = [
     // {
-    //   label: "USDa",
-    //   onClick: () => formik.setFieldValue("inputCollateral", "amint"),
+    //   label: "USDA+",
+    //   onClick: () => {
+    //     formik.setFieldValue("inputCollateral", "amint");
+    //     formik.setFieldValue("collateralAmount", 0);
+    //   },
     // },
     {
       label: "ABond",
-      onClick: () => formik.setFieldValue("inputCollateral", "abond"),
+      onClick: () => {
+        formik.setFieldValue("inputCollateral", "abond");
+        formik.setFieldValue("collateralAmount", 0);
+      },
     },
   ];
   // dropdown items for the redeem token
@@ -647,7 +653,7 @@ const RedeemContainer = () => {
     functionName: "getAbondYields",
     args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
     query: {
-      placeholderData: [0n, 0n, 0n, 0n, 0n],
+      placeholderData: [0n, 0n, 0n, 0n, 0n, 0n],
     },
   });
 
@@ -700,16 +706,34 @@ const RedeemContainer = () => {
               <span className="text-medium text-grayLight text-lg ">
                 Input Amount
               </span>
-              <Input
-                placeholder="Enter amount here"
-                onWheel={handleWheel}
-                type="number"
-                name="collateralAmount"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.collateralAmount}
-                className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] dark:text-[24px]"
-              />
+              <div className="flex justify-start ">
+                <Input
+                  placeholder="Enter amount here"
+                  onWheel={handleWheel}
+                  type="number"
+                  name="collateralAmount"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.collateralAmount}
+                  className="flex  items-center h-[50px] border border-grayLight font-medium md:text-[24px] border-r-0 dark:text-[24px]"
+                />
+                <div
+                  onClick={() => {
+                    if (!formik.values.inputCollateral) {
+                      return toast.error("Please select collateral type");
+                    }
+                    formik.setFieldValue(
+                      "collateralAmount",
+                      formik.values.inputCollateral == "amint"
+                        ? usdabalance?.formatted || 0
+                        : abondbalance?.formatted || 0
+                    );
+                  }}
+                  className="flex text-[20px] justify-center cursor-pointer font-semibold px-2 items-center  border border-grayLight"
+                >
+                  MAX
+                </div>
+              </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
                 formik.touched.collateralAmount

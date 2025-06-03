@@ -56,11 +56,13 @@ function LeaderboardTable({
                   {sortWalletAddress(item.address)}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
-                  {item.totalUSDa ? Number(item.totalUSDa).toFixed(4) : "--"}
+                  {item.totalUSDa
+                    ? `$${Number(item.totalUSDa).toFixed(4)}`
+                    : "--"}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
                   {item.totalDepositedAmount
-                    ? Number(item.totalDepositedAmount).toFixed(2)
+                    ? `$${Number(item.totalDepositedAmount).toFixed(2)}`
                     : "--"}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
@@ -68,12 +70,12 @@ function LeaderboardTable({
                 </td>
                 <td className="px-5 py-4 2xl:py-6   table-cell font-normal">
                   {!!Number(item.totalUSDa) && (
-                    <span className="bg-[#ABFFDE] border border-solid border-grayLight p-2 dark:text-textBlack">
+                    <span className="bg-[#ABFFDE] border mr-3 border-solid border-grayLight p-2 dark:text-textBlack">
                       Borrower
                     </span>
                   )}
                   {!!Number(item.totalDepositedAmount) && (
-                    <span className="bg-[#ABFFDE] border ml-3 border-solid border-grayLight p-2 dark:text-textBlack">
+                    <span className="bg-[#ABFFDE] border  border-solid border-grayLight p-2 dark:text-textBlack">
                       Deposit
                     </span>
                   )}

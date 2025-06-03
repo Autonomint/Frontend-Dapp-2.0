@@ -81,8 +81,8 @@ export default function Footer() {
                     />
                     <path
                       className="fill-white dark:fill-black"
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       d="M27.8555 82.8594L10.5098 74.3359L28.0551 46.6715L45.3509 74.3855L27.8555 82.8594Z"
                     />
                     <path
@@ -94,8 +94,8 @@ export default function Footer() {
                       fill="#A1FFCE"
                     />
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       d="M11.0854 79.5519L27.9048 100.391L44.7749 80.403L27.9048 88.1569L11.0854 79.5519Z"
                       fill="#A1FFCE"
                     />

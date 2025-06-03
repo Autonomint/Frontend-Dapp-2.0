@@ -49,7 +49,15 @@ const useGetLeaderboard = () => {
   } = useQuery({
     queryKey: ["Cdsdeposits", chainId],
     queryFn: () => getCdsLeaderboard(),
+    select: (data: any) => {
+      if (data.status !== 200) {
+        return [];
+      }
+      return data || [];
+    },
   });
+
+  console.log(cdsdeposits, "cdsdeposits");
 
   const isLeaderboardPending = borrowdepositsPending || cdsdepositsPending;
 
@@ -120,6 +128,7 @@ const useGetLeaderboard = () => {
   const leaderboardData = useMemo(() => {
     return mergeLeaderboardDetails(
       sortLeaderboardDetails([
+        // adding new property points for combine point of cds and borrow
         ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
           ...item,
           points: "0",

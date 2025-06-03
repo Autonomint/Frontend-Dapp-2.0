@@ -52,10 +52,8 @@ function Leaderboard() {
                 ? Number(omniChainData?.totalCdsDepositedAmount ?? 0n) /
                     10 ** 6 +
                     Number(
-                      formatEther(
-                        (omniChainData?.totalVolumeOfBorrowersAmountinUSD ??
-                          0n) / BigInt(10 ** 20)
-                      )
+                      (omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n) /
+                        BigInt(10 ** 20)
                     )
                 : 0
             )}`}
@@ -65,9 +63,9 @@ function Leaderboard() {
           {/* Total Distributed Points */}
           <PortfolioMetrics
             subHeading="Total Distributed Points"
-            value={(
+            value={formatNumber(
               Number(totalPoints || 0) + Number(referralPoints || 0)
-            ).toString()}
+            )}
           />
         </div>
       </div>

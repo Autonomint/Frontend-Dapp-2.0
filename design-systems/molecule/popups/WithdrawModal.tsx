@@ -9,6 +9,7 @@ import {
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
 import { Label } from "@/design-systems/atoms/label";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +31,10 @@ import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId, scanUrls } from "@/utils/constants";
 import { calculateTimeDifference } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
+import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -61,6 +65,19 @@ export function DcdsWithdrawModal({
 
   const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
 
+  const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
+    queryKey: ["getPointEarned", address, chainId, position.index],
+    queryFn: async () => {
+      const response = await axios.post(`${BACKEND_API_URL}/cds/deposit`, {
+        chainId,
+        address,
+        index: position.index,
+      });
+      return response.data;
+    },
+    enabled: !!address && !!chainId && !!position.index,
+  });
+
   // kept this inside because every row is going to have different state
   const depositDetails = [
     {
@@ -80,6 +97,14 @@ export function DcdsWithdrawModal({
       value: "0",
       tooltip: false,
       tooltipText: "",
+    },
+    {
+      headline: "Points accrued till now",
+      value: indexPoint?.[1] || "0",
+      tooltip: false,
+      tooltipText: "",
+      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
+      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time",
@@ -224,18 +249,19 @@ export function DcdsWithdrawModal({
       comment: "Will be converted to USDT at 30% price fall",
     },
     {
-      // Adjusted Deposit Value (70% markdown)
+      // Adjusted Deposit Value (Discounted by 30%)
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Adjusted Deposit Value (70% markdown)`,
+      } Adjusted Deposit Value (Discounted by 30%)`,
       value: `$${(
         (Number(position?.depositedAmounts?.nativeToken) *
           Number(position?.nativeTokenPriceAtDeposit) *
           70) /
         100
       ).toFixed(2)}`,
-      tooltip: false,
-      tooltipText: "",
+      tooltip: true,
+      tooltipText:
+        "After factoring in volatility, the token is deposited at 30% lower value",
     },
     {
       // Token Price at Deposit
@@ -329,13 +355,16 @@ export function DcdsWithdrawModal({
    */
 
   // getting apy of index
-  const { apy } = useGetAPY(position.index);
+  const { apy, isLoadingAPY } = useGetAPY(position.index);
   // Post api function for calculate withdraw amount
   const { calculateBackendWithdraw, withdrawdata } =
     useCalculateWithdrawAmount();
 
+  const [updatingData, setUpdatingData] = useState<boolean>(false);
+
   // handle updating deposit data to modal of selected position
   function handleDepositData() {
+    setUpdatingData(true);
     if (position && apy) {
       const updatedData = [...depositData];
       updatedData[0].value =
@@ -350,20 +379,22 @@ export function DcdsWithdrawModal({
           : position.depositedAmounts.usdt;
       // Update depositedAmint value
       updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
+      // Update points earned till now
+      updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
       // Update ethPriceAtDeposit value
-      updatedData[3].value = new Date(
+      updatedData[4].value = new Date(
         Number(position.depositedTime) * 1000
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[4].value = `${(
+      updatedData[5].value = `${(
         Number(position.lockingPeriod) / 86400000
       ).toFixed(0)} days`;
       // Update lockingPeriod value
-      updatedData[5].value = calculateTimeDifference(
+      updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
       );
       // Update time difference value
-      updatedData[6].value = `${Number(
+      updatedData[7].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -371,7 +402,7 @@ export function DcdsWithdrawModal({
           : apy[5]
       ).toFixed(2)}%`;
       // Update aprAtDeposit value
-      updatedData[7].value = `${Number(
+      updatedData[8].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -379,9 +410,9 @@ export function DcdsWithdrawModal({
           : apy[0]
       ).toFixed(2)}%`;
       // Update optedForLiquidation value
-      updatedData[8].value = position.optedForLiquidation ? "Yes" : "No";
+      updatedData[9].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[9].value = `${Number(
+      updatedData[10].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -403,6 +434,7 @@ export function DcdsWithdrawModal({
         chainId: chainId as number,
         ethPrice: (Number(ethPrice ?? 0n) / 100).toFixed(2),
       });
+      setUpdatingData(false);
     } else {
       const updatedData = [...depositData];
       // If details are not available, set each value in depositData to '-'
@@ -418,7 +450,7 @@ export function DcdsWithdrawModal({
     handleDepositData();
     setOpenConfirmNotice(true);
     setSpinner(false);
-  }, [position, lastCumulativeRate, interestGained, apy]);
+  }, [position, lastCumulativeRate, interestGained, apy, indexPoint]);
 
   // Define the initial state for the options variable
   let options = Options.newOptions()
@@ -702,6 +734,8 @@ export function DcdsWithdrawModal({
     setWithdrawMethodLoading(false);
   };
 
+  const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
@@ -759,265 +793,304 @@ export function DcdsWithdrawModal({
             </label>
           </div>
         </div> */}
-        {view === "withdraw" ? (
-          <div>
-            <div className="h-[275px] overflow-auto no-scrollbar">
-              {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
-                return (
-                  <div key={idx} className="flex flex-col justify-between mb-2">
-                    <div className="w-full flex justify-between items-center">
-                      <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+        {!isPopupLoading ? (
+          view === "withdraw" ? (
+            <div>
+              <div className="h-[275px] overflow-auto no-scrollbar">
+                {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
+                  return (
+                    <div
+                      key={idx}
+                      className="flex flex-col justify-between mb-2"
+                    >
+                      <div className="w-full flex justify-between items-center">
+                        <span className="text-[16px] md:text-[18px]  flex items-center   font-medium text-grayLight">
+                          {" "}
+                          {dcdsWidthDrawMetricsObj.headline}
+                          {dcdsWidthDrawMetricsObj.tooltip && (
+                            <Tooltip delayDuration={100}>
+                              <TooltipTrigger asChild>
+                                <Info width={18} height={18} className="ml-2" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white dark:bg-black">
+                                <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </span>
+                        <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                          {dcdsWidthDrawMetricsObj.value}
+                        </span>
+                      </div>
+                      {dcdsWidthDrawMetricsObj?.comment && (
+                        <div className="p-2 mb-2 mt-1 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                          {dcdsWidthDrawMetricsObj?.comment}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
+                  return (
+                    <div key={idx} className="flex justify-between mb-2">
+                      <span
+                        className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${
+                          dcdsWidthDrawMetricsObj?.titleColor || ""
+                        }`}
+                      >
                         {" "}
                         {dcdsWidthDrawMetricsObj.headline}
+                        {dcdsWidthDrawMetricsObj.tooltip && (
+                          <Tooltip delayDuration={100}>
+                            <TooltipTrigger asChild>
+                              <Info width={18} height={18} className="ml-2" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white dark:bg-black">
+                              <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                       </span>
-                      <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      <span
+                        className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${
+                          dcdsWidthDrawMetricsObj?.valueColor || ""
+                        }`}
+                      >
                         {dcdsWidthDrawMetricsObj.value}
                       </span>
                     </div>
-                    {dcdsWidthDrawMetricsObj?.comment && (
-                      <div className="p-2 mb-2 mt-1 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
-                        {dcdsWidthDrawMetricsObj?.comment}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
-                return (
-                  <div key={idx} className="flex justify-between mb-2">
-                    <span className="text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight">
-                      {" "}
-                      {dcdsWidthDrawMetricsObj.headline}
-                      {dcdsWidthDrawMetricsObj.tooltip && (
-                        <Tooltip delayDuration={100}>
-                          <TooltipTrigger asChild>
-                            <Info width={18} height={18} className="ml-2" />
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white dark:bg-black">
-                            <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </span>
-                    <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                      {dcdsWidthDrawMetricsObj.value}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="flex w-full pt-4">
-              <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-                <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
-                  Option Fee + Liquidation Gains
-                </Label>
-                <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
-                  {Number(
-                    apy == undefined
-                      ? 0
-                      : position.status !== "DEPOSITED"
-                      ? position?.apys?.amountAccured
-                      : apy[1]
-                  ).toFixed(4)}
-                </Label>
-                <div className="h-2"></div>
-                <Label className=" text-[12px] font-normal text-[#777777]">
-                  Price Gains
-                </Label>
-                <Label className=" text-[14px] font-medium dark:text-white">
-                  {Number(
-                    apy == undefined
-                      ? 0
-                      : position.status !== "DEPOSITED"
-                      ? position?.apys?.liquidatedCollateralInETH
-                      : apy[2]
-                  ).toFixed(4)}
-                </Label>
+                  );
+                })}
               </div>
-              <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
-                <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-                  Yields
-                </Label>
-                <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
-                  {`${Number(
-                    apy == undefined
-                      ? 0
-                      : position.status !== "DEPOSITED"
-                      ? position?.apys?.liquidatedETHValue
-                      : apy[5]
-                  ).toFixed(2)}%`}
-                </Label>
+              <div className="flex w-full pt-4">
+                <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
+                  <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
+                    Option Fee + Liquidation Gains
+                  </Label>
+                  <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
+                    {Number(
+                      apy == undefined
+                        ? 0
+                        : position.status !== "DEPOSITED"
+                        ? position?.apys?.amountAccured
+                        : apy[1]
+                    ).toFixed(4)}
+                  </Label>
+                  <div className="h-2"></div>
+                  <Label className=" text-[12px] font-normal text-[#777777]">
+                    Price Gains
+                  </Label>
+                  <Label className=" text-[14px] font-medium dark:text-white">
+                    {Number(
+                      apy == undefined
+                        ? 0
+                        : position.status !== "DEPOSITED"
+                        ? position?.apys?.liquidatedCollateralInETH
+                        : apy[2]
+                    ).toFixed(4)}
+                  </Label>
+                </div>
+                <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
+                  <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
+                    Yields (till now)
+                  </Label>
+                  <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
+                    {`${Number(
+                      apy == undefined
+                        ? 0
+                        : position.status !== "DEPOSITED"
+                        ? position?.apys?.liquidatedETHValue
+                        : apy[5]
+                    ).toFixed(2)}%`}
+                  </Label>
+                </div>
               </div>
-            </div>
-            <Typography
-              variant="regular"
-              className="text-[14px] md:text-[16px] my-3 text-[#777777] "
-            >
-              Note: Your amount will be used to offer protection to borrowers &
-              protocol in return for fixed yields
-            </Typography>
-            <div className="h-[50px] overflow-hidden  md:h-[86px]">
-              {!dcdsFundWithdrawLoadingLocal && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="h-full">
-                      <Button
-                        onClick={handleWithdrawFund}
-                        disabled={
-                          (position.status === "WITHDREW_GAINS"
-                            ? true
-                            : false) ||
-                          Number(position.lockingPeriod) * 1000 > Date.now() ||
-                          isWithdrawPause
-                        }
-                        className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
-                      >
-                        {position.status == "DEPOSITED"
-                          ? "Close Position"
-                          : position.status == "WITHDREW"
-                          ? "Withdraw"
-                          : position.status == "WITHDREW_GAINS"
-                          ? "Withdrawn"
-                          : position.status == "LIQUIDATED "
-                          ? "Liquidated"
-                          : "Withdrawn"}
+              <Typography
+                variant="regular"
+                className="text-[14px] md:text-[16px] my-3 text-[#777777] "
+              >
+                Note: Your amount will be used to offer protection to borrowers
+                & protocol in return for fixed yields
+              </Typography>
+              <div className="h-[50px] overflow-hidden  md:h-[86px]">
+                {!dcdsFundWithdrawLoadingLocal && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="h-full">
+                        <Button
+                          onClick={handleWithdrawFund}
+                          disabled={
+                            (position.status === "WITHDREW_GAINS"
+                              ? true
+                              : false) ||
+                            Number(position.lockingPeriod) * 1000 >
+                              Date.now() ||
+                            isWithdrawPause
+                          }
+                          className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                        >
+                          {position.status == "DEPOSITED"
+                            ? "Close Position"
+                            : position.status == "WITHDREW"
+                            ? "Withdraw"
+                            : position.status == "WITHDREW_GAINS"
+                            ? "Withdrawn"
+                            : position.status == "LIQUIDATED "
+                            ? "Liquidated"
+                            : "Withdrawn"}
 
-                        <span className="text-base mt-1">
-                          {isWithdrawPause && "(Paused)"}
-                        </span>
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  {isWithdrawPause && (
-                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                      <p>{"Withdraw is paused now"}</p>
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              )}
-              {/* <LoadingBox
+                          <span className="text-base mt-1">
+                            {isWithdrawPause && "(Paused)"}
+                          </span>
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {isWithdrawPause && (
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>{"Withdraw is paused now"}</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                )}
+                {/* <LoadingBox
                 isLoading={withdrawMethodLoading}
                 isFailure={dcdsFundWithdrawError}
                 isSuccess={Boolean(dcdsFundWithdrawData)}
                 setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
                 heading="Withdrawing Funds"
               /> */}
-              <LoadingBox
-                isLoading={withdrawMethodLoading}
-                isFailure={dcdsFundWithdrawError}
-                isSuccess={Boolean(dcdsFundWithdrawData)}
-                setSuccessLoading={() => false}
-                heading="Closing Position"
-                loadingCount="1/2"
-              />
-              <LoadingBox
-                isLoading={withdrawGainLoading}
-                isFailure={dcdsWithdrawGainError}
-                isSuccess={Boolean(dcdsWithdrawGainData)}
-                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
-                heading="Withdrawing Gains"
-                loadingCount="2/2"
-              />
+                <LoadingBox
+                  isLoading={withdrawMethodLoading}
+                  isFailure={dcdsFundWithdrawError}
+                  isSuccess={Boolean(dcdsFundWithdrawData)}
+                  setSuccessLoading={() => false}
+                  heading="Closing Position"
+                  loadingCount="1/2"
+                />
+                <LoadingBox
+                  isLoading={withdrawGainLoading}
+                  isFailure={dcdsWithdrawGainError}
+                  isSuccess={Boolean(dcdsWithdrawGainData)}
+                  setSuccessLoading={() =>
+                    setDcdsFundWithdrawLoadingLocal(false)
+                  }
+                  heading="Withdrawing Gains"
+                  loadingCount="2/2"
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <div className="h-[390px] overflow-auto no-scrollbar">
+                <div>
+                  <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
+                    Current Deposits
+                  </div>
+                  {rebalanceDetails.map((details, idx) => {
+                    return (
+                      <div key={idx} className="flex justify-between mb-2">
+                        <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                          {" "}
+                          {details.headline}
+                        </span>
+                        <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                          {details.value}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div>
+                  <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
+                    Rebalance Eligibility
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                      Eligible for Rebalance
+                    </span>
+                    <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      Yes
+                    </span>
+                  </div>
+                  <div className="p-2 mb-2  bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                    Rebalancing is available when price increases by more than
+                    20%
+                  </div>
+                  <div className="flex justify-between mb-3">
+                    <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                      Discount Applied
+                    </span>
+                    <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      40%
+                    </span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
+                      Discounted Value Added to dCDS
+                    </span>
+                    <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
+                      35
+                    </span>
+                  </div>
+                  <div className="p-2 mb-2 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
+                    Your token is added at a discounted value and earns fixed
+                    yield
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-[50px] overflow-hidden  md:h-[86px] mt-4">
+                {true && (
+                  <Button
+                    onClick={handleWithdrawFund}
+                    // disabled={
+                    //   (position.status === "WITHDREW" ? true : false) ||
+                    //   Number(position.lockingPeriod) * 1000 > Date.now()
+                    // }
+                    className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
+                  >
+                    {position.status == "DEPOSITED"
+                      ? "Close Position"
+                      : position.status == "WITHDREW"
+                      ? "Withdraw"
+                      : position.status == "WITHDREW_GAINS "
+                      ? "Withdrawn"
+                      : position.status == "LIQUIDATED "
+                      ? "Liquidated"
+                      : "Withdrawn"}
+                  </Button>
+                )}
+                <LoadingBox
+                  isLoading={withdrawMethodLoading}
+                  isFailure={dcdsFundWithdrawError}
+                  isSuccess={Boolean(dcdsFundWithdrawData)}
+                  setSuccessLoading={() =>
+                    setDcdsFundWithdrawLoadingLocal(false)
+                  }
+                  heading="Closing Position"
+                  loadingCount="1/2"
+                />
+                <LoadingBox
+                  isLoading={withdrawGainLoading}
+                  isFailure={dcdsWithdrawGainError}
+                  isSuccess={Boolean(dcdsWithdrawGainData)}
+                  setSuccessLoading={() =>
+                    setDcdsFundWithdrawLoadingLocal(false)
+                  }
+                  heading="Withdrawing Gains"
+                  loadingCount="2/2"
+                />
+              </div>
+            </div>
+          )
         ) : (
-          <div>
-            <div className="h-[390px] overflow-auto no-scrollbar">
-              <div>
-                <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
-                  Current Deposits
-                </div>
-                {rebalanceDetails.map((details, idx) => {
-                  return (
-                    <div key={idx} className="flex justify-between mb-2">
-                      <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                        {" "}
-                        {details.headline}
-                      </span>
-                      <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                        {details.value}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div>
-                <div className="font-semibold mb-3 dark:text-white text-textBlack text-[28px]">
-                  Rebalance Eligibility
-                </div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                    Eligible for Rebalance
-                  </span>
-                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                    Yes
-                  </span>
-                </div>
-                <div className="p-2 mb-2  bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
-                  Rebalancing is available when price increases by more than 20%
-                </div>
-                <div className="flex justify-between mb-3">
-                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                    Discount Applied
-                  </span>
-                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                    40%
-                  </span>
-                </div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-[16px] md:text-[18px]  font-medium text-grayLight">
-                    Discounted Value Added to dCDS
-                  </span>
-                  <span className="text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack">
-                    35
-                  </span>
-                </div>
-                <div className="p-2 mb-2 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
-                  Your token is added at a discounted value and earns fixed
-                  yield
-                </div>
-              </div>
-            </div>
-
-            <div className="h-[50px] overflow-hidden  md:h-[86px] mt-4">
-              {true && (
-                <Button
-                  onClick={handleWithdrawFund}
-                  // disabled={
-                  //   (position.status === "WITHDREW" ? true : false) ||
-                  //   Number(position.lockingPeriod) * 1000 > Date.now()
-                  // }
-                  className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
-                >
-                  {position.status == "DEPOSITED"
-                    ? "Close Position"
-                    : position.status == "WITHDREW"
-                    ? "Withdraw"
-                    : position.status == "WITHDREW_GAINS "
-                    ? "Withdrawn"
-                    : position.status == "LIQUIDATED "
-                    ? "Liquidated"
-                    : "Withdrawn"}
-                </Button>
-              )}
-              <LoadingBox
-                isLoading={withdrawMethodLoading}
-                isFailure={dcdsFundWithdrawError}
-                isSuccess={Boolean(dcdsFundWithdrawData)}
-                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
-                heading="Closing Position"
-                loadingCount="1/2"
-              />
-              <LoadingBox
-                isLoading={withdrawGainLoading}
-                isFailure={dcdsWithdrawGainError}
-                isSuccess={Boolean(dcdsWithdrawGainData)}
-                setSuccessLoading={() => setDcdsFundWithdrawLoadingLocal(false)}
-                heading="Withdrawing Gains"
-                loadingCount="2/2"
-              />
-            </div>
+          <div className="h-[560px] flex justify-center items-center">
+            <RingLoadingIcon
+              width={80}
+              height={80}
+              className="fill-black dark:fill-white w-8 h-8 "
+            />
           </div>
         )}
       </DialogContent>

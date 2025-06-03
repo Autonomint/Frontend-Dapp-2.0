@@ -76,6 +76,11 @@ export const globalAbi = [
   },
   {
     inputs: [],
+    name: "Global_OnlyCoreContracts",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "Global_RequiredApprovalsNotMetToSet",
     type: "error",
   },
@@ -759,24 +764,7 @@ export const globalAbi = [
           },
           {
             internalType: "uint256",
-            name: "tokensToSend",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct IGlobalVariables.USDaOftTransferData",
-        name: "oftTransferData",
-        type: "tuple",
-      },
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "recipient",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "ethToSend",
+            name: "usdaToSend",
             type: "uint256",
           },
           {
@@ -784,14 +772,9 @@ export const globalAbi = [
             name: "weETHToSend",
             type: "uint256",
           },
-          {
-            internalType: "uint256",
-            name: "rsETHToSend",
-            type: "uint256",
-          },
         ],
-        internalType: "struct IGlobalVariables.CollateralTokenTransferData",
-        name: "collateralTokenTransferData",
+        internalType: "struct IGlobalVariables.OftTransferData",
+        name: "oftTransferData",
         type: "tuple",
       },
       {
@@ -984,86 +967,6 @@ export const globalAbi = [
       },
     ],
     name: "send",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "bytes32",
-            name: "guid",
-            type: "bytes32",
-          },
-          {
-            internalType: "uint64",
-            name: "nonce",
-            type: "uint64",
-          },
-          {
-            components: [
-              {
-                internalType: "uint256",
-                name: "nativeFee",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "lzTokenFee",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct MessagingFee",
-            name: "fee",
-            type: "tuple",
-          },
-        ],
-        internalType: "struct MessagingReceipt",
-        name: "receipt",
-        type: "tuple",
-      },
-    ],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "enum IGlobalVariables.FunctionToDo",
-        name: "functionToDo",
-        type: "uint8",
-      },
-      {
-        internalType: "enum IBorrowing.AssetName",
-        name: "assetName",
-        type: "uint8",
-      },
-      {
-        components: [
-          {
-            internalType: "uint256",
-            name: "nativeFee",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "lzTokenFee",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct MessagingFee",
-        name: "fee",
-        type: "tuple",
-      },
-      {
-        internalType: "bytes",
-        name: "options",
-        type: "bytes",
-      },
-      {
-        internalType: "address",
-        name: "refundAddress",
-        type: "address",
-      },
-    ],
-    name: "sendForLiquidation",
     outputs: [
       {
         components: [
@@ -1350,6 +1253,19 @@ export const globalAbi = [
       },
     ],
     name: "setOmniChainData",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "options_",
+        type: "address",
+      },
+    ],
+    name: "setOptions",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

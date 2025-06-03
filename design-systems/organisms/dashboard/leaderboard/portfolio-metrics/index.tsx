@@ -6,7 +6,7 @@ function PortfolioMetrics({
   value: string;
 }) {
   return (
-    <div className="flex-1 flex flex-col p-5 gap-4 border border-grayLight">
+    <div className="flex-1 h-full flex flex-col p-5 gap-4 border border-grayLight">
       <span className="text-textBlack text-[24px] 2xl:text-[32px] font-medium dark:text-white">
         {value}
       </span>

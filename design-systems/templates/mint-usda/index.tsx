@@ -4,8 +4,10 @@ import { FormYourLuckIcon } from "@/design-systems/atoms/SvgIcons";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import ChartComponent from "@/design-systems/organisms/mint-page/chart-wrapper";
+import HowItWorksBorrowPopUp from "@/design-systems/organisms/mint-page/how-it-works";
 import InputForm from "@/design-systems/organisms/mint-page/input-form";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 /**
  * Mint USDA component
@@ -15,6 +17,12 @@ import { useRouter } from "next/navigation";
  */
 function MintUSDa({ currency }: { currency: string }) {
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // open how it work dialog on initial load
+  useEffect(() => {
+    setIsDialogOpen(true);
+  }, []);
 
   return (
     <>
@@ -87,6 +95,10 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
           </div>
         </div>
+        {/* <HowItWorksBorrowPopUp
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+        /> */}
       </div>
     </>
   );

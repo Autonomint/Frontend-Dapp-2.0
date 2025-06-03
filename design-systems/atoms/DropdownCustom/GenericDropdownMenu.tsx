@@ -14,7 +14,7 @@ import { useRef, useState, useEffect } from "react";
 import Spinner from "../Spinner";
 
 type DropdownItem = {
-  label: string;
+  label: string | React.ReactNode;
   shortcut?: string;
   onClick?: () => void;
   disabled?: boolean;
@@ -85,6 +85,7 @@ export function GenericDropdownMenu({
               }`}
             >
               {item.label}
+
               {item.shortcut && (
                 <DropdownMenuShortcut>{item.shortcut}</DropdownMenuShortcut>
               )}

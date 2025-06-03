@@ -14,7 +14,11 @@ import AEROIcon from "@/app/assets/aero-icon.png";
 import OPIcon from "@/app/assets/optimism.png";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { mpoABI } from "@/blockchain/abis/mpo";
-import { cdsAddress, mpoAddress } from "@/blockchain/contracts";
+import {
+  cdsAddress,
+  cdsDepositAddress,
+  mpoAddress,
+} from "@/blockchain/contracts";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 import { useScroll } from "@/contexts/scroll";
@@ -53,6 +57,7 @@ import {
   formatNumber,
   getTotalDepositingAmount,
   handleWheel,
+  toLocalISOString,
 } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -71,9 +76,11 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { getIconMapping } from "@/utils/token-config";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useGetCdsLockinPoint } from "@/hookes/api-hooks/useCdsLockinPoint";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -114,7 +121,7 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
         }
         return Number(value) >= 0;
       })
-      .test("min-amount", "Amount below minimum required", function (value) {
+      .test("min-amount", "Amount is below minimum required", function (value) {
         const tokenName = token.tokenName.toLowerCase();
         if (this.parent[`${tokenName}Flag`] && value) {
           const minAmount = token.minTokenAmount;
@@ -151,7 +158,7 @@ function DCDSTemplate() {
   const [allowanceLoading, setAllowanceLoading] = useState<boolean>(false);
 
   // state variable to handle the how it works popup
-  const [isOpenHowItWork, setIsOpenHowItWork] = useState(false);
+  const [isOpenHowItWork, setIsOpenHowItWork] = useState(true);
 
   // hook to get the chain id, is connected and address
   const { chainId, isConnected, address } = useAccount();
@@ -195,11 +202,48 @@ function DCDSTemplate() {
     },
   ];
 
-  useEffect(() => {
-    // if the chain id changes, reset the selected tokens
-    setSelectedTokens([]);
-  }, [chainId]);
+  const { cdsLockinRewardDetailList } = useGetCdsLockinPoint();
 
+  const lockInPeriodOption = useMemo(() => {
+    if (!cdsLockinRewardDetailList) return [];
+    return Object.keys(cdsLockinRewardDetailList).map((key) => {
+      const booster =
+        cdsLockinRewardDetailList[
+          Number(key) as keyof typeof cdsLockinRewardDetailList
+        ]?.lockingBooster;
+      return {
+        value: key,
+        label: (
+          <div className="flex w-full justify-start gap-2">
+            <div>{key} Days</div>
+            {!!booster &&
+              calculateRemainingTimeDate(
+                toLocalISOString(
+                  new Date(
+                    Number(
+                      cdsLockinRewardDetailList[
+                        Number(key) as keyof typeof cdsLockinRewardDetailList
+                      ]?.lockingBoosterValidity
+                    ) * 1000
+                  )
+                )
+              ).minutes > 0 && (
+                <div className="dark:text-green-600 text-green-700 font-bold">
+                  ({booster}x Booster)
+                </div>
+              )}
+          </div>
+        ),
+        onClick: () => formik.setFieldValue("lockInPeriod", key),
+        booster,
+        boosterValidity:
+          cdsLockinRewardDetailList[
+            Number(key) as keyof typeof cdsLockinRewardDetailList
+          ]?.lockingBoosterValidity,
+      };
+    });
+  }, [cdsLockinRewardDetailList]);
+  console.log(lockInPeriodOption, "lockInPeriodOption");
   // Define the initial state for the options variable
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(400000, 0)
@@ -219,7 +263,7 @@ function DCDSTemplate() {
   const { data: usdtLimit, refetch: refetchCurrentData } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof cdsAddress],
-    functionName: "usdtLimit",
+    functionName: "getUsdtLimit",
   });
 
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
@@ -315,7 +359,7 @@ function DCDSTemplate() {
       // handling the deposit success
       handleDepositSuccess();
     }
-  }, [DepositdataReceipt]);
+  }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
   // function to call the deposit function in the contract
   const callDepositFnInContract = () => {
@@ -352,7 +396,7 @@ function DCDSTemplate() {
           // liquidation gains
           liquidationGains,
           liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400000),
+          BigInt(Number(lockInPeriodLocal || 0) * 86400),
         ],
         nativeFee.nativeFee
       );
@@ -420,7 +464,9 @@ function DCDSTemplate() {
           address: token?.tokenAddress as `0x${string}`,
           functionName: "approve",
           args: [
-            cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+            cdsDepositAddress[
+              chainId as keyof typeof cdsDepositAddress
+            ] as `0x${string}`,
             allowanceAmount,
           ],
         });
@@ -521,7 +567,10 @@ function DCDSTemplate() {
   const resetLoadings = () => {
     setTimeout(() => {
       setDcdsLoadingLocal(false);
-    }, 1000);
+    }, 600);
+    setTimeout(() => {
+      setDcdsDepositLoadingLocal(false);
+    }, 600);
   };
 
   // handle show scroll button for desktop of token input section
@@ -581,70 +630,74 @@ function DCDSTemplate() {
   console.log(formik, depositValue, "depositValue");
 
   // fetching list of the token addresses for the deposit
-  const { data: tokenAddress } = useReadContract({
-    address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-    abi: cdsAbi,
-    functionName: "getSupportedTokenAddresses",
-    query: {
-      placeholderData: [],
-    },
-  }) as { data: `0x${string}`[] };
+  const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
+    {
+      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      abi: cdsAbi,
+      functionName: "getSupportedTokenAddresses",
+      query: {
+        placeholderData: [],
+      },
+    }
+  ) as { data: `0x${string}`[]; isLoading: boolean };
 
   console.log(tokenAddress, "tokenAddress");
 
   // fetching the token details for the deposit (name, symbol, decimals)
-  const { data: tokenDetailsList } = useReadContracts({
-    contracts: tokenAddress?.flatMap((address) => [
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "name",
+  const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
+    useReadContracts({
+      contracts: tokenAddress?.flatMap((address) => [
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "name",
+        },
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "symbol",
+        },
+        {
+          address,
+          abi: erc20Abi,
+          functionName: "decimals",
+        },
+      ]),
+      query: {
+        select: (data) => {
+          const tokens = [];
+          // Process data in groups of 3 (name, symbol, decimals)
+          for (let i = 0; i < data.length; i += 3) {
+            tokens.push({
+              name: data[i].result,
+              symbol: data[i + 1].result,
+              decimals: data[i + 2].result,
+              address: tokenAddress?.[i],
+            });
+          }
+          console.log(tokens, "tokens");
+          return tokens;
+        },
       },
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "symbol",
-      },
-      {
-        address,
-        abi: erc20Abi,
-        functionName: "decimals",
-      },
-    ]),
-    query: {
-      select: (data) => {
-        const tokens = [];
-        // Process data in groups of 3 (name, symbol, decimals)
-        for (let i = 0; i < data.length; i += 3) {
-          tokens.push({
-            name: data[i].result,
-            symbol: data[i + 1].result,
-            decimals: data[i + 2].result,
-            address: tokenAddress?.[i],
-          });
-        }
-        console.log(tokens, "tokens");
-        return tokens;
-      },
-    },
-  });
+    });
 
   // fetching the token balances for the deposit
-  const { data: tokenBalances } = useReadContracts({
-    contracts: tokenAddress
-      ? tokenAddress.map((contractAddress) => ({
-          address: contractAddress as `0x${string}`,
-          abi: erc20Abi,
-          functionName: "balanceOf",
-          args: [address],
-        }))
-      : [],
-    query: {
-      select: (data) => {
-        return data.map((item) => item.result);
+  const { data: tokenBalances, isLoading: isTokenBalanceLoading } =
+    useReadContracts({
+      contracts: tokenAddress
+        ? tokenAddress.map((contractAddress) => ({
+            address: contractAddress as `0x${string}`,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [address],
+          }))
+        : [],
+      query: {
+        select: (data) => {
+          return data.map((item) => item.result);
+        },
       },
-    },
-  });
+    });
 
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
@@ -662,32 +715,39 @@ function DCDSTemplate() {
       },
     });
 
-  const { data: tokenAllowanceByUser, refetch: refetchAllowanceDynamic } =
-    useReadContracts({
-      contracts: tokenAddress?.map((contractAddress) => ({
-        address: contractAddress as `0x${string}`,
-        abi: erc20Abi,
-        functionName: "allowance",
-        args: [
-          address,
-          cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-        ],
-      })),
-      query: {
-        select: (data) => {
-          return data.map((item) => item.result);
-        },
+  const {
+    data: tokenAllowanceByUser,
+    refetch: refetchAllowanceDynamic,
+    isLoading: isAllowanceLoading,
+  } = useReadContracts({
+    contracts: tokenAddress?.map((contractAddress) => ({
+      address: contractAddress as `0x${string}`,
+      abi: erc20Abi,
+      functionName: "allowance",
+      args: [
+        address,
+        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      ],
+    })),
+    query: {
+      select: (data) => {
+        return data.map((item) => item.result);
       },
-    });
+    },
+  });
 
   const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
 
   // checking the token pause state
-  const { data: tokensPauseState } = useReadContracts({
+  const {
+    data: tokensPauseState,
+    isLoading: isTokenStatusLoading,
+    error: tokenPauseError,
+  } = useReadContracts({
     contracts: tokenAddress?.map((address) => ({
       address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
       abi: cdsAbi as Abi,
-      functionName: "assetDetails",
+      functionName: "getAssetDetails",
       args: [address],
     })),
     query: {
@@ -697,14 +757,26 @@ function DCDSTemplate() {
     },
   });
 
-  const { usdaPoints, usdtPoints, nativePoints, isLoading, error } = usePoint();
-  //
-  const minTokenAmountAndPointToDeposit = {
-    usda: usdaPoints,
-    usdt: usdtPoints,
-    op: nativePoints,
-    aero: nativePoints,
-  };
+  // Getting token reward details
+  const { tokenRewardDetailList, tokenRewardDetailLoading } =
+    useGetTokenReward();
+
+  // hook for getting the farm your luck data (current reward data) from the backend api
+  const {
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
+
+  // Combine loading of all react function for token details
+  const isTokenDataLoading =
+    isTokenListPending ||
+    isTokenStatusLoading ||
+    isAllowanceLoading ||
+    isLoadingOraclePrices ||
+    isLoadingOraclePrices ||
+    isTokenBalanceLoading ||
+    tokenRewardDetailLoading;
 
   // token list for the deposit
   const tokenList: TokenDetails[] = useMemo(() => {
@@ -734,7 +806,62 @@ function DCDSTemplate() {
 
       // Calculate USD value of balance
       const balanceInUSD = Number(formattedBalance) * Number(formattedPrice);
+      // boaster from farm your luck
+      const luckBoaster =
+        calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0 &&
+        calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+          ? 10
+          : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine5xTimestamp || ""
+            ).minutes > 0
+          ? 5
+          : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || ""
+            ).minutes > 0
+          ? 10
+          : 0;
 
+      // total boaster for token
+      const totalBooster =
+        (token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.assetBooster ?? 0
+            )
+          : 0) + luckBoaster;
+
+      // Finding the max timestamp
+      const totalTimeStamp = Math.max(
+        farmLuckDetails?.deadLine5xTimestamp
+          ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+          : 0,
+        farmLuckDetails?.deadLine10xTimestamp
+          ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+          : 0,
+        // timestamp for campaign booster
+        Number(
+          token.symbol
+            ? Number(
+                tokenRewardDetailList?.[
+                  token.symbol === "USDa" || token.symbol === "USDA+"
+                    ? "USDA"
+                    : token.symbol === "OP" || token.symbol === "AERO"
+                    ? "NATIVE"
+                    : token.symbol?.toString()
+                ]?.assetBoosterValidity ?? 0
+              )
+            : 0
+        )
+      );
       return {
         tokenImage: getIconMapping(
           theme || "dark",
@@ -750,27 +877,36 @@ function DCDSTemplate() {
         active: true,
         errorMessage: `Token ${token.symbol} not active now`,
         balanceAvailable: `$${balanceInUSD.toFixed(2)}`,
-        minTokenAmount: Number(
-          minTokenAmountAndPointToDeposit[
-            (token.symbol === "USDA+"
-              ? "usda"
-              : token.symbol?.toString()?.toLocaleLowerCase() ||
-                "") as keyof typeof minTokenAmountAndPointToDeposit
-          ]?.minAmount || 0
-        ),
-        pointToGiven: Number(
-          minTokenAmountAndPointToDeposit[
-            (token.symbol === "USDA+"
-              ? "usda"
-              : token.symbol?.toString()?.toLocaleLowerCase() ||
-                "") as keyof typeof minTokenAmountAndPointToDeposit
-          ]?.pointsToBeGiven || 0
-        ),
+        minTokenAmount: token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.minAmount ?? 0
+            )
+          : 0,
+        pointToGiven: token.symbol
+          ? Number(
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
+                  ? "NATIVE"
+                  : token.symbol?.toString()
+              ]?.pointsToBeGiven ?? 0
+            )
+          : 0,
+        defaultBooster: totalBooster,
+        boosterValidity: totalTimeStamp,
+
         tokenPauseMessage: ` ${token.symbol} Token not active now`,
         tokenPrice: formattedPrice,
         tokenCount: Number(formattedBalance),
         tvl:
-          Number(formatUnits(BigInt(tvl), Number(token.decimals))) *
+          Number(formatUnits(BigInt(tvl || 0), Number(token.decimals))) *
           Number(formattedPrice),
         tokenAddress: tokenAddress?.[index],
         tokenDecimals: Number(token.decimals),
@@ -791,16 +927,52 @@ function DCDSTemplate() {
     tokenAllowanceByUser,
     totalTVLList,
     theme,
-    minTokenAmountAndPointToDeposit,
+    tokenRewardDetailList,
+    farmLuckDetails,
   ]);
 
+  // calculating point to be given
   const pointToGiven = useMemo(() => {
-    const value = selectedTokens.reduce((total, token) => {
+    const isLockinBoosterActive =
+      calculateRemainingTimeDate(
+        toLocalISOString(
+          new Date(
+            Number(
+              lockInPeriodOption.find(
+                (option) => option.value === formik.values.lockInPeriod
+              )?.boosterValidity
+            ) * 1000
+          )
+        )
+      ).minutes > 0;
+
+    const lockInBooster = isLockinBoosterActive
+      ? Number(
+          lockInPeriodOption.find(
+            (option) => option.value === formik.values.lockInPeriod
+          )?.booster || 0
+        )
+      : 0;
+    console.log(lockInBooster, "lockin booster validity");
+    const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
         formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
       );
       const tokenPrice = Number(token.tokenPrice || 0);
       const valueInUSD = tokenAmount * tokenPrice;
+      const isDefaultBoosterActive =
+        calculateRemainingTimeDate(
+          toLocalISOString(new Date(token.boosterValidity * 1000))
+        ).minutes > 0;
+
+      const defaultBooster = isDefaultBoosterActive ? token.defaultBooster : 0;
+
+      const totalBooster =
+        defaultBooster + lockInBooster === 0
+          ? 1
+          : defaultBooster + lockInBooster;
+
+      console.log(defaultBooster, lockInBooster, "default booster validity");
 
       // Check for NaN values and handle them
       if (
@@ -814,27 +986,79 @@ function DCDSTemplate() {
 
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
-          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          ? (valueInUSD / token.minTokenAmount) *
+            token.pointToGiven *
+            totalBooster
           : 0;
 
       return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
     }, 0);
 
-    return Math.round(value) || 0; // Return 0 if the result is NaN
-  }, [selectedTokens, formik]);
+    // Calculate individual points for each token
+    const individualPoints = selectedTokens.map((token) => {
+      const tokenAmount = Number(
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+      );
+      const tokenPrice = Number(token.tokenPrice || 0);
+      const valueInUSD = tokenAmount * tokenPrice;
 
-  console.log(tokenList, minTokenAmountAndPointToDeposit, "nativePoints");
+      // Check for NaN values and handle them
+      if (
+        isNaN(valueInUSD) ||
+        isNaN(token.minTokenAmount) ||
+        isNaN(token.pointToGiven) ||
+        token.minTokenAmount === 0
+      ) {
+        return {
+          tokenName: token.tokenName,
+          points: 0,
+        };
+      }
+
+      const pointsForToken =
+        valueInUSD >= token.minTokenAmount
+          ? (valueInUSD / token.minTokenAmount) * token.pointToGiven
+          : 0;
+
+      return {
+        tokenName: token.tokenName,
+        points: isNaN(pointsForToken) ? 0 : pointsForToken,
+      };
+    });
+
+    // Calculating total point without boaster
+    const totalPointsWithoutBoaster = individualPoints.reduce(
+      (total, token) => {
+        return total + token.points;
+      },
+      0
+    );
+
+    // Calculating Lockin Point
+    const lockInPoint =
+      totalPointsWithoutBoaster * (isLockinBoosterActive ? lockInBooster : 0);
+
+    // Calculating Lockin Point
+    individualPoints.push({
+      tokenName: "Lockin Point",
+      points: lockInPoint,
+    });
+
+    // Calculating Boaster Point
+    individualPoints.push({
+      tokenName: "Boosted Point",
+      points: totalPoints - (totalPointsWithoutBoaster + lockInPoint),
+    });
+
+    return {
+      totalPoints: Math.round(totalPoints) || 0,
+      individualPoints,
+    };
+  }, [selectedTokens, formik, lockInPeriodOption]);
 
   console.log(pointToGiven, "pointToGiven");
-  console.log(tokenAddress, "tokenAddress");
 
-  // hook for getting the farm your luck data (current reward data) from the backend api
-  const {
-    data: farmLuckDetails,
-    isLoading: isFarmLuckLoading,
-    refetch: refetchFarmLuckDetails,
-  } = useFarmLuckDetails(address, chainId);
-
+  // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
       (token) =>
@@ -861,7 +1085,80 @@ function DCDSTemplate() {
     );
   }, [formik.values, selectedTokens]);
 
-  console.log(selectedTokens, "selectedTokens");
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+  console.log(userTrackingData, "userTrackingData");
+
+  // update user tracking data
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      cdsPage: {
+        // previous mint page data
+        ...data?.cdsPage,
+        count: (data?.cdsPage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.cdsPage?.count
+          ? data?.cdsPage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+    return () => {
+      // get user tracking data from local storage
+      const data = getUserTrackLocalStorageData();
+      // updating user exit time for selected asset
+      setUserTrackLocalStorageData({
+        ...data,
+        cdsPage: {
+          ...data?.cdsPage,
+          exitTimestamp: new Date().toISOString(),
+        },
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    // updating selected tokens count
+    setUserTrackLocalStorageData({
+      ...data,
+      cdsPage: {
+        ...data?.cdsPage,
+        usda: {
+          count: selectedTokens.find((token) => token.tokenLabel === "USDA+")
+            ?.active
+            ? (data?.cdsPage?.usda?.count || 0) + 1
+            : data?.cdsPage?.usda?.count || 0,
+        },
+        usdt: {
+          count: selectedTokens.find((token) => token.tokenLabel === "USDT")
+            ?.active
+            ? (data?.cdsPage?.usdt?.count || 0) + 1
+            : data?.cdsPage?.usdt?.count || 0,
+        },
+        op: {
+          count: selectedTokens.find((token) => token.tokenLabel === "OP")
+            ?.active
+            ? (data?.cdsPage?.op?.count || 0) + 1
+            : data?.cdsPage?.op?.count || 0,
+        },
+        aero: {
+          count: selectedTokens.find((token) => token.tokenLabel === "AERO")
+            ?.active
+            ? (data?.cdsPage?.aero?.count || 0) + 1
+            : data?.cdsPage?.aero?.count || 0,
+        },
+      },
+    });
+  }, [selectedTokens]);
 
   return (
     <div>
@@ -872,7 +1169,7 @@ function DCDSTemplate() {
             <div className="flex w-full h-full text-lg dark:text-white text-center text-black justify-center items-center ">
               Please connect wallet
             </div>
-          ) : isOmniChainDataPending ? (
+          ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
             tokenList.map((token: TokenDetails, key: number) => (
@@ -924,6 +1221,8 @@ function DCDSTemplate() {
                         src={
                           theme === "dark" && token.tokenName === "USDA+"
                             ? USDaIconGreen
+                            : theme === "light" && token.tokenName === "USDa"
+                            ? USDaIcon
                             : token?.tokenImage
                         }
                         alt={token?.tokenName}
@@ -975,7 +1274,7 @@ function DCDSTemplate() {
               <span className="text-textBlack text-[24px] font-medium dark:text-white">
                 Deposit Funds
               </span>
-              <div className="flex justify-end items-center gap-1">
+              {/* <div className="flex justify-end items-center gap-1">
                 {calculateRemainingTimeDate(
                   farmLuckDetails?.deadLine5xTimestamp || ""
                 ).minutes > 0 &&
@@ -998,7 +1297,7 @@ function DCDSTemplate() {
                     5x Points
                   </div>
                 ) : null}
-              </div>
+              </div> */}
             </div>
             <div
               ref={scrollRef}
@@ -1024,7 +1323,7 @@ function DCDSTemplate() {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values[
-                        `${token.tokenName}Amount` as keyof FormValues
+                        `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
                       ]?.toString()}
                     />
                     {/* showing the token value in usd */}
@@ -1067,7 +1366,18 @@ function DCDSTemplate() {
                       </span>
                     </div>
                     <span className="text-[16px] font-medium text-grayLight">
-                      Bal {token.balanceAvailable}
+                      Bal {token.balanceAvailable}{" "}
+                      <span
+                        onClick={() => {
+                          formik.setFieldValue(
+                            `${token?.tokenName?.toLocaleLowerCase()}Amount`,
+                            Number(token.tokenCount)
+                          );
+                        }}
+                        className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border px-2 py-[2px] rounded-[24px]"
+                      >
+                        Max
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1089,7 +1399,7 @@ function DCDSTemplate() {
                     ? `${formik.values.lockInPeriod} Days`
                     : "Lock-in Period"
                 }
-                items={dropdownItems}
+                items={lockInPeriodOption}
                 className="w-full text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
                 iconWrapBg="bg-white dark:bg-black"
               />
@@ -1138,7 +1448,8 @@ function DCDSTemplate() {
               <DepositSummary
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
-                points={pointToGiven}
+                points={pointToGiven.totalPoints}
+                individualPoints={pointToGiven.individualPoints}
               />
             </div>
             {/* showing the deposit button */}

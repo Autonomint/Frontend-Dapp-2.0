@@ -9,39 +9,6 @@ interface PointResponse {
 }
 
 // API call functions for different point calculations
-const fetchEthPoints = async (chainId: number): Promise<PointResponse> => {
-  const { data } = await axios.post(
-    `${BACKEND_API_URL}/global/get-min-eth-amount-for-points`,
-    { chainId }
-  );
-  return data;
-};
-
-const fetchUsdaPoints = async (chainId: number): Promise<PointResponse> => {
-  const { data } = await axios.post(
-    `${BACKEND_API_URL}/global/get-min-usda-amount-for-points`,
-    { chainId }
-  );
-  return data;
-};
-
-const fetchUsdtPoints = async (chainId: number): Promise<PointResponse> => {
-  const { data } = await axios.post(
-    `${BACKEND_API_URL}/global/get-min-usdt-amount-for-points`,
-    { chainId }
-  );
-  return data;
-};
-
-const fetchUsdaBridgePoints = async (
-  chainId: number
-): Promise<PointResponse> => {
-  const { data } = await axios.post(
-    `${BACKEND_API_URL}/global/get-min-usda-bridge-amount-for-points`,
-    { chainId }
-  );
-  return data;
-};
 
 const fetchReferralPoints = async (chainId: number): Promise<PointResponse> => {
   const { data } = await axios.post(
@@ -69,46 +36,6 @@ const fetchNativePoints = async (chainId: number): Promise<PointResponse> => {
 
 export const usePoint = () => {
   const chainId = useChainId();
-
-  const {
-    data: ethPoints,
-    error: ethPointsError,
-    isLoading: isEthPointsLoading,
-  } = useQuery({
-    queryKey: ["ethPoints", chainId],
-    queryFn: () => fetchEthPoints(chainId),
-    enabled: !!chainId,
-  }) as any;
-
-  const {
-    data: usdaPoints,
-    error: usdaPointsError,
-    isLoading: isUsdaPointsLoading,
-  } = useQuery({
-    queryKey: ["usdaPoints", chainId],
-    queryFn: () => fetchUsdaPoints(chainId),
-    enabled: !!chainId,
-  });
-
-  const {
-    data: usdtPoints,
-    error: usdtPointsError,
-    isLoading: isUsdtPointsLoading,
-  } = useQuery({
-    queryKey: ["usdtPoints", chainId],
-    queryFn: () => fetchUsdtPoints(chainId),
-    enabled: !!chainId,
-  });
-
-  const {
-    data: usdaBridgePoints,
-    error: usdaBridgePointsError,
-    isLoading: isUsdaBridgePointsLoading,
-  } = useQuery({
-    queryKey: ["usdaBridgePoints", chainId],
-    queryFn: () => fetchUsdaBridgePoints(chainId),
-    enabled: !!chainId,
-  });
 
   const {
     data: referralPoints,
@@ -141,28 +68,11 @@ export const usePoint = () => {
   });
 
   return {
-    ethPoints,
-    usdaPoints,
-    usdtPoints,
-    usdaBridgePoints,
     referralPoints,
     xPostsPoints,
     nativePoints,
     isLoading:
-      isEthPointsLoading ||
-      isUsdaPointsLoading ||
-      isUsdtPointsLoading ||
-      isUsdaBridgePointsLoading ||
-      isReferralPointsLoading ||
-      isXPostsPointsLoading ||
-      isNativePointsLoading,
-    error:
-      ethPointsError ||
-      usdaPointsError ||
-      usdtPointsError ||
-      usdaBridgePointsError ||
-      referralPointsError ||
-      xPostsPointsError ||
-      nativePointsError,
+      isReferralPointsLoading || isXPostsPointsLoading || isNativePointsLoading,
+    error: referralPointsError || xPostsPointsError || nativePointsError,
   };
 };

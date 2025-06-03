@@ -1,5 +1,9 @@
 import { usDaAbi } from "@/blockchain/abis/usda";
-import { borrowingContractAddress, usDaAddress } from "@/blockchain/contracts";
+import {
+  borrowingContractAddress,
+  borrowingWithdrawContractAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
 const useApproveUsda = (mutation: any) => {
@@ -21,8 +25,8 @@ const useApproveUsda = (mutation: any) => {
       address: usDaAddress[chainId as keyof typeof usDaAddress],
       functionName: "approve",
       args: [
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        borrowingWithdrawContractAddress[
+          chainId as keyof typeof borrowingWithdrawContractAddress
         ] as `0x${string}`, // address of borrowing contract based on chainId
 
         repayAmount, // Total usda amount

@@ -27,8 +27,8 @@ const BetaConfirmation = ({}: TermAndConditionProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => setIsOpen(true)}>
-      <DialogContent className=" beta-confirmation dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+    <Dialog  open={isOpen} onOpenChange={() => setIsOpen(true)}>
+      <DialogContent   className=" beta-confirmation dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
         <div className="text-center text-3xl font-bold mb-8">Beta Version</div>
         <div className=" mb-8 text-center">
           This dApp is in beta. While it has been audited, features are still

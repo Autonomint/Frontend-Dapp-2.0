@@ -15,7 +15,7 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { handleWheel } from "@/utils/helpers";
+import { formatNumber, handleWheel } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
@@ -25,6 +25,7 @@ import { NetworkId } from "@/utils/constants";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useUserGains from "@/hookes/contract-hooks/useUserGains";
 
 function PortfolioTemplate() {
   const { address, chainId } = useAccount();
@@ -174,11 +175,10 @@ function PortfolioTemplate() {
 
     const bodyElement = document.getElementById("body-scroll-container");
     const mainHeaderTop = bodyElement?.offsetTop || 0;
-
     // Check if we've scrolled past the navbar's original position
-    if (navBarLocal < mainHeaderTop) {
+    if (Math.round(navBarLocal) <= mainHeaderTop) {
       setIsSticky(true);
-    } else if (navBarLocal > mainHeaderTop) {
+    } else if (Math.round(navBarLocal) > mainHeaderTop) {
       setIsSticky(false);
     }
   };
@@ -195,6 +195,20 @@ function PortfolioTemplate() {
 
   // get omni chain data
   const { omniChainData } = useGetOmniChainData();
+
+  // fetching user chain data
+  const { userGains } = useUserGains();
+
+  const userGainsTotal = useMemo(() => {
+    if (userGains) {
+      return (
+        userGains.priceChangePL +
+        userGains.amountAccured +
+        userGains.liqGains
+      ).toFixed(2);
+    }
+    return 0;
+  }, [userGains]);
 
   // calculate cds total profits
   const cdsTotalProfits = useMemo(() => {
@@ -242,8 +256,6 @@ function PortfolioTemplate() {
     };
   }, [omniChainData]);
 
-  console.log(cdsTotalProfits, omniChainData, "cdsTotalProfits");
-
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
@@ -256,21 +268,21 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Total Deposited (All Chain)"
-            value={`$${totalUserDeposit?.toFixed(2)}`}
+            value={`$${formatNumber(totalUserDeposit)}`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading="Fee Earned (All Chain)"
-            value={`$${cdsTotalProfits.optionsFees?.toFixed(2)}`}
+            value={`$${formatNumber(Number(userGainsTotal))}`}
           />
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading={`Points (All Chain)`}
-            value={(
+            value={formatNumber(
               Number(referralPoints || 0) + Number(points || 0)
-            ).toString()}
+            )}
           />
         </div>
       </div>
@@ -364,7 +376,7 @@ function PortfolioTemplate() {
           isRenewRepayOpen={isRenewRepayOpen}
           setRenewRepay={setRenewRepay}
           handleNextPage={dcdsHandleNextPage}
-          handlePrevPage={dcdsHandleNextPage}
+          handlePrevPage={dcdsHandlePrevPage}
           currentPage={dcdsPositionCurrentPage}
           totalPages={dcdsTotalPages}
           pageSize={dcdsPageSize}
@@ -379,7 +391,10 @@ function PortfolioTemplate() {
       <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
-        setIsDialogOpen={() => setIsWithdrawDialogOpen(false)}
+        setIsDialogOpen={() => {
+          setIsWithdrawDialogOpen(false);
+          // setSelectedDcdsPosition(null);
+        }}
         dcdsPositionListRefetch={dcdsPositionListRefetch}
       />
       {/* Borrow repay renew modal */}
@@ -388,7 +403,10 @@ function PortfolioTemplate() {
         positionListRefetech={positionListRefetch}
         position={(selectedPosition || []) as PositionData}
         isDialogOpen={isRenewRepayOpen}
-        setIsDialogOpen={() => setRenewRepay(false)}
+        setIsDialogOpen={() => {
+          setRenewRepay(false);
+          // setSelectedPosition(null);
+        }}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
 import { Input } from "@/design-systems/atoms/input";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useInviteCodeMutation } from "@/hookes/api-hooks/useInvite";
+
 import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
 import { ArrowRight } from "lucide-react";
@@ -104,7 +105,11 @@ const InviteCodePopup = ({}: InviteCodePopup) => {
     setInputError("");
     // if the invite code is not connected, then the user can connect the wallet
     try {
-      if (!isConnected) return open();
+      if (!isConnected) {
+        setIsInviteCodePopupOpen(false);
+        open();
+        return;
+      }
       // if the invite code is not valid, then the user can enter a valid invite code
       if (otp.join("").length < 6) {
         setInputError("Please enter a valid invite code");
