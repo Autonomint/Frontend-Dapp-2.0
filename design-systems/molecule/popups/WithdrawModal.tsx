@@ -688,7 +688,6 @@ export function DcdsWithdrawModal({
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
         res?.odosAssembledData,
-        res?.usdtFromOdos,
         res?.nonce,
         res?.deadline,
         res?.signature,
