@@ -5,6 +5,11 @@ import arrow from "@/app/assets/arrow-right-02.png";
 import LTVDark from "@/app/assets/LTV Details.svg";
 import LTV from "@/app/assets/LTV-range-image.svg";
 import { useRouter } from "next/navigation";
+import AssetsAccepted from "./AssetsAccepted";
+import cryptoEth from "@/app/assets/eth.png";
+import WeETH from "@/app/assets/weETH-icoon.webp";
+import WrsETH from "@/app/assets/WrsETH-icon.png";
+import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 interface FeeDetail {
   orgName: string;
   amount: string;
@@ -81,6 +86,31 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
           tagBg={feesList[0].tagBg}
           borderColor={feesList[0].borderColor}
         />
+      </div>
+      <div className="flex  items-center justify-start gap-2">
+        <p className="text-textBlack mt-2 text-left text-[18px] lg:text-[24px] 2xl:text-[24px] font-medium dark:text-white">
+          Assets Accepted
+        </p>
+        <div className="flex relative mt-2 items-center justify-start ">
+          <div className="flex absolute z-[10] left-0  w-[40px] h-[40px] flex-col items-center justify-center gap-2">
+            <Image className="w-[40px]  h-[40px]" src={cryptoEth} alt="usdt" />
+          </div>
+          <div className="flex absolute z-[9] w-[40px] left-[20px] h-[40px] flex-col items-center justify-center gap-2">
+            <Image className="w-[40px] h-[40px]" src={WeETH} alt="usdt" />
+          </div>
+          <div className="flex absolute w-[40px] z-[8] left-[45px] h-[40px] flex-col items-center justify-center gap-2">
+            <Image className="w-[40px] h-[40px]" src={WrsETH} alt="usdt" />
+          </div>
+          <div className="flex absolute w-[40px] z-[7] left-[70px] h-[40px] flex-col items-center justify-center gap-2">
+            <Image
+              width={40}
+              height={40}
+              className="w-[40px] h-[40px]"
+              src={WsuperOETH}
+              alt="usdt"
+            />
+          </div>
+        </div>
       </div>
       <Button className="absolute px-2 lg:px-6 bottom-0 left-0 w-full lg:mt-13 bg-textBlack text-white text-[20px] lg:text-[32px] flex justify-between  h-[60px] lg:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">
         Mint USDA+

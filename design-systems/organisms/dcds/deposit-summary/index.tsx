@@ -59,7 +59,7 @@ export default function DepositSummary({
                       {point.tokenName}
                     </span>
                     <span className="font-medium text-black dark:text-white">
-                      {Math.floor(point.points)}
+                      {Math.round(point.points)}
                     </span>
                   </div>
                 ))}
@@ -69,7 +69,7 @@ export default function DepositSummary({
         </span>
 
         <span className="text-black text-[16px] dark:text-white font-medium">
-          {points}
+          {Math.round(points)}
         </span>
       </div>
     </div>

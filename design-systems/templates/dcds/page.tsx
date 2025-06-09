@@ -1001,7 +1001,7 @@ function DCDSTemplate() {
         token.minTokenAmount === 0
       ) {
         return {
-          tokenName: token.tokenName,
+          tokenName: token.tokenLabel,
           points: 0,
         };
       }
@@ -1012,7 +1012,7 @@ function DCDSTemplate() {
           : 0;
 
       return {
-        tokenName: token.tokenName,
+        tokenName: token.tokenLabel,
         points: isNaN(pointsForToken) ? 0 : pointsForToken,
       };
     });

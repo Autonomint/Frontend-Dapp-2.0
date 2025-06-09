@@ -8,7 +8,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
-import { calculateTimeDifference } from "@/utils/helpers";
+import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
@@ -816,7 +816,7 @@ export function DcdsWithdrawModal({
                 </div>
                 <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
                   <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-                    Yields (till now)
+                    Yield Earned (All chains)
                   </Label>
                   <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
                     {`${Number(
@@ -847,8 +847,10 @@ export function DcdsWithdrawModal({
                             (position.status === "WITHDREW_GAINS"
                               ? true
                               : false) ||
-                            Number(position.lockingPeriod) * 1000 >
-                              Date.now() ||
+                            !hasDaysPassed(
+                              Number(position?.depositedTime || 0),
+                              Number(position?.lockingPeriod || 0)
+                            ) ||
                             isWithdrawPause
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"

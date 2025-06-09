@@ -50,9 +50,6 @@ const useGetLeaderboard = () => {
     queryKey: ["Cdsdeposits", chainId],
     queryFn: () => getCdsLeaderboard(),
     select: (data: any) => {
-      if (data.status !== 200) {
-        return [];
-      }
       return data || [];
     },
   });

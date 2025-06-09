@@ -979,7 +979,7 @@ export function WithdrawFund({
                                 } ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
-                            <div className="text-sm break-all text-wrap">
+                            <div className="text-sm text-wrap">
                               (Final ETH amount may be lower due to option fees,
                               5% price upside share, and conversion based on
                               current ETH/USD value){" "}

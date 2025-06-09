@@ -105,7 +105,7 @@ function MintEthListTemplate() {
         tokenRewardDetailList &&
         Math.max(
           tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp 
+          farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
@@ -125,21 +125,21 @@ function MintEthListTemplate() {
       InActiveHeading: "wrsETH borrow is paused now",
       pointsToBeGiven:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WrsETH"]?.pointsToBeGiven) ||
+          tokenRewardDetailList?.["wrsETH"]?.pointsToBeGiven) ||
         0,
       minAmount:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WrsETH"]?.minAmount) ||
+          tokenRewardDetailList?.["wrsETH"]?.minAmount) ||
         0,
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WrsETH"]?.assetBooster + luckBoaster) ||
+          tokenRewardDetailList?.["wrsETH"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WrsETH"]?.assetBoosterValidity || 0,
+          tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
@@ -160,20 +160,20 @@ function MintEthListTemplate() {
       InActiveHeading: "wrsETH borrow is paused now",
       pointsToBeGiven:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["WeETH"]?.pointsToBeGiven,
+        tokenRewardDetailList?.["weETH"]?.pointsToBeGiven,
       minAmount:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WeETH"]?.minAmount) ||
+          tokenRewardDetailList?.["weETH"]?.minAmount) ||
         0,
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WeETH"]?.assetBooster + luckBoaster) ||
+          tokenRewardDetailList?.["weETH"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WeETH"]?.assetBoosterValidity || 0,
+          tokenRewardDetailList?.["weETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
@@ -197,22 +197,21 @@ function MintEthListTemplate() {
       InActiveHeading: "wsuperOETHb borrow is paused now",
       pointsToBeGiven:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WSuperOethB"]?.pointsToBeGiven) ||
+          tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
         0,
       minAmount:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WSuperOethB"]?.minAmount) ||
+          tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
         0,
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["WSuperOethB"]?.assetBooster +
-            luckBoaster) ||
+          tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["WSuperOethB"]?.assetBoosterValidity || 0,
+          tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
