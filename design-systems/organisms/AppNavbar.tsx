@@ -45,18 +45,11 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             InActiveHeading: "Borrow is paused now",
           },
           {
-            nameA: "dCDS",
+            nameA: "Earn With dCDS",
             path: "/dcds",
             isActive: pathname === "/dcds",
             isFeatureActive: !isFunctionPausedCDS_Deposit,
             InActiveHeading: "CDS Deposit is paused now",
-          },
-          {
-            nameA: "Bridge",
-            path: "/bridge",
-            isActive: pathname === "/bridge",
-            isFeatureActive: true,
-            InActiveHeading: "",
           },
           {
             nameA: "Dashboard",
@@ -65,6 +58,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
               pathname === "/dashboard/leaderboard" ||
               pathname === "/dashboard/portfolio" ||
               pathname === "/dashboard/stats",
+            isFeatureActive: true,
+            InActiveHeading: "",
+          },
+          {
+            nameA: "Bridge",
+            path: "/bridge",
+            isActive: pathname === "/bridge",
             isFeatureActive: true,
             InActiveHeading: "",
           },

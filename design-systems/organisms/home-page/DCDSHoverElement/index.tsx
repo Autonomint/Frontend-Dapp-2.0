@@ -46,7 +46,7 @@ function DCDSHoverElement() {
               />
             </TooltipTrigger>
             <TooltipContent className="bg-white text-black dark:bg-black dark:text-white">
-              <p>Exposed to volatility risk</p>
+              <p>Exposed to ETH volatility risk</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

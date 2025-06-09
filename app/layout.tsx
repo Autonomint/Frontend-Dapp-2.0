@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 
-
 const ToasterContainerWrapper = dynamic(
   () => import("@/design-systems/molecule/toaster-container-wrapper")
 );
@@ -57,14 +56,16 @@ export default function RootLayout({
                   <Navbar />
                   <div
                     id={"body-scroll-container"}
-                    className="flex-grow overflow-y-auto no-scrollbar border-r-0"
+                    className="flex-grow overflow-y-auto no-scrollbar h-[calc(100vh-210px)] border-r-0"
                   >
-                    {children}
+                    <div className="min-h-[calc(100vh-210px)]">
+                      {children}
+                      <InviteCodePopup />
+                      <SwitchChainPopup />
+                      {/* <SupportCall /> */}
+                      {/* <BetaConfirmation /> */}
+                    </div>
                     <Footer />
-                    <InviteCodePopup />
-                    <SwitchChainPopup />
-                    {/* <SupportCall /> */}
-                    {/* <BetaConfirmation /> */}
                   </div>
                 </ThemeProvider>
               </Provider>

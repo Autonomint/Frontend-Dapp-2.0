@@ -586,12 +586,7 @@ export function WithdrawFund({
     } else if (withdrawErrorReceipt) {
       toast.custom((t) => (
         <ToastNotificationError
-          title={
-            String(
-              (withdrawError?.cause as { shortMessage: string })
-                .shortMessage as string
-            ) || "Transaction failed, Please try again"
-          }
+          title={"Transaction failed, Please try again"}
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -620,7 +615,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.0001) * 1e6));
+    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.001) * 1e6));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount

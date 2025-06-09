@@ -72,7 +72,7 @@ export default function HomeTemplate() {
       ).toFixed(2)}`,
     },
     {
-      title: "dCDS",
+      title: "Earn With dCDS",
       subtitle: `TVL - $${(
         Number(GlobalContractData?.totalCdsDepositedAmount ?? 0n) /
         10 ** 6

@@ -536,12 +536,7 @@ export function DcdsWithdrawModal({
       setWithdrawMethodLoading(false);
       toast.custom((t) => (
         <ToastNotificationError
-          title={
-            String(
-              (cdsWithdrawGainReceiptError?.cause as { shortMessage: string })
-                .shortMessage as string
-            ) || "Transaction failed, Please try again"
-          }
+          title={"Transaction failed, Please try again"}
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -608,12 +603,7 @@ export function DcdsWithdrawModal({
         setWithdrawMethodLoading(false);
         toast.custom((t) => (
           <ToastNotificationError
-            title={
-              String(
-                (cdsLogdataReceiptError?.cause as { shortMessage: string })
-                  .shortMessage as string
-              ) || "Transaction failed, Please try again"
-            }
+            title={"Transaction failed, Please try again"}
             onClose={() => toast.dismiss(t)}
           />
         ));
