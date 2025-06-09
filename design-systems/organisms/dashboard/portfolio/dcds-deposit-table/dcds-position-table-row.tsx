@@ -61,7 +61,6 @@ const DcdsPositionTableRow = ({
     return tokenNames;
   }, [position]);
 
- 
   return (
     <tr
       className={`border ${
@@ -102,7 +101,13 @@ const DcdsPositionTableRow = ({
       </td>
 
       <td className="px-5 py-4 2xl:py-6 ">
-        {(Number(position.lockingPeriod) / 86400000).toFixed(0)} days
+        {(Number(position.lockingPeriod) /
+          String(position.lockingPeriod).length >
+        8
+          ? Number(position.lockingPeriod) / 86400000
+          : Number(position.lockingPeriod) / 864000
+        ).toFixed(0)}{" "}
+        days
       </td>
 
       <td className={`px-5 py-4 2xl:py-6  md:text-right md:space-x-12`}>

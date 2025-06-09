@@ -353,7 +353,7 @@ function DCDSTemplate() {
           // liquidation gains
           liquidationGains,
           liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400000),
+          BigInt(Number(lockInPeriodLocal || 0) * 86400),
         ],
         nativeFee.nativeFee
       );
