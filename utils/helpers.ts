@@ -407,3 +407,17 @@ export function getMinutesPassed(timestamp: number): number {
   const diffInMs = now - timestampInMs;
   return Math.floor(diffInMs / (60 * 1000)); // Convert milliseconds to full minutes
 }
+
+// Check given days passed or not
+export function hasDaysPassed(
+  timestamp: number,
+  daysInSeconds: number
+): boolean {
+  const timestampInMs = timestamp * 1000; // Convert input timestamp from seconds to milliseconds
+  const durationInMs =
+    Number(daysInSeconds) / String(daysInSeconds).length > 8
+      ? daysInSeconds
+      : daysInSeconds * 1000; // Convert days (in seconds) to milliseconds
+  const now = Date.now(); // Current time in milliseconds
+  return now - timestampInMs >= durationInMs;
+}

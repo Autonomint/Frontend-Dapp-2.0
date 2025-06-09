@@ -4,7 +4,7 @@ import {
   nativeTokenAddress,
   testusdtAbiAddress,
   treasuryAddress,
-  usDaAddress
+  usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -28,7 +28,7 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId, scanUrls } from "@/utils/constants";
-import { calculateTimeDifference } from "@/utils/helpers";
+import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { Info } from "lucide-react";
@@ -867,7 +867,10 @@ export function DcdsWithdrawModal({
                           (position.status === "WITHDREW_GAINS"
                             ? true
                             : false) ||
-                          Number(position.lockingPeriod) * 1000 > Date.now() ||
+                          !hasDaysPassed(
+                            Number(position.depositedTime),
+                            Number(position.lockingPeriod)
+                          ) ||
                           isWithdrawPause
                         }
                         className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
