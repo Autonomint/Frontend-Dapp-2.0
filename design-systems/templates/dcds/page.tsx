@@ -857,7 +857,7 @@ function DCDSTemplate() {
       );
       return {
         tokenImage: getIconMapping(
-          theme || "dark",
+          (theme === "system" ? "dark" : theme) || "dark",
           token.symbol?.toString().toLowerCase() || "usda"
         ),
         tokenName: String(token.symbol || ""),
@@ -1217,7 +1217,13 @@ function DCDSTemplate() {
                             : token?.tokenImage
                         }
                         alt={token?.tokenName}
-                        width={80}
+                        width={
+                          theme === "dark" && token.tokenName === "USDa"
+                            ? 55
+                            : theme === "light" && token.tokenName === "USDa"
+                            ? 55
+                            : 80
+                        }
                         height={80}
                         className="object-cover"
                       />

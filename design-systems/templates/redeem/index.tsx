@@ -628,21 +628,7 @@ const RedeemContainer = () => {
       redeemableRsEthDollarValue;
 
     const yieldValue = x / y || 0;
-    console.table(
-      {
-        ethPrice,
-        weEthPrice,
-        rsEthPrice,
-        redeemableEthDollarValue,
-        redeemableWeEthDollarValue,
-        redeemableRsEthDollarValue,
-        redeemableUsdaDollarValue,
-        x,
-        y,
-        yieldValue,
-      },
-      ["osd"]
-    );
+   
 
     return yieldValue;
   }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);

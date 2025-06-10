@@ -38,7 +38,7 @@ function DCDSHoverElement() {
           alt="Price Graph"
           className="2xl:w-[900px] w-[900px]  object-fit hidden dark:block"
         />
-        <div className="mt-4 text-textBlack text-[18px] lg:text-[24px] 2xl:text-[24px]  font-medium dark:text-white flex items-center justify-start gap-8">
+        <div className="mt-4 text-textBlack text-[18px] lg:text-[24px] 2xl:text-[24px]  font-medium dark:text-white flex items-center justify-between gap-8">
           <div className="flex h-full mt-2 items-center justify-start gap-2">
             Get up to 200% APY
             <TooltipProvider>
@@ -56,40 +56,77 @@ function DCDSHoverElement() {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="flex  items-center justify-start gap-2">
+          <div className="flex  items-center justify-end gap-2">
             <p className="text-textBlack mt-2 text-left text-[18px] lg:text-[24px] 2xl:text-[24px] font-medium dark:text-white">
               Assets Accepted
             </p>
-            <div className="flex relative mt-2 items-center justify-start ">
-              <div className="flex absolute z-[10] left-0  w-[40px] h-[40px] flex-col items-center justify-center gap-2">
-                <Image
-                  className="w-[40px]  h-[40px]"
-                  src={getIconMapping(theme as string, "usda")}
-                  alt="usdt"
-                />
+            <div className="flex relative mt-2 items-center justify-start pr-28">
+              <div className="flex absolute z-[10] left-0  w-[35px] h-[35px] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-[35px]  h-[35px]"
+                      src={getIconMapping(theme as string, "usda")}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>USDA+</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
-              <div className="flex absolute z-[9] w-[40px] left-[20px] h-[40px] flex-col items-center justify-center gap-2">
-                <Image
-                  className="w-[40px] h-[40px]"
-                  src={getIconMapping(theme as string, "usdt")}
-                  alt="usdt"
-                />
+
+              <div className="flex absolute z-[9] w-[35px] left-[20px] h-[35px] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-[35px] h-[35px]"
+                      src={getIconMapping(theme as string, "usdt")}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>USDT</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
-              <div className="flex absolute w-[40px] z-[8] left-[45px] h-[40px] flex-col items-center justify-center gap-2">
-                <Image
-                  className="w-[40px] h-[40px]"
-                  src={getIconMapping(theme as string, "aero")}
-                  alt="usdt"
-                />
+              <div className="flex absolute w-[35px] z-[8] left-[45px] h-[35px] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-[35px] h-[35px]"
+                      src={getIconMapping(theme as string, "aero")}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>AERO</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
-              <div className="flex absolute w-[40px] z-[7] left-[70px] h-[40px] flex-col items-center justify-center gap-2">
-                <Image
-                  width={40}
-                  height={40}
-                  className="w-[40px] h-[40px]"
-                  src={getIconMapping(theme as string, "op")}
-                  alt="usdt"
-                />
+              <div className="flex absolute w-[35px] z-[7] left-[70px] h-[35px] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      width={35}
+                      height={35}
+                      className="w-[35px] h-[35px]"
+                      src={getIconMapping(theme as string, "op")}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>OP</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
           </div>

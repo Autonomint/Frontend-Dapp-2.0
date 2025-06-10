@@ -64,7 +64,7 @@ import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
-import { Info } from "lucide-react";
+import { EqualApproximately, Info } from "lucide-react";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
@@ -789,7 +789,8 @@ function InputForm({ currency }: { currency: string }) {
                     </div>
                   </div>
                 </HoverCard>
-                <span className=" font-medium text-lg dark:text-white text-black">
+                <span className=" font-medium text-lg dark:text-white text-black flex items-center gap-1">
+                  <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
                   {Math.round(totalPoint)}
                 </span>
               </div>

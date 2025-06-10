@@ -1,24 +1,20 @@
 import { useTheme } from "next-themes";
 import React, { useState } from "react";
-import cryptoEth from "@/app/assets/eth.png";
-import WeETH from "@/app/assets/weETH-icoon.webp";
-import WrsETH from "@/app/assets/WrsETH-icon.png";
-import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
-import Image from "next/image";
+
 const gradientMap: { [key: string]: string } = {
   Autonomint: "linear-gradient(to right, #FFFFFF, #CCFFEB)",
-  Deribit: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
+  Source: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
   Hegic: "linear-gradient(to right, #FFFFFF, #FEE2E2)",
 };
 
-function AssetsAccepted() {
-  const orgName = "Autonomint";
-  const amount = `$${123.45}`;
-  const tag = "Lowest Fee";
-  const tagColor = "#05A552";
-  const tagBg = "#05A552";
-  const textColor = "white";
-  const borderColor = "borderGreen";
+function YieldComparison() {
+  const orgName = "Source";
+
+  const tag = "ETH price hedge";
+  const tagColor = "#D6A100";
+  const tagBg = "#FFF7E0";
+  const textColor = "#D6A100";
+  const borderColor = "borderYellow";
 
   const gradientBackground = gradientMap[orgName] || "transparent";
   const [isHover, setIsHover] = useState(false);
@@ -32,9 +28,9 @@ function AssetsAccepted() {
   return (
     <div
       // xl:w-[60%]w-[40%] xl:flex-1
-      className={`flex ml-4 relative ${isHover ? borderColor : ""} ${
+      className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4  gap-3 transition-all duration-300 ease-in-out 
+      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4  gap-4 justify-between   transition-all duration-300 ease-in-out 
       w-[400px]
       `}
       style={{
@@ -65,37 +61,61 @@ function AssetsAccepted() {
     >
       <div className="flex justify-between items-center">
         <span className=" text-[14px] lg:text-[18px] 2xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
-          Assets Accepted
+          {orgName}
         </span>
+        {!!tag && (
+          <span
+            style={{
+              backgroundColor: isHover ? tagColor : tagBg,
+              color: isHover ? "white" : textColor,
+            }}
+            className="text-[14px] lg:text-[18px] 2xl:text-[24px] p-1 "
+          >
+            {tag}
+          </span>
+        )}
       </div>
+
       <div className="flex justify-between">
-        <div className="flex flex-col items-center justify-center gap-1">
-          <Image
-            className="w-[40px] h-[40px]"
-            src={cryptoEth}
-            alt="cryptoEth"
-          />
-          <span>ETH</span>
-        </div>
-        <div className="flex flex-col items-center justify-center gap-1">
-          <Image className="w-[40px] h-[40px]" src={WeETH} alt="WeETH" />
-          <span>weETH</span>
-        </div>
-        <div className="flex flex-col items-center justify-center gap-1">
-          <Image className="w-[40px] h-[40px]" src={WrsETH} alt="WrsETH" />
-          <span>wrsETH</span>
-        </div>
-        <div className="flex flex-col items-center justify-center gap-1">
-          <Image
-            className="w-[40px] h-[40px]"
-            src={WsuperOETH}
-            alt="WsuperOETH"
-          />
-          <span>wsuperOETHb</span>
-        </div>
+        <span
+          style={{
+            color: isHover
+              ? theme == "dark"
+                ? tagColor
+                : tagColor
+              : theme == "dark"
+              ? "white"
+              : theme == "light"
+              ? "black"
+              : prefersDarkMode
+              ? "white"
+              : "black",
+          }}
+          className={` text-textBlack  text-[14px] lg:text-[18px] 2xl:text-[20px]`}
+        >
+          Yields
+        </span>
+        <span
+          style={{
+            color: isHover
+              ? theme == "dark"
+                ? tagColor
+                : tagColor
+              : theme == "dark"
+              ? "white"
+              : theme == "light"
+              ? "black"
+              : prefersDarkMode
+              ? "white"
+              : "black",
+          }}
+          className={` text-[14px] lg:text-[18px] 2xl:text-[20px]`}
+        >
+          Max of 16.17% per month
+        </span>
       </div>
     </div>
   );
 }
 
-export default AssetsAccepted;
+export default YieldComparison;

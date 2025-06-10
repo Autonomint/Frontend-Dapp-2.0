@@ -98,7 +98,7 @@ function PriceComparison({
               ? "white"
               : "black",
           }}
-          className={` text-textBlack  text-[14px] lg:text-[18px] 2xl:text-[24px]`}
+          className={` text-textBlack  text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
           Fee
         </span>
@@ -117,7 +117,7 @@ function PriceComparison({
                 ? "dark"
                 : "black",
           }}
-          className={` text-[14px] lg:text-[18px] 2xl:text-[24px]`}
+          className={` text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
           {amount}
         </span>
