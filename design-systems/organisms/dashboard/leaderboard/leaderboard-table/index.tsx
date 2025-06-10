@@ -79,7 +79,7 @@ function LeaderboardTable({
                   )}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
-                  {item.points ? item.points : "--"}
+                  {item.points ? item.points : 0}
                 </td>
               </tr>
             );

@@ -122,7 +122,7 @@ const useGetLeaderboard = () => {
       sortLeaderboardDetails([
         ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
           ...item,
-          points: "0",
+          points: item.points || "0",
         })),
         ...((cdsdeposits || []) as LeaderboardDetails[]),
       ])
