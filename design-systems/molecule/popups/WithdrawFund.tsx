@@ -112,8 +112,8 @@ export function WithdrawFund({
       value: indexPoint?.[1] || "0",
       tooltip: false,
       tooltipText: "",
-      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
-      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
+      titleColor: "!text-[#69a28c] dark:!text-[#afffdfb5]",
+      valueColor: "!text-[#49d69f] dark:!text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time APR",
@@ -946,15 +946,22 @@ export function WithdrawFund({
               </div>
               <div
                 className={` h-[50px] ${
-                  position.status !== BorrowStatus.DEPOSITED
-                    ? "md:h-[100px]"
+                  position.status == BorrowStatus.WITHDREW
+                    ? "md:h-[150px]"
                     : "md:h-[70px]"
-                } mt-4 md:mt-6`}
+                } mt-4 md:mt-4`}
               >
+                {position.status == BorrowStatus.WITHDREW && (
+                  <div className="text-sm text-wrap text-center !text-[#49d69f] dark:!text-[#ABFFDE]">
+                    You can use your ABOND tokens to redeem your remaining 1/2
+                    collateral. They are earning AAVE lending yields and
+                    internal liquidation gains since your USDA+ mint.
+                  </div>
+                )}
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="h-full">
+                      <div className=" mt-4">
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -963,7 +970,11 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
-                          className="w-full h-full gap-0 flex flex-col justify-center  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
+                            position.status == BorrowStatus.WITHDREW
+                              ? "md:p-12"
+                              : "md:p-8"
+                          }`}
                         >
                           <div>
                             {repayLoading
