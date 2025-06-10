@@ -32,7 +32,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       onClick={() => {
         router.push("/mintusdalist");
       }}
-      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-2 lg:gap-2 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top p-3 lg:p-6 relative"
+      className="flex flex-col animateMint border-x border-y border-[1px] overflow-y-hidden  border-grayLight gap-2 lg:gap-4 2xl:gap-2 h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top p-3 lg:p-6 relative"
     >
       <div className="text-textBlack text-[28px] lg:text-[38px] font-medium dark:text-white bg-none">
         100% Synthetic LTV

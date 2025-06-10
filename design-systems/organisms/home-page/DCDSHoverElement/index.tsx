@@ -24,7 +24,7 @@ function DCDSHoverElement() {
       }}
       className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS  h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-3 lg:p-8 relative  dark:bg-custom-gradient-to-top"
     >
-      <div className="flex flex-col 2xl:gap-4 gap-2 lg:gap-6">
+      <div className="flex flex-col 2xl:gap-4 gap-2 lg:gap-12 ">
         <div className=" text-textBlack text-[20px] lg:text-[32px] 2xl:text-[38px] font-medium dark:text-white">
           Earn high yields by offering dCDS protection
         </div>
