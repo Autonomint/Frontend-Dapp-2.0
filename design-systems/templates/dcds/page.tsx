@@ -403,6 +403,10 @@ function DCDSTemplate() {
     reset: resetApproveTokenDynamic,
   } = useWriteContract({
     mutation: {
+      onSuccess: () => {
+        debugger;
+        refetchAllowanceDynamic();
+      },
       onError: () => {
         handleDepositFailure();
       },
@@ -436,11 +440,6 @@ function DCDSTemplate() {
     let currentTransactionCount = 1;
 
     for (const token of selectedTokens) {
-      // setting the current token approving state to true
-      setTimeout(() => {
-        formik.setFieldValue(`${token.tokenName.toLowerCase()}Approving`, true);
-      }, 1000);
-
       currentTransactionCount++;
       // current token allowance amount
       const allowanceAmount = BigInt(
@@ -451,6 +450,13 @@ function DCDSTemplate() {
       );
       // checking if the allowance is less than the allowance amount
       if (Number(token.allowance || 0) < Number(allowanceAmount)) {
+        // setting the current token approving state to true
+        setTimeout(() => {
+          formik.setFieldValue(
+            `${token.tokenName.toLowerCase()}Approving`,
+            true
+          );
+        }, 1000);
         // setting the approve loading state to true
         const tx = await approveTokenDynamicAsync({
           abi: erc20Abi,
@@ -539,7 +545,7 @@ function DCDSTemplate() {
     selectedTokens.forEach((token) => {
       formik.setFieldValue(
         `${token.tokenName.toLowerCase()}ApproveFailure`,
-        false
+        true
       );
     });
   };
@@ -719,7 +725,9 @@ function DCDSTemplate() {
       functionName: "allowance",
       args: [
         address,
-        cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+        cdsDepositAddress[
+          chainId as keyof typeof cdsDepositAddress
+        ] as `0x${string}`,
       ],
     })),
     query: {
@@ -921,6 +929,22 @@ function DCDSTemplate() {
     tokenRewardDetailList,
     farmLuckDetails,
   ]);
+
+  console.log(tokenList, selectedTokens, "token list");
+
+  useEffect(() => {
+    setSelectedTokens((prev) =>
+      prev.map((token) => {
+        const newToken = tokenList.find(
+          (newToken) => newToken.tokenAddress === token.tokenAddress
+        );
+        return {
+          ...token,
+          allowance: newToken?.allowance || 0,
+        };
+      })
+    );
+  }, [tokenList, setSelectedTokens]);
 
   // calculating point to be given
   const pointToGiven = useMemo(() => {

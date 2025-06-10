@@ -157,8 +157,8 @@ function InputForm({ currency }: { currency: string }) {
     functionName: "allowance",
     args: [
       address,
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      borrowingDepositContractAddress[
+        chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -222,14 +222,6 @@ function InputForm({ currency }: { currency: string }) {
     validationSchema: formSchema,
     onSubmit: handleSubmit,
   });
-
-  console.log(
-    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
-    ethBalance,
-    formik.values.balance,
-    formattedBalance,
-    "bal"
-  );
 
   useEffect(() => {
     // set the balance of the selected asset to formik values
