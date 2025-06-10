@@ -38,8 +38,8 @@ function PriceComparison({
       // xl:w-[60%]w-[40%] xl:flex-1
       className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4  gap-4 justify-between   transition-all duration-300 ease-in-out 
-      w-[400px]
+      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4 p-2  gap-2 md:gap-4 justify-between   transition-all duration-300 ease-in-out 
+      xl:w-[400px] w-[200px] sm:w-[300px]
       `}
       style={{
         backgroundImage: isHover
@@ -68,7 +68,7 @@ function PriceComparison({
       }}
     >
       <div className="flex justify-between items-center">
-        <span className=" text-[14px] lg:text-[18px] 2xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
+        <span className=" text-[12px]  sm:text-[14px] lg:text-[18px] 2xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
           {orgName}
         </span>
         {!!tag && (
@@ -77,7 +77,7 @@ function PriceComparison({
               backgroundColor: isHover ? tagColor : tagBg,
               color: isHover ? "white" : textColor,
             }}
-            className="text-[14px] lg:text-[18px] 2xl:text-[24px] p-1 "
+            className="text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[24px] p-[2px] md:p-1  "
           >
             {tag}
           </span>
@@ -98,7 +98,7 @@ function PriceComparison({
               ? "white"
               : "black",
           }}
-          className={` text-textBlack  text-[14px] lg:text-[18px] 2xl:text-[20px]`}
+          className={` text-textBlack  text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
           Fee
         </span>
@@ -117,7 +117,7 @@ function PriceComparison({
                 ? "dark"
                 : "black",
           }}
-          className={` text-[14px] lg:text-[18px] 2xl:text-[20px]`}
+          className={` text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
           {amount}
         </span>

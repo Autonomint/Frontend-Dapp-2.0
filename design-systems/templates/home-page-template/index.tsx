@@ -322,10 +322,10 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[360px]  lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
+                ? "w-full lg:w-[80%] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
                 : // height and width style based on hoveredIndex
                 hoveredIndex === 1
-                ? "lg:w-[40%]  lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
@@ -366,10 +366,10 @@ export default function HomeTemplate() {
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                  "w-full lg:w-[60%]  sm:h-[360px]   lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  "w-full lg:w-[60%]  sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
-                  " w-full lg:w-[30%] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex

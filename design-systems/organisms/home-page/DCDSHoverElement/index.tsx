@@ -24,21 +24,21 @@ function DCDSHoverElement() {
       }}
       className="flex flex-col border-x border-y border-[1px]   border-grayLight overflow-y-hidden animateDCDS  h-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] p-3 lg:p-8 relative  dark:bg-custom-gradient-to-top"
     >
-      <div className="flex flex-col 2xl:gap-4 gap-2 lg:gap-12 ">
+      <div className="flex flex-col 2xl:gap-4 gap-2 lg:gap-4 xl:gap-8">
         <div className=" text-textBlack text-[20px] lg:text-[32px] 2xl:text-[38px] font-medium dark:text-white">
           Earn high yields by offering dCDS protection
         </div>
         <Image
           src={PriceGraph}
           alt="Price Graph"
-          className="2xl:w-[900px] w-[900px]  object-fit block dark:hidden"
+          className="2xl:w-[900px] w-[900px] md:w-[800px]  object-fit block dark:hidden"
         />
         <Image
           src={DCDSHover}
           alt="Price Graph"
-          className="2xl:w-[900px] w-[900px]  object-fit hidden dark:block"
+          className="2xl:w-[900px] w-[900px] md:w-[800px]  object-fit hidden dark:block"
         />
-        <div className="mt-4 text-textBlack text-[18px] lg:text-[24px] 2xl:text-[24px]  font-medium dark:text-white flex items-center justify-between gap-8">
+        <div className="mt-4 text-textBlack text-[14px] sm:text-[18px] lg:text-[20px] 2xl:text-[24px]  font-medium dark:text-white flex items-center justify-between gap-8">
           <div className="flex h-full mt-2 items-center justify-start gap-2">
             Get up to 200% APY
             <TooltipProvider>
@@ -57,15 +57,15 @@ function DCDSHoverElement() {
             </TooltipProvider>
           </div>
           <div className="flex  items-center justify-end gap-2">
-            <p className="text-textBlack mt-2 text-left text-[18px] lg:text-[24px] 2xl:text-[24px] font-medium dark:text-white">
+            <p className="text-textBlack mt-2 text-left text-[14px] sm:text-[18px] lg:text-[20px] 2xl:text-[24px] font-medium dark:text-white">
               Assets Accepted
             </p>
             <div className="flex relative mt-2 items-center justify-start pr-28">
-              <div className="flex absolute z-[10] left-0  w-[35px] h-[35px] flex-col items-center justify-center gap-2">
+              <div className="flex absolute z-[10] left-0   w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
-                      className="w-[35px]  h-[35px]"
+                      className="w-full h-full"
                       src={getIconMapping(theme as string, "usda")}
                       alt="usdt"
                       loading="eager"
@@ -78,11 +78,11 @@ function DCDSHoverElement() {
                 </Tooltip>
               </div>
 
-              <div className="flex absolute z-[9] w-[35px] left-[20px] h-[35px] flex-col items-center justify-center gap-2">
+              <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
-                      className="w-[35px] h-[35px]"
+                      className="w-full h-full"
                       src={getIconMapping(theme as string, "usdt")}
                       alt="usdt"
                       loading="eager"
@@ -94,11 +94,11 @@ function DCDSHoverElement() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex absolute w-[35px] z-[8] left-[45px] h-[35px] flex-col items-center justify-center gap-2">
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[30%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
-                      className="w-[35px] h-[35px]"
+                      className="w-full h-full"
                       src={getIconMapping(theme as string, "aero")}
                       alt="usdt"
                       loading="eager"
@@ -110,13 +110,11 @@ function DCDSHoverElement() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex absolute w-[35px] z-[7] left-[70px] h-[35px] flex-col items-center justify-center gap-2">
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[40%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
-                      width={35}
-                      height={35}
-                      className="w-[35px] h-[35px]"
+                      className="w-full h-full"
                       src={getIconMapping(theme as string, "op")}
                       alt="usdt"
                       loading="eager"
@@ -134,7 +132,7 @@ function DCDSHoverElement() {
       </div>
 
       <div className="2xl:pb-12 pb-8"></div>
-      <Button className="absolute lg:px-6 px-2 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[24px]  lg:text-[32px] flex justify-between h-[60px] lg:h-[108px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
+      <Button className="absolute lg:px-6 px-2 bottom-0 left-0 w-full mt-13 bg-textBlack text-white text-[24px]  lg:text-[32px] flex justify-between  h-[60px] md:h-[80px] xl:h-[102px] hover:bg-textBlack dark:gradient-to-bottom   dark:bg-home-btn-bg">
         Earn
         <Image src={arrow} width={42} height={42} alt="arrow" />
       </Button>
