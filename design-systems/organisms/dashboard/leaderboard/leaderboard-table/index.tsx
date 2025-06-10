@@ -81,7 +81,7 @@ function LeaderboardTable({
                   )}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
-                  {item.points ? Math.round(Number(item?.points || 0)) : "--"}
+                  {item.points ? Math.round(Number(item?.points || 0)) : 0}
                 </td>
               </tr>
             );
