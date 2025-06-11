@@ -241,7 +241,7 @@ export default function HomeTemplate() {
 
   // Message list for scrolling ticker bar
   const message = [
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -249,7 +249,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -257,7 +257,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -265,7 +265,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -273,7 +273,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -281,7 +281,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
@@ -289,7 +289,7 @@ export default function HomeTemplate() {
         </a>
       </span>{" "}
     </div>,
-    <div className=" font-plex-grotesk">
+    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
       Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
       <span className="font-bold  cursor-pointer">
         <a href="https://app.liquidity.land/project/autonomint" target="_blank">
