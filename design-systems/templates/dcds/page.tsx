@@ -1175,6 +1175,8 @@ function DCDSTemplate() {
     });
   }, [selectedTokens]);
 
+  const nativeTokenName = ["OP", "AERO"];
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1319,6 +1321,25 @@ function DCDSTemplate() {
                   </div>
                 ) : null}
               </div> */}
+              {selectedTokens.some((token) =>
+                nativeTokenName.includes(token.tokenLabel)
+              ) && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info
+                      width={24}
+                      height={24}
+                      className="ml-2 stroke-[#4ade80] fill-[#22c55e30] "
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white dark:bg-black">
+                    <p>
+                      We will take 70% of the token dollar value considering
+                      it's volatility.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
             <div
               ref={scrollRef}
@@ -1339,7 +1360,11 @@ function DCDSTemplate() {
                       type="number"
                       name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                       id={`token-${key}`}
-                      className="flex  py-1 items-center h-[44px] border border-grayLight font-medium md:text-[20px] dark:text-[20px]"
+                      className={`flex  py-1 items-center h-[44px] border   font-medium md:text-[20px] dark:text-[20px] ${
+                        nativeTokenName.includes(token.tokenLabel)
+                          ? "border-[#4ade80] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                          : "border-grayLight border-[1px]"
+                      }`}
                       placeholder="0"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -1348,7 +1373,13 @@ function DCDSTemplate() {
                       ]?.toString()}
                     />
                     {/* showing the token value in usd */}
-                    <div className="p-1 flex justify-center items-center border-[1px] border-y border-x border-grayLight font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight">
+                    <div
+                      className={`p-1 flex justify-center items-center  border-y border-x border-grayLight font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight ${
+                        nativeTokenName.includes(token.tokenLabel)
+                          ? "border-[#4ade80] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                          : "border-grayLight border-[1px] "
+                      }`}
+                    >
                       <span>
                         $
                         {(

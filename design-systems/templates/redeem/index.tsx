@@ -567,13 +567,15 @@ const RedeemContainer = () => {
     return options;
   }, [chainId]);
 
-  console.log(RedeemTokenDropdownItems, "RedeemTokenDropdownItems");
-
   const pathname = usePathname();
 
   // Custom hook to fetch the Price of the selected asset
   const { assetPrice: rsEthPrice } = useGetUsdValue(
     borrowAssetsAddress["wrsETH" as keyof typeof borrowAssetsAddress]
+  );
+
+  const { assetPrice: wSuperEthPrice } = useGetUsdValue(
+    borrowAssetsAddress["wsuperOETHb" as keyof typeof borrowAssetsAddress]
   );
   // fetching the price of the weETH
   const { assetPrice: weEthPrice } = useGetUsdValue(
@@ -604,7 +606,7 @@ const RedeemContainer = () => {
   const yieldPercentage = useMemo(() => {
     // dollar value of the all redeemable assets
     const redeemableEthDollarValue =
-      Number(formatEther(outputData?.[3] || 0n)) *
+      Number(formatEther(outputData?.[4] || 0n)) *
       Number(formatUnits(BigInt(ethPrice || 0n), 2));
     const redeemableWeEthDollarValue =
       Number(formatEther(outputData?.[1] || 0n)) *
@@ -612,12 +614,17 @@ const RedeemContainer = () => {
     const redeemableRsEthDollarValue =
       Number(formatEther(outputData?.[2] || 0n)) *
       Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+
+    const redeemablewSuperEthBEthDollarValue =
+      Number(formatEther(outputData?.[3] || 0n)) *
+      Number(formatUnits(BigInt(wSuperEthPrice || 0n), 2));
+
     const redeemableUsdaDollarValue =
-      Number(formatUnits(outputData?.[4] || 0n, 6)) * usdaPrice;
+      Number(formatUnits(outputData?.[5] || 0n, 6)) * usdaPrice;
 
     // calculating the yield percentage
     const x =
-      (Number(formatEther(outputData?.[3] || 0n)) -
+      (Number(formatEther(outputData?.[4] || 0n)) -
         Number(formatEther(outputData?.[0] || 0n))) *
         Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
       redeemableUsdaDollarValue;
@@ -625,13 +632,13 @@ const RedeemContainer = () => {
     const y =
       redeemableEthDollarValue +
       redeemableWeEthDollarValue +
-      redeemableRsEthDollarValue;
+      redeemableRsEthDollarValue +
+      redeemablewSuperEthBEthDollarValue;
 
-    const yieldValue = x / y || 0;
-   
+    const yieldValue = (x / y) * 100 || 0;
 
     return yieldValue;
-  }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
+  }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice, wSuperEthPrice]);
 
   //  fetching the redeem values that user will get after redeeming
   const { data: allABondYields } = useReadContract({
@@ -647,33 +654,35 @@ const RedeemContainer = () => {
     },
   });
 
-  console.log(allABondYields, "allABondYields", abondbalance);
-
   const ABondPrice = useMemo(() => {
     // dollar value of the all redeemable assets
     const redeemableEthDollarValue =
-      Number(formatEther(allABondYields?.[3] || 0n)) *
+      Number(formatEther(outputData?.[4] || 0n)) *
       Number(formatUnits(BigInt(ethPrice || 0n), 2));
     const redeemableWeEthDollarValue =
-      Number(formatEther(allABondYields?.[1] || 0n)) *
+      Number(formatEther(outputData?.[1] || 0n)) *
       Number(formatUnits(BigInt(weEthPrice || 0n), 2));
     const redeemableRsEthDollarValue =
-      Number(formatEther(allABondYields?.[2] || 0n)) *
+      Number(formatEther(outputData?.[2] || 0n)) *
       Number(formatUnits(BigInt(rsEthPrice || 0n), 2));
+
+    const redeemablewSuperEthBEthDollarValue =
+      Number(formatEther(outputData?.[3] || 0n)) *
+      Number(formatUnits(BigInt(wSuperEthPrice || 0n), 2));
+
     const redeemableUsdaDollarValue =
-      Number(formatUnits(allABondYields?.[4] || 0n, 6)) * usdaPrice;
+      Number(formatUnits(outputData?.[5] || 0n, 6)) * usdaPrice;
 
     // calculating the abond price
     const value =
-      (redeemableEthDollarValue +
-        redeemableWeEthDollarValue +
-        redeemableRsEthDollarValue +
-        redeemableUsdaDollarValue) /
-      Number(abondbalance?.formatted || 0);
+      redeemableEthDollarValue +
+      redeemableWeEthDollarValue +
+      redeemableRsEthDollarValue +
+      redeemableUsdaDollarValue +
+      redeemablewSuperEthBEthDollarValue / Number(abondbalance?.formatted || 0);
 
-    console.log(value, "ABondPrice");
     return value;
-  }, [allABondYields, ethPrice, weEthPrice, rsEthPrice, usdaPrice]);
+  }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice, wSuperEthPrice]);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
@@ -816,8 +825,8 @@ const RedeemContainer = () => {
                     </div>
                   </div>
                 ) : formik.values.inputCollateral === "abond" ? (
-                  <div className="text-sm  justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
-                    <div className="flex justify-start items-center gap-2 mr-1 ">
+                  <div className="text-sm  justify-center lg:justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
+                    <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-2 mr-1 ">
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? (
@@ -833,14 +842,22 @@ const RedeemContainer = () => {
                         {outputData
                           ? Number(formatEther(outputData[1])).toFixed(5)
                           : 0}{" "}
-                        WeETH
+                        weETH
                       </div>
                       <div className="text-xl">+</div>
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
                           ? Number(formatEther(outputData[2])).toFixed(5)
                           : 0}{" "}
-                        rsETH
+                        wrsETH
+                      </div>
+
+                      <div className="text-xl">+</div>
+                      <div className="flex items-center p-1 text-xl  text-bold">
+                        {outputData
+                          ? Number(formatEther(outputData[3])).toFixed(5)
+                          : 0}{" "}
+                        wsuperOETHb
                       </div>
 
                       <div className="text-xl">+</div>
@@ -852,11 +869,11 @@ const RedeemContainer = () => {
                       </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <div className="flex items-center p-1 text-xl  text-grayLight text-bold">
                         Yield Percentage: {yieldPercentage.toFixed(4)}%
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 ) : (
                   <div className="flex items-center pt-1 basis-3/5 text-black dark:text-white text-2xl font-semibold">
