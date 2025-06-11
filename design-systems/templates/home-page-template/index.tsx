@@ -1,7 +1,10 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
+import {
+  DecorativeBackground,
+  LeftArrowIcon,
+} from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import { motion } from "framer-motion";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
@@ -28,6 +31,8 @@ import { formatUnits, zeroAddress } from "viem";
 import { formatNumber } from "@/utils/helpers";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+
+import tickerBg from "@/app/assets/ticker-bg.svg";
 
 export default function HomeTemplate() {
   const router = useRouter();
@@ -224,8 +229,8 @@ export default function HomeTemplate() {
     const style = document.createElement("style");
     style.innerHTML = `
       @keyframes scroll-left {
-        0% { transform: translateX(30%); }
-        100% { transform: translateX(-50%); }
+        0% { transform: translateX(70%); }
+        100% { transform: translateX(-70%); }
       }
     `;
     document.head.appendChild(style);
@@ -236,16 +241,62 @@ export default function HomeTemplate() {
 
   // Message list for scrolling ticker bar
   const message = [
-    "🚀 Welcome to our dApp!",
-    "🔐 Audited by Sherlock",
-    "💰 $2M Liquidity Program Coming",
-    "🔍 Hedge ETH with 0 Upfront Cost",
-    "🥇 On-Chain dCDS, First of Its Kind",
-    "🚀 Welcome to our dApp!",
-    "🔐 Audited by Sherlock",
-    "💰 $2M Liquidity Program Coming",
-    "🔍 Hedge ETH with 0 Upfront Cost",
-    "🥇 On-Chain dCDS, First of Its Kind",
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
+    <div className=" font-plex-grotesk">
+      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
+      <span className="font-bold  cursor-pointer">
+        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
+          Read More
+        </a>
+      </span>{" "}
+    </div>,
   ];
 
   // get user tracking data and setter function
@@ -283,11 +334,17 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
-      <div className="  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
+      <div className=" relative overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
+        <Image
+          src={tickerBg}
+          alt="boat"
+          className="w-full h-full object-cover"
+          fill
+        />
         <div
-          className="flex whitespace-nowrap animate-scroll-left"
+          className="flex w-full whitespace-nowrap animate-scroll-left"
           style={{
-            animation: "scroll-left 40s linear infinite",
+            animation: "scroll-left 30s linear infinite",
           }}
         >
           {message.map((item, index) => (
