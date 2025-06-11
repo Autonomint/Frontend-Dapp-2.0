@@ -35,7 +35,6 @@ function LeaderboardTable({
             <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
             <th className="pl-5  table-cell font-normal">Borrowed</th>
             <th className="pl-5  table-cell font-normal">Deposited</th>
-            <th className="pl-5  table-cell font-normal">LTV Ratio</th>
             <th className="pl-5  table-cell font-normal">Type</th>
             <th className="pr-5  table-cell text-right font-normal">Points</th>
           </tr>
@@ -56,8 +55,8 @@ function LeaderboardTable({
                   {sortWalletAddress(item.address)}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
-                  {item.totalUSDa
-                    ? `$${Number(item.totalUSDa).toFixed(4)}`
+                  {item.totalBorrowedAmount
+                    ? `$${Number(item.totalBorrowedAmount).toFixed(4)}`
                     : "--"}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell">
@@ -65,11 +64,9 @@ function LeaderboardTable({
                     ? `$${Number(item.totalDepositedAmount).toFixed(2)}`
                     : "--"}
                 </td>
-                <td className="px-5 py-4 2xl:py-6  table-cell">
-                  {item.totalLTV ? item.totalLTV : "--"}
-                </td>
+
                 <td className="px-5 py-4 2xl:py-6   table-cell font-normal">
-                  {!!Number(item.totalUSDa) && (
+                  {!!Number(item.totalBorrowedAmount) && (
                     <span className="bg-[#ABFFDE] border mr-3 border-solid border-grayLight p-2 dark:text-textBlack">
                       Borrower
                     </span>
@@ -81,7 +78,9 @@ function LeaderboardTable({
                   )}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
-                  {item.points ? Math.round(Number(item?.points || 0)) : 0}
+                  {item.totalPoints
+                    ? Math.round(Number(item?.totalPoints || 0))
+                    : 0}
                 </td>
               </tr>
             );
