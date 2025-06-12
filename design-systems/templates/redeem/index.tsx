@@ -464,6 +464,7 @@ const RedeemContainer = () => {
         callRedeemUSDaInContract();
       }
     } else if (values.inputCollateral === "abond") {
+      setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
         (values.collateralAmount || 0) * 10 ** 18
