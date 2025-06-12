@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
-import { Info } from "lucide-react";
+import { EqualApproximately, Info } from "lucide-react";
 
 export default function DepositSummary({
   apy,
@@ -59,7 +59,7 @@ export default function DepositSummary({
                       {point.tokenName}
                     </span>
                     <span className="font-medium text-black dark:text-white">
-                      {Math.floor(point.points)}
+                      {Math.round(point.points)}
                     </span>
                   </div>
                 ))}
@@ -68,8 +68,9 @@ export default function DepositSummary({
           </HoverCard>
         </span>
 
-        <span className="text-black text-[16px] dark:text-white font-medium">
-          {points}
+        <span className="text-black flex items-center gap-1 text-[16px] dark:text-white font-medium">
+          <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
+          {Math.round(points)}
         </span>
       </div>
     </div>

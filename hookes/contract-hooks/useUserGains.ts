@@ -15,6 +15,8 @@ const useUserGains = () => {
     data: userGains,
     error: userGainsError,
     isLoading: userGainsLoading,
+    isPending: userGainsPending,
+    isFetching: userGainsFetching,
   } = useQuery({
     queryKey: ["getUserGains", address],
     queryFn: () =>
@@ -29,7 +31,13 @@ const useUserGains = () => {
     },
   });
 
-  return { userGains, userGainsError, userGainsLoading };
+  return {
+    userGains,
+    userGainsError,
+    userGainsLoading,
+    userGainsFetching,
+    userGainsPending,
+  };
 };
 
 export default useUserGains;

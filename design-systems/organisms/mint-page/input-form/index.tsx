@@ -64,7 +64,7 @@ import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
-import { Info } from "lucide-react";
+import { EqualApproximately, Info } from "lucide-react";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
@@ -155,8 +155,8 @@ function InputForm({ currency }: { currency: string }) {
     functionName: "allowance",
     args: [
       address,
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      borrowingDepositContractAddress[
+        chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -584,11 +584,7 @@ function InputForm({ currency }: { currency: string }) {
   const { tokenRewardDetailList } = useGetTokenReward();
 
   const tokenRewardDetailBorrow =
-    tokenRewardDetailList?.[
-      assetNameForRewardDataBorrow[
-        currency as keyof typeof assetNameForRewardDataBorrow
-      ]
-    ];
+    tokenRewardDetailList?.[currency as keyof typeof tokenRewardDetailList];
 
   // boaster from farm your luck
   const luckBoaster =
@@ -666,7 +662,7 @@ function InputForm({ currency }: { currency: string }) {
               calculateRemainingTimeDate(
                 toLocalISOString(new Date(totalTimeStamp * 1000))
               ).minutes > 0 &&
-              totalBooster > 1 && ( 
+              totalBooster > 1 && (
                 <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
                   {totalBooster}x Points
                 </div>
@@ -765,7 +761,7 @@ function InputForm({ currency }: { currency: string }) {
                           {currency}
                         </span>
                         <span className="font-medium text-black dark:text-white">
-                          {depositTokenPoint}
+                          {Math.round(depositTokenPoint)}
                         </span>
                       </div>
                       <div className="flex  justify-between">
@@ -773,14 +769,15 @@ function InputForm({ currency }: { currency: string }) {
                           Boosted
                         </span>
                         <span className="font-medium text-black dark:text-white">
-                          {tokenBoasterPoint}
+                          {Math.round(tokenBoasterPoint)}
                         </span>
                       </div>
                     </div>
                   </div>
                 </HoverCard>
-                <span className=" font-medium text-lg dark:text-white text-black">
-                  {totalPoint}
+                <span className=" font-medium text-lg dark:text-white text-black flex items-center gap-1">
+                  <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
+                  {Math.round(totalPoint)}
                 </span>
               </div>
             </div>

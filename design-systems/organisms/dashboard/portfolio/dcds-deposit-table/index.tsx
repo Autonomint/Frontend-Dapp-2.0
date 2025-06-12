@@ -79,7 +79,7 @@ function DcdsDepositTable({
     }
   }, [positionList]);
 
-  // sorting position based on selected position
+  // sorting position based on selected table column
   const sortedPositionList = useMemo(() => {
     return positionList.sort((a, b) => {
       if (sortBy === "deposit") {
@@ -108,7 +108,9 @@ function DcdsDepositTable({
     <>
       <div
         ref={scrollRef}
-        className="sm:my-4 overflow-x-scroll xl:overflow-x-clip   no-scrollbar"
+        className={`sm:my-4 overflow-x-scroll xl:overflow-x-clip   no-scrollbar  ${
+          sortedPositionList.length < 3 ? "h-[400px]" : ""
+        }`}
       >
         <table className="table-auto  w-full border-collapse text-[20px]">
           <thead

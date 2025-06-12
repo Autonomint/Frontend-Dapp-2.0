@@ -154,7 +154,9 @@ function DepositTable({
     <>
       <div
         ref={scrollRef}
-        className="sm:my-4  overflow-x-scroll xl:overflow-x-clip no-scrollbar"
+        className={`sm:my-4  overflow-x-scroll xl:overflow-x-clip no-scrollbar ${
+          sortedPositionList.length < 3 ? "h-[400px]" : ""
+        }`}
       >
         <table className="table-auto   w-full border-collapse text-[20px]">
           <thead

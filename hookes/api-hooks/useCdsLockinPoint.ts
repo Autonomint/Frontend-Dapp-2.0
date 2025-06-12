@@ -84,6 +84,7 @@ export const useGetCdsLockinPoint = () => {
         lockingBoosterValidity: 0,
       },
     } as LockingBoostersData,
+    select: (data) => data || {},
     enabled: !!chainId,
   });
 

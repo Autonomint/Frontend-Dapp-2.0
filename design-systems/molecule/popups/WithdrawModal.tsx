@@ -29,7 +29,7 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId, scanUrls } from "@/utils/constants";
-import { calculateTimeDifference } from "@/utils/helpers";
+import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -103,8 +103,8 @@ export function DcdsWithdrawModal({
       value: indexPoint?.[1] || "0",
       tooltip: false,
       tooltipText: "",
-      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
-      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
+      titleColor: "!text-[#69a28c] dark:!text-[#afffdfb5]",
+      valueColor: "!text-[#49d69f] dark:!text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time",
@@ -386,9 +386,11 @@ export function DcdsWithdrawModal({
         Number(position.depositedTime) * 1000
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[5].value = `${(
-        Number(position.lockingPeriod) / 86400000
-      ).toFixed(0)} days`;
+      updatedData[5].value = `${
+        String(position.lockingPeriod).length > 8
+          ? Number(position.lockingPeriod) / 86400000
+          : Number(position.lockingPeriod) / 86400
+      } days`;
       // Update lockingPeriod value
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
@@ -601,12 +603,7 @@ export function DcdsWithdrawModal({
       setWithdrawMethodLoading(false);
       toast.custom((t) => (
         <ToastNotificationError
-          title={
-            String(
-              (cdsWithdrawGainReceiptError?.cause as { shortMessage: string })
-                .shortMessage as string
-            ) || "Transaction failed, Please try again"
-          }
+          title={"Transaction failed, Please try again"}
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -660,7 +657,6 @@ export function DcdsWithdrawModal({
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
           res?.odosAssembledData,
-          res?.usdtFromOdos,
           res?.nonce,
           res?.deadline,
           res?.signature,
@@ -673,12 +669,7 @@ export function DcdsWithdrawModal({
         setWithdrawMethodLoading(false);
         toast.custom((t) => (
           <ToastNotificationError
-            title={
-              String(
-                (cdsLogdataReceiptError?.cause as { shortMessage: string })
-                  .shortMessage as string
-              ) || "Transaction failed, Please try again"
-            }
+            title={"Transaction failed, Please try again"}
             onClose={() => toast.dismiss(t)}
           />
         ));
@@ -720,7 +711,6 @@ export function DcdsWithdrawModal({
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
         res?.odosAssembledData,
-        res?.usdtFromOdos,
         res?.nonce,
         res?.deadline,
         res?.signature,
@@ -892,7 +882,7 @@ export function DcdsWithdrawModal({
                 </div>
                 <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
                   <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-                    Yields (till now)
+                    Yield Earned (All chains)
                   </Label>
                   <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
                     {`${Number(
@@ -923,8 +913,10 @@ export function DcdsWithdrawModal({
                             (position.status === "WITHDREW_GAINS"
                               ? true
                               : false) ||
-                            Number(position.lockingPeriod) * 1000 >
-                              Date.now() ||
+                            !hasDaysPassed(
+                              Number(position?.depositedTime || 0),
+                              Number(position?.lockingPeriod || 0)
+                            ) ||
                             isWithdrawPause
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"

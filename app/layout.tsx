@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 
-
 const ToasterContainerWrapper = dynamic(
   () => import("@/design-systems/molecule/toaster-container-wrapper")
 );
@@ -18,6 +17,7 @@ import InviteCodePopup from "@/design-systems/molecule/popups/InviteCodePopup";
 import SwitchChainPopup from "@/design-systems/molecule/popups/WalletConnect";
 import BetaConfirmation from "@/design-systems/molecule/popups/BetaConfirmation";
 import SupportCall from "@/design-systems/molecule/popups/SupportCall";
+import Ticker from "@/design-systems/molecule/Ticker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,17 +54,20 @@ export default function RootLayout({
             <WalletProvider cookies={""}>
               <Provider>
                 <ThemeProvider attribute="class">
+                  <Ticker />
                   <Navbar />
                   <div
                     id={"body-scroll-container"}
-                    className="flex-grow overflow-y-auto no-scrollbar border-r-0"
+                    className="flex-grow overflow-y-auto no-scrollbar h-[calc(100vh-210px)] border-r-0"
                   >
-                    {children}
+                    <div className="min-h-[calc(100vh-210px)]">
+                      {children}
+                      <InviteCodePopup />
+                      <SwitchChainPopup />
+                      {/* <SupportCall /> */}
+                      {/* <BetaConfirmation /> */}
+                    </div>
                     <Footer />
-                    <InviteCodePopup />
-                    <SwitchChainPopup />
-                    {/* <SupportCall /> */}
-                    {/* <BetaConfirmation /> */}
                   </div>
                 </ThemeProvider>
               </Provider>

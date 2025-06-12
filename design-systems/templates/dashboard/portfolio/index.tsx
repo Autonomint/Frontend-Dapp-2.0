@@ -197,7 +197,13 @@ function PortfolioTemplate() {
   const { omniChainData } = useGetOmniChainData();
 
   // fetching user chain data
-  const { userGains } = useUserGains();
+  const {
+    userGains,
+    userGainsLoading,
+    userGainsError,
+    userGainsFetching,
+    userGainsPending,
+  } = useUserGains();
 
   const userGainsTotal = useMemo(() => {
     if (userGains) {
@@ -275,6 +281,7 @@ function PortfolioTemplate() {
           <PortfolioMetrics
             subHeading="Fee Earned (All Chain)"
             value={`$${formatNumber(Number(userGainsTotal))}`}
+            isLoading={userGainsFetching}
           />
         </div>
         <div className="col-span-1">

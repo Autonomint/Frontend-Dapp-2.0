@@ -1,33 +1,31 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
-import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
-import { motion } from "framer-motion";
-import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
-import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
-import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
-import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
-import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useDeviceType from "@/hookes/useDeviceType";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
 import {
   nativeTokenAddress,
   testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
-import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
-import { useAccount } from "wagmi";
-import { formatUnits, zeroAddress } from "viem";
-import { formatNumber } from "@/utils/helpers";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
+import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
+import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
+import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
+import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
+import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import useDeviceType from "@/hookes/useDeviceType";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { zeroAddress } from "viem";
+import { useAccount } from "wagmi";
 
 export default function HomeTemplate() {
   const router = useRouter();
@@ -72,7 +70,7 @@ export default function HomeTemplate() {
       ).toFixed(2)}`,
     },
     {
-      title: "dCDS",
+      title: "Earn With dCDS",
       subtitle: `TVL - $${(
         Number(GlobalContractData?.totalCdsDepositedAmount ?? 0n) /
         10 ** 6
@@ -98,11 +96,16 @@ export default function HomeTemplate() {
   const feesList = [
     {
       orgName: "Autonomint",
-      amount: `$${oneEthOptionFees.toFixed(2)}`,
+      amount: (
+        <div className="flex gap-2 items-baseline">
+          {oneEthOptionFees.toFixed(2)}
+          <span className="text-[14px]">per month</span>
+        </div>
+      ),
       tag: "Lowest Fee",
       tagColor: "#05A552",
-      tagBg: "#05A552",
-      textColor: "white",
+      tagBg: "#a6ffd0",
+      textColor: "#05A552",
       borderColor: "borderGreen",
     },
     // {
@@ -215,36 +218,6 @@ export default function HomeTemplate() {
     }
   };
 
-  // ticket bar animation
-  useEffect(() => {
-    // Inject keyframes for scrolling
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes scroll-left {
-        0% { transform: translateX(30%); }
-        100% { transform: translateX(-50%); }
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
-  // Message list for scrolling ticker bar
-  const message = [
-    "🚀 Welcome to our dApp!",
-    "🔐 Audited by Sherlock",
-    "💰 $2M Liquidity Program Coming",
-    "🔍 Hedge ETH with 0 Upfront Cost",
-    "🥇 On-Chain dCDS, First of Its Kind",
-    "🚀 Welcome to our dApp!",
-    "🔐 Audited by Sherlock",
-    "💰 $2M Liquidity Program Coming",
-    "🔍 Hedge ETH with 0 Upfront Cost",
-    "🥇 On-Chain dCDS, First of Its Kind",
-  ];
-
   // get user tracking data and setter function
   const {
     userTrackingData,
@@ -280,21 +253,6 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
-      <div className="  overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
-        <div
-          className="flex whitespace-nowrap animate-scroll-left"
-          style={{
-            animation: "scroll-left 40s linear infinite",
-          }}
-        >
-          {message.map((item, index) => (
-            <div className="flex items-center" key={index}>
-              <span className="font-bold">{item}</span>
-              <span className="text-lg font-bold px-8 mt-2">*</span>
-            </div>
-          ))}
-        </div>
-      </div>
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}
@@ -319,10 +277,10 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[480px]  xl:!h-[550px] 3xl:!h-[620px]"
+                ? "w-full lg:w-[80%] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
                 : // height and width style based on hoveredIndex
                 hoveredIndex === 1
-                ? "lg:w-[40%]  lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
@@ -363,10 +321,10 @@ export default function HomeTemplate() {
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                  "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                  "w-full lg:w-[60%]  sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
-                  " w-full lg:w-[30%] lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                  " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex

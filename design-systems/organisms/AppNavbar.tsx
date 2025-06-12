@@ -47,20 +47,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             isComingSoon: false,
           },
           {
-            nameA: "dCDS",
+            nameA: "Earn With dCDS",
             path: "/dcds",
             isActive: pathname === "/dcds",
             isFeatureActive: !isFunctionPausedCDS_Deposit,
             InActiveHeading: "CDS Deposit is paused now",
             isComingSoon: false,
-          },
-          {
-            nameA: "Bridge",
-            path: "/bridge",
-            isActive: pathname === "/bridge",
-            isFeatureActive: true,
-            InActiveHeading: "",
-            isComingSoon: true,
           },
           {
             nameA: "Dashboard",
@@ -72,6 +64,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             isFeatureActive: true,
             InActiveHeading: "",
             isComingSoon: false,
+          },
+          {
+            nameA: "Bridge",
+            path: "/bridge",
+            isActive: pathname === "/bridge",
+            isFeatureActive: true,
+            InActiveHeading: "",
           },
         ]
       : tabOptions;
