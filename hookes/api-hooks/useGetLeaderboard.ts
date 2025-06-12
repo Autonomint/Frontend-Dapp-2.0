@@ -1,4 +1,4 @@
-import { LeaderboardDetails } from "@/utils/interface";
+import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { it } from "node:test";
 import { useEffect, useMemo, useState } from "react";
@@ -23,7 +23,7 @@ const useGetLeaderboard = () => {
   const [pageSize, setPageSize] = useState<number>(15); // Default page size
   const [currentPage, setCurrentPage] = useState<number>(1); // Default to first page
   const [pagedLeaderboardData, setPagedLeaderboardData] = useState<
-    LeaderboardDetails[]
+    LeaderboardDetailsList[]
   >([]);
   const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
 

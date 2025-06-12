@@ -93,10 +93,12 @@ export interface PositionData {
 export interface LeaderboardDetails {
   borrowerCount: number;
   cdsCount: number;
-  leaderboard: {
-    address: string;
-    totalBorrowedAmount: number;
-    totalDepositedAmount: number;
-    totalPoints: number;
-  }[];
+  leaderboard: LeaderboardDetailsList[];
+}
+
+export interface LeaderboardDetailsList {
+  address: string;
+  totalBorrowedAmount: number;
+  totalDepositedAmount: number;
+  totalPoints: number;
 }

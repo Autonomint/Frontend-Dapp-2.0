@@ -2,7 +2,7 @@ import { Button } from "@/design-systems/atoms/button";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { sortWalletAddress } from "@/utils/helpers";
-import { LeaderboardDetails } from "@/utils/interface";
+import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function LeaderboardTable({
@@ -22,7 +22,7 @@ function LeaderboardTable({
   totalPages: number;
   handleNextPage: () => void;
   handlePrevPage: () => void;
-  leaderboardData: LeaderboardDetails[];
+  leaderboardData: LeaderboardDetailsList[];
 }) {
   return (
     <div className="overflow-x-auto min-h-[500px]  ">
