@@ -136,7 +136,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       const tvl = await cdsContract.getTokenDepositedTillNow(tokenAddress);
       tvls.push(tvl);
     }
-    console.log(tvls, otherChainAddressList, "tvlOtherChainLool");
+
     setOtherChainTvl(tvls);
   };
 
@@ -147,8 +147,6 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
         Number(item) + Number(otherChainTvl[index] || 0)
     );
   }, [tvlValue, otherChainTvl]);
-
-  console.log({ totalTVLList, tvlValue, otherChainTvl }, "usd11");
 
   return {
     isTVLPending,

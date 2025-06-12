@@ -223,7 +223,7 @@ function MintEthListTemplate() {
     });
   }
 
-  console.log(list, "list");
+
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();

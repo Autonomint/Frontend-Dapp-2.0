@@ -599,7 +599,7 @@ const RedeemContainer = () => {
     },
   }) as { data: number; isPending: boolean };
 
-  console.log(usdaPrice, "usdaPrice");
+
 
   // fetching the yield percentage
   const yieldPercentage = useMemo(() => {

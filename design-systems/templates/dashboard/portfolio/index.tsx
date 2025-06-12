@@ -229,10 +229,6 @@ function PortfolioTemplate() {
           Number(1e6) -
         Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
 
-      console.log(
-        Number(omniChainData?.lastCumulativeRate) / Number(1e12),
-        "lastCumulativeRate"
-      );
       // calculate liq gains
       let liqGains =
         (Number(omniChainData?.liquidationCumulativeValues.liqAmountUsedCV) *

@@ -482,8 +482,6 @@ export function DcdsWithdrawModal({
     oftCmd: `0x${"".padEnd(64, "0")}`,
   };
 
-  console.log(transactionParamsCDS, "transactionParamsCDS");
-
   const {
     data: nativeFeeUSDA,
     error: UsdaQuoteError,
@@ -499,8 +497,6 @@ export function DcdsWithdrawModal({
     },
   }) as any;
 
-  console.log("nativeFeeUSDA", nativeFeeUSDA);
-
   options = Options.newOptions()
     .addExecutorLzReceiveOption(
       700000,
@@ -511,7 +507,6 @@ export function DcdsWithdrawModal({
 
   const { quoteValue: nativeFeeOFT, quoteError: quoteErrorOFT } =
     useGetGlobalQuote(options, 5, 0);
-  console.log("nativeFeeOFT", nativeFeeOFT);
 
   // Define the initial state for the options variable
   options = Options.newOptions()
@@ -524,12 +519,8 @@ export function DcdsWithdrawModal({
     1
   );
 
-  console.log("nativeFeeWithdraw", nativeFeeWithdraw);
-
   const nativeFeeAll =
     Number(nativeFeeWithdraw?.nativeFee) + Number(nativeFeeOFT?.nativeFee);
-
-  console.log("nativeFeeAll", nativeFeeAll);
 
   const {
     dcdsFundWithdrawGainAsync,
@@ -690,7 +681,7 @@ export function DcdsWithdrawModal({
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
       if (nativeFeeAll) {
-        console.log("nativeFee withdraw", nativeFeeAll);
+
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(

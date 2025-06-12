@@ -534,7 +534,7 @@ function InputForm({ currency }: { currency: string }) {
     setUserTrackLocalStorageData,
     getUserTrackLocalStorageData,
   } = useTrackUserData();
-  console.log(userTrackingData, "userTrackingData");
+
 
   // update user tracking data
   useEffect(() => {
@@ -650,7 +650,7 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
 
-  console.log(totalBooster, totalTimeStamp, "totalBooster");
+
 
   return (
     <form onSubmit={formik.handleSubmit}>

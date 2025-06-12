@@ -93,7 +93,7 @@ export function WithdrawFund({
     },
     enabled: !!address && !!chainId && !!position.index,
   });
-  console.log(indexPoint, "indexPoint");
+
   const depositDetails = [
     {
       headline: "ETH Deposited",
@@ -181,7 +181,7 @@ export function WithdrawFund({
   const { interestGained, isInterestGainedPending } = useInterestGain(
     position.index
   );
-  console.log(interestGained, "interestGained");
+
 
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
@@ -268,12 +268,7 @@ export function WithdrawFund({
         Number(downsideProtection) -
         Number(position?.optionFees);
 
-  console.log(
-    downsideProtection,
-    position?.optionFees,
-    position?.normalizedAmount,
-    "position"
-  );
+ 
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({

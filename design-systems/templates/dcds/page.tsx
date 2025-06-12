@@ -179,8 +179,6 @@ function DCDSTemplate() {
     },
   });
 
-  console.log(formik, "formik.values");
-
   // lock in period dropdown items
   const dropdownItems = [
     {
@@ -237,7 +235,7 @@ function DCDSTemplate() {
       };
     });
   }, [cdsLockinRewardDetailList]);
-  console.log(lockInPeriodOption, "lockInPeriodOption");
+
   // Define the initial state for the options variable
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(400000, 0)
@@ -246,7 +244,6 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
-  console.log("nativeFee", nativeFee);
   const { omniChainData: GlobalContractData, isOmniChainDataPending } =
     useGetUsdtAmountDepositedTillNow();
 
@@ -280,8 +277,6 @@ function DCDSTemplate() {
         formik.values.aeroFlag,
     },
   }) as any;
-
-  console.log(getPrices, "getPrices");
 
   // calculating the liquidation amount
   // this will run when token amount is changed
@@ -317,8 +312,6 @@ function DCDSTemplate() {
     formik.values.usdtAmount,
     getPrices,
   ]);
-
-  console.log(liqAmnt, "liqAmnt");
 
   // deposit function hook
   const {
@@ -627,8 +620,6 @@ function DCDSTemplate() {
     }, 0);
   }, [formik.values, selectedTokens]);
 
-  console.log(formik, depositValue, "depositValue");
-
   // fetching list of the token addresses for the deposit
   const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
     {
@@ -640,8 +631,6 @@ function DCDSTemplate() {
       },
     }
   ) as { data: `0x${string}`[]; isLoading: boolean };
-
-  console.log(tokenAddress, "tokenAddress");
 
   // fetching the token details for the deposit (name, symbol, decimals)
   const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
@@ -675,7 +664,7 @@ function DCDSTemplate() {
               address: tokenAddress?.[i],
             });
           }
-          console.log(tokens, "tokens");
+
           return tokens;
         },
       },
@@ -931,8 +920,6 @@ function DCDSTemplate() {
     farmLuckDetails,
   ]);
 
-  console.log(tokenList, selectedTokens, "token list");
-
   useEffect(() => {
     setSelectedTokens((prev) =>
       prev.map((token) => {
@@ -969,7 +956,6 @@ function DCDSTemplate() {
           )?.booster || 0
         )
       : 0;
-    console.log(lockInBooster, "lockin booster validity");
     const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
         formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
@@ -987,8 +973,6 @@ function DCDSTemplate() {
         defaultBooster + lockInBooster === 0
           ? 1
           : defaultBooster + lockInBooster;
-
-      console.log(defaultBooster, lockInBooster, "default booster validity");
 
       // Check for NaN values and handle them
       if (
@@ -1072,8 +1056,6 @@ function DCDSTemplate() {
     };
   }, [selectedTokens, formik, lockInPeriodOption]);
 
-  console.log(pointToGiven, "pointToGiven");
-
   // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
@@ -1107,7 +1089,6 @@ function DCDSTemplate() {
     setUserTrackLocalStorageData,
     getUserTrackLocalStorageData,
   } = useTrackUserData();
-  console.log(userTrackingData, "userTrackingData");
 
   // update user tracking data
   useEffect(() => {

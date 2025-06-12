@@ -30,7 +30,7 @@ function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const { isConnected } = useCheckWalletConnection();
   const { disconnect } = useDisconnect();
-  console.log("systemTheme");
+
   const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
 
   // user activity tracking function
