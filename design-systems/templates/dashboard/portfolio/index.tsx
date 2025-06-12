@@ -279,7 +279,7 @@ function PortfolioTemplate() {
         </div>
         <div className="col-span-1">
           <PortfolioMetrics
-            subHeading="Fee Earned (All Chain)"
+            subHeading="Yield Earned (All Chain)"
             value={`$${formatNumber(Number(userGainsTotal))}`}
             isLoading={userGainsFetching}
           />

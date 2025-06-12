@@ -25,7 +25,31 @@ const Ticker = () => {
     <a
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+      className=" dark:text-white text-white  text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
       Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
       <span className="font-bold  cursor-pointer">Read More</span>{" "}
@@ -41,31 +65,7 @@ const Ticker = () => {
     <a
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
       Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
       <span className="font-bold  cursor-pointer">Read More</span>{" "}
@@ -88,7 +88,7 @@ const Ticker = () => {
         {message.map((item, index) => (
           <div className="flex items-center" key={index}>
             <span className="font-bold">{item}</span>
-            <span className="text-lg font-bold px-8 mt-2">*</span>
+            <span className="text-lg font-bold px-8 mt-2 text-white dark:text-white">*</span>
           </div>
         ))}
       </div>
