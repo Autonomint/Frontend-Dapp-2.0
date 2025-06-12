@@ -415,9 +415,7 @@ export function hasDaysPassed(
 ): boolean {
   const timestampInMs = timestamp * 1000; // Convert input timestamp from seconds to milliseconds
   const durationInMs =
-    Number(daysInSeconds) / String(daysInSeconds).length > 8
-      ? daysInSeconds
-      : daysInSeconds * 1000; // Convert days (in seconds) to milliseconds
+    String(daysInSeconds).length > 8 ? daysInSeconds : daysInSeconds * 1000; // Convert days (in seconds) to milliseconds
   const now = Date.now(); // Current time in milliseconds
   return now - timestampInMs >= durationInMs;
 }

@@ -355,8 +355,9 @@ export function DcdsWithdrawModal({
         Number(position.depositedTime) * 1000
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[4].value = `${(
-        Number(position.lockingPeriod) / 86400000
+      updatedData[4].value = `${(String(position.lockingPeriod).length > 8
+        ? Number(position.lockingPeriod) / 86400000
+        : Number(position.lockingPeriod) / 86400
       ).toFixed(0)} days`;
       // Update lockingPeriod value
       updatedData[5].value = calculateTimeDifference(

@@ -101,11 +101,9 @@ const DcdsPositionTableRow = ({
       </td>
 
       <td className="px-5 py-4 2xl:py-6 ">
-        {(Number(position.lockingPeriod) /
-          String(position.lockingPeriod).length >
-        8
+        {(String(position.lockingPeriod).length > 8
           ? Number(position.lockingPeriod) / 86400000
-          : Number(position.lockingPeriod) / 864000
+          : Number(position.lockingPeriod) / 86400
         ).toFixed(0)}{" "}
         days
       </td>
