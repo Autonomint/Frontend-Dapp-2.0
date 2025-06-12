@@ -17,6 +17,7 @@ import InviteCodePopup from "@/design-systems/molecule/popups/InviteCodePopup";
 import SwitchChainPopup from "@/design-systems/molecule/popups/WalletConnect";
 import BetaConfirmation from "@/design-systems/molecule/popups/BetaConfirmation";
 import SupportCall from "@/design-systems/molecule/popups/SupportCall";
+import Ticker from "@/design-systems/molecule/Ticker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +54,7 @@ export default function RootLayout({
             <WalletProvider cookies={""}>
               <Provider>
                 <ThemeProvider attribute="class">
+                  <Ticker />
                   <Navbar />
                   <div
                     id={"body-scroll-container"}

@@ -97,8 +97,8 @@ export function DcdsWithdrawModal({
       value: indexPoint?.[1] || "0",
       tooltip: false,
       tooltipText: "",
-      titleColor: "text-[#69a28c] dark:text-[#afffdfb5]",
-      valueColor: "text-[#49d69f] dark:text-[#ABFFDE]",
+      titleColor: "!text-[#69a28c] dark:!text-[#afffdfb5]",
+      valueColor: "!text-[#49d69f] dark:!text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time",
@@ -380,9 +380,11 @@ export function DcdsWithdrawModal({
         Number(position.depositedTime) * 1000
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[5].value = `${(
-        Number(position.lockingPeriod) / 86400000
-      ).toFixed(0)} days`;
+      updatedData[5].value = `${
+        String(position.lockingPeriod).length > 8
+          ? Number(position.lockingPeriod) / 86400000
+          : Number(position.lockingPeriod) / 86400
+      } days`;
       // Update lockingPeriod value
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"

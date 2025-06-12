@@ -1362,7 +1362,7 @@ function DCDSTemplate() {
                       id={`token-${key}`}
                       className={`flex  py-1 items-center h-[44px] border   font-medium md:text-[20px] dark:text-[20px] ${
                         nativeTokenName.includes(token.tokenLabel)
-                          ? "border-[#4ade80] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                          ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
                           : "border-grayLight border-[1px]"
                       }`}
                       placeholder="0"
@@ -1374,9 +1374,9 @@ function DCDSTemplate() {
                     />
                     {/* showing the token value in usd */}
                     <div
-                      className={`p-1 flex justify-center items-center  border-y border-x border-grayLight font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight ${
+                      className={`p-1 flex justify-center items-center  border-y border-x  font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight ${
                         nativeTokenName.includes(token.tokenLabel)
-                          ? "border-[#4ade80] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                          ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
                           : "border-grayLight border-[1px] "
                       }`}
                     >

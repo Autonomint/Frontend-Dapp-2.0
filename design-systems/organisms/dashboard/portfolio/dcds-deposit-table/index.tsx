@@ -79,7 +79,7 @@ function DcdsDepositTable({
     }
   }, [positionList]);
 
-  // sorting position based on selected position
+  // sorting position based on selected table column
   const sortedPositionList = useMemo(() => {
     return positionList.sort((a, b) => {
       if (sortBy === "deposit") {

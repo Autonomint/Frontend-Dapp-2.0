@@ -2,37 +2,30 @@
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
 import {
-  DecorativeBackground,
-  LeftArrowIcon,
-} from "@/design-systems/atoms/SvgIcons";
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
+import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
-import { motion } from "framer-motion";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
 import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmYourLuckHoverElement";
 import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
 import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import {
-  nativeTokenAddress,
-  testusdtAbiAddress,
-  usDaAddress,
-} from "@/blockchain/contracts";
-import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import { zeroAddress } from "viem";
 import { useAccount } from "wagmi";
-import { formatUnits, zeroAddress } from "viem";
-import { formatNumber } from "@/utils/helpers";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
-import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
-
-import tickerBg from "@/app/assets/ticker-bg.svg";
 
 export default function HomeTemplate() {
   const router = useRouter();
@@ -223,74 +216,6 @@ export default function HomeTemplate() {
     }
   };
 
-  // ticket bar animation
-  useEffect(() => {
-    // Inject keyframes for scrolling
-    const style = document.createElement("style");
-    style.innerHTML = `
-      @keyframes scroll-left {
-        0% { transform: translateX(70%); }
-        100% { transform: translateX(-70%); }
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
-  // Message list for scrolling ticker bar
-  const message = [
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-    <a
-      href="https://app.liquidity.land/project/autonomint"
-      target="_blank"
-      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
-    >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
-    </a>,
-  ];
-
   // get user tracking data and setter function
   const {
     userTrackingData,
@@ -326,27 +251,6 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
-      <div className=" relative overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
-        <Image
-          src={tickerBg}
-          alt="boat"
-          className="w-full h-full object-cover"
-          fill
-        />
-        <div
-          className="flex w-full whitespace-nowrap animate-scroll-left"
-          style={{
-            animation: "scroll-left 40s linear infinite",
-          }}
-        >
-          {message.map((item, index) => (
-            <div className="flex items-center" key={index}>
-              <span className="font-bold">{item}</span>
-              <span className="text-lg font-bold px-8 mt-2">*</span>
-            </div>
-          ))}
-        </div>
-      </div>
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}
