@@ -241,62 +241,54 @@ export default function HomeTemplate() {
 
   // Message list for scrolling ticker bar
   const message = [
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
-    <div className=" text-[14px] lg:text-[16px]  font-plex-grotesk">
-      Autonomint is listed on Liquidity.Land. Now get 25% boost in your points -{" "}
-      <span className="font-bold  cursor-pointer">
-        <a href="https://app.liquidity.land/project/autonomint" target="_blank">
-          Read More
-        </a>
-      </span>{" "}
-    </div>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
   ];
 
   // get user tracking data and setter function
@@ -344,7 +336,7 @@ export default function HomeTemplate() {
         <div
           className="flex w-full whitespace-nowrap animate-scroll-left"
           style={{
-            animation: "scroll-left 30s linear infinite",
+            animation: "scroll-left 40s linear infinite",
           }}
         >
           {message.map((item, index) => (
