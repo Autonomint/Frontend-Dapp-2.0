@@ -97,7 +97,12 @@ export default function HomeTemplate() {
   const feesList = [
     {
       orgName: "Autonomint",
-      amount: `$${oneEthOptionFees.toFixed(2)}`,
+      amount: (
+        <div className="flex gap-2 items-baseline">
+          {oneEthOptionFees.toFixed(2)}
+          <span className="text-[14px]">per month</span>
+        </div>
+      ),
       tag: "Lowest Fee",
       tagColor: "#05A552",
       tagBg: "#a6ffd0",

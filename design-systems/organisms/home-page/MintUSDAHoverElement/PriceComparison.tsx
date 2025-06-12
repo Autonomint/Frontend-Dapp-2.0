@@ -18,7 +18,7 @@ function PriceComparison({
 }: {
   orgName: string;
   tag: string;
-  amount: string;
+  amount: React.ReactNode;
   tagColor: string;
   textColor: string;
   tagBg: string;

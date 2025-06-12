@@ -18,7 +18,7 @@ import {
 import YieldComparison from "./YieldComparison";
 interface FeeDetail {
   orgName: string;
-  amount: string;
+  amount: React.ReactNode;
   tag: string;
   tagColor: string;
   tagBg: string;
@@ -67,7 +67,7 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
         </div>
         <div>
           <div className="ml-2 text-[14px] sm:text-[20px] lg:text-[24px] text-textBlack font-medium dark:text-white bg-none">
-            Hedging fees{" "}
+            Hedging fees per ETH{" "}
           </div>
 
           <div className=" flex  lg:flex-wrap gap-2 sm:gap-3 lg:gap-3 lg:justify-start  2xl:gap-8 xl:ml-6   bg-none">
