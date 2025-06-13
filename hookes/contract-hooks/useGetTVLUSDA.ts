@@ -12,7 +12,7 @@ import {
 } from "wagmi";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { ethers } from "ethers";
-import { infuraApiKeys, NetworkId } from "@/utils/constants";
+import { alchemyApiKeys, NetworkId } from "@/utils/constants";
 import { useEffect, useState, useMemo } from "react";
 import { Abi, formatUnits } from "viem";
 import { rpcUrls } from "@/utils/urls";
@@ -40,7 +40,7 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
           ? NetworkId.Optimism
           : NetworkId.BaseSepolia
       ]
-    }/${infuraApiKeys}`
+    }/${alchemyApiKeys}`
   );
 
   const cdsContract = new ethers.Contract(
@@ -105,7 +105,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
           ? NetworkId.Optimism
           : NetworkId.BaseSepolia
       ]
-    }/${infuraApiKeys}`
+    }/${alchemyApiKeys}`
   );
 
   const cdsContract = new ethers.Contract(

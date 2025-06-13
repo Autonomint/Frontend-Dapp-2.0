@@ -615,24 +615,23 @@ export function WithdrawFund({
     // }
   };
 
-  const callRepayInContract = async () => {
-    setIsApproveLoadingLocal(false);
-    setTimeout(() => {
-      setWithdrawLoadingLocal(true);
-    }, 800);
+  // const callRepayInContract = async () => {
+  //   setIsApproveLoadingLocal(false);
+  //   setTimeout(() => {
+  //     setWithdrawLoadingLocal(true);
+  //   }, 800);
 
-    const borrowSignedData = await refetchBorrowWithDrawSignedData();
+  //   const borrowSignedData = await refetchBorrowWithDrawSignedData();
 
-    withdrawUsda(
-      position.index,
-      nativeFee?.nativeFee || BigInt(0n),
-      borrowSignedData?.odosAssembledData,
-      borrowSignedData?.usdtFromOdos,
-      BigInt(borrowSignedData?.nonce || 0),
-      BigInt(borrowSignedData?.deadline || 0),
-      (borrowSignedData?.signature || "") as `0x${string}`
-    );
-  };
+  //   withdrawUsda(
+  //     position.index,
+  //     nativeFee?.nativeFee || BigInt(0n),
+  //     borrowSignedData?.odosAssembledData,
+  //     BigInt(borrowSignedData?.nonce || 0),
+  //     BigInt(borrowSignedData?.deadline || 0),
+  //     (borrowSignedData?.signature || "") as `0x${string}`
+  //   );
+  // };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -679,7 +678,6 @@ export function WithdrawFund({
             position.index,
             nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
-            borrowSignedData?.usdtFromOdos,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`

@@ -7,7 +7,7 @@ export const STRATEGY_LINK =
 
 export const rpcUrls = {
   [NetworkId.BaseSepolia]:
-    "https://base-mainnet.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE",
+    "https://base-mainnet.g.alchemy.com/v2",
   [NetworkId.Optimism]:
-    "https://opt-mainnet.g.alchemy.com/v2/WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE",
+    "https://opt-mainnet.g.alchemy.com/v2",
 };
