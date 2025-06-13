@@ -311,6 +311,7 @@ function DCDSTemplate() {
     formik.values.usdaAmount,
     formik.values.usdtAmount,
     getPrices,
+    liquidationGains,
   ]);
 
   // deposit function hook

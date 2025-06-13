@@ -1,4 +1,8 @@
-import { BRAND_ICON_URL, projectId, TESTNET_URL } from "@/utils/constants";
+import {
+  BRAND_ICON_URL,
+  projectId,
+  AUTONOMINT_DAPP_URL,
+} from "@/utils/constants";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   baseSepolia,
@@ -45,7 +49,7 @@ export const opSepolia = defineChain({
 const metadata = {
   name: "autonomint",
   description: "Autonomint Testnet",
-  url: TESTNET_URL, // origin must match your domain & subdomain
+  url: AUTONOMINT_DAPP_URL, // origin must match your domain & subdomain
   icons: [BRAND_ICON_URL],
 };
 

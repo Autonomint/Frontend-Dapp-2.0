@@ -67,7 +67,7 @@ export const infuraApiKeys = "SS28xhM5WTcPjxMPrmDfJICizSZIUWmo";
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
 // urls
-export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
+export const AUTONOMINT_DAPP_URL = "https://app.autonomint.com/";
 export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
