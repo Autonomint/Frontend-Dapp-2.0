@@ -643,8 +643,10 @@ export function DcdsWithdrawModal({
           setWithdrawGainLoading(true);
         }, 1000);
         dcdsPositionListRefetch();
-        const res = await refetchBorrowWithDrawGainsSignedData();
-        // If close position is success then call withdraw gain function
+        
+        setTimeout(async () => {
+          const res = await refetchBorrowWithDrawGainsSignedData();
+          // If close position is success then call withdraw gain function
         handleDcdsWithdrawGain?.([
           BigInt(position.index),
           res?.odosAssembledData,
@@ -652,6 +654,8 @@ export function DcdsWithdrawModal({
           res?.deadline,
           res?.signature,
         ]);
+        }, 3000);
+       
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
         setTimeout(() => {

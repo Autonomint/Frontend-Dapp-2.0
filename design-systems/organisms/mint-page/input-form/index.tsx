@@ -345,6 +345,9 @@ function InputForm({ currency }: { currency: string }) {
     reset(); // reset the form
     setApproveLoading(false);
     setMintLoading(false);
+    setTimeout(() => {
+      setMintBtnLoading(false);
+    }, 800);
   };
 
   //getting option fees for selected amount
