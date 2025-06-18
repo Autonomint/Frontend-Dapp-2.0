@@ -218,7 +218,7 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
-      <Ticker />
+      {/* <Ticker /> */}
 
       <Image
         className=" hidden h-full  dark:lg:block w-full"

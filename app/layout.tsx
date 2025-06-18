@@ -61,7 +61,7 @@ export default function RootLayout({
                     <Footer />
                     <InviteCodePopup />
                     <SwitchChainPopup />
-                    {/* <BetaConfirmation /> */}
+                    <BetaConfirmation />
                   </div>
                 </ThemeProvider>
               </Provider>
