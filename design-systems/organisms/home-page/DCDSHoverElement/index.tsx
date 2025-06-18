@@ -66,7 +66,7 @@ function DCDSHoverElement() {
                   <TooltipTrigger asChild>
                     <Image
                       className="w-full h-full"
-                      src={getIconMapping(theme as string, "usda")}
+                      src={getIconMapping(theme as string, "usda+")}
                       alt="usdt"
                       loading="eager"
                       priority
