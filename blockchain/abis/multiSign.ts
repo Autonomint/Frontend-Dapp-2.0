@@ -1,499 +1,649 @@
 export const multiSignABI = [
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "target",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "target",
+        "type": "address"
+      }
     ],
-    name: "AddressEmptyCode",
-    type: "error",
+    "name": "AddressEmptyCode",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "implementation",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
     ],
-    name: "ERC1967InvalidImplementation",
-    type: "error",
+    "name": "ERC1967InvalidImplementation",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "ERC1967NonPayable",
-    type: "error",
+    "inputs": [],
+    "name": "ERC1967NonPayable",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "FailedInnerCall",
-    type: "error",
+    "inputs": [],
+    "name": "FailedInnerCall",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "InvalidInitialization",
-    type: "error",
+    "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "NotInitializing",
-    type: "error",
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    name: "OwnableInvalidOwner",
-    type: "error",
+    "name": "OwnableInvalidOwner",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
     ],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
   },
   {
-    inputs: [],
-    name: "UUPSUnauthorizedCallContext",
-    type: "error",
+    "inputs": [],
+    "name": "UUPSUnauthorizedCallContext",
+    "type": "error"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "bytes32",
-        name: "slot",
-        type: "bytes32",
-      },
+        "internalType": "bytes32",
+        "name": "slot",
+        "type": "bytes32"
+      }
     ],
-    name: "UUPSUnsupportedProxiableUUID",
-    type: "error",
+    "name": "UUPSUnsupportedProxiableUUID",
+    "type": "error"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: false,
-        internalType: "uint64",
-        name: "version",
-        type: "uint64",
-      },
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "version",
+        "type": "uint64"
+      }
     ],
-    name: "Initialized",
-    type: "event",
+    "name": "Initialized",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
     ],
-    name: "OwnershipTransferred",
-    type: "event",
+    "name": "OwnershipTransferred",
+    "type": "event"
   },
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: true,
-        internalType: "address",
-        name: "implementation",
-        type: "address",
-      },
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
     ],
-    name: "Upgraded",
-    type: "event",
+    "name": "Upgraded",
+    "type": "event"
   },
   {
-    inputs: [],
-    name: "UPGRADE_INTERFACE_VERSION",
-    outputs: [
+    "inputs": [],
+    "name": "UPGRADE_INTERFACE_VERSION",
+    "outputs": [
       {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8[]",
-        name: "functions",
-        type: "uint8[]",
-      },
+        "internalType": "uint8[]",
+        "name": "assets",
+        "type": "uint8[]"
+      }
     ],
-    name: "approvePause",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "approveBorrowAssetsToUpdate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8[]",
-        name: "functions",
-        type: "uint8[]",
-      },
+        "internalType": "address[]",
+        "name": "assets",
+        "type": "address[]"
+      }
     ],
-    name: "approveSetterFunction",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "approveCDSTokensToUpdate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8[]",
-        name: "functions",
-        type: "uint8[]",
-      },
+        "internalType": "uint8[]",
+        "name": "functions",
+        "type": "uint8[]"
+      }
     ],
-    name: "approveUnPause",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "approvePause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.SetterFunctions",
-        name: "",
-        type: "uint8",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
+        "internalType": "uint8[]",
+        "name": "functions",
+        "type": "uint8[]"
+      }
     ],
-    name: "approvedToUpdate",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "approved",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    "name": "approveSetterFunction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.SetterFunctions",
-        name: "_function",
-        type: "uint8",
-      },
+        "internalType": "uint8[]",
+        "name": "functions",
+        "type": "uint8[]"
+      }
     ],
-    name: "executeSetterFunction",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "approveUnPause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.Functions",
-        name: "",
-        type: "uint8",
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "",
+        "type": "uint8"
       },
-    ],
-    name: "functionState",
-    outputs: [
       {
-        internalType: "bool",
-        name: "paused",
-        type: "bool",
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "approvedBorrowAssetsToUpdate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.Functions",
-        name: "_function",
-        type: "uint8",
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
       },
-    ],
-    name: "getApprovalPauseCount",
-    outputs: [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "approvedCDSTokensToUpdate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.Functions",
-        name: "_function",
-        type: "uint8",
+        "internalType": "enum IMultiSign.SetterFunctions",
+        "name": "",
+        "type": "uint8"
       },
-    ],
-    name: "getApprovalUnPauseCount",
-    outputs: [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "approvedToUpdate",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.SetterFunctions",
-        name: "_function",
-        type: "uint8",
-      },
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "asset",
+        "type": "uint8"
+      }
     ],
-    name: "getSetterFunctionApproval",
-    outputs: [
+    "name": "executeBorrowAssetUpdateFunction",
+    "outputs": [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address[]",
-        name: "_owners",
-        type: "address[]",
-      },
-      {
-        internalType: "uint64",
-        name: "_requiredApprovals",
-        type: "uint64",
-      },
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
     ],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "executeCDSAssetUpdateFunction",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
+        "internalType": "enum IMultiSign.SetterFunctions",
+        "name": "_function",
+        "type": "uint8"
+      }
     ],
-    name: "isOwner",
-    outputs: [
+    "name": "executeSetterFunction",
+    "outputs": [
       {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "owner",
-    outputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
+        "internalType": "enum IMultiSign.Functions",
+        "name": "",
+        "type": "uint8"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "functionState",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "paused",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "enum IMultiSign.Functions",
-        name: "",
-        type: "uint8",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "asset",
+        "type": "uint8"
+      }
     ],
-    name: "pauseApproved",
-    outputs: [
+    "name": "getApprovalBorrowAssetUpdateCount",
+    "outputs": [
       {
-        internalType: "bool",
-        name: "paused",
-        type: "bool",
-      },
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8[]",
-        name: "functions",
-        type: "uint8[]",
-      },
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
     ],
-    name: "pauseFunction",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "getApprovalCDSAssetUpdateCount",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "proxiableUUID",
-    outputs: [
+    "inputs": [
       {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
+        "internalType": "enum IMultiSign.Functions",
+        "name": "_function",
+        "type": "uint8"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "getApprovalPauseCount",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "inputs": [
+      {
+        "internalType": "enum IMultiSign.Functions",
+        "name": "_function",
+        "type": "uint8"
+      }
+    ],
+    "name": "getApprovalUnPauseCount",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [],
-    name: "requiredApprovals",
-    outputs: [
+    "inputs": [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
-      },
+        "internalType": "enum IMultiSign.SetterFunctions",
+        "name": "_function",
+        "type": "uint8"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "name": "getSetterFunctionApproval",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address[]",
-        name: "coreContractsAddresses",
-        type: "address[]",
+        "internalType": "address[]",
+        "name": "_owners",
+        "type": "address[]"
       },
+      {
+        "internalType": "uint64",
+        "name": "_requiredApprovals",
+        "type": "uint64"
+      }
     ],
-    name: "setCoreContracts",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "isOwner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
       {
-        internalType: "enum IMultiSign.Functions",
-        name: "",
-        type: "uint8",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
-    name: "unpauseApproved",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "unpaused",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "uint8[]",
-        name: "functions",
-        type: "uint8[]",
+        "internalType": "enum IMultiSign.Functions",
+        "name": "",
+        "type": "uint8"
       },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
     ],
-    name: "unpauseFunction",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
+    "name": "pauseApproved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "paused",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    inputs: [
+    "inputs": [
       {
-        internalType: "address",
-        name: "newImplementation",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
+        "internalType": "uint8[]",
+        "name": "functions",
+        "type": "uint8[]"
+      }
     ],
-    name: "upgradeToAndCall",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
+    "name": "pauseFunction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "requiredApprovals",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "coreContractsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "setCoreContracts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IMultiSign.Functions",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "unpauseApproved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "unpaused",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "functions",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "unpauseFunction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
 ];

@@ -1,4 +1,4 @@
-export const borrowingContractAbi = [
+export const borrowingContractAbi =  [
   {
     "inputs": [
       {
@@ -69,11 +69,6 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [],
-    "name": "Borrow_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "Borrow_DeadlinePassed",
     "type": "error"
   },
@@ -85,11 +80,6 @@ export const borrowingContractAbi = [
   {
     "inputs": [],
     "name": "Borrow_ETHTransferFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Borrow_EthTransferToCdsFailed",
     "type": "error"
   },
   {
@@ -182,16 +172,6 @@ export const borrowingContractAbi = [
   {
     "inputs": [],
     "name": "Borrow_OnlyCoreContracts",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Borrow_OnlyCoreContractsCancall",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Borrow_OnlyTreasuryCancall",
     "type": "error"
   },
   {
@@ -1209,11 +1189,6 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "tokenAmountFromOdos",
-        "type": "uint128"
-      },
-      {
         "components": [
           {
             "internalType": "address",
@@ -1743,11 +1718,6 @@ export const borrowingContractAbi = [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint128",
-        "name": "usdtFromOdos",
-        "type": "uint128"
       },
       {
         "components": [

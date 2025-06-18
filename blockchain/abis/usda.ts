@@ -1,4 +1,4 @@
-export const usDaAbi  = [
+export const usDaAbi  =  [
   {
     "inputs": [
       {
@@ -1567,7 +1567,7 @@ export const usDaAbi  = [
         "components": [
           {
             "internalType": "uint256",
-            "name": "nativeFee",  
+            "name": "nativeFee",
             "type": "uint256"
           },
           {
@@ -1903,7 +1903,7 @@ export const usDaAbi  = [
         "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   },
   {

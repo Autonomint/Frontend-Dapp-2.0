@@ -26,14 +26,14 @@ export const borrowingContractAddress = {
 
 // Addresses for the borrowing deposit contract
 export const borrowingDepositContractAddress = {
-  84532: "0x79b4c9F408702a904ea70bCA538E591d08E33EF0",
-  11155420: "0x0c2A3d2EB1787F05263A9E1E685a5DC0b410E435",
+  8453: "0x4a8d902fc344bACF72583C97f4280C94eD586088",
+  10: "0x91aD5Ce32ed5569C30c23916300C275Cd83307c6",
 } as const;
 
 // Addresses for the borrowing withdraw contract
 export const borrowingWithdrawContractAddress = {
-  84532: "0x718BDf21C71ED621bdcc5e33a66e21Bc0D2ebB5b",
-  11155420: "0x6Dca68026a1449e15da3C1D007F36F19b8Ea4A79",
+  8453: "0x91aD5Ce32ed5569C30c23916300C275Cd83307c6",
+  10: "0x2e322fB33031B64D7D11d888a950F47cE7E5f2e6",
 } as const;
 
 // Addresses for the cds contract
@@ -44,14 +44,14 @@ export const cdsAddress = {
 
 // Addresses for the cds deposit contract
 export const cdsDepositAddress = {
-  84532: "0x36E4a1590768477A3cfE2Ca78c3D0fd098855701",
-  11155420: "0x783487b17e7B80d264421a0d52bc5E68a5F36757",
+  8453: "0x9Cbb1df330A37C0A0C16b2ec6a6c3bb4795C937A",
+  10: "0x14157E3b04f6ae7524969CB8B8E57713dcE3e8F8",
 } as const;
 
 // Addresses for the cds withdraw contract
 export const cdsWithdrawAddress = {
-  84532: "0xc3414FF2bB20A226967DF827267b4F3f465D60f7",
-  11155420: "0xE34D631201720f662f09a500fAE4923fa3bDE6E2",
+  8453: "0x14157E3b04f6ae7524969CB8B8E57713dcE3e8F8",
+  10: "0x3f4549Caf7CA067661Dfc99d83EacdDfdD593E8C",
 } as const;
 
 // Addresses for the USDT contract

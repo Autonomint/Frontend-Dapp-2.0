@@ -137,7 +137,7 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
 
 export const getIconMapping = (theme: string, token: string) => {
   const mapping = {
-    usda: theme === "dark"  ? USDaIconGreen : USDaIcon,
+    "usda+": theme === "dark"  ? USDaIconGreen : USDaIcon,
     usdt: UsdtIcon,
     aero: AEROIcon,
     op: OPIcon,

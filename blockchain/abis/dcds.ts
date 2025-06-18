@@ -17,11 +17,6 @@ export const cdsAbi =  [
   },
   {
     "inputs": [],
-    "name": "CDSInterface_ZeroSupportedTokenAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CDS_AlreadyWithdrew",
     "type": "error"
   },
@@ -132,11 +127,6 @@ export const cdsAbi =  [
   },
   {
     "inputs": [],
-    "name": "CDS_LockingPeriodLessThanWithdrawTimeLimit",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CDS_NeedsMoreThanZero",
     "type": "error"
   },
@@ -169,11 +159,6 @@ export const cdsAbi =  [
   {
     "inputs": [],
     "name": "CDS_NotEnoughFundInCDS",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CDS_OnlyBorrowCancall",
     "type": "error"
   },
   {
@@ -229,16 +214,6 @@ export const cdsAbi =  [
   },
   {
     "inputs": [],
-    "name": "CDS_SurplusUSDT",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CDS_SwapFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CDS_TokenAddressesAndAmountsMustBeSameLength",
     "type": "error"
   },
@@ -249,17 +224,7 @@ export const cdsAbi =  [
   },
   {
     "inputs": [],
-    "name": "CDS_USDT_TransferFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "CDS_USDa_MintFailed",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CDS_USDa_TransferFailed",
     "type": "error"
   },
   {
@@ -275,11 +240,6 @@ export const cdsAbi =  [
   {
     "inputs": [],
     "name": "CDS_ZeroAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "CDS_ZeroNativeTokenDeposited",
     "type": "error"
   },
   {
@@ -338,11 +298,6 @@ export const cdsAbi =  [
   {
     "inputs": [],
     "name": "NotInitializing",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "OnlyCoreOrChildContracts",
     "type": "error"
   },
   {
@@ -1543,11 +1498,6 @@ export const cdsAbi =  [
         "type": "address[]"
       },
       {
-        "internalType": "uint128",
-        "name": "usdtFromOdos",
-        "type": "uint128"
-      },
-      {
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
@@ -2254,11 +2204,6 @@ export const cdsAbi =  [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint128",
-        "name": "usdtFromOdos",
-        "type": "uint128"
       },
       {
         "internalType": "uint256",
