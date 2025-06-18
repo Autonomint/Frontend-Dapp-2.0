@@ -26,6 +26,7 @@ import { useAccount } from "wagmi";
 import { formatUnits, zeroAddress } from "viem";
 import { formatNumber } from "@/utils/helpers";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import Ticker from "@/design-systems/molecule/Ticker";
 
 export default function HomeTemplate() {
   const router = useRouter();
@@ -217,6 +218,8 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
+      <Ticker />
+
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}
