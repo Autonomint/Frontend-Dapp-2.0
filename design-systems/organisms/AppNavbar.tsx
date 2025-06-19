@@ -70,7 +70,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
             path: "/bridge",
             isActive: pathname === "/bridge",
             isFeatureActive: true,
-            InActiveHeading: "",
+            InActiveHeading: "Coming Soon",
+            isComingSoon: true,
           },
         ]
       : tabOptions;

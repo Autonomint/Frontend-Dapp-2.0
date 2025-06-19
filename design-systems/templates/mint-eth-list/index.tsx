@@ -159,7 +159,7 @@ function MintEthListTemplate() {
       InActiveHeading: "wrsETH borrow is paused now",
       pointsToBeGiven:
         tokenRewardDetailList &&
-        tokenRewardDetailList?.["weETH"]?.pointsToBeGiven,
+        tokenRewardDetailList?.["weETH"]?.pointsToBeGiven || 0,
       minAmount:
         (tokenRewardDetailList &&
           tokenRewardDetailList?.["weETH"]?.minAmount) ||
