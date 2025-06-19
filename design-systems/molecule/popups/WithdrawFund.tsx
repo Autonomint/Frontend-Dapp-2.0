@@ -300,7 +300,7 @@ export function WithdrawFund({
       updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
       // set points earned till now
       updatedData[2].headline = "Points earned till now";
-      updatedData[2].value = `${indexPoint?.[1] || 0}` || "-";
+      updatedData[2].value = `${indexPoint?.[1]?.toFixed(0) || 0}` || "-";
       // set apr at deposit
       updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
@@ -937,7 +937,7 @@ export function WithdrawFund({
                 } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
-                  <div className="text-sm text-wrap text-center !text-[#49d69f] dark:!text-[#ABFFDE]">
+                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#69a28c] ">
                     You can use your ABOND tokens to redeem your remaining 1/2
                     collateral. They are earning AAVE lending yields and
                     internal liquidation gains since your USDA+ mint.
