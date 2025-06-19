@@ -139,7 +139,7 @@ const DepositTableRow = ({
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
       <td className="px-5 py-4 2xl:py-6">
-        {position.depositedAmount} {position.collateralType}
+        {parseFloat(Number(position.depositedAmount).toFixed(4))} {position.collateralType}
       </td>
       <td className="px-5 py-4 2xl:py-6">
         ${Number(position.noOfUSDaMinted).toFixed(2)}
