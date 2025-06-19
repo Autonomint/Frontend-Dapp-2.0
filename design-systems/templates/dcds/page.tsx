@@ -1221,15 +1221,15 @@ function DCDSTemplate() {
                         src={
                           theme === "dark" && token.tokenName === "USDA+"
                             ? USDaIconGreen
-                            : theme === "light" && token.tokenName === "USDa"
+                            : theme === "light" && token.tokenName === "USDA+"
                             ? USDaIcon
                             : token?.tokenImage
                         }
                         alt={token?.tokenName}
                         width={
-                          theme === "dark" && token.tokenName === "USDa"
+                          theme === "dark" && token.tokenName === "USDA+"
                             ? 55
-                            : theme === "light" && token.tokenName === "USDa"
+                            : theme === "light" && token.tokenName === "USDA+"
                             ? 55
                             : 80
                         }
@@ -1312,7 +1312,7 @@ function DCDSTemplate() {
                     <Info
                       width={24}
                       height={24}
-                      className="ml-2 stroke-[#4ade80] fill-[#22c55e30] "
+                      className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
                     />
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black">
