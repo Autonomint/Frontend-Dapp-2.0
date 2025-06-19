@@ -18,7 +18,6 @@ const useWithdrawUsda = (mutation: any) => {
     index: number,
     nativeFee: bigint,
     odosAssembledData: any,
-    usdtFromOdos: any,
     nonce: bigint,
     deadline: bigint,
     signature: `0x${string}`

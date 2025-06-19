@@ -9,14 +9,18 @@ import Link from "next/link";
 import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
+import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
 import { STRATEGY_LINK } from "@/utils/urls";
+import { NetworkId } from "@/utils/constants";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -30,7 +34,7 @@ const farmTextVariants = {
 };
 
 function MintEthListTemplate() {
-  const { chainId } = useAccount();
+  const { chainId, address } = useAccount();
   // Custom hook to fetch the LTV value
   const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
@@ -44,13 +48,35 @@ function MintEthListTemplate() {
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "APR",
+    functionName: "getAPR",
   });
 
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
-  const { ethPoints, isLoading, error } = usePoint();
+  // hook for getting the farm your luck data (current reward data) from the backend api
+  const {
+    data: farmLuckDetails,
+    isLoading: isFarmLuckLoading,
+    refetch: refetchFarmLuckDetails,
+  } = useFarmLuckDetails(address, chainId);
+
+  const { tokenRewardDetailList } = useGetTokenReward();
+
+  // boaster from farm your luck
+  const luckBoaster =
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+      .minutes > 0 &&
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
+      ? 10
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
 
   // List of tokens with their respective data
   const list = [
@@ -62,9 +88,31 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "ETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["ETH"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["ETH"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
     {
       token: "wrsETH",
@@ -74,9 +122,32 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
     {
       token: "weETH",
@@ -86,11 +157,73 @@ function MintEthListTemplate() {
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven: ethPoints?.pointsToBeGiven,
-      minAmount: ethPoints?.minAmount,
+      pointsToBeGiven:
+        tokenRewardDetailList &&
+        tokenRewardDetailList?.["weETH"]?.pointsToBeGiven,
+      minAmount:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["weETH"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["weETH"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["weETH"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     },
   ];
+
+  if (chainId == NetworkId.BaseSepolia) {
+    list.push({
+      token: "wsuperOETHb",
+      tokenImage: WsuperOETH,
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "wsuperOETHb borrow is paused now",
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
+        0,
+      link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
+    });
+  }
+
+
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();
@@ -104,7 +237,7 @@ function MintEthListTemplate() {
       <div className="md:relative">
         <motion.div className="flex flex-col lg:max-w-[93%]">
           {list.map((item, index) => (
-            <SingleListItem key={index} item={item} indexVal={index} />
+            <SingleListItem key={index} item={item} />
           ))}
         </motion.div>
         <Link prefetch={true} href="/farmyourluck" className="">

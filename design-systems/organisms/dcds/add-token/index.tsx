@@ -17,6 +17,8 @@ import { useTokenConfig } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { CircleFadingPlus } from "lucide-react";
 import { useTheme } from "next-themes";
+import PulsatingBadge from "@/design-systems/atoms/pulsBadge";
+import { calculateRemainingTimeDate, toLocalISOString } from "@/utils/helpers";
 
 function AddToken({
   tokenDetails,
@@ -46,6 +48,7 @@ function AddToken({
       ));
       return;
     }
+    // Set the flag and field values for the token in formik
     formik.setFieldValue(
       `${tokenDetails.tokenName.toLocaleLowerCase()}Flag`,
       isSelected ? false : true
@@ -63,7 +66,7 @@ function AddToken({
       tokenDetails.minTokenAmount
     );
 
-    // Set approval flags in formik
+    // Set approval flags in formik for approval transaction status
     formik.setFieldValue(
       `${tokenDetails.tokenName.toLocaleLowerCase()}Approving`,
       false
@@ -121,10 +124,10 @@ function AddToken({
       className={`relative ${tokenDetails.isLoading ? "cursor-wait " : ""} `}
     >
       <div
-        className={` border border-solid border-grayLight p-5 flex justify-start items-center h-full relative `}
+        className={` border border-solid border-grayLight flex flex-col justify-start items-center h-full relative `}
       >
-        <div className="flex  gap-5 w-full items-center">
-          <div className="flex w-[40%] md:w-[20%] flex-row items-center lg:items-start lg:flex-col gap-5">
+        <div className="flex relative p-4 gap-2 2xl:gap-5 w-full items-start">
+          <div className="flex w-[40%] md:w-[20%] lg:w-[30%] 2xl:w-[25%] flex-row items-center lg:items-start lg:flex-col gap-5">
             <div>
               <Image
                 src={tokenDetails.tokenImage}
@@ -133,33 +136,58 @@ function AddToken({
                 height={30}
               />
             </div>
-            <span className="text-[24px] text-textBlack dark:text-white">
+            <span className="2xl:text-[24px] text-[20px] text-textBlack dark:text-white">
               {tokenDetails.tokenLabel || tokenDetails.tokenName}
             </span>
           </div>
-          <div className="flex flex-row items-center lg:items-start lg:flex-col justify-start  md:gap-0">
-            <div className="hidden md:flex text-[18px] text-[#7a7a7a] dark:text-[#c2c2c2]">
-              balance
+          <div className="flex items-start flex-col justify-start  md:gap-0">
+            <div className="flex text-[18px] text-black dark:text-[#c2c2c2]">
+              Balance
             </div>
-            <div className="flex md:hidden text-[18px] text-[#7a7a7a] dark:text-[#7a7a7a]">
-              bal.
-            </div>
+
             <div className="flex flex-col gap-0">
-              <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+              <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
                 {tokenDetails.balanceAvailable.replaceAll(
                   tokenDetails.tokenName,
                   ""
                 )}
               </span>
               {tokenDetails.tokenCount && (
-                <span className="text-base md:text-[16px] md:mt-1 text-[#7a7a7a]">
+                <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
                   {tokenDetails?.tokenCount?.toFixed(2)}{" "}
-                  {` ${tokenDetails.tokenName}`}
+                  {/* {` ${tokenDetails.tokenName}`} */}
                 </span>
               )}
             </div>
           </div>
-          {/* <div className="flex flex-col justify-center h-full gap-2 items-center">
+          {Boolean(tokenDetails.minTokenAmount) &&
+            Boolean(tokenDetails.pointToGiven) && (
+              <div className="flex ml-2 items-start flex-col justify-start  md:gap-0">
+                <div className="flex text-[18px] text-black dark:text-[#c2c2c2]">
+                  Points
+                </div>
+
+                <div className="flex flex-col gap-0">
+                  <span className="text-[14px] 2xl:text-[16px] md:mt-1 text-[#7a7a7a]">
+                    {tokenDetails.pointToGiven} Per $
+                    {tokenDetails.minTokenAmount}
+                  </span>
+
+                  {!!tokenDetails.defaultBooster &&
+                    calculateRemainingTimeDate(
+                      toLocalISOString(
+                        new Date(tokenDetails.boosterValidity * 1000)
+                      )
+                    ).minutes > 0 &&
+                    tokenDetails.defaultBooster > 1 && (
+                      <div className="badge mt-1 pulsate w-fit text-[12px] 2xl:text-[16px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                        {tokenDetails.defaultBooster}x Points
+                      </div>
+                    )}
+                </div>
+              </div>
+            )}
+          <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />
@@ -167,17 +195,15 @@ function AddToken({
                 <CircleFadingPlus className="stroke-black dark:stroke-white " />
               )}
             </div>
-            <div className="text-md text-grayLight ">Add token</div>
-          </div> */}
+          </div>
         </div>
-
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="  absolute right-0 top-0 h-full">
+            <div className="  w-full right-0 top-0 h-full">
               <Button
                 disabled={tokenDetails.isLoading || tokenDetails.isTokenPause}
                 onClick={toggleToken}
-                className="bg-black h-full dark:bg-custom-gradient-to-bottom"
+                className="bg-black h-full w-full dark:bg-custom-gradient-to-bottom"
               >
                 {isSelected ? (
                   <Image src={minus} alt="minus" />
@@ -194,6 +220,7 @@ function AddToken({
           )}
         </Tooltip>
       </div>
+
       {tokenDetails.isLoading && (
         <div className="top-0 text-white left-0 absolute w-full h-full bg-[#00000080] dark:bg-[#ffffff52] flex items-center justify-center ">
           <RingLoadingIcon width={50} height={50} />

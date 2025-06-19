@@ -5,26 +5,71 @@ import tickerBg from "@/app/assets/ticker-bg.svg";
 
 const Ticker = () => {
   // ticket bar animation
-  // useEffect(() => {
-  //   // Inject keyframes for scrolling
-  //   const style = document.createElement("style");
-  //   style.innerHTML = `
-  //         @keyframes scroll-left {
-  //           0% { transform: translateX(70%); }
-  //           100% { transform: translateX(-70%); }
-  //         }
-  //       `;
-  //   document.head.appendChild(style);
-  //   return () => {
-  //     document.head.removeChild(style);
-  //   };
-  // }, []);
+  useEffect(() => {
+    // Inject keyframes for scrolling
+    const style = document.createElement("style");
+    style.innerHTML = `
+          @keyframes scroll-left {
+            0% { transform: translateX(70%); }
+            100% { transform: translateX(-70%); }
+          }
+        `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   // Message list for scrolling ticker bar
   const message = [
-    <div className=" dark:text-white text-white  text-[14px] lg:text-[16px]  font-plex-grotesk">
-      App is currently updating and will be live in few minutes.
-    </div>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white  text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
+    <a
+      href="https://app.liquidity.land/project/autonomint"
+      target="_blank"
+      className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
+    >
+      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
+      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+    </a>,
   ];
   return (
     <div className=" relative overflow-hidden border-[1px] border-grayLight border-b border-t-0 h-[45px] flex items-center w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top">
@@ -34,8 +79,18 @@ const Ticker = () => {
         className="w-full h-full object-cover"
         fill
       />
-      <div className="h-full text-center absolute top-1/2 left-1/2 mt-2 transform -translate-x-1/2 -translate-y-1/2 z-10 w-full dark:text-white text-white  text-[14px] lg:text-[16px]  font-plex-grotesk">
-        App is currently updating and will be live in few minutes.
+      <div
+        className="flex w-full whitespace-nowrap animate-scroll-left"
+        style={{
+          animation: "scroll-left 40s linear infinite",
+        }}
+      >
+        {message.map((item, index) => (
+          <div className="flex items-center" key={index}>
+            <span className="font-bold">{item}</span>
+            <span className="text-lg font-bold px-8 mt-2 text-white dark:text-white">*</span>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
   getStrikePercent,
   handleWheel,
+  toLocalISOString,
 } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -34,10 +35,16 @@ import {
 import InputMetics from "../Input-metrics";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import { BorrowAssetsEnum, NetworkId, scanUrls } from "@/utils/constants";
+import {
+  assetNameForRewardDataBorrow,
+  BorrowAssetsEnum,
+  NetworkId,
+  scanUrls,
+} from "@/utils/constants";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  borrowingDepositContractAddress,
 } from "@/blockchain/contracts";
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
@@ -55,6 +62,10 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import { HoverCard } from "@/design-systems/atoms/hover-card";
+import { EqualApproximately, Info } from "lucide-react";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
  * Yup validation schema for the input form
@@ -144,8 +155,8 @@ function InputForm({ currency }: { currency: string }) {
     functionName: "allowance",
     args: [
       address,
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      borrowingDepositContractAddress[
+        chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -181,14 +192,14 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb"].includes(currency) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
       setApproveLoading(true);
       await approveWrapETHDynamic(
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        borrowingDepositContractAddress[
+          chainId as keyof typeof borrowingDepositContractAddress
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
@@ -257,7 +268,7 @@ function InputForm({ currency }: { currency: string }) {
     isSuccess: isDepositSuccess,
   } = useWaitForTransactionReceipt({
     hash: depositDatahash,
-    confirmations: 2,
+    confirmations: 1,
   });
 
   // function to fetch the min amount for luck
@@ -327,13 +338,16 @@ function InputForm({ currency }: { currency: string }) {
         );
       });
     }
-  }, [Depositdata, isDepositSuccess]);
+  }, [Depositdata, isDepositSuccess, depositHashError]);
 
   const handleResetPage = () => {
     // formik.resetForm();
     reset(); // reset the form
     setApproveLoading(false);
     setMintLoading(false);
+    setTimeout(() => {
+      setMintBtnLoading(false);
+    }, 800);
   };
 
   //getting option fees for selected amount
@@ -510,12 +524,136 @@ function InputForm({ currency }: { currency: string }) {
     );
   };
 
-  // hook for getting the farm your luck data (current reward data) from the backend api
+  // hook for getting the farm your luck data (current reward data) from the backend api for showing point boaster in ui
   const {
     data: farmLuckDetails,
     isLoading: isFarmLuckLoading,
     refetch: refetchFarmLuckDetails,
   } = useFarmLuckDetails(address, chainId);
+
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+
+
+  // update user tracking data
+  useEffect(() => {
+    // get user tracking data from local storage
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      mintPage: {
+        // previous mint page data
+        ...data?.mintPage,
+
+        // asset related data
+        [currency]: {
+          count: (data?.mintPage?.[currency]?.count || 0) + 1,
+          visited: true,
+          enterTimestamp: data?.mintPage?.[currency]?.count
+            ? data?.mintPage?.[currency]?.enterTimestamp
+            : new Date().toISOString(),
+          exitTimestamp: new Date().toISOString(),
+        },
+        count: (data?.mintPage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.mintPage?.count
+          ? data?.mintPage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+    return () => {
+      // get user tracking data from local storage
+      const data = getUserTrackLocalStorageData();
+      // updating user exit time for selected asset
+      setUserTrackLocalStorageData({
+        ...data,
+        mintPage: {
+          [currency]: {
+            ...data?.mintPage?.[currency],
+            exitTimestamp: new Date().toISOString(),
+          },
+          ...data?.mintPage,
+          exitTimestamp: new Date().toISOString(),
+        },
+      });
+    };
+  }, []);
+
+  const { tokenRewardDetailList } = useGetTokenReward();
+
+  const tokenRewardDetailBorrow =
+    tokenRewardDetailList?.[currency as keyof typeof tokenRewardDetailList];
+
+  // boaster from farm your luck
+  const luckBoaster =
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+      .minutes > 0 &&
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
+      ? 10
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+          .minutes > 0
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
+
+  // total boaster for token
+  const totalBooster =
+    (tokenRewardDetailBorrow
+      ? Number(tokenRewardDetailBorrow?.assetBooster ?? 0)
+      : 0) + luckBoaster;
+
+  // Finding the max timestamp
+  const totalTimeStamp = Math.max(
+    farmLuckDetails?.deadLine5xTimestamp
+      ? // convert date to timestamp
+        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+      : 0,
+    farmLuckDetails?.deadLine10xTimestamp
+      ? // convert date to timestamp
+        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+      : 0,
+    // timestamp for campaign booster
+    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
+  );
+
+  // calculate the point based on depositing amount
+  const depositTokenPoint =
+    (tokenRewardDetailBorrow?.minAmount || 0) <=
+    Number(formik.values.collateralAmount || 0)
+      ? Number(
+          formik.values.collateralAmount /
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+      : 0;
+
+  // // calculate the point based on farm luck boaster
+  // const luckBoasterPoint =
+  //   depositTokenPoint *
+  //   Number(
+  //     (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+  //       .minutes > 0 &&
+  //       10) ||
+  //       (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+  //         .minutes > 0 &&
+  //         5) ||
+  //       0
+  //   );
+
+  // calculate the total point
+  const totalPoint = depositTokenPoint * totalBooster;
+
+  // calculate the point based on token boaster
+  const tokenBoasterPoint = totalPoint - depositTokenPoint;
+
+
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -523,28 +661,15 @@ function InputForm({ currency }: { currency: string }) {
         <div className="flex justify-between items-center">
           <div className=" font-medium text-2xl">Mint USDA+</div>
           <div className="flex justify-end items-center gap-1">
-            {calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine5xTimestamp || ""
-            ).minutes > 0 &&
-            calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine10xTimestamp || ""
-            ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                10x Points
-              </div>
-            ) : calculateRemainingTimeDate(
-                farmLuckDetails?.deadLine10xTimestamp || ""
-              ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                10x Points
-              </div>
-            ) : calculateRemainingTimeDate(
-                farmLuckDetails?.deadLine5xTimestamp || ""
-              ).minutes > 0 ? (
-              <div className="text-[14px] font-medium text-black bg-[#abffde] dark:border-white  border-black border px-3 py-1 rounded-[24px]">
-                5x Points
-              </div>
-            ) : null}
+            {!!totalBooster &&
+              calculateRemainingTimeDate(
+                toLocalISOString(new Date(totalTimeStamp * 1000))
+              ).minutes > 0 &&
+              totalBooster > 1 && (
+                <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                  {totalBooster}x Points
+                </div>
+              )}
           </div>
         </div>
         <div className="flex flex-col gap-[18px] ">
@@ -607,14 +732,57 @@ function InputForm({ currency }: { currency: string }) {
                 </Button>
               </div>
             </div>
+            <div>
+              <div className="flex justify-between">
+                <span className=" font-medium text-lg text-grayLight">
+                  5% of collateral upside
+                </span>
+                <span className=" font-medium text-lg dark:text-white text-black">
+                  ${upsideCollateral.toFixed(2)}
+                </span>
+              </div>
 
-            <div className="flex justify-between">
-              <span className=" font-medium text-lg text-grayLight">
-                5% of collateral upside
-              </span>
-              <span className=" font-medium text-lg text-grayLight">
-                ${upsideCollateral.toFixed(2)}
-              </span>
+              <div className="flex justify-between">
+                <HoverCard
+                  title={
+                    <span className=" flex gap-1 items-center font-medium text-lg text-grayLight">
+                      Points
+                      <Info
+                        id="points-breakdown"
+                        className="stroke-grayLight w-[18px] h-[18px]"
+                      />
+                    </span>
+                  }
+                >
+                  <div>
+                    <div className=" p-3 bg-[#ABFFDE] border-b-[1px] border-grayLight font-medium text-lg text-grayLight">
+                      Points Breakdown
+                    </div>
+                    <div className="flex p-3 mt-2 flex-col gap-2">
+                      <div className="flex justify-between">
+                        <span className="font-medium text-grayLight">
+                          {currency}
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {Math.round(depositTokenPoint)}
+                        </span>
+                      </div>
+                      <div className="flex  justify-between">
+                        <span className="font-medium text-grayLight">
+                          Boosted
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {Math.round(tokenBoasterPoint)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </HoverCard>
+                <span className=" font-medium text-lg dark:text-white text-black flex items-center gap-1">
+                  <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
+                  {Math.round(totalPoint)}
+                </span>
+              </div>
             </div>
           </div>
         </div>

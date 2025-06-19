@@ -9,18 +9,20 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { useDisconnect } from "@reown/appkit/react";
 import { watchAccount } from "@wagmi/core";
-import { Moon, Sun } from "lucide-react";
+import { Headset, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount, useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import ReferPopup from "../../molecule/popups/ReferPopUp";
 import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
 import twitter from "@/app/assets/x-social-media-black-icon.svg";
+import { getIconMapping } from "@/utils/token-config";
+import { useTrackUser } from "@/hookes/api-hooks/useTrackUser";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -31,7 +33,8 @@ function Navbar() {
 
   const [systemThemeDark, setSystemThemeDark] = useState<boolean>();
 
-  const { address } = useAccount();
+  // user activity tracking function
+  useTrackUser();
 
   useAccountEffect({
     onConnect(data) {
@@ -112,6 +115,43 @@ function Navbar() {
     window.open(shareUrl, "_blank");
   }
 
+  // for ticker badge animation
+  const texts = ["Mint 2x Points", "CDS 10x Points"];
+
+  // for ticker badge animation
+  const [index, setIndex] = useState(0);
+
+  // ref for ticker badge animation
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // // for ticker badge animation
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     // Start animation
+  //     if (containerRef.current) {
+  //       containerRef.current.style.transition = "transform 0.5s ease-in-out";
+  //       containerRef.current.style.transform = "translateY(-100%)";
+  //     }
+
+  //     const timeout = setTimeout(() => {
+  //       // After animation
+  //       setIndex((prev) => (prev + 1) % texts.length);
+
+  //       if (containerRef.current) {
+  //         containerRef.current.style.transition = "none";
+  //         containerRef.current.style.transform = "translateY(0)";
+  //       }
+  //     }, 500); // match transition duration
+
+  //     return () => clearTimeout(timeout);
+  //   }, 2000);
+
+  //   return () => clearInterval(interval);
+  // }, [containerRef]);
+
+  // next for ticker badge animation
+  // const nextText = texts[(index + 1) % texts.length];
+
   return (
     <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
       <div className="ml-4 flex-row flex gap-2">
@@ -128,9 +168,9 @@ function Navbar() {
 
         <Link onClick={closeMenu} href="/">
           <div className="flex justify-start  items-center  gap-4">
-            {/* <div className="w-[3rem] h-[3rem]">
+            <div className="w-[3rem] lg:hidden h-[3rem]">
               <Image
-                src={logo}
+                src={getIconMapping(theme || "dark", "usda")}
                 alt="autonomint-dapp"
                 style={{
                   width: "100%",
@@ -139,7 +179,7 @@ function Navbar() {
                   flexShrink: 0,
                 }}
               />
-            </div> */}
+            </div>
             <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
               <div
                 className=" dark:block hidden w-full  shrink-0"
@@ -193,8 +233,8 @@ function Navbar() {
                   />
                   <path
                     className="fill-white dark:fill-black"
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M27.8555 82.8594L10.5098 74.3359L28.0551 46.6715L45.3509 74.3855L27.8555 82.8594Z"
                   />
                   <path
@@ -206,8 +246,8 @@ function Navbar() {
                     fill="#A1FFCE"
                   />
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
                     d="M11.0854 79.5519L27.9048 100.391L44.7749 80.403L27.9048 88.1569L11.0854 79.5519Z"
                     fill="#A1FFCE"
                   />
@@ -234,7 +274,35 @@ function Navbar() {
       </div>
 
       {!isPolicyPage && isClient && (
-        <div className="flex md:gap-6 sm:gap-2 mr-4">
+        <div className="flex items-center md:gap-6 sm:gap-2 mr-4">
+          {/* <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
+            <div
+              ref={containerRef}
+              className="flex flex-col pt-[40px]"
+              style={{ transform: "translateY(0)" }}
+            >
+              <div className="h-[40px] text-center flex items-center w-full">
+                {texts[index]}
+              </div>
+              <div className="h-[40px] text-center flex items-center w-full">
+                {nextText}
+              </div>
+            </div>
+          </div> */}
+          <a
+            href="https://meet.brevo.com/akshit-vig"
+            target="_blank"
+            rel="noopener noreferrer"
+            className=""
+          >
+            <Button
+              variant={"shadowOutline"}
+              className=" h-fit text-[18px] font-normal hidden lg:flex  p-[8px] "
+            >
+              Call
+              <Headset />
+            </Button>
+          </a>
           <WalletPopup />
           <Button
             variant={"shadowOutline"}
@@ -270,7 +338,7 @@ function Navbar() {
               )
             }
             variant={"shadowOutline"}
-            className=" h-fit text-[18px] font-normal  w-full p-[8px] "
+            className=" h-fit text-[18px] font-normal hidden lg:flex  p-[8px] "
           >
             <svg
               className="stroke-black dark:stroke-white"
@@ -282,9 +350,9 @@ function Navbar() {
             >
               <path
                 d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>{" "}
             Share
@@ -396,6 +464,33 @@ function Navbar() {
               )}
             </Button>
           )}
+
+          <Button
+            onClick={() =>
+              shareOnTwitter(
+                "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
+              )
+            }
+            variant={"shadowOutline"}
+            className=" h-fit text-[18px]  font-normal flex lg:hidden  w-fit p-[8px] "
+          >
+            <svg
+              className="stroke-black dark:stroke-white"
+              width="14"
+              height="14"
+              viewBox="0 0 20 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>{" "}
+            Share
+          </Button>
           {/* <ReferPopupMobile /> */}
           {/* <Button
             onClick={() => shareOnTwitter("")}

@@ -26,6 +26,7 @@ const useDeviceType = (): DeviceType => {
       else if (width > 768 && width <= 1024) {
         setDeviceType("tablet");
       }
+      
       // Desktop devices: width > 1024px 
       else {
         setDeviceType("desktop");

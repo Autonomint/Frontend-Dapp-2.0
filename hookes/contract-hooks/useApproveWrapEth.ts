@@ -10,7 +10,7 @@ import { useAccount, useWriteContract } from "wagmi";
 
 const useApproveWrapEth = (
   mutation: any,
-  tokenName: "wrsETH" | "weETH" | string
+  tokenName: "wrsETH" | "weETH" | "wsuperOETH" | string
 ) => {
   const {
     isPending: wrapETHApproveLoading,

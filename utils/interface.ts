@@ -91,14 +91,14 @@ export interface PositionData {
 }
 
 export interface LeaderboardDetails {
-  rank: string;
+  borrowerCount: number;
+  cdsCount: number;
+  leaderboard: LeaderboardDetailsList[];
+}
+
+export interface LeaderboardDetailsList {
   address: string;
-  totalDepositedAmount?: string;
-  cdsdeposit?: number;
-  totalAmint?: string;
-  totalUSDa?: string;
-  points: string;
-  totalLTV?: number;
-  yield: number;
-  chainId: number;
+  totalBorrowedAmount: number;
+  totalDepositedAmount: number;
+  totalPoints: number;
 }

@@ -1,6 +1,7 @@
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
+  borrowingWithdrawContractAddress,
   cdsAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
@@ -50,6 +51,11 @@ import { Network } from "ethers";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { InfoIcon } from "lucide-react";
 import { usDaAbi } from "@/blockchain/abis/usda";
+import PageLoader from "../page-loader";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { BACKEND_API_URL } from "@/utils/urls";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -69,9 +75,24 @@ export function WithdrawFund({
   const { isFunctionPausedBorrow_Renew, isFunctionPausedBorrow_Withdraw } =
     useBorrowPause();
 
+  const [isDataUpdating, setIsDataUpdating] = useState(false);
+
   const [spinner, setSpinner] = useState(false);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+
+  const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
+    queryKey: ["getPointEarned", address, chainId, position.index],
+    queryFn: async () => {
+      const response = await axios.post(`${BACKEND_API_URL}/borrows/deposit`, {
+        chainId,
+        address,
+        index: position.index,
+      });
+      return response.data;
+    },
+    enabled: !!address && !!chainId && !!position.index,
+  });
 
   const depositDetails = [
     {
@@ -85,6 +106,14 @@ export function WithdrawFund({
       value: "0",
       tooltip: false,
       tooltipText: "",
+    },
+    {
+      headline: "Points accrued till now",
+      value: indexPoint?.[1] || "0",
+      tooltip: false,
+      tooltipText: "",
+      titleColor: "!text-[#69a28c] dark:!text-[#afffdfb5]",
+      valueColor: "!text-[#49d69f] dark:!text-[#ABFFDE]",
     },
     {
       headline: "Deposit Time APR",
@@ -149,9 +178,12 @@ export function WithdrawFund({
     useLastCumulativeRate();
 
   // interest gain from backend
-  const { interestGained } = useInterestGain(position.index);
+  const { interestGained, isInterestGainedPending } = useInterestGain(
+    position.index
+  );
 
-  const { usdValue: ethPrice } = useGetUsdValue(
+
+  const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
 
@@ -160,8 +192,6 @@ export function WithdrawFund({
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
   const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
-
-  const { chainId } = useAccount();
 
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
@@ -172,7 +202,10 @@ export function WithdrawFund({
     useState<boolean>(false);
 
   // fetching renew enable time
-  const { data: optionsFeesTimeLimits } = useReadContract({
+  const {
+    data: optionsFeesTimeLimits,
+    isLoading: isOptionsFeesTimeLimitsPending,
+  } = useReadContract({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
@@ -200,7 +233,7 @@ export function WithdrawFund({
       : 0;
 
   // fetching allowance of usda for repay
-  const { data: allowance } = useReadContract({
+  const { data: allowance, isLoading: isAllowancePending } = useReadContract({
     abi: usDaAbi,
     address: usDaAddress[chainId as keyof typeof usDaAddress],
     functionName: "allowance",
@@ -210,8 +243,7 @@ export function WithdrawFund({
         chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined };
-
+  }) as { data: number | undefined; isLoading: boolean };
   // usda amount multiply by cumulative rate
   const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
@@ -236,24 +268,20 @@ export function WithdrawFund({
         Number(downsideProtection) -
         Number(position?.optionFees);
 
-  console.log(
-    downsideProtection,
-    position?.optionFees,
-    position?.normalizedAmount,
-    "position"
-  );
+ 
 
   // getting current APR value
-  const { data: currentAPR } = useReadContract({
+  const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "APR",
+    functionName: "getAPR",
   });
 
   function handleDepositData() {
+    setIsDataUpdating(true);
     // Calculate the totalUsdaAmntWithCumulativeRate
     if (position && lastCumulativeRate) {
       // If details are available, update each value in the depositData array
@@ -270,16 +298,19 @@ export function WithdrawFund({
           Number(position.exchangeRateAtDeposit || 0)) /
         100;
       updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
+      // set points earned till now
+      updatedData[2].headline = "Points earned till now";
+      updatedData[2].value = `${indexPoint?.[1] || 0}` || "-";
       // set apr at deposit
-      updatedData[2].value = `${position.aprAtDeposit}%`;
+      updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
-      updatedData[3].value = `${Number(currentAPR || 0) / 10}%`;
-      updatedData[4].value = new Date(
+      updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[5].value = new Date(
         // set deposited time
         position.depositedTime * 1000
       ).toLocaleString();
       // downside protection percentage
-      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
 
       // current price of eth
       const currentPrice =
@@ -307,9 +338,9 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[7].value = `${upsideAt.toFixed(2)}`;
       // set collateral upside till now
-      updatedData[7].value =
+      updatedData[8].value =
         // check if eth price at deposit time is less then current price
         // if yes then set curtUpside
         // else set -
@@ -317,16 +348,17 @@ export function WithdrawFund({
           ? `${curtUpside.toFixed(2)}`
           : "-";
       // check is position is liquidated or not
-      updatedData[8].value = position.status === "LIQUIDATED" ? "Yes" : "No";
+      updatedData[9].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       // set interest gain
-      updatedData[9].value =
+      updatedData[10].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[10].value = position.noOfAbondMinted
+      updatedData[11].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
+      setIsDataUpdating(false);
     } else {
       // if position and lastCumulativeRate is not available then set -
       // If details are not available, set each value in the depositData array to '-'
@@ -342,6 +374,7 @@ export function WithdrawFund({
       updatedData[8].value = "-";
       updatedData[9].value = "-";
       updatedData[10].value = "-";
+      updatedData[11].value = "-";
 
       setDepositData(updatedData);
     }
@@ -428,7 +461,7 @@ export function WithdrawFund({
     handleAmountProtected();
     setOpenConfirmNotice(true);
     setSpinner(false);
-  }, [position, lastCumulativeRate, interestGained]);
+  }, [position, lastCumulativeRate, interestGained, indexPoint]);
 
   // Create the options for the contract
   const options = Options.newOptions()
@@ -436,11 +469,11 @@ export function WithdrawFund({
     .toHex()
     .toString() as `0x${string}`;
 
-  const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(
-    options,
-    3,
-    1
-  );
+  const {
+    quoteValue: nativeFee,
+    quoteError,
+    isUsdValuePending: isQuotePending,
+  } = useGetGlobalQuote(options, 3, 1);
 
   const {
     approveUsda,
@@ -546,12 +579,7 @@ export function WithdrawFund({
     } else if (withdrawErrorReceipt) {
       toast.custom((t) => (
         <ToastNotificationError
-          title={
-            String(
-              (withdrawError?.cause as { shortMessage: string })
-                .shortMessage as string
-            ) || "Transaction failed, Please try again"
-          }
+          title={"Transaction failed, Please try again"}
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -574,7 +602,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.0001) * 1e6));
+    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.001) * 1e6));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
@@ -587,24 +615,23 @@ export function WithdrawFund({
     // }
   };
 
-  const callRepayInContract = async () => {
-    setIsApproveLoadingLocal(false);
-    setTimeout(() => {
-      setWithdrawLoadingLocal(true);
-    }, 800);
+  // const callRepayInContract = async () => {
+  //   setIsApproveLoadingLocal(false);
+  //   setTimeout(() => {
+  //     setWithdrawLoadingLocal(true);
+  //   }, 800);
 
-    const borrowSignedData = await refetchBorrowWithDrawSignedData();
+  //   const borrowSignedData = await refetchBorrowWithDrawSignedData();
 
-    withdrawUsda(
-      position.index,
-      nativeFee?.nativeFee || BigInt(0n),
-      borrowSignedData?.odosAssembledData,
-      borrowSignedData?.usdtFromOdos,
-      BigInt(borrowSignedData?.nonce || 0),
-      BigInt(borrowSignedData?.deadline || 0),
-      (borrowSignedData?.signature || "") as `0x${string}`
-    );
-  };
+  //   withdrawUsda(
+  //     position.index,
+  //     nativeFee?.nativeFee || BigInt(0n),
+  //     borrowSignedData?.odosAssembledData,
+  //     BigInt(borrowSignedData?.nonce || 0),
+  //     BigInt(borrowSignedData?.deadline || 0),
+  //     (borrowSignedData?.signature || "") as `0x${string}`
+  //   );
+  // };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -651,7 +678,6 @@ export function WithdrawFund({
             position.index,
             nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
-            borrowSignedData?.usdtFromOdos,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`
@@ -769,6 +795,17 @@ export function WithdrawFund({
     renewBorrow(BigInt(position.index), nativeFee?.nativeFee || BigInt(0n));
   };
 
+  const isPopupLoading =
+    isLastCumulativeRatePending ||
+    isInterestGainedPending ||
+    isUsdValuePending ||
+    isDataUpdating ||
+    isOptionsFeesTimeLimitsPending ||
+    isAllowancePending ||
+    isCurrentAPRPending ||
+    isQuotePending ||
+    isIndexPointLoading;
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -833,8 +870,16 @@ export function WithdrawFund({
               </label>
             </div>
           </div>
-
-          {toggleView === "repay" && (
+          {isPopupLoading && (
+            <div className="h-[470px] flex justify-center items-center">
+              <RingLoadingIcon
+                width={80}
+                height={80}
+                className="fill-black dark:fill-white w-8 h-8 "
+              />
+            </div>
+          )}
+          {toggleView === "repay" && !isPopupLoading && (
             <>
               <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
                 {depositData.map((item) => (
@@ -842,7 +887,9 @@ export function WithdrawFund({
                     key={item.headline}
                     className="flex justify-between text-sm text-gray-700"
                   >
-                    <span className="text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium">
+                    <span
+                      className={`text-grayLight items-center flex gap-1 text-[16px] md:text-[20px] font-medium ${item.titleColor}`}
+                    >
                       {item.headline}
                       {item.tooltip && (
                         <Tooltip>
@@ -861,7 +908,9 @@ export function WithdrawFund({
                         </Tooltip>
                       )}
                     </span>
-                    <span className="text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px]">
+                    <span
+                      className={`text-textBlack font-medium text-[16px]  dark:text-white md:text-[20px] ${item.valueColor}`}
+                    >
                       {item.value}
                     </span>
                   </div>
@@ -882,15 +931,22 @@ export function WithdrawFund({
               </div>
               <div
                 className={` h-[50px] ${
-                  position.status !== BorrowStatus.DEPOSITED
-                    ? "md:h-[100px]"
+                  position.status == BorrowStatus.WITHDREW
+                    ? "md:h-[150px]"
                     : "md:h-[70px]"
-                } mt-4 md:mt-6`}
+                } mt-4 md:mt-4`}
               >
+                {position.status == BorrowStatus.WITHDREW && (
+                  <div className="text-sm text-wrap text-center !text-[#49d69f] dark:!text-[#ABFFDE]">
+                    You can use your ABOND tokens to redeem your remaining 1/2
+                    collateral. They are earning AAVE lending yields and
+                    internal liquidation gains since your USDA+ mint.
+                  </div>
+                )}
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="h-full">
+                      <div className=" mt-4">
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -899,7 +955,11 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
-                          className="w-full h-full gap-0 flex flex-col justify-center  py-6 md:p-8 bg-black text-white text-[18px] md:text-[24px]"
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
+                            position.status == BorrowStatus.WITHDREW
+                              ? "md:p-12"
+                              : "md:p-8"
+                          }`}
                         >
                           <div>
                             {repayLoading
@@ -915,7 +975,7 @@ export function WithdrawFund({
                                 } ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
-                            <div className="text-sm break-all text-wrap">
+                            <div className="text-sm text-wrap">
                               (Final ETH amount may be lower due to option fees,
                               5% price upside share, and conversion based on
                               current ETH/USD value){" "}
@@ -969,7 +1029,7 @@ export function WithdrawFund({
             </>
           )}
 
-          {toggleView === "renew" && (
+          {toggleView === "renew" && !isPopupLoading && (
             <>
               <div className="w-full h-[67px]">
                 {
@@ -1141,11 +1201,14 @@ export function WithdrawFund({
                   {calculateRemainingDays(Number(position.validTill))} Days
                   remaining till maturity
                 </div>
-                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                  <span className="block w-3 h-3 bg-blue-600"></span>
-                  {calculateRemainingDays(Number(position.validTill)) - 15} Days
-                  remaining to activate renew
-                </div>
+                {calculateRemainingDays(Number(position.validTill)) > 15 && (
+                  <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                    <span className="block w-3 h-3 bg-blue-600"></span>
+                    {calculateRemainingDays(Number(position.validTill)) -
+                      15}{" "}
+                    Days remaining to activate renew
+                  </div>
+                )}
               </div>
               <div className="max-h-[280px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
@@ -1237,6 +1300,9 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW ||
                             position.status == BorrowStatus.LIQUIDATED ||
                             isFunctionPausedBorrow_Renew ||
+                            calculateRemainingDays(
+                              Number(position.validTill)
+                            ) <= 0 ||
                             !isFifteenDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400

@@ -13,21 +13,15 @@ import {
 } from "@/design-systems/atoms/tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
-import { usePoint } from "@/hookes/api-hooks/usePoint";
+
+import { calculateRemainingTimeDate, toLocalISOString } from "@/utils/helpers";
 
 const listItemVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
 };
 
-function SingleListItem({
-  item,
-  indexVal,
-}: {
-  //@ts-ignore
-  item: ListItem;
-  indexVal: number;
-}) {
+function SingleListItem({ item }: { item: any }) {
   const metrics = [
     {
       label: "Borrow Rate",
@@ -49,9 +43,20 @@ function SingleListItem({
     {
       label: "Point",
       value: (
-        <div className="flex items-baseline justify-center flex-row gap-1">
-          <p>{item.pointsToBeGiven}</p>
-          <div className="text-base">{`per ${item.minAmount} ETH`}</div>
+        <div className="flex items-center justify-center flex-row-reverse md:flex-col  gap-2 md:gap-1">
+          {!!item.boaster &&
+            calculateRemainingTimeDate(
+              toLocalISOString(new Date(item.boasterTime * 1000))
+            ).minutes > 0 &&
+            item.boaster > 1 && (
+              <div className="badge mt-1 pulsate w-fit  text-nowrap text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
+                {item.boaster}x Points
+              </div>
+            )}
+          <div className="flex items-baseline justify-center  text-nowrap flex-row gap-1">
+            <p>{item.pointsToBeGiven}</p>
+            <div className="text-base">{`per ${item.minAmount} ETH`}</div>
+          </div>
         </div>
       ),
       tooltipText: "Points to be given for depositing the token",
@@ -80,7 +85,7 @@ function SingleListItem({
       >
         <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full">
           <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[120px] lg:h-[160px]">
+          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[211px] lg:h-[160px]">
             {metrics.map((metric, index) => (
               <div key={index} className="md:flex-1 h-full">
                 <ListItemMetric {...metric} />

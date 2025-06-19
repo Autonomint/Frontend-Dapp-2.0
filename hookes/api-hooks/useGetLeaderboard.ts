@@ -1,20 +1,16 @@
-import { LeaderboardDetails } from "@/utils/interface";
+import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { it } from "node:test";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "wagmi/query";
 
-// Fetch the total number of borrowers
-async function getBorrowLeaderboard(): Promise<LeaderboardDetails[]> {
-  const response = await fetch(`${BACKEND_API_URL}/borrows/leaderboard`);
+// Fetch the list
+async function getLeaderboardList(): Promise<LeaderboardDetails[]> {
+  const response = await fetch(`${BACKEND_API_URL}/points/getLeaderboard`);
   return await response.json();
 }
-// Fetch the total number of cds depositors
-async function getCdsLeaderboard(): Promise<LeaderboardDetails[]> {
-  const response = await fetch(`${BACKEND_API_URL}/cds/cds/leaderboard`);
-  return await response.json();
-}
+
 /**
  * React hook to retrieve and manage leaderboard data for borrow and cds deposits.
  *
@@ -27,128 +23,48 @@ const useGetLeaderboard = () => {
   const [pageSize, setPageSize] = useState<number>(15); // Default page size
   const [currentPage, setCurrentPage] = useState<number>(1); // Default to first page
   const [pagedLeaderboardData, setPagedLeaderboardData] = useState<
-    LeaderboardDetails[]
+    LeaderboardDetailsList[]
   >([]);
   const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
 
   // Fetch and store borrow deposits using react-query
   const {
-    data: borrowdeposits,
-    error: borrowdepositsError,
-    isPending: borrowdepositsPending,
+    data: leaderboardData,
+    error: leaderboardListError,
+    isPending: leaderboardListPending,
   } = useQuery({
-    queryKey: ["borrowDeposits", chainId],
-    queryFn: () => getBorrowLeaderboard(),
+    queryKey: ["leaderboardList", chainId],
+    queryFn: () => getLeaderboardList(),
+    select: (data: any) => {
+      return data || [];
+    },
+    enabled: !!chainId,
   });
 
-  // Fetch and store cds deposits using react-query
-  const {
-    data: cdsdeposits,
-    error: cdsdepositsError,
-    isPending: cdsdepositsPending,
-  } = useQuery({
-    queryKey: ["Cdsdeposits", chainId],
-    queryFn: () => getCdsLeaderboard(),
-  });
+  const leaderboardList = leaderboardData?.leaderboard || [];
 
-  const isLeaderboardPending = borrowdepositsPending || cdsdepositsPending;
-
-  // Sorting function for the leaderboard details
-  function sortLeaderboardDetails(
-    items: LeaderboardDetails[]
-  ): LeaderboardDetails[] {
-    return items
-      .map((item) => ({
-        ...item,
-        sortByValue: item.totalDepositedAmount || item.totalAmint || 0,
-      }))
-      .sort((a, b) => {
-        // First, compare by totalDepositedAmount or totalAmint
-        if (Number(a?.sortByValue) > Number(b?.sortByValue)) {
-          return -1;
-        } else if (Number(a?.sortByValue) < Number(b?.sortByValue)) {
-          return 1;
-        }
-        // If both are equal, maintain the original order
-        return 0;
-      });
-  }
-
-  function mergeLeaderboardDetails(
-    leaderboard: LeaderboardDetails[]
-  ): LeaderboardDetails[] {
-    const mergedData: { [address: string]: LeaderboardDetails } = {};
-
-    leaderboard.forEach((entry) => {
-      const existingEntry = mergedData[entry.address];
-
-      if (existingEntry) {
-        // Merge logic for summing numeric fields and handling string conversion
-        mergedData[entry.address] = {
-          ...existingEntry,
-          rank: entry.rank, // Update with the latest rank or customize logic
-          totalDepositedAmount: (
-            (parseFloat(existingEntry.totalDepositedAmount || "0") || 0) +
-            (parseFloat(entry.totalDepositedAmount || "0") || 0)
-          ).toString(),
-          cdsdeposit: (existingEntry.cdsdeposit || 0) + (entry.cdsdeposit || 0),
-          totalAmint: (
-            (parseFloat(existingEntry.totalAmint || "0") || 0) +
-            (parseFloat(entry.totalAmint || "0") || 0)
-          ).toString(),
-          totalUSDa: (
-            (parseFloat(existingEntry.totalUSDa || "0") || 0) +
-            (parseFloat(entry.totalUSDa || "0") || 0)
-          ).toString(),
-          points: (
-            Number(entry.points) + Number(existingEntry.points)
-          ).toString(),
-
-          totalLTV: (existingEntry.totalLTV || 0) + (entry.totalLTV || 0),
-          yield: existingEntry.yield + entry.yield, // Summing yields
-          chainId: entry.chainId, // Assuming latest chainId
-        };
-      } else {
-        // If not a duplicate, simply add the entry
-        mergedData[entry.address] = { ...entry };
-      }
-    });
-
-    // Return the merged leaderboard details as an array
-    return Object.values(mergedData);
-  }
-  const leaderboardData = useMemo(() => {
-    return mergeLeaderboardDetails(
-      sortLeaderboardDetails([
-        ...((borrowdeposits || []) as LeaderboardDetails[]).map((item) => ({
-          ...item,
-          points: item.points || "0",
-        })),
-        ...((cdsdeposits || []) as LeaderboardDetails[]),
-      ])
-    );
-  }, [borrowdeposits, cdsdeposits, borrowdepositsError, cdsdepositsError]);
+  const isLeaderboardPending = leaderboardListPending;
 
   // Calculate the current page data and total pages
   const updatePagedData = () => {
-    if (leaderboardData) {
+    if (leaderboardList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      setPagedLeaderboardData(leaderboardData.slice(startIndex, endIndex));
+      setPagedLeaderboardData(leaderboardList.slice(startIndex, endIndex));
 
       // Calculate total pages based on pageSize and leaderboardData length
-      setTotalPages(Math.ceil(leaderboardData.length / pageSize));
+      setTotalPages(Math.ceil(leaderboardList.length / pageSize));
     }
   };
 
   // Update the paged data and total pages whenever leaderboardData, pageSize, or currentPage changes
   useEffect(() => {
     updatePagedData();
-  }, [leaderboardData, pageSize, currentPage]);
+  }, [leaderboardList, pageSize, currentPage]);
 
   // Function to go to the next page
   const handleNextPage = () => {
-    if (leaderboardData && currentPage < totalPages) {
+    if (leaderboardList && currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
@@ -161,26 +77,17 @@ const useGetLeaderboard = () => {
   };
 
   const totalBorrowCount = useMemo(() => {
-    return (
-      (leaderboardData as LeaderboardDetails[])?.filter(
-        (entry) => Number(entry.totalUSDa || 0) > 0
-      ).length || 0
-    );
-  }, [leaderboardData]);
+    return leaderboardData?.borrowerCount || 0;
+  }, [leaderboardList]);
 
   const totalDepositedCount = useMemo(() => {
-    return (
-      (leaderboardData as LeaderboardDetails[])?.filter(
-        (entry) => Number(entry.totalDepositedAmount || 0) > 0
-      ).length || 0
-    );
-  }, [leaderboardData]);
+    return leaderboardData?.cdsCount || 0;
+  }, [leaderboardList]);
 
   return {
-    leaderboardData: leaderboardData as LeaderboardDetails[], // Complete list of positions
+    leaderboardData: leaderboardList as LeaderboardDetails[], // Complete list of positions
     pagedLeaderboardData, // Current page's data
-    borrowdepositsError, // Error in fetching borrow deposits
-    cdsdepositsError, // Error in fetching cds deposits
+    leaderboardListError, // Error in fetching borrow deposits
     totalBorrowCount, // Total count of borrow deposits
     totalDepositedCount, // Total count of cds deposits
     currentPage, // Current page number

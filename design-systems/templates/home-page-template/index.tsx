@@ -1,6 +1,11 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
+import {
+  nativeTokenAddress,
+  testusdtAbiAddress,
+  usDaAddress,
+} from "@/blockchain/contracts";
 import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
@@ -8,31 +13,24 @@ import FarmYourLuckHoverElement from "@/design-systems/organisms/home-page/FarmY
 import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAHoverElement";
 import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import {
-  nativeTokenAddress,
-  testusdtAbiAddress,
-  usDaAddress,
-} from "@/blockchain/contracts";
-import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
+import { zeroAddress } from "viem";
 import { useAccount } from "wagmi";
-import { formatUnits, zeroAddress } from "viem";
-import { formatNumber } from "@/utils/helpers";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
-import Ticker from "@/design-systems/molecule/Ticker";
 
 export default function HomeTemplate() {
   const router = useRouter();
   const { theme } = useTheme();
-  const { chainId } = useAccount();
-
+  const { chainId, isConnected, address } = useAccount();
   // scroll down btn state
   const [isScrollBottom, setIsScrollBottom] = useState<boolean>(false);
 
@@ -72,16 +70,15 @@ export default function HomeTemplate() {
       ).toFixed(2)}`,
     },
     {
-      title: "dCDS",
+      title: "Earn With dCDS",
       subtitle: `TVL - $${(
-        Number(formatUnits(BigInt(tvlValueUSDT || 0n), 6)) +
-        Number(Number(tvlValueUSDa || 0) / 1e6) +
-        ((Number(tvlValueNative) || 0) * Number(getOraclePrice[0])) / 1e36
+        Number(GlobalContractData?.totalCdsDepositedAmount ?? 0n) /
+        10 ** 6
       ).toFixed(2)}`,
     },
-    { title: "Bridge", subtitle: "Coming soon" },
-    { title: "Farm Your Luck", subtitle: "Earn Option Fee" },
-    { title: "Redeem ABOND", subtitle: "" },
+    { title: "Bridge", subtitle: "" },
+    { title: "Farm Your Luck", subtitle: "Win Option Fee And Rewards" },
+    { title: "Redeem", subtitle: "" },
     { title: "Buy", subtitle: "" },
   ];
 
@@ -99,11 +96,16 @@ export default function HomeTemplate() {
   const feesList = [
     {
       orgName: "Autonomint",
-      amount: `$${oneEthOptionFees.toFixed(2)}`,
+      amount: (
+        <div className="flex gap-2 items-baseline">
+          {oneEthOptionFees.toFixed(2)}
+          <span className="text-[14px]">per month</span>
+        </div>
+      ),
       tag: "Lowest Fee",
       tagColor: "#05A552",
-      tagBg: "#05A552",
-      textColor: "white",
+      tagBg: "#a6ffd0",
+      textColor: "#05A552",
       borderColor: "borderGreen",
     },
     // {
@@ -216,10 +218,41 @@ export default function HomeTemplate() {
     }
   };
 
+  // get user tracking data and setter function
+  const {
+    userTrackingData,
+    setUserTrackLocalStorageData,
+    getUserTrackLocalStorageData,
+  } = useTrackUserData();
+
+  // update user tracking data
+  useEffect(() => {
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      homePage: {
+        count: (data?.homePage?.count || 0) + 1,
+        visited: true,
+        enterTimestamp: data?.homePage?.count
+          ? data?.homePage?.enterTimestamp
+          : new Date().toISOString(),
+        exitTimestamp: new Date().toISOString(),
+      },
+    });
+  }, []);
+
+  // update user tracking data
+  useEffect(() => {
+    const data = getUserTrackLocalStorageData();
+    setUserTrackLocalStorageData({
+      ...data,
+      address,
+      chainId,
+    });
+  }, [isConnected]);
+
   return (
     <div className="w-full">
-      {/* <Ticker /> */}
-
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}
@@ -244,10 +277,10 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[350px]  lg:!h-[480px]  xl:!h-[550px] 3xl:!h-[620px]"
+                ? "w-full lg:w-[80%] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
                 : // height and width style based on hoveredIndex
                 hoveredIndex === 1
-                ? "lg:w-[40%]  lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
@@ -276,7 +309,7 @@ export default function HomeTemplate() {
                     {items[0].title}
                   </h3>
                   {items[0].subtitle && (
-                    <p className="text-[24px] lg:text-[32px] text-gray-600">
+                    <p className="text-[24px] lg:text-[32px] text-grayLight">
                       {items[0].subtitle}
                     </p>
                   )}
@@ -288,10 +321,10 @@ export default function HomeTemplate() {
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                  "w-full lg:w-[60%]  sm:h-[350px]   lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                  "w-full lg:w-[60%]  sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
-                  " w-full lg:w-[30%] lg:!h-[480px]  xl:!h-[550px]  3xl:!h-[620px]"
+                  " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex
@@ -322,7 +355,7 @@ export default function HomeTemplate() {
                     {items[1].title}
                   </h3>
                   {items[1].subtitle && (
-                    <p className="text-gray-600 text-[24px] lg:text-[32px]">
+                    <p className="text-grayLight text-[24px] lg:text-[32px]">
                       {items[1].subtitle}
                     </p>
                   )}
@@ -370,7 +403,7 @@ export default function HomeTemplate() {
                     {items[2].title}
                   </h3>
                   {items[2].subtitle && (
-                    <p className="text-gray-600 text-[24px]  lg:text-[32px]">
+                    <p className="text-grayLight text-[24px]  lg:text-[32px]">
                       {items[2].subtitle}
                     </p>
                   )}
@@ -415,7 +448,7 @@ export default function HomeTemplate() {
                     {items[3].title}
                   </h3>
                   {items[3].subtitle && (
-                    <p className="text text-[24px] lg:text-[32px]">
+                    <p className="text-grayLight text-[24px] lg:text-[32px]">
                       {items[3].subtitle}
                     </p>
                   )}
@@ -437,29 +470,7 @@ export default function HomeTemplate() {
           <div
             className={`flex flex-col lg:flex-row mt-[-2px] animateTransfer closeAnimateButtom w-full  `}
           >
-            {/* Dashboard Section  for mobile and tablet*/}
-            <div
-              className={`relative lg:hidden cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
-              onClick={() => {
-                router.push("/dashboard/portfolio");
-              }}
-              style={{
-                transition: "width 0.3s ease-in, height 0.3s ease-in",
-              }}
-            >
-              <div
-                className={
-                  "p-4 h-full flex flex-row  justify-between items-center"
-                }
-              >
-                <h3 className="font-medium text-[32px] lg:text-[42px]  ">
-                  Dashboard
-                </h3>
-                <div className="hidden group-hover:flex items-center">
-                  <LeftArrowIcon width={42} height={42} />
-                </div>
-              </div>
-            </div>{" "}
+            {/* Dashboard Section  for mobile and tablet*/}{" "}
             <div
               className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full lg:w-[50%] border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
               onClick={() => {
@@ -504,13 +515,35 @@ export default function HomeTemplate() {
               </div>
             </div>{" "}
           </div>
+          <div
+            className={`relative  cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full  border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
+            onClick={() => {
+              router.push("/dashboard/portfolio");
+            }}
+            style={{
+              transition: "width 0.3s ease-in, height 0.3s ease-in",
+            }}
+          >
+            <div
+              className={
+                "p-4 h-full flex flex-row  justify-between items-center"
+              }
+            >
+              <h3 className="font-medium text-[32px] lg:text-[42px]  ">
+                Dashboard
+              </h3>
+              <div className="hidden group-hover:flex items-center">
+                <LeftArrowIcon width={42} height={42} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {/* Scroll down arrow button  */}
       {!isScrollBottom && (
         <ScrollDownArrow
           handleClick={() => handleScroll()}
-          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-20  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border-grayLight border"
+          classNames="bottom-10 right-[unset] top-[unset] w-[42px] left-[44%] xl:left-[48.8%] transform -translate-x-1/2  z-9  dark:bg-black bg-white shadow-xl rounded-full dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] border-grayLight border"
         />
       )}
     </div>

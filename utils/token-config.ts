@@ -10,6 +10,7 @@ import {
   usDaAddress,
   weETHAddress,
   wrsETHAddress,
+  wsuperOETHAddress,
 } from "@/blockchain/contracts";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
@@ -107,6 +108,17 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             // image: "https://yourdomain.com/token-image.png",
           },
         };
+      case "wsuperoethb":
+        return {
+          type: "ERC20",
+          options: {
+            address:
+              wsuperOETHAddress[chainId as keyof typeof wsuperOETHAddress],
+            symbol: "wsuperOETH",
+            decimals: 18,
+            // image: "https://yourdomain.com/token-image.png",
+          },
+        };
       default:
         return {
           type: "ERC20",
@@ -125,7 +137,7 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
 
 export const getIconMapping = (theme: string, token: string) => {
   const mapping = {
-    usda: theme === "dark" ? USDaIconGreen : USDaIcon,
+    "usda+": theme === "dark"  ? USDaIconGreen : USDaIcon,
     usdt: UsdtIcon,
     aero: AEROIcon,
     op: OPIcon,

@@ -3,27 +3,19 @@ import React, { useState } from "react";
 
 const gradientMap: { [key: string]: string } = {
   Autonomint: "linear-gradient(to right, #FFFFFF, #CCFFEB)",
-  Deribit: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
+  Source: "linear-gradient(to right, #FFFFFF, #FFF7E0)",
   Hegic: "linear-gradient(to right, #FFFFFF, #FEE2E2)",
 };
 
-function PriceComparison({
-  orgName,
-  tag,
-  amount,
-  tagColor,
-  textColor,
-  tagBg,
-  borderColor,
-}: {
-  orgName: string;
-  tag: string;
-  amount: React.ReactNode;
-  tagColor: string;
-  textColor: string;
-  tagBg: string;
-  borderColor: string;
-}) {
+function YieldComparison() {
+  const orgName = "Source";
+
+  const tag = "ETH price hedge";
+  const tagColor = "#D6A100";
+  const tagBg = "#FFF7E0";
+  const textColor = "#D6A100";
+  const borderColor = "borderYellow";
+
   const gradientBackground = gradientMap[orgName] || "transparent";
   const [isHover, setIsHover] = useState(false);
   const { theme } = useTheme();
@@ -31,13 +23,15 @@ function PriceComparison({
     "(prefers-color-scheme: dark)"
   ).matches;
 
+
+
   return (
     <div
       // xl:w-[60%]w-[40%] xl:flex-1
       className={`flex relative ${isHover ? borderColor : ""} ${
         isHover && "priceCardBorderLeft "
-      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4 p-2  gap-2 md:gap-4 justify-between   transition-all duration-300 ease-in-out 
-      xl:w-[400px] w-[200px] sm:w-[300px]
+      } group flex-col xl:px-4 2xl:px-6 lg:p-3 xl:py-4 p-2 gap-2 md:gap-4 justify-between   transition-all duration-300 ease-in-out 
+      xl:w-[400px] w-[200px] sm:w-[300px]  
       `}
       style={{
         backgroundImage: isHover
@@ -66,7 +60,7 @@ function PriceComparison({
       }}
     >
       <div className="flex justify-between items-center">
-        <span className=" text-[12px]  sm:text-[14px] lg:text-[18px] 2xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
+        <span className=" text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[24px] group-hover:font-semibold text-textBlack dark:text-white">
           {orgName}
         </span>
         {!!tag && (
@@ -75,12 +69,13 @@ function PriceComparison({
               backgroundColor: isHover ? tagColor : tagBg,
               color: isHover ? "white" : textColor,
             }}
-            className="text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[24px] p-[2px] md:p-1  "
+            className="text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[24px] p-[2px] md:p-1 "
           >
             {tag}
           </span>
         )}
       </div>
+
       <div className="flex justify-between">
         <span
           style={{
@@ -98,30 +93,29 @@ function PriceComparison({
           }}
           className={` text-textBlack  text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
-          Fee
+          Yields
         </span>
         <span
           style={{
-            color:
-              theme == "dark" && orgName == "AthermintXYZ"
-                ? isHover
-                  ? "#b42e2e"
-                  : ""
-                : isHover
+            color: isHover
+              ? theme == "dark"
                 ? tagColor
-                : theme == "dark"
-                ? "white"
-                : prefersDarkMode
-                ? "dark"
-                : "black",
+                : tagColor
+              : theme == "dark"
+              ? "white"
+              : theme == "light"
+              ? "black"
+              : prefersDarkMode
+              ? "white"
+              : "black",
           }}
           className={` text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
-          {amount}
+          Max of 16.17% <span className="text-[14px]">per month</span>
         </span>
       </div>
     </div>
   );
 }
 
-export default PriceComparison;
+export default YieldComparison;

@@ -8,7 +8,6 @@ export interface SignedDataReturn {
   nonce: number;
   deadline: number;
   odosAssembledData: string;
-  usdtFromOdos: string;
 }
 /**
  *

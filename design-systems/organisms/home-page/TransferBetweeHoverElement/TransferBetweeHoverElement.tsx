@@ -8,7 +8,7 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import arrow from "@/app/assets/arrow-right-02.png";
-import ModeImage from "@/app/assets/mode.png";
+import ModeImage from "@/app/assets/op-blue.svg";
 import OptimismImage from "@/app/assets/optimism.png";
 import infinityImage from "@/app/assets/infinity.svg";
 import { useRouter } from "next/navigation";

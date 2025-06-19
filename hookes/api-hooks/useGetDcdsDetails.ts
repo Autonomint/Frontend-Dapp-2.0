@@ -20,8 +20,8 @@ function getDeposits(
 }
 
 /**
- * @desc get cds position list hook backend api 
- * with pagination and sorting 
+ * @desc get cds position list hook backend api
+ * with pagination and sorting
  * @returns {dcdsPositionList: dcdsDepositDetails[], pagedDcdsPositionList: dcdsDepositDetails[], dcdsPositionListError: Error, dcdsPositionListRefetch: () => void, dcdsPositionListLoading: boolean, currentPage: number, pageSize: number, setPageSize: (size: number) => void, totalPages: number, handleNextPage: () => void, handlePrevPage: () => void, setCurrentPage: (page: number) => void}
  */
 const useGetDcdsDepositList = () => {
@@ -57,12 +57,11 @@ const useGetDcdsDepositList = () => {
     if (dcdsPositionList) {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
-      
+
       setPagedDcdsPositionList(
         [...dcdsPositionList]
-          .sort((a, b) => b.index - a.index)
+          .sort((a, b) => a.index - b.index)
           .slice(startIndex, endIndex)
-          .reverse()
       );
 
       // Calculate total pages based on pageSize and positionList length

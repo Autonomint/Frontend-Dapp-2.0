@@ -34,7 +34,7 @@ export enum StrikePrice {
   TWENTY_FIVE,
 }
 
-export enum AssetNames {
+export enum AssetName {
   DUMMY,
   ETH,
   WeETH,
@@ -42,22 +42,29 @@ export enum AssetNames {
   rsETH,
   USDa,
   ABOND,
-  TUSDT,
+  USDT,
+  NativeToken,
   USDC,
   sUSD,
+  WSUPER_OETH,
 }
 export const BorrowAssetsEnum = {
-  ETH: AssetNames.ETH,
-  weETH: AssetNames.WeETH,
-  wrsETH: AssetNames.WrsETH,
-  rsETH: AssetNames.rsETH,
+  ETH: AssetName.ETH,
+  weETH: AssetName.WeETH,
+  wrsETH: AssetName.WrsETH,
+  rsETH: AssetName.rsETH,
+  wsuperOETHb: AssetName.WSUPER_OETH,
 };
 
 export const RedeemAssets = {
-  usda: AssetNames.USDa,
-  abond: AssetNames.ABOND,
-  tusdt: AssetNames.TUSDT,
+  usda: AssetName.USDa,
+  abond: AssetName.ABOND,
+  tusdt: AssetName.USDT,
 };
+
+export const alchemyApiKeys = "WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE";
+
+export const LOCAL_STORAGE_KEY = "userTrackingData";
 
 // urls
 export const AUTONOMINT_DAPP_URL = "https://app.autonomint.com/";
@@ -118,3 +125,10 @@ export const NEXT_PUBLIC_LINK_DOCS =
 export const NEXT_PUBLIC_LINK_DISCORD = "https://discord.com/invite/4QFaUTwjkU";
 export const NEXT_PUBLIC_LINK_TWITTER = "https://x.com/autonomint";
 export const NEXT_PUBLIC_LINK_TELEGRAM = "https://t.me/+lBgFePSf6982ZDA9";
+
+export const assetNameForRewardDataBorrow = {
+  ETH: "ETH",
+  wrsETH: "WrsETH",
+  weETH: "WeETH",
+  wsuperOETHb: "WSuperOethB",
+};

@@ -462,6 +462,7 @@ export const MenuIcon: React.FC<SvgIconProps> = (props) => {
     </svg>
   );
 };
+
 export const CloseIcon: React.FC<SvgIconProps> = (props) => {
   return (
     <svg
@@ -478,6 +479,198 @@ export const CloseIcon: React.FC<SvgIconProps> = (props) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+};
+
+export const BrandLogoSmall = ({ className }: { className?: string }) => {
+  const { theme } = useTheme();
+
+  return (
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 116 156"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
+      className={className}
+    >
+      <path
+        d="M0.810303 104.719C38.9786 104.719 76.8445 104.719 115.024 104.719L65.9478 0.617287H50.0351L0.810303 104.719Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M56.5213 120.938L21.8298 103.89L56.9204 48.5617L91.5122 103.99L56.5213 120.938Z"
+        fill="black"
+      />
+      <path
+        d="M56.0358 121.933L20.2322 104.338L56.9281 46.4804L93.1056 104.451C80.9089 110.354 68.7107 116.254 56.5209 122.172L56.0358 121.933ZM23.4276 103.444L56.523 119.708L89.9189 103.532L56.9148 50.646L23.4276 103.444Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M55.51 120.938V49.0525H57.7312V120.938H55.51Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M22.9812 114.322L56.6198 156L90.36 116.025L56.6198 131.533L22.9812 114.322Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M21.3621 102.901L56.1528 86.5451L57.0902 88.55L22.2992 104.906L21.3621 102.901Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+      <path
+        d="M90.9431 104.906L56.1516 88.55L57.089 86.5451L91.8806 102.901L90.9431 104.906Z"
+        fill={theme === "dark" ? "#A1FFCE" : "black"}
+      />
+    </svg>
+  );
+};
+
+export const DecorativeBackground: React.FC = () => {
+  return (
+    <svg
+      viewBox="0 0 238 64"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-full h-full"
+    >
+      <g clipPath="url(#clip0_2009_3430)">
+        <rect width="100%" height="100%" fill="#0C0C0C" />
+        <g filter="url(#filter0_f_2009_3430)">
+          <circle
+            cx="191.5"
+            cy="-7"
+            r="39"
+            fill="url(#paint0_linear_2009_3430)"
+          />
+        </g>
+        <g filter="url(#filter1_f_2009_3430)">
+          <circle
+            cx="13.5"
+            cy="87"
+            r="52"
+            fill="url(#paint1_linear_2009_3430)"
+          />
+        </g>
+        <g filter="url(#filter2_f_2009_3430)">
+          <ellipse
+            cx="242"
+            cy="-3.5"
+            rx="40.5"
+            ry="32.5"
+            fill="url(#paint2_linear_2009_3430)"
+          />
+        </g>
+      </g>
+      <defs>
+        <filter
+          id="filter0_f_2009_3430"
+          x="112.5"
+          y="-86"
+          width="158"
+          height="158"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="20"
+            result="effect1_foregroundBlur_2009_3430"
+          />
+        </filter>
+        <filter
+          id="filter1_f_2009_3430"
+          x="-88.5"
+          y="-15"
+          width="204"
+          height="204"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="25"
+            result="effect1_foregroundBlur_2009_3430"
+          />
+        </filter>
+        <filter
+          id="filter2_f_2009_3430"
+          x="171.5"
+          y="-66"
+          width="141"
+          height="125"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="15"
+            result="effect1_foregroundBlur_2009_3430"
+          />
+        </filter>
+        <linearGradient
+          id="paint0_linear_2009_3430"
+          x1="152.5"
+          y1="-7"
+          x2="230.5"
+          y2="-7"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#A1C4FD" />
+          <stop offset="1" stopColor="#C2E9FB" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_2009_3430"
+          x1="-21.8017"
+          y1="106.412"
+          x2="57.1752"
+          y2="154.364"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#7F20FA" />
+          <stop offset="0.575" stopColor="#F22384" />
+          <stop offset="0.985" stopColor="#5D00F3" />
+        </linearGradient>
+        <linearGradient
+          id="paint2_linear_2009_3430"
+          x1="214.505"
+          y1="8.6325"
+          x2="268.043"
+          y2="49.1404"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#7F20FA" />
+          <stop offset="0.575" stopColor="#F22384" />
+          <stop offset="0.985" stopColor="#5D00F3" />
+        </linearGradient>
+        <clipPath id="clip0_2009_3430">
+          <rect width="100%" height="100%" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 };
