@@ -104,14 +104,14 @@ export const weETHAddress: ChainAddresses = {
 
 // Addresses for the rsETH contract
 export const rsETHAddress: ChainAddresses = {
-  84532: "0x7118Ee6D6eBeb3028FFc885b2f62Cf7264c2168F",
-  11155420: "0x101ddb5026322f42E0F133352c115AD4B40B9412",
+  8453: "0x7118Ee6D6eBeb3028FFc885b2f62Cf7264c2168F",
+  10: "0x101ddb5026322f42E0F133352c115AD4B40B9412",
 } as const;
 
 // Addresses for the wsuperOETH contract
 export const wsuperOETHAddress: ChainAddresses = {
-  84532: "0x7F1Ed7Dcb429ed1Adb93f5d56537c4bDaf54eD50",
-  11155420: zeroAddress,
+  8453: "0x7FcD174E80f264448ebeE8c88a7C4476AAF58Ea6",
+  10: zeroAddress,
 } as const;
 
 // Addresses for the borrow assets
