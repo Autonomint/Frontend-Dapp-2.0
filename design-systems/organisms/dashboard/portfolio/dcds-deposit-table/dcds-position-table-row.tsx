@@ -54,7 +54,7 @@ const DcdsPositionTableRow = ({
             ? chainId === NetworkId.BaseSepolia
               ? "aero"
               : "op"
-            : token
+            : token 
         );
       }
     }

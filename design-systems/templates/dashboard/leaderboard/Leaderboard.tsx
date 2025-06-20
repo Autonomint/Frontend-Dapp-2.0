@@ -39,7 +39,7 @@ function Leaderboard() {
         <div className="col-span-1">
           {/* Total number of dcds depositors */}
           <PortfolioMetrics
-            subHeading="Total number of dcds depositors"
+            subHeading="Total number of dCDS depositors"
             value={totalDepositedCount.toString() || ""}
           />
         </div>

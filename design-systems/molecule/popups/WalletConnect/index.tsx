@@ -13,6 +13,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import { useParams, usePathname } from "next/navigation";
 import { NetworkId } from "@/utils/constants";
 import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
+import { useAppKit } from "@reown/appkit/react";
 interface SwitchChainPopupProps {}
 
 /**
@@ -28,6 +29,15 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const { chainId, isConnected } = useAccount();
   const pathname = usePathname();
   const [switchingChain, setSwitchingChain] = useState<number>();
+  const { open, close } = useAppKit();
+
+  useEffect(() => {
+    if (!isConnected) {
+      open();
+    } else {
+      close();
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true

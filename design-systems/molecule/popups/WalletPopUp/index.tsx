@@ -243,7 +243,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         >
           <div className="hidden lg:block ">
             <Popover>
-              <PopoverTrigger className="py-[12px] px-4 bg-[#ABFFDE]" asChild>
+              <PopoverTrigger className="py-[14px] h-full px-4 bg-[#ABFFDE]" asChild>
                 <div className="relative flex items-center gap-1">
                   {chainId == NetworkId.Mode ? (
                     <Image
