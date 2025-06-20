@@ -28,7 +28,7 @@ import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useUserGains from "@/hookes/contract-hooks/useUserGains";
 
 function PortfolioTemplate() {
-  const { address, chainId } = useAccount();
+  const { address, chainId, isConnected } = useAccount();
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
 
   // portfolio current tab
@@ -144,6 +144,7 @@ function PortfolioTemplate() {
   // handle refresh table data based on tab position
   const handleRefresh = async () => {
     try {
+      if (!address || !chainId || !isConnected) return;
       setRefreshLoading(true);
       if (tabPosition == "Borrowed") {
         await RefreshTableData();
@@ -327,7 +328,9 @@ function PortfolioTemplate() {
         </div>
         <div
           onClick={handleRefresh}
-          className="w-1/2 xl:w-[15%] text-center xl:text-left cursor-pointer  justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid"
+          className={`w-1/2  xl:w-[15%] text-center xl:text-left   justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid ${
+            isConnected ? "cursor-pointer " : "opacity-50 cursor-not-allowed"
+          }`}
         >
           Refresh
           <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>
