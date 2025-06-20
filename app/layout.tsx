@@ -62,7 +62,7 @@ export default function RootLayout({
                   >
                     <div className="min-h-[calc(100vh-210px)]">
                       {children}
-                      <InviteCodePopup />
+                      {/* <InviteCodePopup /> */}
                       <SwitchChainPopup />
                       {/* <SupportCall /> */}
                       {/* <BetaConfirmation /> */}
