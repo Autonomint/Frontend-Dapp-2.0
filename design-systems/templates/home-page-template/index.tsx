@@ -253,6 +253,12 @@ export default function HomeTemplate() {
 
   return (
     <div className="w-full">
+      <div className="w-full h-[40px] bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top flex justify-center items-center">
+        <p className="lg:text-[15px] text-[12px] sm:text-[14px] text-center  font-medium dark:text-white  text-black">
+          Note: This dApp is in beta. While it has been audited, features are
+          still evolving. Use at your own risk.
+        </p>
+      </div>
       <Image
         className=" hidden h-full  dark:lg:block w-full"
         src={darkboat}

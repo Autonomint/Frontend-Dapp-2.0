@@ -395,15 +395,15 @@ export function DcdsWithdrawModal({
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
       );
-      // Update time difference value
+      // Update all time APY value
       updatedData[7].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.liquidatedETHValue
+          ? position?.apys?.currentTimeAPYTillNow
           : apy[5]
       ).toFixed(2)}%`;
-      // Update aprAtDeposit value
+      // Update yearly APY value
       updatedData[8].value = `${Number(
         apy == undefined
           ? 0
@@ -418,13 +418,13 @@ export function DcdsWithdrawModal({
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.currentTimeAPYTillNow
+          ? position?.apys?.liquidatedCollateralInETH 
           : apy[3]
       ).toFixed(2)} ETH (${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.liquidatedCollateralInETH
+          ? position?.apys?.liquidatedETHValue
           : apy[4]
       ).toFixed(2)}$)`;
       // Update optedForLiquidation value
@@ -870,7 +870,7 @@ export function DcdsWithdrawModal({
                       apy == undefined
                         ? 0
                         : position.status !== "DEPOSITED"
-                        ? position?.apys?.liquidatedCollateralInETH
+                        ? position?.apys?.priceChangePL
                         : apy[2]
                     ).toFixed(4)}
                   </Label>
@@ -884,7 +884,7 @@ export function DcdsWithdrawModal({
                       apy == undefined
                         ? 0
                         : position.status !== "DEPOSITED"
-                        ? position?.apys?.liquidatedETHValue
+                        ? position?.apys?.currentTimeAPYTillNow
                         : apy[5]
                     ).toFixed(2)}%`}
                   </Label>
