@@ -952,7 +952,7 @@ export function WithdrawFund({
                 } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
-                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#69a28c] ">
+                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
                     You can use your ABOND tokens to redeem your remaining 1/2
                     collateral. They are earning AAVE lending yields and
                     internal liquidation gains since your USDA+ mint.
