@@ -774,7 +774,7 @@ const RedeemContainer = () => {
                   <div className="text-grayLight">
                     ABond Price:{" "}
                     <span className="dark:text-white text-black">
-                      ${isNaN(ABondPrice) ? '0' : ABondPrice.toFixed(2)}
+                      ${isNaN(ABondPrice) ? "0" : ABondPrice.toFixed(2)}
                     </span>
                   </div>
                 ) : (
@@ -828,10 +828,7 @@ const RedeemContainer = () => {
                     <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-2 mr-1 ">
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
-                          ? (
-                              Number(formatEther(outputData[4])) -
-                              Number(formatEther(outputData[0]))
-                            ).toFixed(5)
+                          ? Number(formatEther(outputData[4])).toFixed(5)
                           : 0}{" "}
                         ETH
                       </div>
