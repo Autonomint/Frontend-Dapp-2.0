@@ -1,11 +1,6 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
-import {
-  nativeTokenAddress,
-  testusdtAbiAddress,
-  usDaAddress,
-} from "@/blockchain/contracts";
 import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
@@ -14,17 +9,13 @@ import MintUSDAHoverElement from "@/design-systems/organisms/home-page/MintUSDAH
 import TransferBetweeHoverElement from "@/design-systems/organisms/home-page/TransferBetweeHoverElement/TransferBetweeHoverElement";
 import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
-import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
-import useGetTVLUSDA from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { zeroAddress } from "viem";
 import { useAccount } from "wagmi";
 
 export default function HomeTemplate() {
@@ -36,29 +27,10 @@ export default function HomeTemplate() {
 
   // state for current hover box of navigation
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
   // getting omni chain data from blockchain
-  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
+  const { omniChainData: GlobalContractData } =
     useGetUsdtAmountDepositedTillNow();
-
-  // token address based in chain id
-  const nativeTokenAdds = nativeTokenAddress[chainId || 0] || zeroAddress;
-  // getting price from oracle blockchain
-  const { getOraclePrice, getOraclePriceRefetch } =
-    useMasterPriceOracle(nativeTokenAdds);
-
-  // getting TVL for USDA USDT Native Token
-  const { isTVLPending, tvlValue: tvlValueNative } = useGetTVL(
-    nativeTokenAddress[chainId as keyof typeof usDaAddress]
-  );
-  const { isTVLPending: isTVLPendingUsd, tvlValue: tvlValueUSDa } =
-    useGetTVLUSDA(usDaAddress[chainId as keyof typeof usDaAddress]);
-
-  const { isTVLPending: isTVLPendingUsdt, tvlValue: tvlValueUSDT } =
-    useGetTVLUSDA(
-      testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
-    );
 
   // box option list for navigation
   const items = [
@@ -299,11 +271,9 @@ export default function HomeTemplate() {
             }`}
             onMouseEnter={() => {
               setHoveredIndex(0);
-              setCurrentIndex(1);
             }}
             onMouseLeave={() => {
               setHoveredIndex(null);
-              setCurrentIndex(null);
             }}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",
@@ -345,11 +315,9 @@ export default function HomeTemplate() {
             }`}
             onMouseEnter={() => {
               setHoveredIndex(1);
-              setCurrentIndex(1);
             }}
             onMouseLeave={() => {
               setHoveredIndex(null);
-              setCurrentIndex(null);
             }}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",
@@ -393,11 +361,9 @@ export default function HomeTemplate() {
             }`}
             onMouseEnter={() => {
               setHoveredIndex(2);
-              setCurrentIndex(2);
             }}
             onMouseLeave={() => {
               setHoveredIndex(null);
-              setCurrentIndex(null);
             }}
             style={{
               transition: "width 0.3s ease-in, height 0.3s ease-in",
@@ -435,11 +401,9 @@ export default function HomeTemplate() {
             }`}
             onMouseEnter={() => {
               setHoveredIndex(3);
-              setCurrentIndex(2);
             }}
             onMouseLeave={() => {
               setHoveredIndex(null);
-              setCurrentIndex(null);
             }}
             onClick={() => {
               router.push("/farmyourluck");

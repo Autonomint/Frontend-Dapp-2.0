@@ -640,26 +640,11 @@ function InputForm({ currency }: { currency: string }) {
         ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
-  // // calculate the point based on farm luck boaster
-  // const luckBoasterPoint =
-  //   depositTokenPoint *
-  //   Number(
-  //     (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-  //       .minutes > 0 &&
-  //       10) ||
-  //       (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-  //         .minutes > 0 &&
-  //         5) ||
-  //       0
-  //   );
-
   // calculate the total point
   const totalPoint = depositTokenPoint * totalBooster;
 
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
-
-  console.log(totalBooster, totalTimeStamp, "totalBooster");
 
   return (
     <form onSubmit={formik.handleSubmit}>

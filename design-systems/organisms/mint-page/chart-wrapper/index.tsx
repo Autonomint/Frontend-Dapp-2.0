@@ -1,21 +1,18 @@
+import cryptoEth from "@/app/assets/eth.png";
+import WeETH from "@/app/assets/weETH-icoon.webp";
+import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
+import WrsETH from "@/app/assets/WrsETH-icon.png";
+import Spinner from "@/design-systems/atoms/Spinner";
 import { Typography } from "@/design-systems/atoms/Typography";
-import useMarketChart from "@/hookes/api-hooks/useGetChartData";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { assetNameForRewardDataBorrow } from "@/utils/constants";
+import { useTokenConfig } from "@/utils/token-config";
+import { CircleFadingPlus } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import cryptoEth from "@/app/assets/eth.png";
-import WeETH from "@/app/assets/weETH-icoon.webp";
-import WrsETH from "@/app/assets/WrsETH-icon.png";
-import { Button } from "@/design-systems/atoms/button";
-import { useWalletClient } from "wagmi";
-import { useTokenConfig } from "@/utils/token-config";
 import { toast } from "sonner";
-import Spinner from "@/design-systems/atoms/Spinner";
-import { CircleFadingPlus } from "lucide-react";
-import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
-import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
-import { calculateRemainingTimeDate } from "@/utils/helpers";
-import { assetNameForRewardDataBorrow } from "@/utils/constants";
+import { useWalletClient } from "wagmi";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -36,8 +33,6 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["BINANCE:ETHUSD|1D"];
     }
   };
-
-  console.log(theme, "theme");
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(

@@ -95,10 +95,7 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
           </div>
         </div>
-        {/* <HowItWorksBorrowPopUp
-          isDialogOpen={isDialogOpen}
-          setIsDialogOpen={setIsDialogOpen}
-        /> */}
+       
       </div>
     </>
   );
