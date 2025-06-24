@@ -1,5 +1,8 @@
 import { Button } from "@/design-systems/atoms/button";
-import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import {
+  LiquidityLandIcon,
+  RingLoadingIcon,
+} from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
@@ -78,9 +81,21 @@ function LeaderboardTable({
                   )}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
-                  {item.totalPoints
-                    ? Math.round(Number(item?.totalPoints || 0))
-                    : 0}
+                  <div className="flex justify-end  gap-2 items-center">
+                    <div>
+                      {item.totalPoints
+                        ? Math.round(Number(item?.totalPoints || 0))
+                        : 0}
+                    </div>
+                    <div className="flex bg-gray-200 dark:bg-neutral-800 items-center w-fit gap-1 border-[1px] border-grayLight   rounded-[24px]">
+                      <span className="ml-[-2px]">
+                        <LiquidityLandIcon />{" "}
+                      </span>
+                      <span className="text-black dark:text-white text-[14px] py-[3px] mr-2">
+                        1.25x
+                      </span>
+                    </div>
+                  </div>
                 </td>
               </tr>
             );

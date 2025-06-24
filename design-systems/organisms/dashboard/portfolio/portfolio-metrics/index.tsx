@@ -1,4 +1,5 @@
 import Spinner from "@/design-systems/atoms/Spinner";
+import { LiquidityLandIcon } from "@/design-systems/atoms/SvgIcons";
 
 function PortfolioMetrics({
   subHeading,
@@ -17,7 +18,19 @@ function PortfolioMetrics({
             <Spinner size={32} />
           </div>
         ) : (
-          value
+          <div className="flex justify-start  gap-2 items-center">
+            <div>{value}</div>
+            {subHeading === "Points (All Chain)" && (
+              <div className="flex bg-gray-200 dark:bg-neutral-800 items-center w-fit gap-1 border-[1px] border-grayLight   rounded-[24px]">
+                <span className="ml-[-2px]">
+                  <LiquidityLandIcon />{" "}
+                </span>
+                <span className="text-black dark:text-white text-[14px] py-[3px] mr-2">
+                  1.25x
+                </span>
+              </div>
+            )}
+          </div>
         )}
       </span>
       <span className="text-grayLight md:text-lg text-[14px] ">
