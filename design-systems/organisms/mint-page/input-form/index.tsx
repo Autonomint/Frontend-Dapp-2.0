@@ -14,7 +14,7 @@ import displayNumberWithPrecision, {
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
-import { BACKEND_API_URL } from "@/utils/urls";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,6 @@ import {
   assetNameForRewardDataBorrow,
   BorrowAssetsEnum,
   NetworkId,
-  scanUrls,
 } from "@/utils/constants";
 import {
   borrowAssetsAddress,
@@ -66,6 +65,8 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import { EqualApproximately, Info } from "lucide-react";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import Spinner from "@/design-systems/atoms/Spinner";
 
 /**
  * Yup validation schema for the input form
@@ -646,6 +647,9 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
 
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -796,13 +800,17 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit}
+                    disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && "Mint USDA+"}{" "}
+                    {!mintBtnLoading && readyForNewTx ? (
+                      "Mint USDA+"
+                    ) : (
+                      <Spinner color="#fff" />
+                    )}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>

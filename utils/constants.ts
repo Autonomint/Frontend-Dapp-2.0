@@ -71,18 +71,6 @@ export const infuraApiKeys = "SS28xhM5WTcPjxMPrmDfJICizSZIUWmo";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
-// urls
-export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
-export const BRAND_ICON_URL =
-  "https://avatars.githubusercontent.com/u/37784886";
-
-export const scanUrls = {
-  919: "https://sepolia.explorer.mode.network/",
-  11155420: "https://sepolia-optimism.etherscan.io/",
-  11155111: `https://sepolia.etherscan.io/`,
-  84532: `https://sepolia.basescan.org/`,
-} as Record<number, string>;
-
 export const eidOpSepolia = 40232;
 export const eidModeSepolia = 40260;
 export const eidSepolia = 40161;
@@ -93,6 +81,12 @@ export const eId = {
   Mode: eidModeSepolia,
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
+};
+export const eIdWithChainId = {
+  [NetworkId.Optimism]: eidOpSepolia,
+  [NetworkId.Mode]: eidModeSepolia,
+  [NetworkId.EthereumSepolia]: eidSepolia,
+  [NetworkId.BaseSepolia]: eidBaseSepolia,
 };
 
 // enum for control cds and borrow pause unpause

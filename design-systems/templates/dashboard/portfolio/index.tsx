@@ -203,7 +203,7 @@ function PortfolioTemplate() {
   const userGainsTotal = useMemo(() => {
     if (userGains) {
       return (
-        userGains.priceChangePL +
+        (userGains.priceChangePL < 0 ? 0 : userGains.priceChangePL) +
         userGains.amountAccured +
         userGains.liqGains
       ).toFixed(2);

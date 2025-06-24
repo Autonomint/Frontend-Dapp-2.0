@@ -52,7 +52,7 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetStatus, NetworkId, scanUrls } from "@/utils/constants";
+import { AssetStatus, NetworkId } from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -78,6 +78,8 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
+import { scanUrls } from "@/utils/urls";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -1200,6 +1202,9 @@ function DCDSTemplate() {
 
   const nativeTokenName = ["OP", "AERO"];
 
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1536,13 +1541,15 @@ function DCDSTemplate() {
                       <div className="h-full">
                         <Button
                           disabled={
-                            isFunctionPausedCDS_Deposit || allowanceLoading
+                            isFunctionPausedCDS_Deposit ||
+                            allowanceLoading ||
+                            !readyForNewTx
                           }
                           type="submit"
                           onClick={() => formik.handleSubmit()}
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
-                          {allowanceLoading ? (
+                          {allowanceLoading || !readyForNewTx ? (
                             <Spinner color="#fff" />
                           ) : (
                             "Deposit"

@@ -1,4 +1,5 @@
-import { BRAND_ICON_URL, projectId, TESTNET_URL } from "@/utils/constants";
+import { projectId } from "@/utils/constants";
+import { BRAND_ICON_URL, TESTNET_URL } from "@/utils/urls";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   baseSepolia,
