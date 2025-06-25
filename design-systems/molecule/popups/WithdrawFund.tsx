@@ -15,7 +15,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, NetworkId, scanUrls } from "@/utils/constants";
+import { BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -55,7 +55,9 @@ import PageLoader from "../page-loader";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { BACKEND_API_URL } from "@/utils/urls";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import Spinner from "@/design-systems/atoms/Spinner";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -806,6 +808,9 @@ export function WithdrawFund({
     isQuotePending ||
     isIndexPointLoading;
 
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -952,7 +957,8 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW ||
                             isFunctionPausedBorrow_Withdraw ||
                             !hasFiveMinutesPassed(position?.depositedTime) ||
-                            position.status == BorrowStatus.LIQUIDATED
+                            position.status == BorrowStatus.LIQUIDATED ||
+                            readyForNewTx
                           }
                           onClick={handleRepay}
                           className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
@@ -962,17 +968,19 @@ export function WithdrawFund({
                           }`}
                         >
                           <div>
-                            {repayLoading
-                              ? "Loading..."
-                              : position.status == BorrowStatus.DEPOSITED
-                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                              : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${Number(
-                                  position.depositedAmount
-                                )} ${position.collateralType}`
-                              : `Withdrawn ${
-                                  Number(position.depositedAmount) / 2
-                                } ${position.collateralType}`}{" "}
+                            {repayLoading || !readyForNewTx ? (
+                              <Spinner color="#fff" />
+                            ) : position.status == BorrowStatus.DEPOSITED ? (
+                              `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                            ) : position.status == BorrowStatus.LIQUIDATED ? (
+                              `Liquidated ${Number(position.depositedAmount)} ${
+                                position.collateralType
+                              }`
+                            ) : (
+                              `Withdrawn ${
+                                Number(position.depositedAmount) / 2
+                              } ${position.collateralType}`
+                            )}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
@@ -1306,12 +1314,13 @@ export function WithdrawFund({
                             !isFifteenDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
-                            )
+                            ) ||
+                            readyForNewTx
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
                         >
-                          {"Renew"}{" "}
+                          {!readyForNewTx ? <Spinner color="#fff" /> : "Renew"}{" "}
                           <span className="text-base mt-1">
                             {isFunctionPausedBorrow_Renew && "(Paused)"}
                           </span>

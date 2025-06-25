@@ -1,7 +1,5 @@
 "use client";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
-import { Input } from "@/design-systems/atoms/input";
-import { SearchIcon } from "@/design-systems/atoms/SvgIcons";
 import { WithdrawFund } from "@/design-systems/molecule/popups/WithdrawFund";
 import { DcdsWithdrawModal } from "@/design-systems/molecule/popups/WithdrawModal";
 import DcdsDepositTable from "@/design-systems/organisms/dashboard/portfolio/dcds-deposit-table";
@@ -14,22 +12,18 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useUserGains from "@/hookes/contract-hooks/useUserGains";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { formatNumber, handleWheel } from "@/utils/helpers";
+import { formatNumber } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAccount, useReadContract } from "wagmi";
-import { NetworkId } from "@/utils/constants";
-import { borrowingContractAddress } from "@/blockchain/contracts";
-import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import useUserGains from "@/hookes/contract-hooks/useUserGains";
+import { useAccount } from "wagmi";
 
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
-  const { isConnected: isWalletConnected } = useCheckWalletConnection();
 
   // portfolio current tab
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
@@ -59,7 +53,7 @@ function PortfolioTemplate() {
   // get total user deposit
   const { totalUserDeposit } = useGetTotalUserDeposit();
   // get user point
-  const { points, referralPoints } = useGetUserPoint();
+  const { points, referralPoints, hasLiquidityLandPoints } = useGetUserPoint();
 
   // get borrowed position list
   const {
@@ -163,7 +157,6 @@ function PortfolioTemplate() {
   };
 
   const [isSticky, setIsSticky] = useState(false);
-  const navbarRef = useRef(null);
 
   // Function to check the scroll position
   const handleScroll = () => {
@@ -206,58 +199,17 @@ function PortfolioTemplate() {
     userGainsPending,
   } = useUserGains();
 
+  // calculate user gains total
   const userGainsTotal = useMemo(() => {
     if (userGains) {
       return (
-        userGains.priceChangePL +
+        (userGains.priceChangePL < 0 ? 0 : userGains.priceChangePL) +
         userGains.amountAccured +
         userGains.liqGains
       ).toFixed(2);
     }
     return 0;
   }, [userGains]);
-
-  // calculate cds total profits
-  const cdsTotalProfits = useMemo(() => {
-    if (omniChainData) {
-      // calculate upside
-      const upside =
-        Number(omniChainData?.cdsPoolValue) / Number(1e6) -
-        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
-      // calculate options fees
-      const optionsFees =
-        Number(omniChainData?.totalCdsDepositedAmountWithOptionFees) /
-          Number(1e6) -
-        Number(omniChainData?.totalCdsDepositedAmount) / Number(1e6);
-
-      // calculate liq gains
-      let liqGains =
-        (Number(omniChainData?.liquidationCumulativeValues.liqAmountUsedCV) *
-          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
-        (Number(10000000e6) * Number(1e6));
-
-      // calculate liquidated eth
-      liqGains =
-        (((liqGains * Number(100)) / Number(82)) * Number(18)) / Number(100);
-      const liquidatedETH =
-        (Number(omniChainData?.liquidationCumulativeValues.liqCollateralCV) *
-          Number(omniChainData?.totalAvailableLiquidationAmountForPropCalc)) /
-        Number(1e6);
-
-      return {
-        upside: upside,
-        optionsFees: optionsFees,
-        liqGains: liqGains,
-        liquidatedETH: liquidatedETH,
-      };
-    }
-    return {
-      upside: 0,
-      optionsFees: 0,
-      liqGains: 0,
-      liquidatedETH: 0,
-    };
-  }, [omniChainData]);
 
   return (
     <div className="flex sm:px-4 flex-col">
@@ -287,6 +239,7 @@ function PortfolioTemplate() {
             value={formatNumber(
               Number(referralPoints || 0) + Number(points || 0)
             )}
+            hasLiquidityLandPoints={hasLiquidityLandPoints}
           />
         </div>
       </div>

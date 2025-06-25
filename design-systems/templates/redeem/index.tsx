@@ -32,7 +32,7 @@ import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { NetworkId, scanUrls } from "@/utils/constants";
+import { NetworkId } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
@@ -50,6 +50,9 @@ import {
 } from "wagmi";
 import { mpoABI } from "@/blockchain/abis/mpo";
 import * as Yup from "yup";
+import { scanUrls } from "@/utils/urls";
+import Spinner from "@/design-systems/atoms/Spinner";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -683,6 +686,9 @@ const RedeemContainer = () => {
     return value;
   }, [outputData, ethPrice, weEthPrice, rsEthPrice, usdaPrice, wSuperEthPrice]);
 
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar
@@ -911,7 +917,7 @@ const RedeemContainer = () => {
                       onClick={() => formik.handleSubmit()}
                       className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
                     >
-                      Redeem
+                      {!readyForNewTx ? <Spinner color="#fff" /> : "Redeem"}
                     </Button>
                   </div>
                 </TooltipTrigger>
@@ -965,7 +971,12 @@ const RedeemContainer = () => {
               isFailure={redeemEthIsError || redeemEthError}
               isSuccess={Boolean(redeemEthSuccess)}
               setSuccessLoading={() => console.log()}
-              heading={"Redeeming " + formik.values.inputCollateral}
+              heading={
+                "Redeeming " +
+                (formik.values.inputCollateral === "abond"
+                  ? "ABond"
+                  : formik.values.inputCollateral)
+              }
               loadingCount="2/2"
             />
           </div>

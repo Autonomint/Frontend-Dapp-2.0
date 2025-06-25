@@ -6,6 +6,7 @@ import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import ChartComponent from "@/design-systems/organisms/mint-page/chart-wrapper";
 import HowItWorksBorrowPopUp from "@/design-systems/organisms/mint-page/how-it-works";
 import InputForm from "@/design-systems/organisms/mint-page/input-form";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -95,10 +96,6 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
           </div>
         </div>
-        {/* <HowItWorksBorrowPopUp
-          isDialogOpen={isDialogOpen}
-          setIsDialogOpen={setIsDialogOpen}
-        /> */}
       </div>
     </>
   );
