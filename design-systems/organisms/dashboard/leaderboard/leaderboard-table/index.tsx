@@ -4,11 +4,16 @@ import {
   RingLoadingIcon,
 } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { sortWalletAddress } from "@/utils/helpers";
+import { formatNumber, sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import liquidityLandIcon from "@/app/assets/liquidity-land-logo-png.jpeg";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 
 function LeaderboardTable({
   leaderboardData,
@@ -84,11 +89,6 @@ function LeaderboardTable({
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
                   <div className="flex justify-end  gap-2 items-center">
-                    <div>
-                      {item.totalPoints
-                        ? Math.round(Number(item?.totalPoints || 0))
-                        : 0}
-                    </div>
                     {item.hasLiquidityLandPoints && (
                       <div className="flex relative  ml-4 items-center w-fit     ">
                         <span className="absolute left-[-20px] z-10 ">
@@ -99,6 +99,27 @@ function LeaderboardTable({
                         </span>
                       </div>
                     )}
+
+                    <div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            {item.totalPoints
+                              ? formatNumber(
+                                  Math.round(Number(item?.totalPoints || 0))
+                                )
+                              : 0}
+                          </div>
+                        </TooltipTrigger>
+                        {
+                          <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                            {item.totalPoints
+                              ? Math.round(Number(item?.totalPoints || 0))
+                              : 0}
+                          </TooltipContent>
+                        }
+                      </Tooltip>
+                    </div>
                   </div>
                 </td>
               </tr>
