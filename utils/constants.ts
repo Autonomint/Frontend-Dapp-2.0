@@ -66,22 +66,28 @@ export const alchemyApiKeys = "p3uGu6Owoecg4A4tSuxz11VTcdXmK00z";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
-export const eidOpSepolia = 40232;
-export const eidModeSepolia = 40260;
-export const eidSepolia = 40161;
-export const eidBaseSepolia = 40245;
+// urls
+export const AUTONOMINT_DAPP_URL = "https://app.autonomint.com/";
+export const BRAND_ICON_URL =
+  "https://avatars.githubusercontent.com/u/37784886";
+
+export const scanUrls = {
+  919: "https://explorer.mode.network/",
+  10: "https://optimistic.etherscan.io/",
+  1: `https://etherscan.io/`,
+  8453: `https://basescan.org/`,
+} as Record<number, string>;
+
+export const eidOpSepolia = 30111; // Optimism Mainnet
+export const eidModeSepolia = 30260; // Mode Mainnet
+export const eidSepolia = 30101; // Ethereum Mainnet
+export const eidBaseSepolia = 30184; // Base Mainnet
 
 export const eId = {
   OP: eidOpSepolia,
   Mode: eidModeSepolia,
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
-};
-export const eIdWithChainId = {
-  [NetworkId.Optimism]: eidOpSepolia,
-  [NetworkId.Mode]: eidModeSepolia,
-  [NetworkId.EthereumSepolia]: eidSepolia,
-  [NetworkId.BaseSepolia]: eidBaseSepolia,
 };
 
 // enum for control cds and borrow pause unpause

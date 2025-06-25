@@ -29,8 +29,6 @@ const useUserGains = () => {
       amountAccured: 0,
       liqGains: 0,
     },
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return {

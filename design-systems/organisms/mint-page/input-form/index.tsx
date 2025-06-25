@@ -14,7 +14,7 @@ import displayNumberWithPrecision, {
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -39,6 +39,7 @@ import {
   assetNameForRewardDataBorrow,
   BorrowAssetsEnum,
   NetworkId,
+  scanUrls,
 } from "@/utils/constants";
 import {
   borrowAssetsAddress,
@@ -65,8 +66,6 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import { EqualApproximately, Info } from "lucide-react";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import Spinner from "@/design-systems/atoms/Spinner";
 
 /**
  * Yup validation schema for the input form
@@ -635,14 +634,26 @@ function InputForm({ currency }: { currency: string }) {
         ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
+  // // calculate the point based on farm luck boaster
+  // const luckBoasterPoint =
+  //   depositTokenPoint *
+  //   Number(
+  //     (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+  //       .minutes > 0 &&
+  //       10) ||
+  //       (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+  //         .minutes > 0 &&
+  //         5) ||
+  //       0
+  //   );
+
   // calculate the total point
   const totalPoint = depositTokenPoint * totalBooster;
 
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
 
-  // fetching layer zero transaction data to add loading state to user to initiate transaction
-  const { readyForNewTx } = useLayerZeroMessages();
+
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -794,17 +805,13 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
+                    disabled={isFunctionPausedBorrow_Deposit}
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && readyForNewTx ? (
-                      "Mint USDA+"
-                    ) : (
-                      <Spinner color="#fff" />
-                    )}{" "}
+                    {!mintBtnLoading && "Mint USDA+"}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>

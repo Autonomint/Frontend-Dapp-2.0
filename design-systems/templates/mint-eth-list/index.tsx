@@ -10,6 +10,7 @@ import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
+import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
@@ -35,7 +36,7 @@ const farmTextVariants = {
 function MintEthListTemplate() {
   const { chainId, address } = useAccount();
   // Custom hook to fetch the LTV value
-  const { tvlValue: ltv } = useGetTvl();
+  const { isTvlPending, tvlValue: ltv } = useGetTvl();
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
@@ -221,6 +222,8 @@ function MintEthListTemplate() {
         ),
     });
   }
+
+
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();

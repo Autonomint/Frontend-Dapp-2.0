@@ -13,7 +13,10 @@ import Provider from "@/contexts";
 import { ThemeProvider } from "@/providers/theme-provider";
 import Navbar from "@/design-systems/organisms/navbar/Navbar";
 import Footer from "@/design-systems/organisms/Footer";
+import InviteCodePopup from "@/design-systems/molecule/popups/InviteCodePopup";
 import SwitchChainPopup from "@/design-systems/molecule/popups/WalletConnect";
+
+import SupportCall from "@/design-systems/molecule/popups/SupportCall";
 import Ticker from "@/design-systems/molecule/Ticker";
 
 const geistSans = Geist({
@@ -59,7 +62,10 @@ export default function RootLayout({
                   >
                     <div className="min-h-[calc(100vh-210px)]">
                       {children}
+                      {/* <InviteCodePopup /> */}
                       <SwitchChainPopup />
+                      {/* <SupportCall /> */}
+                      {/* <BetaConfirmation /> */}
                     </div>
                     <Footer />
                   </div>

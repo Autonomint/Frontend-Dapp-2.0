@@ -51,7 +51,6 @@ const useGetUserPoint = () => {
     points: Number(opPoints?.[0] || 0) + Number(modePoints?.[0] || 0),
     referralPoints,
     totalPoints: Number(opPoints?.[1] || 0),
-    hasLiquidityLandPoints: opPoints?.[2] || false,
   };
 };
 

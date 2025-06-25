@@ -1,13 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  useAccount,
-  useReadContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
-import LoadingBox from "../LoadingBox";
-import { toast } from "sonner";
-import ToastNotification from "../toasts/ToastNotification";
-import ToastNotificationError from "../toasts/ToastNotificationError";
+import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
   nativeTokenAddress,
@@ -37,18 +28,25 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { eId, NetworkId } from "@/utils/constants";
+import { eId, NetworkId, scanUrls } from "@/utils/constants";
 import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
+import { BACKEND_API_URL } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import Spinner from "@/design-systems/atoms/Spinner";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Info } from "lucide-react";
-import { usDaAbi } from "@/blockchain/abis/usda";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { padHex } from "viem";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import LoadingBox from "../LoadingBox";
+import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 
 export function DcdsWithdrawModal({
   position,
@@ -251,29 +249,6 @@ export function DcdsWithdrawModal({
       comment: "Will be converted to USDT at 30% price fall",
     },
     {
-      // Token deposited
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      }  tokens converted to USDT`,
-      value: (
-        <div className="flex gap-1 items-center text-black text-[16px] font-bold dark:text-white ">
-          {
-            <span className="text-black dark:text-white text-[16px]">
-              ${Number(position?.liquidatedAmount || 0).toFixed(2)}
-            </span>
-          }
-          {position?.status === "Liquidated" ? (
-            <span className="px-[8px] !text-orange-700">Yes</span>
-          ) : (
-            <span>Not Yet</span>
-          )}
-        </div>
-      ),
-      tooltip: false,
-      tooltipText: "",
-      comment: "",
-    },
-    {
       // Adjusted Deposit Value (Discounted by 30%)
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
@@ -443,7 +418,7 @@ export function DcdsWithdrawModal({
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.liquidatedCollateralInETH
+          ? position?.apys?.liquidatedCollateralInETH 
           : apy[3]
       ).toFixed(2)} ETH (${Number(
         apy == undefined
@@ -668,18 +643,19 @@ export function DcdsWithdrawModal({
           setWithdrawGainLoading(true);
         }, 1000);
         dcdsPositionListRefetch();
-
+        
         setTimeout(async () => {
           const res = await refetchBorrowWithDrawGainsSignedData();
           // If close position is success then call withdraw gain function
-          handleDcdsWithdrawGain?.([
-            BigInt(position.index),
-            res?.odosAssembledData,
-            res?.nonce,
-            res?.deadline,
-            res?.signature,
-          ]);
+        handleDcdsWithdrawGain?.([
+          BigInt(position.index),
+          res?.odosAssembledData,
+          res?.nonce,
+          res?.deadline,
+          res?.signature,
+        ]);
         }, 3000);
+       
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
         setTimeout(() => {
@@ -709,6 +685,7 @@ export function DcdsWithdrawModal({
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
       if (nativeFeeAll) {
+
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
@@ -735,7 +712,6 @@ export function DcdsWithdrawModal({
       ]);
     }
   };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     resetDcdsFundWithdraw();
@@ -743,11 +719,7 @@ export function DcdsWithdrawModal({
     setWithdrawMethodLoading(false);
   };
 
-  // loading state for withdraw modal
   const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
-
-  // fetching layer zero transaction data to add loading state to user to initiate transaction
-  const { readyForNewTx } = useLayerZeroMessages();
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -940,22 +912,19 @@ export function DcdsWithdrawModal({
                               Number(position?.depositedTime || 0),
                               Number(position?.lockingPeriod || 0)
                             ) ||
-                            isWithdrawPause ||
-                            readyForNewTx
+                            isWithdrawPause
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >
-                          {!readyForNewTx ? (
-                            <Spinner color="#fff" />
-                          ) : position.status == "DEPOSITED" ? (
-                            "Close Position"
-                          ) : position.status == "WITHDREW" ? (
-                            "Withdraw"
-                          ) : position.status == "WITHDREW_GAINS" ? (
-                            "Withdrawn"
-                          ) : (
-                            "Withdrawn"
-                          )}
+                          {position.status == "DEPOSITED"
+                            ? "Close Position"
+                            : position.status == "WITHDREW"
+                            ? "Withdraw"
+                            : position.status == "WITHDREW_GAINS"
+                            ? "Withdrawn"
+                            : position.status == "LIQUIDATED "
+                            ? "Liquidated"
+                            : "Withdrawn"}
 
                           <span className="text-base mt-1">
                             {isWithdrawPause && "(Paused)"}

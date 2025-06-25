@@ -1,5 +1,6 @@
 "use client";
 import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
+import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import dcdsDark from "@/app/assets/dcds-ring-dark.svg";
 import dcdsFrame from "@/app/assets/dcds-ring-light.svg";
 import USDaIcon from "@/app/assets/logo.svg";
@@ -9,6 +10,8 @@ import { Label } from "@/design-systems/atoms/label";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import AEROIcon from "@/app/assets/aero-icon.png";
+import OPIcon from "@/app/assets/optimism.png";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { mpoABI } from "@/blockchain/abis/mpo";
 import {
@@ -41,10 +44,6 @@ import DepositSummary from "@/design-systems/organisms/dcds/deposit-summary";
 import HowItWorksPopUp from "@/design-systems/organisms/dcds/how-it-works";
 import HowItWorksButton from "@/design-systems/organisms/dcds/how-it-works-button";
 import TokenTvlDetails from "@/design-systems/organisms/dcds/TokenTvlDetails";
-import { useGetCdsLockinPoint } from "@/hookes/api-hooks/useCdsLockinPoint";
-import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
-import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
-import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
 import useDcdsDeposit from "@/hookes/contract-hooks/useDepositDcds";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
@@ -52,7 +51,7 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetStatus, NetworkId } from "@/utils/constants";
+import { AssetStatus, NetworkId, scanUrls } from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -60,7 +59,6 @@ import {
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
-import { getIconMapping } from "@/utils/token-config";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { useFormik } from "formik";
@@ -78,8 +76,11 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
-import { scanUrls } from "@/utils/urls";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import { getIconMapping } from "@/utils/token-config";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import { useGetCdsLockinPoint } from "@/hookes/api-hooks/useCdsLockinPoint";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -398,6 +399,7 @@ function DCDSTemplate() {
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
+        debugger;
         refetchAllowanceDynamic();
       },
       onError: () => {
@@ -768,9 +770,7 @@ function DCDSTemplate() {
     isTokenBalanceLoading ||
     tokenRewardDetailLoading;
 
-  /* Creating token list with all details about token from smart contract and backend
-   * to show in ui and use in code
-   */
+  // token list for the deposit
   const tokenList: TokenDetails[] = useMemo(() => {
     if (
       !tokenDetailsList ||
@@ -855,27 +855,18 @@ function DCDSTemplate() {
         )
       );
       return {
-        // token image to showing in ui
         tokenImage: getIconMapping(
           (theme === "system" ? "dark" : theme) || "dark",
           token.symbol?.toString().toLowerCase() || "usda"
         ),
-        // token name to using in codo (name is from smart contract)
         tokenName: String(token.symbol || ""),
-        // token label to using in ui
         tokenLabel: String(
           token.symbol === "USDa" ? "USDA+" : token.symbol || ""
         ),
-        // token loading state
         isLoading: false,
-        // token active state
         active: true,
-        // token error message when not active
         errorMessage: `Token ${token.symbol} not active now`,
-        // token balance available in usd
         balanceAvailable: `$${balanceInUSD.toFixed(2)}`,
-        // minimum token amount to deposit
-        // fetching from backend variable
         minTokenAmount: token.symbol
           ? Number(
               tokenRewardDetailList?.[
@@ -887,7 +878,6 @@ function DCDSTemplate() {
               ]?.minAmount ?? 0
             )
           : 0,
-        // points to be given on per min deposit
         pointToGiven: token.symbol
           ? Number(
               tokenRewardDetailList?.[
@@ -899,31 +889,21 @@ function DCDSTemplate() {
               ]?.pointsToBeGiven ?? 0
             )
           : 0,
-        // default booster for token (specific token booster)
         defaultBooster: totalBooster,
-        // booster validity for token (specific token booster in timestamp)
         boosterValidity: totalTimeStamp,
-        // token pause message (if pause from smart contract)
+
         tokenPauseMessage: ` ${token.symbol} Token not active now`,
-        // token price (price from master oracle price )
         tokenPrice: formattedPrice,
-        // token count (balance available in token)
         tokenCount: Number(formattedBalance),
-        // token tvl (total value locked in token)
         tvl:
           Number(formatUnits(BigInt(tvl || 0), Number(token.decimals))) *
           Number(formattedPrice),
-        // token address (address from smart contract)
         tokenAddress: tokenAddress?.[index],
-        // token decimals (decimals from smart contract)
         tokenDecimals: Number(token.decimals),
-        // token allowance (allowance from smart contract)
         allowance: allowance || 0,
-        // token pause state (if pause from smart contract)
         isTokenPause:
           tokensPauseState?.[index] === AssetStatus.DEPOSIT_PAUSED ||
           isFunctionPausedCDS_Deposit,
-        // token details like decimal name etc (pause state from smart contract)
         tokenDetails: tokensPauseState?.[index] as Record<
           number,
           string | number
@@ -941,7 +921,6 @@ function DCDSTemplate() {
     farmLuckDetails,
   ]);
 
-  // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
     setSelectedTokens((prev) =>
       prev.map((token) => {
@@ -958,7 +937,6 @@ function DCDSTemplate() {
 
   // calculating point to be given
   const pointToGiven = useMemo(() => {
-    // checking if lockin booster is active or not by using timestamp (boosterValidity) data
     const isLockinBoosterActive =
       calculateRemainingTimeDate(
         toLocalISOString(
@@ -972,7 +950,6 @@ function DCDSTemplate() {
         )
       ).minutes > 0;
 
-    // getting the lockin booster value
     const lockInBooster = isLockinBoosterActive
       ? Number(
           lockInPeriodOption.find(
@@ -986,17 +963,13 @@ function DCDSTemplate() {
       );
       const tokenPrice = Number(token.tokenPrice || 0);
       const valueInUSD = tokenAmount * tokenPrice;
-
-      // checking if default booster (perticular selected token booster) is active or not by using timestamp (boosterValidity) data
       const isDefaultBoosterActive =
         calculateRemainingTimeDate(
           toLocalISOString(new Date(token.boosterValidity * 1000))
         ).minutes > 0;
 
-      // getting the default booster value if active else taking 0
       const defaultBooster = isDefaultBoosterActive ? token.defaultBooster : 0;
 
-      // getting the total booster value by adding default booster and lockin booster
       const totalBooster =
         defaultBooster + lockInBooster === 0
           ? 1
@@ -1012,8 +985,6 @@ function DCDSTemplate() {
         return total;
       }
 
-      // calculating points for token
-      // token point to be given * total booster
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
           ? (valueInUSD / token.minTokenAmount) *
@@ -1025,7 +996,6 @@ function DCDSTemplate() {
     }, 0);
 
     // Calculate individual points for each token
-    // to show in ui point card
     const individualPoints = selectedTokens.map((token) => {
       const tokenAmount = Number(
         formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
@@ -1069,7 +1039,7 @@ function DCDSTemplate() {
     const lockInPoint =
       totalPointsWithoutBoaster * (isLockinBoosterActive ? lockInBooster : 0);
 
-    // adding Lockin Point
+    // Calculating Lockin Point
     individualPoints.push({
       tokenName: "Lockin Point",
       points: lockInPoint,
@@ -1087,7 +1057,7 @@ function DCDSTemplate() {
     };
   }, [selectedTokens, formik, lockInPeriodOption]);
 
-  // Loading box component list of approve smart contract function
+  // Loading box list of approve smart contract function
   const LoadingBoxs = useMemo(() => {
     return selectedTokens.map(
       (token) =>
@@ -1189,9 +1159,6 @@ function DCDSTemplate() {
   }, [selectedTokens]);
 
   const nativeTokenName = ["OP", "AERO"];
-
-  // fetching layer zero transaction data to add loading state to user to initiate transaction
-  const { readyForNewTx } = useLayerZeroMessages();
 
   return (
     <div>
@@ -1529,15 +1496,13 @@ function DCDSTemplate() {
                       <div className="h-full">
                         <Button
                           disabled={
-                            isFunctionPausedCDS_Deposit ||
-                            allowanceLoading ||
-                            !readyForNewTx
+                            isFunctionPausedCDS_Deposit || allowanceLoading
                           }
                           type="submit"
                           onClick={() => formik.handleSubmit()}
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
-                          {allowanceLoading || !readyForNewTx ? (
+                          {allowanceLoading ? (
                             <Spinner color="#fff" />
                           ) : (
                             "Deposit"
