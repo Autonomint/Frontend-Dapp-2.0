@@ -864,7 +864,6 @@ export function DcdsWithdrawModal({
                               Number(position?.lockingPeriod || 0)
                             ) ||
                             isWithdrawPause ||
-                            position.status === "LIQUIDATED" ||
                             readyForNewTx
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
@@ -877,8 +876,6 @@ export function DcdsWithdrawModal({
                             "Withdraw"
                           ) : position.status == "WITHDREW_GAINS" ? (
                             "Withdrawn"
-                          ) : position.status == "LIQUIDATED" ? (
-                            "Liquidated"
                           ) : (
                             "Withdrawn"
                           )}

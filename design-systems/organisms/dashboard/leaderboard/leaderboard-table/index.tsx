@@ -7,6 +7,8 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import { sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import liquidityLandIcon from "@/app/assets/liquidity-land-logo-png.jpeg";
 
 function LeaderboardTable({
   leaderboardData,
@@ -87,14 +89,16 @@ function LeaderboardTable({
                         ? Math.round(Number(item?.totalPoints || 0))
                         : 0}
                     </div>
-                    <div className="flex bg-gray-200 dark:bg-neutral-800 items-center w-fit gap-1 border-[1px] border-grayLight   rounded-[24px]">
-                      <span className="ml-[-2px]">
-                        <LiquidityLandIcon />{" "}
-                      </span>
-                      <span className="text-black dark:text-white text-[14px] py-[3px] mr-2">
-                        1.25x
-                      </span>
-                    </div>
+                    {item.hasLiquidityLandPoints && (
+                      <div className="flex relative  ml-4 items-center w-fit     ">
+                        <span className="absolute left-[-20px] z-10 ">
+                          <LiquidityLandIcon />
+                        </span>
+                        <span className="text-black dark:text-white rounded-[24px] pl-4 pr-2  text-[14px] border-[1px] border-grayLight border-l-0 py-[px] mr-2">
+                          1.25x
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </td>
               </tr>

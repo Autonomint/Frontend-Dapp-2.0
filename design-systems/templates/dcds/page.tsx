@@ -403,7 +403,6 @@ function DCDSTemplate() {
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
-        debugger;
         refetchAllowanceDynamic();
       },
       onError: () => {

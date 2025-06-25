@@ -53,7 +53,7 @@ function PortfolioTemplate() {
   // get total user deposit
   const { totalUserDeposit } = useGetTotalUserDeposit();
   // get user point
-  const { points, referralPoints } = useGetUserPoint();
+  const { points, referralPoints, hasLiquidityLandPoints } = useGetUserPoint();
 
   // get borrowed position list
   const {
@@ -239,6 +239,7 @@ function PortfolioTemplate() {
             value={formatNumber(
               Number(referralPoints || 0) + Number(points || 0)
             )}
+            hasLiquidityLandPoints={hasLiquidityLandPoints}
           />
         </div>
       </div>
