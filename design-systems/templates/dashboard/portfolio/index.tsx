@@ -83,6 +83,7 @@ function PortfolioTemplate() {
     pageSize: dcdsPageSize,
     pagedDcdsPositionList: dcdsPagedDcdsPositionList,
     totalPages: dcdsTotalPages,
+    setCurrentPage: dcdsSetCurrentPage,
   } = useGetDcdsDepositList();
 
   // handle selecting position
@@ -262,7 +263,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          Borrowed Position
+          USDA+ Position
         </div>
         <div
           onClick={() => {
@@ -277,7 +278,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          Deposited Position
+          dCDS Position
         </div>
         <div
           onClick={handleRefresh}
@@ -320,6 +321,7 @@ function PortfolioTemplate() {
           pageSize={pageSize}
           setPageSize={setPageSize}
           setCurrentPage={setCurrentPage}
+          isHightlightTab={portfolioTab == "Borrowed"}
         />
       ) : (
         <DcdsDepositTable
@@ -340,6 +342,8 @@ function PortfolioTemplate() {
           totalPages={dcdsTotalPages}
           pageSize={dcdsPageSize}
           setPageSize={setPageSize}
+          setCurrentPage={dcdsSetCurrentPage}
+          isHightlightTab={portfolioTab == "Deposited"}
         />
       )}
       {/* <RebalancePopup

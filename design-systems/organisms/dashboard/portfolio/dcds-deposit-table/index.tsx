@@ -26,6 +26,8 @@ function DcdsDepositTable({
   pageSize,
   setPageSize,
   isSticky,
+  setCurrentPage,
+  isHightlightTab,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -44,6 +46,8 @@ function DcdsDepositTable({
   positionList: dcdsDepositDetails[];
   setSelectedPosition: (position: dcdsDepositDetails) => void;
   isSticky: boolean;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  isHightlightTab: boolean;
 }) {
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -61,9 +65,14 @@ function DcdsDepositTable({
     }
   };
 
+  // this is for setting currect page for one time if user coming from redirect by deposit
+  const [scrollPageSets, setScrollPageSets] = useState(false);
+
   // calling scroll for new deposit
   useEffect(() => {
-    if (isScroll) {
+    if (isScroll && !scrollPageSets && totalPages > 0) {
+      setCurrentPage(totalPages);
+      setScrollPageSets(true);
       const scrollContainer = document.getElementById("body-scroll-container");
       if (scrollContainer) {
         scrollContainer.scroll({
@@ -77,7 +86,7 @@ function DcdsDepositTable({
         setIsScroll(false);
       }, 10000);
     }
-  }, [positionList]);
+  }, [positionList, totalPages]);
 
   // sorting position based on selected table column
   const sortedPositionList = useMemo(() => {
@@ -208,7 +217,12 @@ function DcdsDepositTable({
                     setViewPosition={setViewPosition}
                     isLast={key === positionList.length - 1}
                     setRenewRepay={setRenewRepay}
-                    highlight={key + 1 === positionList.length && isScroll}
+                    highlight={
+                      key + 1 === positionList.length &&
+                      isScroll &&
+                      totalPages === currentPage &&
+                      isHightlightTab
+                    }
                   />
                 );
               }

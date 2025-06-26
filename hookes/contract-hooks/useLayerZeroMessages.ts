@@ -143,19 +143,21 @@ export const useLayerZeroMessages = () => {
     return response.json();
   };
 
-  const { data, isLoading, error } = useQuery<LayerZeroMessagesResponse>({
-    queryKey: [
-      "layerZeroMessages",
-      chainId,
-      { otherChainContractAddress, eid },
-    ],
-    queryFn: fetchMessages,
-    retry: 1,
-    refetchOnWindowFocus: true,
-    enabled: !!otherChainContractAddress && !!eid,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: 5000,
-  });
+  const { data, isLoading, error, isError } =
+    useQuery<LayerZeroMessagesResponse>({
+      queryKey: [
+        "layerZeroMessages",
+        chainId,
+        { otherChainContractAddress, eid },
+      ],
+      queryFn: fetchMessages,
+      retry: 1,
+      refetchOnWindowFocus: true,
+      // enabled: !!otherChainContractAddress && !!eid,
+      enabled: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchInterval: 5000,
+    });
 
   const readyForNewTx = useMemo(() => {
     if (!data?.data?.length) return false;
@@ -164,5 +166,10 @@ export const useLayerZeroMessages = () => {
 
   console.log(readyForNewTx, "readyForNewTx");
 
-  return { layerZeroTxData: data, readyForNewTx, isLoading, error };
+  return {
+    layerZeroTxData: data,
+    readyForNewTx: true,
+    isLoading: isLoading && isError === false,
+    error,
+  };
 };
