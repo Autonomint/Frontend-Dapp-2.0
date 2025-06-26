@@ -263,7 +263,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          USDA+ Position
+          USDA+ Positions
         </div>
         <div
           onClick={() => {
@@ -278,7 +278,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          dCDS Position
+          dCDS Positions
         </div>
         <div
           onClick={handleRefresh}
