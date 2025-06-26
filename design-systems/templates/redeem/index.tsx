@@ -602,8 +602,6 @@ const RedeemContainer = () => {
     },
   }) as { data: number; isPending: boolean };
 
-
-
   // fetching the yield percentage
   const yieldPercentage = useMemo(() => {
     // dollar value of the all redeemable assets
@@ -917,7 +915,7 @@ const RedeemContainer = () => {
                       onClick={() => formik.handleSubmit()}
                       className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
                     >
-                      {!readyForNewTx ? <Spinner color="#fff" /> : "Redeem"}
+                      {"Redeem"}
                     </Button>
                   </div>
                 </TooltipTrigger>

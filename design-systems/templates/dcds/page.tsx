@@ -1529,15 +1529,13 @@ function DCDSTemplate() {
                       <div className="h-full">
                         <Button
                           disabled={
-                            isFunctionPausedCDS_Deposit ||
-                            allowanceLoading ||
-                            !readyForNewTx
+                            isFunctionPausedCDS_Deposit || allowanceLoading
                           }
                           type="submit"
                           onClick={() => formik.handleSubmit()}
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
-                          {allowanceLoading || !readyForNewTx ? (
+                          {allowanceLoading ? (
                             <Spinner color="#fff" />
                           ) : (
                             "Deposit"

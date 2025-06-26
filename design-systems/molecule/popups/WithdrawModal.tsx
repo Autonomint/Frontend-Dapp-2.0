@@ -940,22 +940,17 @@ export function DcdsWithdrawModal({
                               Number(position?.depositedTime || 0),
                               Number(position?.lockingPeriod || 0)
                             ) ||
-                            isWithdrawPause ||
-                            readyForNewTx
+                            isWithdrawPause
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >
-                          {!readyForNewTx ? (
-                            <Spinner color="#fff" />
-                          ) : position.status == "DEPOSITED" ? (
-                            "Close Position"
-                          ) : position.status == "WITHDREW" ? (
-                            "Withdraw"
-                          ) : position.status == "WITHDREW_GAINS" ? (
-                            "Withdrawn"
-                          ) : (
-                            "Withdrawn"
-                          )}
+                          {position.status == "DEPOSITED"
+                            ? "Close Position"
+                            : position.status == "WITHDREW"
+                            ? "Withdraw"
+                            : position.status == "WITHDREW_GAINS"
+                            ? "Withdrawn"
+                            : "Withdrawn"}
 
                           <span className="text-base mt-1">
                             {isWithdrawPause && "(Paused)"}

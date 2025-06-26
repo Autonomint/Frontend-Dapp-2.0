@@ -539,7 +539,6 @@ function InputForm({ currency }: { currency: string }) {
     getUserTrackLocalStorageData,
   } = useTrackUserData();
 
-
   // update user tracking data
   useEffect(() => {
     // get user tracking data from local storage
@@ -794,17 +793,13 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
+                    disabled={isFunctionPausedBorrow_Deposit}
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && readyForNewTx ? (
-                      "Mint USDA+"
-                    ) : (
-                      <Spinner color="#fff" />
-                    )}{" "}
+                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>

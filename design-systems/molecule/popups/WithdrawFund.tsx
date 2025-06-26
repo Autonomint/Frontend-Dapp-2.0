@@ -184,7 +184,6 @@ export function WithdrawFund({
     position.index
   );
 
-
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
@@ -269,8 +268,6 @@ export function WithdrawFund({
       : Number(position.totalDebtAmount) -
         Number(downsideProtection) -
         Number(position?.optionFees);
-
- 
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
@@ -957,8 +954,7 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW ||
                             isFunctionPausedBorrow_Withdraw ||
                             !hasFiveMinutesPassed(position?.depositedTime) ||
-                            position.status == BorrowStatus.LIQUIDATED ||
-                            readyForNewTx
+                            position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
                           className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
@@ -968,7 +964,7 @@ export function WithdrawFund({
                           }`}
                         >
                           <div>
-                            {repayLoading || !readyForNewTx ? (
+                            {repayLoading ? (
                               <Spinner color="#fff" />
                             ) : position.status == BorrowStatus.DEPOSITED ? (
                               `Repay amount ${repayAmount.toFixed(2)} USDA+`
@@ -1314,13 +1310,12 @@ export function WithdrawFund({
                             !isFifteenDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
-                            ) ||
-                            readyForNewTx
+                            )
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
                         >
-                          {!readyForNewTx ? <Spinner color="#fff" /> : "Renew"}{" "}
+                          {"Renew"}{" "}
                           <span className="text-base mt-1">
                             {isFunctionPausedBorrow_Renew && "(Paused)"}
                           </span>
