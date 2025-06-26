@@ -21,10 +21,9 @@ const getDeposits = (
   );
 };
 
-
 /**
- * @desc get borrowed position list hook backend api 
- * with pagination and sorting 
+ * @desc get borrowed position list hook backend api
+ * with pagination and sorting
  * @returns {positionList: PositionData[], pagedPositionList: PositionData[], positionListError: Error, positionListRefetch: () => void, positionListLoading: boolean, currentPage: number, pageSize: number, setPageSize: (size: number) => void, totalPages: number, handleNextPage: () => void, handlePrevPage: () => void, setCurrentPage: (page: number) => void}
  */
 const useGetPositionList = () => {

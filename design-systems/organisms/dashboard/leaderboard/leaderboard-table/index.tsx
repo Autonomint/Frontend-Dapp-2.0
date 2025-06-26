@@ -90,14 +90,23 @@ function LeaderboardTable({
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
                   <div className="flex justify-end  gap-2 items-center">
                     {item.hasLiquidityLandPoints && (
-                      <div className="flex relative  ml-4 items-center w-fit     ">
-                        <span className="absolute left-[-20px] z-10 ">
-                          <LiquidityLandIcon />
-                        </span>
-                        <span className="text-black dark:text-white rounded-[24px] pl-4 pr-2  text-[14px] border-[1px] border-grayLight border-l-0 py-[px] mr-2">
-                          1.25x
-                        </span>
-                      </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex relative  ml-4 items-center w-fit     ">
+                            <span className="absolute left-[-20px] z-10 ">
+                              <LiquidityLandIcon />
+                            </span>
+                            <span className="text-black dark:text-white rounded-[24px] pl-4 pr-2  text-[14px] border-[1px] border-grayLight border-l-0 py-[px] mr-2">
+                              1.25x
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        {
+                          <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                            Liquidity Land Booster
+                          </TooltipContent>
+                        }
+                      </Tooltip>
                     )}
 
                     <div>

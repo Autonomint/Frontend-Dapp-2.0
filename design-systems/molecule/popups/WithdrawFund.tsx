@@ -964,19 +964,19 @@ export function WithdrawFund({
                           }`}
                         >
                           <div>
-                            {repayLoading ? (
-                              <Spinner color="#fff" />
-                            ) : position.status == BorrowStatus.DEPOSITED ? (
-                              `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                            ) : position.status == BorrowStatus.LIQUIDATED ? (
-                              `Liquidated ${Number(position.depositedAmount)} ${
-                                position.collateralType
-                              }`
-                            ) : (
-                              `Withdrawn ${
-                                Number(position.depositedAmount) / 2
-                              } ${position.collateralType}`
-                            )}{" "}
+                            {repayLoading
+                              ? "Loading..."
+                              : position.status == BorrowStatus.DEPOSITED
+                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                              : position.status == BorrowStatus.LIQUIDATED
+                              ? `Liquidated ${parseFloat(
+                                  Number(position.depositedAmount).toFixed(6)
+                                )} ${position.collateralType}`
+                              : `Withdrawn ${parseFloat(
+                                  (
+                                    Number(position.depositedAmount) / 2
+                                  ).toFixed(6)
+                                )} ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">

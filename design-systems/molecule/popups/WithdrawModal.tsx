@@ -251,29 +251,6 @@ export function DcdsWithdrawModal({
       comment: "Will be converted to USDT at 30% price fall",
     },
     {
-      // Token deposited
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      }  tokens converted to USDT`,
-      value: (
-        <div className="flex gap-1 items-center text-black text-[16px] font-bold dark:text-white ">
-          {
-            <span className="text-black dark:text-white text-[16px]">
-              ${Number(position?.liquidatedAmount || 0).toFixed(2)}
-            </span>
-          }
-          {position?.status === "Liquidated" ? (
-            <span className="px-[8px] !text-orange-700">Yes</span>
-          ) : (
-            <span>Not Yet</span>
-          )}
-        </div>
-      ),
-      tooltip: false,
-      tooltipText: "",
-      comment: "",
-    },
-    {
       // Adjusted Deposit Value (Discounted by 30%)
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
@@ -835,6 +812,14 @@ export function DcdsWithdrawModal({
                           {dcdsWidthDrawMetricsObj.value}
                         </span>
                       </div>
+                      {idx === 0 && position.status === "LIQUIDATED" && (
+                        <div className="flex w-full justify-end font-bold text-orange-700">
+                          <p className="text-[12px]">
+                            Converted to USDT: $
+                            {Number(position.liquidatedAmount).toFixed(2) || 0}
+                          </p>
+                        </div>
+                      )}
                       {dcdsWidthDrawMetricsObj?.comment && (
                         <div className="p-2 mb-2 mt-1 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
                           {dcdsWidthDrawMetricsObj?.comment}
