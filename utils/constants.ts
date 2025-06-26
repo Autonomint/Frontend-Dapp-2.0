@@ -66,10 +66,10 @@ export const alchemyApiKeys = "p3uGu6Owoecg4A4tSuxz11VTcdXmK00z";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
-export const eidOpSepolia = 40232;
-export const eidModeSepolia = 40260;
-export const eidSepolia = 40161;
-export const eidBaseSepolia = 40245;
+export const eidOpSepolia = 30111; // Optimism Mainnet
+export const eidModeSepolia = 30260; // Mode Mainnet
+export const eidSepolia = 30101; // Ethereum Mainnet
+export const eidBaseSepolia = 30184; // Base Mainnet
 
 export const eId = {
   OP: eidOpSepolia,
