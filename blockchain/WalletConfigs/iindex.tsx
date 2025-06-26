@@ -1,5 +1,5 @@
-import {  projectId } from "@/utils/constants";
-import { AUTONOMINT_DAPP_URL, BRAND_ICON_URL, TESTNET_URL } from "@/utils/urls";
+import { projectId } from "@/utils/constants";
+import { AUTONOMINT_DAPP_URL, BRAND_ICON_URL } from "@/utils/urls";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   baseSepolia,

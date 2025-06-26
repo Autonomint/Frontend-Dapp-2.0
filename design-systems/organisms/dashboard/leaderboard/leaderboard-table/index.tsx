@@ -3,17 +3,15 @@ import {
   LiquidityLandIcon,
   RingLoadingIcon,
 } from "@/design-systems/atoms/SvgIcons";
-import { Typography } from "@/design-systems/atoms/Typography";
-import { formatNumber, sortWalletAddress } from "@/utils/helpers";
-import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import Image from "next/image";
-import liquidityLandIcon from "@/app/assets/liquidity-land-logo-png.jpeg";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { Typography } from "@/design-systems/atoms/Typography";
+import { formatNumber, sortWalletAddress } from "@/utils/helpers";
+import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 function LeaderboardTable({
   leaderboardData,

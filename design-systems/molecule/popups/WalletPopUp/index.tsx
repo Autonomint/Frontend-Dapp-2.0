@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/design-systems/atoms/popover";
 import NotificationContainer from "@/design-systems/molecule/notifiaction-card";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, } from "@/utils/constants";
 import { sortWalletAddress } from "@/utils/helpers";
 import { scanUrls } from "@/utils/urls";
 import {
@@ -244,10 +244,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         >
           <div className="hidden lg:block ">
             <Popover>
-              <PopoverTrigger
-                className="py-[14px] h-full px-4 bg-[#ABFFDE]"
-                asChild
-              >
+              <PopoverTrigger className="py-[14px] h-full px-4 bg-[#ABFFDE]" asChild>
                 <div className="relative flex items-center gap-1">
                   {chainId == NetworkId.Mode ? (
                     <Image

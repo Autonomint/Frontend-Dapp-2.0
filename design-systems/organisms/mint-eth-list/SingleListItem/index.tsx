@@ -3,7 +3,7 @@ import { Button } from "@/design-systems/atoms/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipTrigger
+  TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { motion } from "framer-motion";
 import { SquareArrowOutUpRight } from "lucide-react";

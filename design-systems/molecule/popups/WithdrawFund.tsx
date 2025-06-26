@@ -56,8 +56,6 @@ import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import Spinner from "@/design-systems/atoms/Spinner";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -804,9 +802,6 @@ export function WithdrawFund({
     isCurrentAPRPending ||
     isQuotePending ||
     isIndexPointLoading;
-
-  // fetching layer zero transaction data to add loading state to user to initiate transaction
-  const { readyForNewTx } = useLayerZeroMessages();
 
   return (
     <>
