@@ -1,12 +1,13 @@
+import { usePortfolioTab } from "@/contexts/portfolio-tab";
+import { useScroll } from "@/contexts/scroll";
 import { Button } from "@/design-systems/atoms/button";
 import { Input } from "@/design-systems/atoms/input";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { usePortfolioTab } from "@/contexts/portfolio-tab";
-import { useScroll } from "@/contexts/scroll";
 import LoadingBox from "@/design-systems/molecule/LoadingBox";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
@@ -14,17 +15,41 @@ import displayNumberWithPrecision, {
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
-import { BACKEND_API_URL } from "@/utils/urls";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { parseEther, parseUnits } from "viem";
-import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
+import { parseEther } from "viem";
 
 import * as Yup from "yup";
 
+import { wrsETHABI } from "@/blockchain/abis/wrsETH";
+import {
+  borrowAssetsAddress,
+  borrowingDepositContractAddress,
+} from "@/blockchain/contracts";
+import { HoverCard } from "@/design-systems/atoms/hover-card";
+import Spinner from "@/design-systems/atoms/Spinner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
+import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
+import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
+import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
+import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
+import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import { BorrowAssetsEnum, NetworkId } from "@/utils/constants";
+import { calculateRemainingTimeDate } from "@/utils/helpers";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { EqualApproximately, Info } from "lucide-react";
 import {
   useAccount,
   useBalance,
@@ -33,39 +58,6 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
-import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
-import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
-import {
-  assetNameForRewardDataBorrow,
-  BorrowAssetsEnum,
-  NetworkId,
-  scanUrls,
-} from "@/utils/constants";
-import {
-  borrowAssetsAddress,
-  borrowingContractAddress,
-  borrowingDepositContractAddress,
-} from "@/blockchain/contracts";
-import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
-import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
-import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
-import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/design-systems/atoms/tooltip";
-import { Network } from "ethers";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { wrsETHABI } from "@/blockchain/abis/wrsETH";
-import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
-import { calculateRemainingTimeDate } from "@/utils/helpers";
-import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
-import { HoverCard } from "@/design-systems/atoms/hover-card";
-import { EqualApproximately, Info } from "lucide-react";
-import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 
 /**
  * Yup validation schema for the input form
@@ -538,7 +530,6 @@ function InputForm({ currency }: { currency: string }) {
     getUserTrackLocalStorageData,
   } = useTrackUserData();
 
-
   // update user tracking data
   useEffect(() => {
     // get user tracking data from local storage
@@ -634,26 +625,11 @@ function InputForm({ currency }: { currency: string }) {
         ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
-  // // calculate the point based on farm luck boaster
-  // const luckBoasterPoint =
-  //   depositTokenPoint *
-  //   Number(
-  //     (calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-  //       .minutes > 0 &&
-  //       10) ||
-  //       (calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-  //         .minutes > 0 &&
-  //         5) ||
-  //       0
-  //   );
-
   // calculate the total point
   const totalPoint = depositTokenPoint * totalBooster;
 
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
-
-
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -811,7 +787,7 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading && "Mint USDA+"}{" "}
+                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>

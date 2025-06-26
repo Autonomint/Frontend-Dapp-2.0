@@ -15,7 +15,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, NetworkId, scanUrls } from "@/utils/constants";
+import { BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -55,7 +55,7 @@ import PageLoader from "../page-loader";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { BACKEND_API_URL } from "@/utils/urls";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -182,7 +182,6 @@ export function WithdrawFund({
     position.index
   );
 
-
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
@@ -267,8 +266,6 @@ export function WithdrawFund({
       : Number(position.totalDebtAmount) -
         Number(downsideProtection) -
         Number(position?.optionFees);
-
- 
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
@@ -967,12 +964,14 @@ export function WithdrawFund({
                               : position.status == BorrowStatus.DEPOSITED
                               ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
                               : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${Number(
-                                  position.depositedAmount
+                              ? `Liquidated ${parseFloat(
+                                  Number(position.depositedAmount).toFixed(6)
                                 )} ${position.collateralType}`
-                              : `Withdrawn ${
-                                  Number(position.depositedAmount) / 2
-                                } ${position.collateralType}`}{" "}
+                              : `Withdrawn ${parseFloat(
+                                  (
+                                    Number(position.depositedAmount) / 2
+                                  ).toFixed(6)
+                                )} ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">

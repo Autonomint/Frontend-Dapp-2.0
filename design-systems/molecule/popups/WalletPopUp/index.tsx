@@ -21,8 +21,9 @@ import {
   PopoverTrigger,
 } from "@/design-systems/atoms/popover";
 import NotificationContainer from "@/design-systems/molecule/notifiaction-card";
-import { NetworkId, scanUrls } from "@/utils/constants";
+import { NetworkId, } from "@/utils/constants";
 import { sortWalletAddress } from "@/utils/helpers";
+import { scanUrls } from "@/utils/urls";
 import {
   useAppKit,
   useAppKitAccount,

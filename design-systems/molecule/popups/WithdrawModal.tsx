@@ -28,10 +28,10 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { eId, NetworkId, scanUrls } from "@/utils/constants";
+import { eId, NetworkId } from "@/utils/constants";
 import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
-import { BACKEND_API_URL } from "@/utils/urls";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -807,6 +807,14 @@ export function DcdsWithdrawModal({
                           {dcdsWidthDrawMetricsObj.value}
                         </span>
                       </div>
+                      {idx === 0 && position.status === "LIQUIDATED" && (
+                        <div className="flex w-full justify-end font-bold text-orange-700">
+                          <p className="text-[12px]">
+                            Converted to USDT: $
+                            {Number(position.liquidatedAmount).toFixed(2) || 0}
+                          </p>
+                        </div>
+                      )}
                       {dcdsWidthDrawMetricsObj?.comment && (
                         <div className="p-2 mb-2 mt-1 bg-[#FFF0CA] text-[14px]  dark:bg-[#4F3800] dark:text-[#D6A100] text-grayLight font-normal">
                           {dcdsWidthDrawMetricsObj?.comment}
@@ -922,8 +930,6 @@ export function DcdsWithdrawModal({
                             ? "Withdraw"
                             : position.status == "WITHDREW_GAINS"
                             ? "Withdrawn"
-                            : position.status == "LIQUIDATED "
-                            ? "Liquidated"
                             : "Withdrawn"}
 
                           <span className="text-base mt-1">

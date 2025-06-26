@@ -30,6 +30,7 @@ function DepositTable({
   setPageSize,
   setCurrentPage,
   isSticky,
+  isHightlightTab,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -49,6 +50,7 @@ function DepositTable({
   setSelectedPosition: (position: PositionData) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   isSticky: boolean;
+  isHightlightTab: boolean;
 }) {
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -69,11 +71,14 @@ function DepositTable({
       });
     }
   };
+  // this is for setting currect page for one time if user coming from redirect by deposit
+  const [scrollPageSets, setScrollPageSets] = useState(false);
 
   useEffect(() => {
     // if global scroll state is true then scroll to bottom of table and page
-    if (isScroll) {
+    if (isScroll && !scrollPageSets && totalPages > 0) {
       setCurrentPage(totalPages);
+      setScrollPageSets(true);
       const scrollContainer = document.getElementById("body-scroll-container");
       // page scroll to bottom
       if (scrollContainer) {
@@ -89,7 +94,7 @@ function DepositTable({
         setIsScroll(false);
       }, 10000);
     }
-  }, [positionList]);
+  }, [positionList, totalPages]);
 
   // calculate position down side protection for every position for sorting in down side protection column
   const positionListDP = positionList.map((position) => {
@@ -344,7 +349,8 @@ function DepositTable({
                   highlight={
                     key + 1 === positionList.length &&
                     isScroll &&
-                    totalPages == currentPage
+                    totalPages == currentPage &&
+                    isHightlightTab
                   }
                 />
               );

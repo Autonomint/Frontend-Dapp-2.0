@@ -34,6 +34,7 @@ export interface dcdsDepositDetails {
   nativeTokenPriceAtDeposit: number;
   liquidationPrice: number;
   apys: CdsWithdrawAPYs;
+  liquidatedAmount: string | number;
 }
 
 export interface CdsWithdrawAPYs {
@@ -101,4 +102,5 @@ export interface LeaderboardDetailsList {
   totalBorrowedAmount: number;
   totalDepositedAmount: number;
   totalPoints: number;
+  hasLiquidityLandPoints: boolean;
 }

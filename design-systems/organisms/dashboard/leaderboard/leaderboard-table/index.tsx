@@ -1,7 +1,15 @@
 import { Button } from "@/design-systems/atoms/button";
-import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import {
+  LiquidityLandIcon,
+  RingLoadingIcon,
+} from "@/design-systems/atoms/SvgIcons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { sortWalletAddress } from "@/utils/helpers";
+import { formatNumber, sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -78,9 +86,48 @@ function LeaderboardTable({
                   )}
                 </td>
                 <td className="px-5 py-4 2xl:py-6  table-cell font-normal text-right">
-                  {item.totalPoints
-                    ? Math.round(Number(item?.totalPoints || 0))
-                    : 0}
+                  <div className="flex justify-end  gap-2 items-center">
+                    {item.hasLiquidityLandPoints && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex relative  ml-4 items-center w-fit     ">
+                            <span className="absolute left-[-20px] z-10 ">
+                              <LiquidityLandIcon />
+                            </span>
+                            <span className="text-black dark:text-white rounded-[24px] pl-4 pr-2  text-[14px] border-[1px] border-grayLight border-l-0 py-[px] mr-2">
+                              1.25x
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        {
+                          <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                            Liquidity Land Booster
+                          </TooltipContent>
+                        }
+                      </Tooltip>
+                    )}
+
+                    <div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            {item.totalPoints
+                              ? formatNumber(
+                                  Math.round(Number(item?.totalPoints || 0))
+                                )
+                              : 0}
+                          </div>
+                        </TooltipTrigger>
+                        {
+                          <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                            {item.totalPoints
+                              ? Math.round(Number(item?.totalPoints || 0))
+                              : 0}
+                          </TooltipContent>
+                        }
+                      </Tooltip>
+                    </div>
+                  </div>
                 </td>
               </tr>
             );

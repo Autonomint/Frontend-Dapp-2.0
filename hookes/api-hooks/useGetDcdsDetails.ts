@@ -35,7 +35,7 @@ const useGetDcdsDepositList = () => {
   const [pagedDcdsPositionList, setPagedDcdsPositionList] = useState<
     dcdsDepositDetails[]
   >([]);
-  const [totalPages, setTotalPages] = useState<number>(0); // Total number of pages
+  const [totalPages, setTotalPages] = useState<number>(1); // Total number of pages
 
   // Query to fetch data
   const {
@@ -102,6 +102,7 @@ const useGetDcdsDepositList = () => {
     totalPages, // Total number of pages
     handleNextPage, // Function to go to next page
     handlePrevPage, // Function to go to previous page
+    setCurrentPage, // Function to set current page
   };
 };
 

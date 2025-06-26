@@ -1,18 +1,16 @@
-import { Button } from "@/design-systems/atoms/button";
-import Image from "next/image";
-import Link from "next/link";
 import arrow from "@/app/assets/arrow-right-02.png";
-import { motion } from "framer-motion";
-import SingleListItemImage from "../SingleListItemImage";
-import ListItemMetric from "../ListItemMetric";
+import { Button } from "@/design-systems/atoms/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
-import { IoMdInformationCircleOutline } from "react-icons/io";
-import { Info, Link2Icon, SquareArrowOutUpRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { SquareArrowOutUpRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import ListItemMetric from "../ListItemMetric";
+import SingleListItemImage from "../SingleListItemImage";
 
 import { calculateRemainingTimeDate, toLocalISOString } from "@/utils/helpers";
 
