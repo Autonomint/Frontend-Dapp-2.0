@@ -64,7 +64,7 @@ export default function HomeTemplate() {
     useReadContract({
       abi: optionABI,
       address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress],
+        optionContractAddress[chainId as keyof typeof optionContractAddress] as `0x${string}`,
       functionName: "currentStrikePricePercentLimit",
       query: {
         select: (data) => Number(data || 0),
@@ -273,8 +273,8 @@ export default function HomeTemplate() {
               ? "w-full lg:w-[80%] h-[380px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
               : // height and width style based on hoveredIndex
               hoveredIndex === 1
-                  ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
-                  : "w-full lg:w-[50%]"
+                ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
+                : "w-full lg:w-[50%]"
               } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null || hoveredIndex === 2
@@ -315,7 +315,7 @@ export default function HomeTemplate() {
               : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
                 " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
-                  : "w-full lg:w-[50%]"
+                : "w-full lg:w-[50%]"
               } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null

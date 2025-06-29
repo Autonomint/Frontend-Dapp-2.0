@@ -1,29 +1,45 @@
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
   testusdtAbiAddress,
-  usDaAddress,
+  usDaAddress
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
-import useCalculateInterest from "@/hookes/contract-hooks/useCalculateInterest";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { BorrowAssetsEnum, BorrowData, BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
-  getDownsideProtectionTillNow,
   getMinutesPassed,
-  hasFiveMinutesPassed,
+  hasFiveMinutesPassed
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { use, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { InfoIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
 import {
@@ -32,28 +48,8 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import LoadingBox from "../LoadingBox";
-import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
-import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
-import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
-import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
-import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/design-systems/atoms/tooltip";
-import { Network } from "ethers";
-import { cdsAbi } from "@/blockchain/abis/dcds";
-import { InfoIcon } from "lucide-react";
-import { usDaAbi } from "@/blockchain/abis/usda";
-import PageLoader from "../page-loader";
-import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -528,6 +524,45 @@ export function WithdrawFund({
   } = useGetGlobalQuote(options, 3, 1) as { quoteValue: { nativeFee: bigint }; quoteError: any; isUsdValuePending: boolean };
 
   const {
+    usdtApprovedHash,
+    isPendingUsdtApprove,
+    isSuccessUsdtApprove,
+    usdtApproveWrite,
+    usdtApproveError,
+    resetUsdtApprove,
+    handleUsdtApprove,
+  } = useUsdtApprove({
+    onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
+      setRenewApproveLoading(false);
+      setTimeout(() => {
+        setRenewLoading(false);
+        setRepayLoading(false);
+      }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    },
+  });
+
+  const {
+    data: usdtHashData,
+    isSuccess: usdtHashSucces,
+    isError: usdtHashError,
+    isLoading: usdtHashLoading,
+  } = useWaitForTransactionReceipt({
+    hash: usdtApprovedHash,
+    query: {
+      enabled: !!usdtApprovedHash,
+    },
+  });
+
+  const {
     approveUsda,
     approveReset,
     usdaApproveHash,
@@ -717,7 +752,10 @@ export function WithdrawFund({
 
   useEffect(() => {
     (async () => {
-      if (usdaHashData && usdaHashSucces) {
+      if (
+        (usdaHashData && usdaHashSucces) ||
+        (usdtHashData && usdtHashSucces)
+      ) {
         if (toggleView == "repay") {
           setIsApproveLoadingLocal(false);
           setTimeout(() => {
@@ -747,7 +785,7 @@ export function WithdrawFund({
             nativeFee?.nativeFee || BigInt(0n)
           );
         }
-      } else if (usdaHashError) {
+      } else if (usdaHashError || usdtHashError) {
         toast.custom((t) => (
           <ToastNotificationError
             title="Transaction failed, Please try again"
@@ -756,7 +794,7 @@ export function WithdrawFund({
         ));
       }
     })();
-  }, [usdaHashData]);
+  }, [usdaHashData, usdtHashData, usdaHashError, usdtHashError]);
 
   const {
     isLoading: isLoadingRenewReceipt,
@@ -810,6 +848,7 @@ export function WithdrawFund({
 
   const handleCloseDialog = (value: boolean) => {
     approveReset?.();
+    resetUsdtApprove?.();
     borrowReset?.();
     setIsLoadingCumulativeLocal(false);
     setIsApproveLoadingLocal(false);
@@ -819,20 +858,30 @@ export function WithdrawFund({
 
   const { payableOptionFees } = usePayableOptionFees(position.index) as { payableOptionFees: bigint | undefined };
 
+  const { getOraclePrice } = useMasterPriceOracle(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
+
   const handleRenew = () => {
     setRenewLoading(true);
-    approveReset?.();
+
+    resetUsdtApprove?.();
     resetBorrowRenew?.();
 
-    const renewAmount = BigInt(Number(payableOptionFees || 0n) + 1e6);
+    const renewAmount = BigInt(
+      Number(
+        Number(payableOptionFees || 0) / Number(getOraclePrice[0] || 0) || 0
+      ) + 1e6
+    );
+
     if ((allowance || 0) < renewAmount) {
       setRenewApproveLoading(true);
-      approveUsdaDynamic(
-        renewAmount,
+      handleUsdtApprove([
         borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
         ] as `0x${string}`,
-      );
+        renewAmount,
+      ]);
     } else {
       callRenewInContract();
     }
@@ -1563,12 +1612,13 @@ export function WithdrawFund({
 
                   <LoadingBox
                     isLoading={renewApproveLoading}
-                    isFailure={usdaApproveError || usdaHashError}
-                    isSuccess={usdaHashSucces}
+                    isFailure={usdtApproveError || usdtHashError}
+                    isSuccess={usdtHashSucces}
                     setSuccessLoading={() => console.log()}
-                    heading="Approving USDA+"
+                    heading="Approving USDT"
                     loadingCount="1/2"
                   />
+
                   <LoadingBox
                     isLoading={renewLoadingSM}
                     isFailure={renewReceiptError || renewErrorSm}

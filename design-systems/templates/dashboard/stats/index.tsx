@@ -63,7 +63,7 @@ function StatsTemplate() {
     useReadContract({
       abi: optionABI,
       address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress],
+        optionContractAddress[chainId as keyof typeof optionContractAddress] as `0x${string}`,
       functionName: "currentStrikePricePercentLimit",
       query: {
         select: (data) => Number(data || 0),

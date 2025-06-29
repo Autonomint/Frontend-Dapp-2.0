@@ -11,9 +11,8 @@ import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
-  getStrikePercent,
   handleWheel,
-  toLocalISOString,
+  toLocalISOString
 } from "@/utils/helpers";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -25,12 +24,12 @@ import { formatUnits, parseEther } from "viem";
 
 import * as Yup from "yup";
 
+import { optionABI } from "@/blockchain/abis/option";
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import {
   borrowAssetsAddress,
-  borrowingContractAddress,
   borrowingDepositContractAddress,
-  optionContractAddress,
+  optionContractAddress
 } from "@/blockchain/contracts";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import Spinner from "@/design-systems/atoms/Spinner";
@@ -47,6 +46,8 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import { BorrowAssetsEnum, NetworkId } from "@/utils/constants";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
@@ -60,8 +61,6 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
-import { optionABI } from "@/blockchain/abis/option";
-import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 
 /**
  * Yup validation schema for the input form
@@ -354,7 +353,7 @@ function InputForm({ currency }: { currency: string }) {
     useReadContract({
       abi: optionABI,
       address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress],
+        optionContractAddress[chainId as keyof typeof optionContractAddress] as `0x${string}`,
       functionName: "currentStrikePricePercentLimit",
       query: {
         select: (data) => Number(data || 0),
@@ -655,8 +654,6 @@ function InputForm({ currency }: { currency: string }) {
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
-
-
 
   return (
     <form onSubmit={formik.handleSubmit}>
