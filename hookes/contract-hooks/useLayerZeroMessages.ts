@@ -188,7 +188,7 @@ export const useLayerZeroMessages = () => {
   // Return query results and status
   return {
     layerZeroTxData: data, // LayerZero message data
-    readyForNewTx: false || isError, // Always return true (TODO: fix this)
+    readyForNewTx: readyForNewTx || isError, // Always return true (TODO: fix this)
     isLoading: isLoading && isError === false, // Loading state
     error, // Any error that occurred
   };
