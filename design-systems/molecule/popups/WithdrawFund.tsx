@@ -3,6 +3,7 @@ import {
   borrowingContractAddress,
   borrowingWithdrawContractAddress,
   cdsAddress,
+  testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
@@ -58,6 +59,8 @@ import axios from "axios";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import Spinner from "@/design-systems/atoms/Spinner";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -477,6 +480,45 @@ export function WithdrawFund({
   } = useGetGlobalQuote(options, 3, 1);
 
   const {
+    usdtApprovedHash,
+    isPendingUsdtApprove,
+    isSuccessUsdtApprove,
+    usdtApproveWrite,
+    usdtApproveError,
+    resetUsdtApprove,
+    handleUsdtApprove,
+  } = useUsdtApprove({
+    onError: () => {
+      setIsLoadingCumulativeLocal(false);
+      setIsApproveLoadingLocal(false);
+      setWithdrawLoadingLocal(false);
+      setRenewApproveLoading(false);
+      setTimeout(() => {
+        setRenewLoading(false);
+        setRepayLoading(false);
+      }, 1000);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    },
+  });
+
+  const {
+    data: usdtHashData,
+    isSuccess: usdtHashSucces,
+    isError: usdtHashError,
+    isLoading: usdtHashLoading,
+  } = useWaitForTransactionReceipt({
+    hash: usdtApprovedHash,
+    query: {
+      enabled: !!usdtApprovedHash,
+    },
+  });
+
+  const {
     approveUsda,
     approveReset,
     usdaApproveHash,
@@ -673,7 +715,10 @@ export function WithdrawFund({
 
   useEffect(() => {
     (async () => {
-      if (usdaHashData && usdaHashSucces) {
+      if (
+        (usdaHashData && usdaHashSucces) ||
+        (usdtHashData && usdtHashSucces)
+      ) {
         if (toggleView == "repay") {
           setIsApproveLoadingLocal(false);
           setTimeout(() => {
@@ -703,7 +748,7 @@ export function WithdrawFund({
             nativeFee?.nativeFee || BigInt(0n)
           );
         }
-      } else if (usdaHashError) {
+      } else if (usdaHashError || usdtHashError) {
         toast.custom((t) => (
           <ToastNotificationError
             title="Transaction failed, Please try again"
@@ -712,7 +757,7 @@ export function WithdrawFund({
         ));
       }
     })();
-  }, [usdaHashData]);
+  }, [usdaHashData, usdtHashData, usdaHashError, usdtHashError]);
 
   const {
     isLoading: isLoadingRenewReceipt,
@@ -767,6 +812,7 @@ export function WithdrawFund({
 
   const handleCloseDialog = (value: boolean) => {
     approveReset?.();
+    resetUsdtApprove?.();
     borrowReset?.();
     setIsLoadingCumulativeLocal(false);
     setIsApproveLoadingLocal(false);
@@ -776,20 +822,30 @@ export function WithdrawFund({
 
   const { payableOptionFees } = usePayableOptionFees(position.index);
 
+  const { getOraclePrice } = useMasterPriceOracle(
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+  );
+
   const handleRenew = () => {
     setRenewLoading(true);
-    approveReset?.();
+
+    resetUsdtApprove?.();
     resetBorrowRenew?.();
 
-    const renewAmount = BigInt(Number(payableOptionFees || 0n) + 1e6);
+    const renewAmount = BigInt(
+      Number(
+        Number(payableOptionFees || 0) / Number(getOraclePrice[0] || 0) || 0
+      ) + 1e6
+    );
+
     if ((allowance || 0) < renewAmount) {
       setRenewApproveLoading(true);
-      approveUsdaDynamic(
-        renewAmount,
+      handleUsdtApprove([
         borrowingContractAddress[
           chainId as keyof typeof borrowingContractAddress
-        ] as `0x${string}`
-      );
+        ] as `0x${string}`,
+        renewAmount,
+      ]);
     } else {
       callRenewInContract();
     }
@@ -965,7 +1021,7 @@ export function WithdrawFund({
                             isFunctionPausedBorrow_Withdraw ||
                             !hasFiveMinutesPassed(position?.depositedTime) ||
                             position.status == BorrowStatus.LIQUIDATED ||
-                            readyForNewTx
+                            !readyForNewTx
                           }
                           onClick={handleRepay}
                           className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
@@ -975,19 +1031,24 @@ export function WithdrawFund({
                           }`}
                         >
                           <div>
-                            {repayLoading
-                              ? "Loading..."
-                              : position.status == BorrowStatus.DEPOSITED
-                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                              : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${parseFloat(
-                                  Number(position.depositedAmount).toFixed(6)
-                                )} ${position.collateralType}`
-                              : `Withdrawn ${parseFloat(
-                                  (
-                                    Number(position.depositedAmount) / 2
-                                  ).toFixed(6)
-                                )} ${position.collateralType}`}{" "}
+                            {repayLoading ||
+                            (!readyForNewTx &&
+                              position.status !== BorrowStatus.WITHDREW &&
+                              position.status !== BorrowStatus.LIQUIDATED) ? (
+                              <Spinner color="#fff" />
+                            ) : position.status == BorrowStatus.DEPOSITED ? (
+                              `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                            ) : position.status == BorrowStatus.LIQUIDATED ? (
+                              `Liquidated ${parseFloat(
+                                Number(position.depositedAmount).toFixed(6)
+                              )} ${position.collateralType}`
+                            ) : (
+                              `Withdrawn ${parseFloat(
+                                (Number(position.depositedAmount) / 2).toFixed(
+                                  6
+                                )
+                              )} ${position.collateralType}`
+                            )}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
@@ -1016,14 +1077,7 @@ export function WithdrawFund({
                     )}
                   </Tooltip>
                 )}
-                {/* <LoadingBox
-                  isLoading={isLoadingCumulativeLocal}
-                  isFailure={cumulativeRateError || cumulativeRateErrorReceipt}
-                  isSuccess={cumulativeRateReciptSuccess}
-                  setSuccessLoading={() => console.log()}
-                  heading="Calculating Interest "
-                  loadingCount="1/3"
-                /> */}
+
                 <LoadingBox
                   isLoading={isApproveLoadingLocal}
                   isFailure={usdaApproveError || usdaHashError}
@@ -1322,12 +1376,18 @@ export function WithdrawFund({
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
                             ) ||
-                            readyForNewTx
+                            !readyForNewTx
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
                         >
-                          {!readyForNewTx ? <Spinner color="#fff" /> : "Renew"}{" "}
+                          {position.status !== BorrowStatus.WITHDREW &&
+                          position.status !== BorrowStatus.LIQUIDATED &&
+                          !readyForNewTx ? (
+                            <Spinner color="#fff" />
+                          ) : (
+                            "Renew"
+                          )}{" "}
                           <span className="text-base mt-1">
                             {isFunctionPausedBorrow_Renew && "(Paused)"}
                           </span>
@@ -1344,10 +1404,10 @@ export function WithdrawFund({
 
                 <LoadingBox
                   isLoading={renewApproveLoading}
-                  isFailure={usdaApproveError || usdaHashError}
-                  isSuccess={usdaHashSucces}
+                  isFailure={usdtApproveError || usdtHashError}
+                  isSuccess={usdtHashSucces}
                   setSuccessLoading={() => console.log()}
-                  heading="Approving USDA+"
+                  heading="Approving USDT"
                   loadingCount="1/2"
                 />
                 <LoadingBox

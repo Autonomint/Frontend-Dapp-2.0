@@ -67,6 +67,8 @@ import { EqualApproximately, Info } from "lucide-react";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import Spinner from "@/design-systems/atoms/Spinner";
+import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 /**
  * Yup validation schema for the input form
@@ -649,6 +651,29 @@ function InputForm({ currency }: { currency: string }) {
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
+
+  const { omniChainData } = useGetOmniChainData();
+
+  // Getting ratio value for mint amount
+  const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
+    parseUnits(String(formik.values.collateralAmount) || "0", 18),
+    BigInt(ethPrice || 0),
+    BigInt(omniChainData?.lastETHPrice || 0),
+    omniChainData?.firstBorrowDeposited || false,
+    BigInt(omniChainData?.totalVolumeOfBorrowersAmountinWei || 0),
+    omniChainData || null
+  );
+
+  useEffect(() => {
+    if (ratioValue && Number(ratioValue) < 2) {
+      formik.setFieldError(
+        "collateralAmount",
+        "USDA+ mint cap reached. Reduce the amount and try again"
+      );
+    } else {
+      formik.setFieldError("collateralAmount", "");
+    }
+  }, [ratioValue]);
 
   return (
     <form onSubmit={formik.handleSubmit}>

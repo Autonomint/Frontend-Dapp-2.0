@@ -135,5 +135,8 @@ export const mpoAddress = {
   11155420: "0x6fb19C9d62D008B50f91F09315456BFAe08AEf5c",
 } as const;
 
-// Addresses for the hegicETH contract
-export const hegicETHAddress = "0xEfC0eEAdC1132A12c9487d800112693bf49EcfA2";
+// Addresses for the borrow lib contract
+export const borrowLibAddress = {
+  84532: "0x8A08258Bf7448604a354094182137A47296A5BB5",
+  11155420: "0x84ef34218255C3A0EcD4100820cd3ab3D23DFDed",
+} as const;
