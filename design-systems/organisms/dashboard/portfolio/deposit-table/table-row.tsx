@@ -1,8 +1,13 @@
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { borrowingContractAddress } from "@/blockchain/contracts";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { BorrowStatus } from "@/utils/constants";
-import displayNumberWithPrecision from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  calculateRemainingDays,
+} from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { useEffect, useState } from "react";
+import { useAccount, useReadContract } from "wagmi";
 
 const DepositTableRow = ({
   position,
@@ -89,7 +94,7 @@ const DepositTableRow = ({
   const [amountProtected, setAmountProtected] = useState(0);
   const { usdValue: ethPrice } = useGetUsdValue();
   const [openChart, setOpenChart] = useState(false);
-
+  const { chainId, address } = useAccount();
   // calculating protect amount
   const amountProtectedFunction = () => {
     if (ethPrice === undefined) {
@@ -108,14 +113,6 @@ const DepositTableRow = ({
       setAmountProtected(amountProtPrecision);
     }
   };
-
-  console.log(
-    amountProtected,
-    ethPrice,
-    position.ethPrice,
-    position.depositedAmount,
-    position.index
-  );
 
   // setting protected amount, setting 0 while unmount
   useEffect(() => {
@@ -139,13 +136,27 @@ const DepositTableRow = ({
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
       <td className="px-5 py-4 2xl:py-6">
-        {parseFloat(Number(position.depositedAmount).toFixed(4))} {position.collateralType}
+        {parseFloat(Number(position.depositedAmount).toFixed(4))}{" "}
+        {position.collateralType}
       </td>
       <td className="px-5 py-4 2xl:py-6">
         ${Number(position.noOfUSDaMinted).toFixed(2)}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
-        {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
+        <div className="flex flex-col">
+          {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
+          {Number(calculateRemainingDays(position.validTill) || 0) < 15 &&
+            Number(calculateRemainingDays(position.validTill) || 0) > 0 &&
+            position.status !== BorrowStatus.WITHDREW &&
+            position.status !== BorrowStatus.LIQUIDATED && (
+              <span className="text-grayLight text-lg">
+                {Number(calculateRemainingDays(position.validTill) || 0)}{" "}
+                <span className="text-grayLight text-[14px]">
+                  Days left to renew
+                </span>
+              </span>
+            )}
+        </div>
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {" "}
