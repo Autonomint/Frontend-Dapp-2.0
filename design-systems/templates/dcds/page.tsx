@@ -1549,7 +1549,14 @@ function DCDSTemplate() {
                           className="bg-black text-white text-[24px] h-full w-full dark:bg-custom-gradient-to-bottom cursor-pointer"
                         >
                           {allowanceLoading || !readyForNewTx ? (
-                            <Spinner color="#fff" />
+                            <div className="flex flex-col items-center gap-2">
+                              <Spinner color="#fff" />
+                              {!readyForNewTx && (
+                                <p className="text-[14px]">
+                                  Updating data on other chain
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             "Deposit"
                           )}

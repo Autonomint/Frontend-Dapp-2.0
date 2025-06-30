@@ -881,8 +881,13 @@ export function DcdsWithdrawModal({
                           ) : position.status == "WITHDREW_GAINS" ? (
                             "Withdrawn"
                           ) : !readyForNewTx ? (
-                            <div>
+                            <div className="flex flex-col items-center gap-2">
                               <Spinner color="#fff" />
+                              {!readyForNewTx && (
+                                <p className="text-[14px]">
+                                  Updating data on other chain
+                                </p>
+                              )}
                             </div>
                           ) : position.status == "DEPOSITED" ? (
                             "Close Position"

@@ -834,7 +834,14 @@ function InputForm({ currency }: { currency: string }) {
                     {!mintBtnLoading && readyForNewTx ? (
                       "Mint USDA+"
                     ) : (
-                      <Spinner color="#fff" />
+                      <div className="flex flex-col items-center gap-2">
+                        <Spinner color="#fff" />
+                        {!readyForNewTx && (
+                          <p className="text-[14px]">
+                            Updating data on other chain
+                          </p>
+                        )}
+                      </div>
                     )}{" "}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}

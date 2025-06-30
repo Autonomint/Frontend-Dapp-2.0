@@ -67,7 +67,7 @@ export const aws_secret_name = "testingSecret";
 export const sm_accessKeyId = "AKIAQLVQQPQX6XEGOPMA";
 export const sm_secretAccessKey = "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";
 
-export const infuraApiKeys = "SS28xhM5WTcPjxMPrmDfJICizSZIUWmo";
+export const infuraApiKeys = "-LFCh4425MjVeCkrD8u9MRAXLDz0_Ycg";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
@@ -113,9 +113,9 @@ export enum AssetStatus {
 }
 export interface AssetDetails {
   status: AssetStatus;
-  LTV: BigInt;
-  tokenDecimals: BigInt;
-  priceDecimals: BigInt;
+  LTV: bigint;
+  tokenDecimals: bigint;
+  priceDecimals: bigint;
 }
 
 export const assetNameForRewardDataBorrow = {

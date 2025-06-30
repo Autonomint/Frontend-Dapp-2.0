@@ -124,20 +124,22 @@ interface LayerZeroMessagesResponse {
 
 // Custom hook to manage LayerZero cross-chain messages
 export const useLayerZeroMessages = () => {
-  // Get current chain ID from wagmi
+  // Memoize chain ID and related values to prevent unnecessary recalculations
   const { chainId } = useAccount();
+  const otherChainId = useMemo(
+    () =>
+      chainId === NetworkId.Optimism
+        ? NetworkId.BaseSepolia
+        : NetworkId.Optimism,
+    [chainId]
+  );
 
-  // Determine the other chain ID based on current chain
-  // Switches between Optimism and BaseSepolia
-  const otherChainId =
-    chainId === NetworkId.Optimism ? NetworkId.BaseSepolia : NetworkId.Optimism;
+  const otherChainContractAddress = useMemo(
+    () => globalAddress[otherChainId as keyof typeof globalAddress],
+    [otherChainId]
+  );
 
-  // Get the contract address for the other chain
-  const otherChainContractAddress =
-    globalAddress[otherChainId as keyof typeof globalAddress];
-
-  // Get the EID (Endpoint ID) for the other chain
-  const eid = eIdWithChainId[otherChainId];
+  const eid = useMemo(() => eIdWithChainId[otherChainId], [otherChainId]);
 
   // Function to fetch LayerZero messages from the API
   const fetchMessages = async (): Promise<LayerZeroMessagesResponse> => {
@@ -185,11 +187,14 @@ export const useLayerZeroMessages = () => {
   // Log ready status for debugging
   console.log(readyForNewTx, "readyForNewTx");
 
-  // Return query results and status
-  return {
-    layerZeroTxData: data, // LayerZero message data
-    readyForNewTx: false || isError, // Always return true (TODO: fix this)
-    isLoading: isLoading && isError === false, // Loading state
-    error, // Any error that occurred
-  };
+  // Memoize the return value to prevent unnecessary re-renders
+  return useMemo(
+    () => ({
+      layerZeroTxData: data, // LayerZero message data
+      readyForNewTx: readyForNewTx || isError, // Always return true (TODO: fix this)
+      isLoading: isLoading && isError === false, // Loading state
+      error, // Any error that occurred
+    }),
+    [data, isError, isLoading, error]
+  );
 };

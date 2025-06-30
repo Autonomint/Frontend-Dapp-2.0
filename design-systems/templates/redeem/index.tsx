@@ -920,7 +920,18 @@ const RedeemContainer = () => {
                       onClick={() => formik.handleSubmit()}
                       className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"
                     >
-                      {!readyForNewTx ? <Spinner color="#fff" /> : "Redeem"}
+                      {!readyForNewTx ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <Spinner color="#fff" />
+                          {!readyForNewTx && (
+                            <p className="text-[14px]">
+                              Updating data on other chain
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        "Redeem"
+                      )}
                     </Button>
                   </div>
                 </TooltipTrigger>

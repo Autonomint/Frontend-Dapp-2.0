@@ -826,6 +826,8 @@ export function WithdrawFund({
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
   );
 
+
+
   const handleRenew = () => {
     setRenewLoading(true);
 
@@ -834,7 +836,8 @@ export function WithdrawFund({
 
     const renewAmount = BigInt(
       Number(
-        Number(payableOptionFees || 0) / Number(getOraclePrice[0] || 0) || 0
+        Number(payableOptionFees || 0) /
+          Number(BigInt(getOraclePrice[0]) / BigInt(1e18)) || 0
       ) + 1e6
     );
 
@@ -1035,7 +1038,14 @@ export function WithdrawFund({
                             (!readyForNewTx &&
                               position.status !== BorrowStatus.WITHDREW &&
                               position.status !== BorrowStatus.LIQUIDATED) ? (
-                              <Spinner color="#fff" />
+                              <div className="flex flex-col items-center gap-2">
+                                <Spinner color="#fff" />
+                                {!readyForNewTx && (
+                                  <p className="text-[14px]">
+                                    Updating data on other chain
+                                  </p>
+                                )}
+                              </div>
                             ) : position.status == BorrowStatus.DEPOSITED ? (
                               `Repay amount ${repayAmount.toFixed(2)} USDA+`
                             ) : position.status == BorrowStatus.LIQUIDATED ? (
@@ -1384,7 +1394,14 @@ export function WithdrawFund({
                           {position.status !== BorrowStatus.WITHDREW &&
                           position.status !== BorrowStatus.LIQUIDATED &&
                           !readyForNewTx ? (
-                            <Spinner color="#fff" />
+                            <div className="flex flex-col items-center gap-2">
+                              <Spinner color="#fff" />
+                              {readyForNewTx && (
+                                <p className="text-[14px]">
+                                  Updating data on other chain
+                                </p>
+                              )}
+                            </div>
                           ) : (
                             "Renew"
                           )}{" "}
