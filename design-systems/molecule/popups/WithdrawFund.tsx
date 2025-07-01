@@ -598,7 +598,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.001) * 1e6));
+    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.1) * 1e6));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
