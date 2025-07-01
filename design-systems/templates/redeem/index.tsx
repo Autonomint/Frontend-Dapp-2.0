@@ -2,6 +2,7 @@
 import { abondAbi } from "@/blockchain/abis/abond";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { cdsAbi } from "@/blockchain/abis/dcds";
+import { mpoABI } from "@/blockchain/abis/mpo";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   abondAddress,
@@ -17,6 +18,7 @@ import {
 import { Button } from "@/design-systems/atoms/button";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import { Input } from "@/design-systems/atoms/input";
+import Spinner from "@/design-systems/atoms/Spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -29,30 +31,25 @@ import ToastNotification from "@/design-systems/molecule/toasts/ToastNotificatio
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { NetworkId } from "@/utils/constants";
 import { handleWheel } from "@/utils/helpers";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
+import { scanUrls } from "@/utils/urls";
 import { useFormik } from "formik";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Abi, formatEther, formatUnits, zeroAddress } from "viem";
+import { formatEther, formatUnits, parseUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useBalance,
-  useChainId,
   useReadContract,
   useWaitForTransactionReceipt,
-  useWriteContract,
+  useWriteContract
 } from "wagmi";
-import { mpoABI } from "@/blockchain/abis/mpo";
 import * as Yup from "yup";
-import { scanUrls } from "@/utils/urls";
-import Spinner from "@/design-systems/atoms/Spinner";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
 // Define the validation schema using Yup
 const formSchema = Yup.object({
@@ -142,7 +139,6 @@ const RedeemContainer = () => {
       : undefined,
   });
 
-  console.log(abondbalance,'abondbalance')
 
   // fetching the usda balance
   const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
@@ -300,11 +296,10 @@ const RedeemContainer = () => {
     functionName: "getAbondYields",
     args: [
       accountAddress as `0x${string}`,
-      BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18),
+      parseUnits((formik.values.collateralAmount || 0).toString(),18),
     ],
   });
 
-  console.log("getAbondYields",outputData , (Number(formik.values.collateralAmount || 0) * 10 ** 18), error);
 
   useEffect(() => {
     // checking if the input collateral is abond and the collateral amount is greater than 0
