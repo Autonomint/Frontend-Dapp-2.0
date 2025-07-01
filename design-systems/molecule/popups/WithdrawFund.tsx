@@ -228,7 +228,9 @@ export function WithdrawFund({
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
-    position.status == BorrowStatus.LIQUIDATED
+    position.status == BorrowStatus.LIQUIDATED || calculateRemainingDays(
+      Number(position.validTill)
+    ) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
@@ -394,7 +396,7 @@ export function WithdrawFund({
       headline: "Total Interest",
       value: `$${
         Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
-        Number(position.noOfUSDaMinted)
+        Number(position.noOfUSDaMinted) || position.status === BorrowStatus.LIQUIDATED
           ? 0
           : position.status === BorrowStatus.DEPOSITED
           ? // if position withdrawn using totalDebtAmount else total usda with cumulative
