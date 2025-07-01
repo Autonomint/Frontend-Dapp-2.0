@@ -18,9 +18,9 @@ import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { parseEther, parseUnits } from "viem";
+import { formatEther, formatUnits, parseEther, parseUnits } from "viem";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 
 import * as Yup from "yup";
@@ -69,6 +69,7 @@ import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessag
 import Spinner from "@/design-systems/atoms/Spinner";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 
 /**
  * Yup validation schema for the input form
@@ -142,9 +143,23 @@ function InputForm({ currency }: { currency: string }) {
     token:
       currency.toLocaleLowerCase() !== "eth"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-            chainId
-          ]
+        chainId
+        ]
         : undefined,
+  });
+
+  // getting current LTV value
+  const { data: currentDebtCeilingMintLimit, refetch: refetchCurrentData } = useReadContract({
+    scopeKey: "currentData",
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+      chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "getDebtCeilingMintLimit",
+    query: {
+      select: (data) => formatUnits(data, 6)
+    }
   });
 
   // Formatted balance of the selected asset
@@ -155,13 +170,13 @@ function InputForm({ currency }: { currency: string }) {
     abi: wrsETHABI,
     address:
       borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-        chainId || NetworkId.BaseSepolia
+      chainId || NetworkId.BaseSepolia
       ],
     functionName: "allowance",
     args: [
       address,
       borrowingDepositContractAddress[
-        chainId as keyof typeof borrowingDepositContractAddress
+      chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -188,6 +203,12 @@ function InputForm({ currency }: { currency: string }) {
       ));
       return;
     }
+    // checking mint ratio
+    const checkMintRatioResult = checkMintRatio()
+    // if mint ratio is not valid then return
+    if (!checkMintRatioResult) {
+      return;
+    }
     // set the loading state to true
     setMintBtnLoading(true);
 
@@ -204,7 +225,7 @@ function InputForm({ currency }: { currency: string }) {
       setApproveLoading(true);
       await approveWrapETHDynamic(
         borrowingDepositContractAddress[
-          chainId as keyof typeof borrowingDepositContractAddress
+        chainId as keyof typeof borrowingDepositContractAddress
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
@@ -305,9 +326,8 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          Depositdata.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${Depositdata.transactionHash
+          } `;
 
         return (
           <ToastNotification
@@ -442,7 +462,7 @@ function InputForm({ currency }: { currency: string }) {
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
-              nativeFee.nativeFee
+            nativeFee.nativeFee
             : nativeFee.nativeFee,
       });
     }
@@ -602,16 +622,16 @@ function InputForm({ currency }: { currency: string }) {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-      .minutes > 0
+      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+        .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+        .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+          ? 10
+          : 0;
 
   // total boaster for token
   const totalBooster =
@@ -623,11 +643,11 @@ function InputForm({ currency }: { currency: string }) {
   const totalTimeStamp = Math.max(
     farmLuckDetails?.deadLine5xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+      new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
       : 0,
     farmLuckDetails?.deadLine10xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+      new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
     Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
@@ -636,11 +656,11 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on depositing amount
   const depositTokenPoint =
     (tokenRewardDetailBorrow?.minAmount || 0) <=
-    Number(formik.values.collateralAmount || 0)
+      Number(formik.values.collateralAmount || 0)
       ? Number(
-          formik.values.collateralAmount /
-            (tokenRewardDetailBorrow?.minAmount || 0) || 0
-        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+        formik.values.collateralAmount /
+        (tokenRewardDetailBorrow?.minAmount || 0) || 0
+      ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
   // calculate the total point
@@ -652,28 +672,69 @@ function InputForm({ currency }: { currency: string }) {
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
-  const { omniChainData } = useGetOmniChainData();
+  const ethAmountForRatio = Number((formik.values.collateralAmount || 0) * Number((BigInt(exchangeRate || 0))))
 
   // Getting ratio value for mint amount
   const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
-    parseUnits(String(formik.values.collateralAmount) || "0", 18),
-    BigInt(ethPrice || 0),
-    BigInt(omniChainData?.lastETHPrice || 0),
-    omniChainData?.firstBorrowDeposited || false,
-    BigInt(omniChainData?.totalVolumeOfBorrowersAmountinWei || 0),
-    omniChainData || null
+    BigInt(ethAmountForRatio)
   );
 
-  useEffect(() => {
-    if (ratioValue && Number(ratioValue) < 2) {
-      formik.setFieldError(
-        "collateralAmount",
-        "USDA+ mint cap reached. Reduce the amount and try again"
-      );
-    } else {
-      formik.setFieldError("collateralAmount", "");
+  // get borrowed position list
+  const {
+    positionList,
+  } = useGetPositionList();
+
+  // get last 24 hour position list
+  const last24HourPositionList = useMemo(
+    () =>
+      positionList
+        ? positionList.filter((position) =>
+          Number(position.depositedTime) >=
+          (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
+        )
+        : [],
+    [positionList]
+  );
+
+  // total deposit amount in last 24 hours
+  const totalDepositAmount24Hour = useMemo(() => {
+    return last24HourPositionList.reduce((total, position) => {
+      return total + Number(position.noOfUSDaMinted);
+    }, 0);
+  }, [last24HourPositionList]);
+
+
+  // Checking mint ratio for user input amount
+  const checkMintRatio = () => {
+    if (formik.values.collateralAmount > 0) {
+      // Checking mint ratio
+      if (ratioValue && Number(ratioValue) < 30000) {
+        formik.setFieldError(
+          "collateralAmount",
+          "USDA+ mint cap reached. Reduce the amount and try again"
+        );
+        return false
+        // Checking last mint amount and last mint time is valid or not from mint limit 
+      } else if (last24HourPositionList.length > 0 && totalDepositAmount24Hour > Number(currentDebtCeilingMintLimit || 0)) {
+        const remainingTimeInHours = Math.round((Number(last24HourPositionList[0].depositedTime) + 24 * 60 * 60 - (new Date().getTime() / 1000)) / (60 * 60));
+        formik.setFieldError(
+          "collateralAmount",
+          `USDA+ mint cap reached. Please try again after ${remainingTimeInHours} hours`
+        );
+        toast.custom((t) => (
+          <ToastNotificationError
+            title={`USDA+ mint cap reached. Please try again after ${remainingTimeInHours} hours`}
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        return false
+        // If all conditions are valid setting error to empty
+      } else {
+        formik.setFieldError("collateralAmount", "");
+        return true
+      }
     }
-  }, [ratioValue]);
+  }
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -718,7 +779,7 @@ function InputForm({ currency }: { currency: string }) {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                formik.touched.collateralAmount
+                  formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>
