@@ -208,7 +208,7 @@ export function WithdrawFund({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
   });
@@ -222,14 +222,16 @@ export function WithdrawFund({
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
-    position.status == BorrowStatus.LIQUIDATED
+    position.status == BorrowStatus.LIQUIDATED || calculateRemainingDays(
+      Number(position.validTill)
+    ) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
-      ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-          Number(position?.depositedAmountInETH) -
+        ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+        Number(position?.depositedAmountInETH) -
         Number(formatUnits(BigInt(currentEthPrice), 2)) *
-          Number(position?.depositedAmountInETH)
-      : 0;
+        Number(position?.depositedAmountInETH)
+        : 0;
 
   // fetching allowance of usda for repay
   const { data: allowance, isLoading: isAllowancePending } = useReadContract({
@@ -239,7 +241,7 @@ export function WithdrawFund({
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean };
@@ -248,31 +250,31 @@ export function WithdrawFund({
     lastCumulativeRate === undefined
       ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
       : BigInt(
-          BigInt(
-            Math.round(
-              position.normalizedAmount
-                ? Number(position?.normalizedAmount || 0) * 10 ** 6
-                : 0
-            )
-          ) * lastCumulativeRate
-        ) / BigInt(10 ** 27);
+        BigInt(
+          Math.round(
+            position.normalizedAmount
+              ? Number(position?.normalizedAmount || 0) * 10 ** 6
+              : 0
+          )
+        ) * lastCumulativeRate
+      ) / BigInt(10 ** 27);
 
   // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
       ? Number(totalUsdaAmntWithCumulativeRate) / 1e6 -
-        Number(downsideProtection) -
-        Number(position?.optionFees)
+      Number(downsideProtection) -
+      Number(position?.optionFees)
       : Number(position.totalDebtAmount) -
-        Number(downsideProtection) -
-        Number(position?.optionFees);
+      Number(downsideProtection) -
+      Number(position?.optionFees);
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAPR",
   });
@@ -285,9 +287,8 @@ export function WithdrawFund({
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
       // set deposited amount
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
-        position.collateralType
-      }`;
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${position.collateralType
+        }`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
       // set eth price at deposit
       const ethPriceAtDep =
@@ -327,8 +328,8 @@ export function WithdrawFund({
         // else set 0
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? Number(position.depositedAmountInETH) *
-              (Number(currentPrice) / 100) -
-            Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
+          (Number(currentPrice) / 100) -
+          Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
       // if upside is more than 5% so showing 5% max upside or else showing calculated amount that
@@ -387,20 +388,19 @@ export function WithdrawFund({
     },
     {
       headline: "Total Interest",
-      value: `$${
-        Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
-        Number(position.noOfUSDaMinted)
+      value: `$${Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
+          Number(position.noOfUSDaMinted) || position.status === BorrowStatus.LIQUIDATED
           ? 0
           : position.status === BorrowStatus.DEPOSITED
-          ? // if position withdrawn using totalDebtAmount else total usda with cumulative
+            ? // if position withdrawn using totalDebtAmount else total usda with cumulative
             (
               Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
               Number(position.noOfUSDaMinted)
             ).toFixed(4)
-          : (
+            : (
               Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
             ).toFixed(4)
-      }`,
+        }`,
       tooltip: false,
       tooltipText: "",
     },
@@ -549,9 +549,8 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          withdrawReceipt.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${withdrawReceipt.transactionHash
+          } `;
         return (
           <ToastNotification
             title="Repay Successful"
@@ -715,9 +714,8 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-        renewReceipt.transactionHash
-      } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${renewReceipt.transactionHash
+        } `;
 
       toast.custom((t) => (
         <ToastNotification
@@ -775,7 +773,7 @@ export function WithdrawFund({
       approveUsdaDynamic(
         renewAmount,
         borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
         ] as `0x${string}`
       );
     } else {
@@ -927,11 +925,10 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={` h-[50px] ${
-                  position.status == BorrowStatus.WITHDREW
+                className={` h-[50px] ${position.status == BorrowStatus.WITHDREW
                     ? "md:h-[150px]"
                     : "md:h-[70px]"
-                } mt-4 md:mt-4`}
+                  } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
                   <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
@@ -952,26 +949,25 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
-                            position.status == BorrowStatus.WITHDREW
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${position.status == BorrowStatus.WITHDREW
                               ? "md:p-12"
                               : "md:p-8"
-                          }`}
+                            }`}
                         >
                           <div>
                             {repayLoading
                               ? "Loading..."
                               : position.status == BorrowStatus.DEPOSITED
-                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                              : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${parseFloat(
-                                  Number(position.depositedAmount).toFixed(6)
-                                )} ${position.collateralType}`
-                              : `Withdrawn ${parseFloat(
-                                  (
-                                    Number(position.depositedAmount) / 2
-                                  ).toFixed(6)
-                                )} ${position.collateralType}`}{" "}
+                                ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                                : position.status == BorrowStatus.LIQUIDATED
+                                  ? `Liquidated ${parseFloat(
+                                    Number(position.depositedAmount).toFixed(6)
+                                  )} ${position.collateralType}`
+                                  : `Withdrawn ${parseFloat(
+                                    (
+                                      Number(position.depositedAmount) / 2
+                                    ).toFixed(6)
+                                  )} ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
@@ -982,9 +978,8 @@ export function WithdrawFund({
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
-                              {`(Repay will active in ${
-                                5 - getMinutesPassed(position?.depositedTime)
-                              } min)`}{" "}
+                              {`(Repay will active in ${5 - getMinutesPassed(position?.depositedTime)
+                                } min)`}{" "}
                             </div>
                           )}
                           <span className="text-base">
@@ -1043,8 +1038,8 @@ export function WithdrawFund({
                               Number(optionsFeesTimeLimits?.[0]) / 86400
                             )
                               ? calculateRemainingDays(
-                                  Number(position.validTill)
-                                )
+                                Number(position.validTill)
+                              )
                               : 15
                           ),
                           days: Number(
@@ -1093,9 +1088,8 @@ export function WithdrawFund({
                             style={{
                               width: `${percentage}%`,
                             }}
-                            className={` ${
-                              index == 1 && "mr-1"
-                            } relative h-full flex flex-col justify-end truncate`}
+                            className={` ${index == 1 && "mr-1"
+                              } relative h-full flex flex-col justify-end truncate`}
                           >
                             {index == 1 && (
                               <div
