@@ -26,7 +26,7 @@ interface SwitchChainPopupProps {}
 const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
-  const { chainId, isConnected } = useAccount();
+  const { chainId, isConnected , address } = useAccount();
   const pathname = usePathname();
   const [switchingChain, setSwitchingChain] = useState<number>();
   const { open, close } = useAppKit();
@@ -37,7 +37,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
     } else {
       close();
     }
-  }, [isConnected]);
+  }, [isConnected ,chainId , address]);
 
   useEffect(() => {
     // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true

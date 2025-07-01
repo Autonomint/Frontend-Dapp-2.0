@@ -142,6 +142,8 @@ const RedeemContainer = () => {
       : undefined,
   });
 
+  console.log(abondbalance,'abondbalance')
+
   // fetching the usda balance
   const { data: usdabalance, refetch: refetchBlAmint } = useBalance({
     address: usDaAddress ? accountAddress : undefined,
@@ -302,6 +304,8 @@ const RedeemContainer = () => {
     ],
   });
 
+  console.log("getAbondYields",outputData , (Number(formik.values.collateralAmount || 0) * 10 ** 18), error);
+
   useEffect(() => {
     // checking if the input collateral is abond and the collateral amount is greater than 0
     if (
@@ -311,7 +315,7 @@ const RedeemContainer = () => {
       // checking if the collateral amount is greater than the abond balance
       if (
         (formik.values.collateralAmount || 0) >
-        Number(abondbalance?.formatted.slice(0, 8))
+        Number(abondbalance?.formatted)
       ) {
         formik.setErrors({
           collateralAmount: "Insufficient Balance",

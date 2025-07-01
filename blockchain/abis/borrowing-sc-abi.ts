@@ -1472,6 +1472,32 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
+        "internalType": "uint128",
+        "name": "_newMintLimit",
+        "type": "uint128"
+      }
+    ],
+    "name": "setDebtCeilingMintLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint128",
+        "name": "_newTimeLimit",
+        "type": "uint128"
+      }
+    ],
+    "name": "setDebtCeilingTimeLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint8",
         "name": "ltv",
         "type": "uint8"
@@ -1722,6 +1748,25 @@ export const borrowingContractAbi = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "viewCurrentRatio",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "ratio",
+        "type": "uint64"
       }
     ],
     "stateMutability": "view",
