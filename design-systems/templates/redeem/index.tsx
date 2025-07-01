@@ -338,7 +338,7 @@ const RedeemContainer = () => {
       // checking if the collateral amount is greater than the usda balance
       if (
         (formik.values.collateralAmount || 0) >
-        Number(usdabalance?.formatted.slice(0, 9))
+        Number(usdabalance?.formatted)
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
