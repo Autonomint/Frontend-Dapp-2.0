@@ -1,12 +1,12 @@
 "use client";
 import autonomintTxtImage from "@/app/assets/brand-logo-white.svg";
-import autonomintTxtImageDark from "@/app/assets/brand-logo-white-pink.svg";
-import logo from "@/app/assets/logo.svg";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { Button } from "@/design-systems/atoms/button";
 import { CloseIcon, MenuIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
+import { useTrackUser } from "@/hookes/api-hooks/useTrackUser";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
+import { getIconMapping } from "@/utils/token-config";
 import { useDisconnect } from "@reown/appkit/react";
 import { watchAccount } from "@wagmi/core";
 import { Headset, Moon, Sun } from "lucide-react";
@@ -14,16 +14,10 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useAccount, useAccountEffect } from "wagmi";
+import { useEffect, useRef, useState } from "react";
+import { useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
-import ReferPopup from "../../molecule/popups/ReferPopUp";
-import ReferPopupMobile from "../../molecule/popups/ReferPopUpMobile";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
-import getSecretVar from "@/services/aws-secret";
-import twitter from "@/app/assets/x-social-media-black-icon.svg";
-import { getIconMapping } from "@/utils/token-config";
-import { useTrackUser } from "@/hookes/api-hooks/useTrackUser";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();

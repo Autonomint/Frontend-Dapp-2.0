@@ -14,7 +14,7 @@ export interface TokenDetails {
   tokenDecimals?: number;
   isTokenPause: boolean;
   tokenPauseMessage: string;
-  tokenPrice: string | Number;
+  tokenPrice: string | number;
   tokenLabel: string;
   allowance?: string | number | bigint;
   tokenDetails?: Record<number, string | number>;

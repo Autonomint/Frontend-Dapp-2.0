@@ -945,9 +945,13 @@ function DCDSTemplate() {
     tokenPrices,
     tokenAllowanceByUser,
     totalTVLList,
-    theme,
+    farmLuckDetails?.deadLine5xTimestamp,
+    farmLuckDetails?.deadLine10xTimestamp,
     tokenRewardDetailList,
-    farmLuckDetails,
+    theme,
+    tokenAddress,
+    tokensPauseState,
+    isFunctionPausedCDS_Deposit,
   ]);
 
   // useEffect for updating the allowance in selected tokens state
@@ -1229,6 +1233,9 @@ function DCDSTemplate() {
         </div>
 
         <div className="hidden xl:flex col-span-2 flex-col items-center justify-center relative">
+          <div className="w-full text-end mr-4 text-base mt-3 font-medium">
+            Expected yields up to 20% monthly
+          </div>
           <div className="relative h-full  flex flex-col items-center justify-center w-full">
             <div className="2xl:w-[550px] 3xl:w-[550px] 3xl:h-[550px] xl:w-[500px] xl:h-[500px] w-[400px]  2xl:h-[580px] h-[400px] flex items-center justify-center relative">
               <Image
@@ -1356,13 +1363,13 @@ function DCDSTemplate() {
                     <Info
                       width={24}
                       height={24}
-                      className="ml-2 stroke-[#4ade80] fill-[#22c55e30] "
+                      className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
                     />
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black">
                     <p>
                       We will take 70% of the token dollar value considering
-                      it's volatility.
+                      it&apos;s volatility.
                     </p>
                   </TooltipContent>
                 </Tooltip>
