@@ -593,7 +593,7 @@ export const strategies: StrategyData[] = [
     id: "8",
     strategy: "option",
     risk: "medium",
-    route: "dcds",
+    route: "mintUSDaWithCollateral/ETH",
     name: "Best Strategy : Option Fee Arbitrage",
     description: "Borrow cheap option from Autonomint & sell higher",
     maxReturn: {
@@ -668,7 +668,7 @@ export const strategies: StrategyData[] = [
     id: "9",
     strategy: "option",
     risk: "veryLow",
-    route: "mintusdalist",
+    route: "mintUSDaWithCollateral/ETH",
     name: "Best Strategy : Multiple Option Fee Arbitrage",
     description:
       "Borrow monthly cheap option from Autonomint & sell mutiple weekly ones",

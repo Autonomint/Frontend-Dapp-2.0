@@ -63,7 +63,7 @@ function SingleListItem({ item }: { item: any }) {
       label: "Yield",
       value: (
         <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
-          <p className="text-base">16.17% per month</p>
+          <p className="text-[14px]">Max upto 16.17% per month</p>
           <div className="flex items-center gap-2">
             <Link href={item.link}>
               <p>Strategies</p>
