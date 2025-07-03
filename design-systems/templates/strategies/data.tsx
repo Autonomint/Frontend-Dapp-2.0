@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 export interface StrategyData {
   id: string;
+  route?: string;
   name: string;
   description: string;
   maxReturn: {
@@ -50,6 +51,7 @@ export interface StrategyData {
 
 export const strategies: StrategyData[] = [
   {
+    route: "mintUSDaWithCollateral/ETH",
     id: "1",
     name: "Mint USDA+ with ETH",
     description: "Delta neutral ETH while retaining upside",
@@ -116,6 +118,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "2",
+    route: "mintUSDaWithCollateral/weETH",
     name: "Mint USDA+ with weETH (Ether.fi)",
     description: "Delta neutral weETH while retaining upside",
     maxReturn: {
@@ -187,6 +190,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "3",
+    route: "mintUSDaWithCollateral/wrsETH",
     name: "Mint USDA+ with rsETH (Kelp DAO)",
     description: "Delta neutral rsETH while retaining upside",
     maxReturn: {
@@ -252,6 +256,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "4",
+    route: "dcds",
     name: "Mint USDA+ and deposit 25% in dCDS",
     description: "Retain ETH upside and earn some option fees",
     maxReturn: {
@@ -333,6 +338,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "5",
+    route: "dcds",
     name: "Mint USDA+ and deposit 100% in dCDS",
     description: "Retain ETH upside and earn high option fees",
     maxReturn: {
@@ -414,6 +420,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "6",
+    route: "dcds",
     name: "Deposit Stablecoins in dCDS",
     description: "Capture ETH upside gains and earn option fees",
     maxReturn: {
@@ -466,6 +473,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "7",
+    route: "dcds",
     name: "Deposit Volatile Tokens in dCDS",
     description: "Capture ETH upside gains and earn option fees",
     maxReturn: {
@@ -525,6 +533,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "8",
+    route: "dcds",
     name: "Best Strategy : Option Fee Arbitrage",
     description: "Borrow cheap option from Autonomint & sell higher",
     maxReturn: {
@@ -593,6 +602,7 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "9",
+    route: "mintusdalist",
     name: "Best Strategy : Multiple Option Fee Arbitrage",
     description:
       "Borrow monthly cheap option from Autonomint & sell mutiple weekly ones",

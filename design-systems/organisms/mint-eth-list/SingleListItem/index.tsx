@@ -60,14 +60,17 @@ function SingleListItem({ item }: { item: any }) {
       tooltipText: "Points to be given for depositing the token",
     },
     {
-      label: "Strategies",
+      label: "Yield",
       value: (
-        <div className="flex mb-4 items-center cursor-pointer justify-center gap-2 text-lg">
-          <a href={item.link} target="_blank">
-            Open Link
-          </a>
+        <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
+          <p className="text-base">16.17% per month</p>
+          <div className="flex items-center gap-2">
+            <Link href={item.link}>
+              <p>Strategies</p>
+            </Link>
 
-          <SquareArrowOutUpRight />
+            <SquareArrowOutUpRight />
+          </div>
         </div>
       ),
     },
