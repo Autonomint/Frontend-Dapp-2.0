@@ -201,7 +201,9 @@ export default function StrategiesTemplate() {
                       {/* left */}
                       <div className="flex sm:flex-col flex-wrap   items-center justify-start sm:justify-end gap-2 sm:items-end">
                         <div className="text-xs xl:text-sm font-medium font-plex-grotesk text-center  text-grayLight">
-                          Max Return Upto
+                          {strategy.strategy === "option"
+                            ? "Return Near to"
+                            : "Max Return Upto"}
                         </div>
                         <div className="xl:text-4xl md:text-2xl font-semibold font-plex-grotesk text-textBlack dark:text-white">
                           {strategy.maxReturn.value}
