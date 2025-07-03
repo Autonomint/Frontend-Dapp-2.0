@@ -16,6 +16,8 @@ import {
 export interface StrategyData {
   id: string;
   route?: string;
+  strategy: string;
+  risk: string;
   name: string;
   description: string;
   maxReturn: {
@@ -51,6 +53,8 @@ export interface StrategyData {
 
 export const strategies: StrategyData[] = [
   {
+    strategy: "borrow",
+    risk: "veryLow",
     route: "mintUSDaWithCollateral/ETH",
     id: "1",
     name: "Mint USDA+ with ETH",
@@ -68,6 +72,12 @@ export const strategies: StrategyData[] = [
       },
       {
         value: "Earn ABOND tokens ~ Variable APY",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
+      },
+      {
+        value: "Earn Autonomint Points",
         token: "ABOND",
         period: "APY",
         icon: getIconMapping("dark", "ABOND"),
@@ -118,6 +128,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "2",
+    risk: "veryLow",
+    strategy: "borrow",
     route: "mintUSDaWithCollateral/weETH",
     name: "Mint USDA+ with weETH (Ether.fi)",
     description: "Delta neutral weETH while retaining upside",
@@ -143,6 +155,12 @@ export const strategies: StrategyData[] = [
         token: "Etherfi",
         period: "APY",
         icon: etherfi,
+      },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
       },
     ],
     strategyDetails: [
@@ -190,6 +208,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "3",
+    strategy: "borrow",
+    risk: "veryLow",
     route: "mintUSDaWithCollateral/wrsETH",
     name: "Mint USDA+ with rsETH (Kelp DAO)",
     description: "Delta neutral rsETH while retaining upside",
@@ -206,6 +226,12 @@ export const strategies: StrategyData[] = [
       },
       {
         value: "Earn ABOND tokens ~ Variable APY",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
+      },
+      {
+        value: "Earn Autonomint Points",
         token: "ABOND",
         period: "APY",
         icon: getIconMapping("dark", "ABOND"),
@@ -256,6 +282,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "4",
+    strategy: "dcds",
+    risk: "low",
     route: "dcds",
     name: "Mint USDA+ and deposit 25% in dCDS",
     description: "Retain ETH upside and earn some option fees",
@@ -278,6 +306,12 @@ export const strategies: StrategyData[] = [
       },
       {
         value: "dCDS APR ~ upto 200%",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
+      },
+      {
+        value: "Earn Autonomint Points",
         token: "ABOND",
         period: "APY",
         icon: getIconMapping("dark", "ABOND"),
@@ -338,6 +372,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "5",
+    strategy: "dcds",
+    risk: "medium",
     route: "dcds",
     name: "Mint USDA+ and deposit 100% in dCDS",
     description: "Retain ETH upside and earn high option fees",
@@ -363,6 +399,12 @@ export const strategies: StrategyData[] = [
         token: "ABOND",
         period: "APY",
         icon: <Percent width={16} height={16} />,
+      },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
       },
     ],
     strategyDetails: [
@@ -420,6 +462,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "6",
+    strategy: "dcds",
+    risk: "medium",
     route: "dcds",
     name: "Deposit Stablecoins in dCDS",
     description: "Capture ETH upside gains and earn option fees",
@@ -433,6 +477,12 @@ export const strategies: StrategyData[] = [
         token: "ABOND",
         period: "APY",
         icon: <Percent width={16} height={16} />,
+      },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
       },
     ],
     strategyDetails: [
@@ -473,6 +523,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "7",
+    strategy: "dcds",
+    risk: "medium",
     route: "dcds",
     name: "Deposit Volatile Tokens in dCDS",
     description: "Capture ETH upside gains and earn option fees",
@@ -486,6 +538,12 @@ export const strategies: StrategyData[] = [
         token: "ABOND",
         period: "APY",
         icon: <Percent width={16} height={16} />,
+      },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
       },
     ],
     strategyDetails: [
@@ -533,6 +591,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "8",
+    strategy: "option",
+    risk: "medium",
     route: "dcds",
     name: "Best Strategy : Option Fee Arbitrage",
     description: "Borrow cheap option from Autonomint & sell higher",
@@ -553,13 +613,18 @@ export const strategies: StrategyData[] = [
         period: "APY",
         icon: getIconMapping("dark", "ABOND"),
       },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
+      },
     ],
     strategyDetails: [
       {
         heading: "Strategy",
         subHeading: [
           "Deposit ETH and borrow 80% of ETH value in USDA+",
-          "Swap USDA+ for USDT",
           "Go to Deribit and sell a 1 month expiry ETH ATM Put option",
         ],
       },
@@ -567,8 +632,7 @@ export const strategies: StrategyData[] = [
         heading: "Example",
         subHeading: [
           "Deposit 1 ETH and borrow 1600 USDA+",
-          "Swap 400 USDA+ for USDT",
-          "Go to Deribit and deposit 400 USDA+ as margin",
+          "Go to Deribit and deposit 400 USDT as margin",
           "Sell a 1 month expiry ETH ATM Put option for $160",
         ],
       },
@@ -602,6 +666,8 @@ export const strategies: StrategyData[] = [
   },
   {
     id: "9",
+    strategy: "option",
+    risk: "veryLow",
     route: "mintusdalist",
     name: "Best Strategy : Multiple Option Fee Arbitrage",
     description:
@@ -624,13 +690,18 @@ export const strategies: StrategyData[] = [
         period: "APY",
         icon: getIconMapping("dark", "ABOND"),
       },
+      {
+        value: "Earn Autonomint Points",
+        token: "ABOND",
+        period: "APY",
+        icon: getIconMapping("dark", "ABOND"),
+      },
     ],
     strategyDetails: [
       {
         heading: "Strategy",
         subHeading: [
           "Deposit ETH and borrow 80% of ETH value in USDA+",
-          "Swap USDA+ for USDT",
           "Go to Deribit and sell week wise expiry ETH ATM Put option",
         ],
       },
@@ -638,8 +709,7 @@ export const strategies: StrategyData[] = [
         heading: "Example",
         subHeading: [
           "Deposit 1 ETH and borrow 1600 USDA+",
-          "Swap 400 USDA+ for USDT",
-          "Go to Deribit and deposit 400 USDA+ as margin",
+          "Go to Deribit and deposit 400 USDT as margin",
           "Sell a 1 month expiry ETH ATM Put option for $160",
           "Keep on repeating previous step after a week till entire month is over",
         ],
