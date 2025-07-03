@@ -219,7 +219,7 @@ export default function StrategiesTemplate() {
 
                   {/* Strategy card body 1 */}
                   <div className="flex flex-col gap-2 p-4 px-6">
-                    <div className="flex sm:flex-col flex-wrap gap-2">
+                    <div className="flex sm:flex-col md:flex-row md:flex-nowrap flex-wrap gap-2">
                       {/* left */}
                       {strategy.strategyDetails.map((detail, index) => (
                         <div key={index}>
