@@ -1,6 +1,6 @@
 // Import required dependencies
 import { useQuery } from "@tanstack/react-query";
-import { LayerZeroUrl } from "../../utils/urls";
+import { BACKEND_API_URL } from "../../utils/urls";
 import { useAccount } from "wagmi";
 import { eId, eIdWithChainId, NetworkId } from "@/utils/constants";
 import { globalAddress } from "@/blockchain/contracts";
@@ -126,29 +126,12 @@ interface LayerZeroMessagesResponse {
 export const useLayerZeroMessages = () => {
   // Memoize chain ID and related values to prevent unnecessary recalculations
   const { chainId } = useAccount();
-  const otherChainId = useMemo(
-    () =>
-      chainId === NetworkId.Optimism
-        ? NetworkId.BaseSepolia
-        : NetworkId.Optimism,
-    [chainId]
-  );
-
-  const otherChainContractAddress = useMemo(
-    () => globalAddress[otherChainId as keyof typeof globalAddress],
-    [otherChainId]
-  );
-
-  const eid = useMemo(() => eIdWithChainId[otherChainId], [otherChainId]);
 
   // Function to fetch LayerZero messages from the API
-  const fetchMessages = async (): Promise<LayerZeroMessagesResponse> => {
-    // Return empty data if contract address or EID is not available
-    if (!otherChainContractAddress || !eid) return { data: [] };
-
+  const fetchMessages = async (): Promise<boolean> => {
     // Fetch messages from LayerZero API with specified EID and contract address
     const response = await fetch(
-      `${LayerZeroUrl}/messages/oapp/${eid}/${otherChainContractAddress}?limit=1`
+      `${BACKEND_API_URL}/global/is-all-lz-messaged-delivered/${chainId}`
     );
 
     // Handle API errors
@@ -159,30 +142,25 @@ export const useLayerZeroMessages = () => {
   };
 
   // Use React Query to manage the data fetching
-  const { data, isLoading, error, isError } =
-    useQuery<LayerZeroMessagesResponse>({
-      // Query key includes chain ID and relevant addresses
-      queryKey: [
-        "layerZeroMessages",
-        chainId,
-        { otherChainContractAddress, eid },
-      ],
-      queryFn: fetchMessages,
-      retry: 1, // Retry once on failure
-      refetchOnWindowFocus: true, // Refetch when window gains focus
-      enabled: !!otherChainContractAddress && !!eid,
-      // enabled: false, // Query is disabled (currently commented out)
-      staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
-      refetchInterval: 5000, // Refetch every 5 seconds
-    });
+  const { data, isLoading, error, isError } = useQuery<boolean>({
+    // Query key includes chain ID and relevant addresses
+    queryKey: ["layerZeroMessages", chainId],
+    queryFn: fetchMessages,
+    retry: 1, // Retry once on failure
+    refetchOnWindowFocus: true, // Refetch when window gains focus
+    enabled: !!chainId,
+    // enabled: false, // Query is disabled (currently commented out)
+    staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+    refetchInterval: 10000, // Refetch every 10 seconds
+  });
 
   // Memoized function to check if system is ready for new transactions
   const readyForNewTx = useMemo(() => {
     // Return false if no messages exist
-    if (!data?.data?.length) return false;
+    if (!data) return true;
     // Check if all messages have been delivered
-    return data.data.every((msg) => msg.status.name === "DELIVERED");
-  }, [data, chainId]);
+    return data;
+  }, [data]);
 
   // Log ready status for debugging
   console.log(readyForNewTx, "readyForNewTx");
@@ -195,6 +173,6 @@ export const useLayerZeroMessages = () => {
       isLoading: isLoading && isError === false, // Loading state
       error, // Any error that occurred
     }),
-    [data, isError, isLoading, error]
+    [data, isError, isLoading, error, readyForNewTx]
   );
 };
