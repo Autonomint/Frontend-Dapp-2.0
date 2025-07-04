@@ -9,8 +9,6 @@ export const rpcUrls = {
   [NetworkId.Optimism]: "https://opt-sepolia.g.alchemy.com/v2",
 };
 
-export const LayerZeroUrl = "https://scan-testnet.layerzero-api.com/v1";
-
 // Dapp urls
 export const TESTNET_URL = "https://www.dev.testnet.app.autonomint.com/";
 
