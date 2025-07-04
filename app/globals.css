@@ -300,6 +300,9 @@ input[type="number"]:-webkit-autofill {
 .invite_code_popup_container .popup-close-icon {
   visibility: hidden;
 }
+.connect-wallet .popup-close-icon {
+  visibility: hidden;
+}
 
 .badge {
   position: relative;
