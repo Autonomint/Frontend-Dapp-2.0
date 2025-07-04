@@ -1,48 +1,46 @@
-import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
-import { Label } from "@/design-systems/atoms/label";
-import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
-import useGetAPY from "@/hookes/api-hooks/useGetAPY";
-import useInterestGain from "@/hookes/api-hooks/useInterateGain";
-import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
-import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
-import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
-import LoadingBox from "../LoadingBox";
-import { toast } from "sonner";
-import { Typography } from "@/design-systems/atoms/Typography";
-import ToastNotification from "../toasts/ToastNotification";
-import ToastNotificationError from "../toasts/ToastNotificationError";
-import { dcdsDepositDetails } from "@/utils/interface";
-import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
-import { NetworkId } from "@/utils/constants";
 import {
   borrowAssetsAddress,
   nativeTokenAddress,
   testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
-import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
-import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import { Button } from "@/design-systems/atoms/button";
+import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Label } from "@/design-systems/atoms/label";
+import Spinner from "@/design-systems/atoms/Spinner";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
+import { Typography } from "@/design-systems/atoms/Typography";
+import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
+import useGetAPY from "@/hookes/api-hooks/useGetAPY";
+import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
+import useInterestGain from "@/hookes/api-hooks/useInterateGain";
+import useCdsPause from "@/hookes/contract-hooks/useCdsPause";
+import useDcdsWithdraw from "@/hookes/contract-hooks/useDcdsWithdraw";
+import useDcdsWithdrawGain from "@/hookes/contract-hooks/useDcdsWithdrawGain";
+import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
+import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { Info } from "lucide-react";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import PageLoader from "../page-loader";
-import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import { NetworkId } from "@/utils/constants";
+import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
+import { dcdsDepositDetails } from "@/utils/interface";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import Spinner from "@/design-systems/atoms/Spinner";
+import { Info } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import LoadingBox from "../LoadingBox";
+import ToastNotification from "../toasts/ToastNotification";
+import ToastNotificationError from "../toasts/ToastNotificationError";
 
 export function DcdsWithdrawModal({
   position,
@@ -597,7 +595,6 @@ export function DcdsWithdrawModal({
             BigInt(position.index),
             res?.odosAssembledData,
             res?.usdtFromOdos,
-            res?.nonce,
             res?.deadline,
             res?.signature,
           ]);
@@ -627,6 +624,7 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
+    debugger;
     setDcdsFundWithdrawLoadingLocal(true);
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
@@ -637,7 +635,6 @@ export function DcdsWithdrawModal({
           [
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
-            res?.nonce,
             res?.deadline,
             res?.signature,
           ],
@@ -652,7 +649,6 @@ export function DcdsWithdrawModal({
         BigInt(position.index),
         res?.odosAssembledData,
         res?.usdtFromOdos,
-        res?.nonce,
         res?.deadline,
         res?.signature,
       ]);
