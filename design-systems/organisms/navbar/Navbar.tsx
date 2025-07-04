@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
+import { meetUrl } from "@/utils/urls";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -285,7 +286,7 @@ function Navbar() {
             </div>
           </div> */}
           <a
-            href="https://meet.brevo.com/akshit-vig"
+            href={meetUrl}
             target="_blank"
             rel="noopener noreferrer"
             className=""
