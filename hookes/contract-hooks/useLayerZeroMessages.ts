@@ -131,7 +131,7 @@ export const useLayerZeroMessages = () => {
   const fetchMessages = async (): Promise<boolean> => {
     // Fetch messages from LayerZero API with specified EID and contract address
     const response = await fetch(
-      `${BACKEND_API_URL}/global/is-all-lz-messaged-delivered/${chainId}`
+      `${BACKEND_API_URL}/global/is-all-lz-message-delivered/${chainId}`
     );
 
     // Handle API errors
