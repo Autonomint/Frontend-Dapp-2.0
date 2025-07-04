@@ -26,3 +26,4 @@ export const scanUrls = {
 
 // urls
 export const AUTONOMINT_DAPP_URL = "https://app.autonomint.com/";
+export const meetUrl = "https://meet.brevo.com/aks-autonomint";
