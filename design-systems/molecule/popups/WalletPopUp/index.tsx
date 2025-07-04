@@ -33,7 +33,7 @@ import {
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
 
@@ -52,6 +52,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
   const router = useRouter();
+  const pathName = usePathname();
   const { open, close } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
@@ -94,7 +95,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
       loading: chainId != NetworkId.Optimism && isPending,
     },
   ];
-  console.log(chains, "chains");
+
 
   const MobileNavOption = () => {
     return (
@@ -108,7 +109,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <Popover>
               <PopoverTrigger className="" asChild>
                 <div className="relative flex items-center gap-1">
-                  {chainId == NetworkId.Mode ? (
+                  {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                     <Image
                       src={modeIconNew}
                       alt="modeIconNew"
@@ -117,22 +118,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     />
                   ) : chainId == NetworkId.Optimism ? (
                     <OptimismIcon
-                      className=" fill-black dark:fill-white "
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.EthereumSepolia ? (
+                  ) : chainId == NetworkId.EthereumSepolia &&
+                    pathName == "/bridge" ? (
                     <EthereumIcon
-                      className=" stroke-black dark:fill-white "
+                      className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.BaseSepolia ? (
                     <BaseIcon
-                      className=" stroke-black dark:fill-white "
+                      className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
                     <OptimismIcon
-                      className=" fill-black dark:fill-white "
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
@@ -250,7 +252,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 asChild
               >
                 <div className="relative flex items-center gap-1">
-                  {chainId == NetworkId.Mode ? (
+                  {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                     <Image
                       src={modeIconNew}
                       alt="modeIconNew"
@@ -259,22 +261,23 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     />
                   ) : chainId == NetworkId.Optimism ? (
                     <OptimismIcon
-                      className=" fill-black dark:fill-white "
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.EthereumSepolia ? (
+                  ) : chainId == NetworkId.EthereumSepolia &&
+                    pathName == "/bridge" ? (
                     <EthereumIcon
-                      className=" stroke-black dark:fill-white "
+                      className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : chainId == NetworkId.BaseSepolia ? (
                     <BaseIcon
-                      className=" stroke-black dark:fill-white "
+                      className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   ) : (
                     <OptimismIcon
-                      className=" fill-black dark:fill-white "
+                      className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
@@ -329,7 +332,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <Popover>
                 <PopoverTrigger className="py-[12px] px-4 bg-[#ABFFDE]" asChild>
                   <div className="relative flex items-center gap-2">
-                    {chainId == NetworkId.Mode ? (
+                    {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                       <Image
                         src={modeIconNew}
                         alt="modeIconNew"
@@ -341,7 +344,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                         className=" fill-black  "
                         style={{ width: "20px", height: "20px" }}
                       />
-                    ) : chainId == NetworkId.EthereumSepolia ? (
+                    ) : chainId == NetworkId.EthereumSepolia &&
+                      pathName == "/bridge" ? (
                       <EthereumIcon
                         className=" stroke-black  "
                         style={{ width: "20px", height: "20px" }}
