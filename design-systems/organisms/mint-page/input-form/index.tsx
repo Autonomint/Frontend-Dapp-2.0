@@ -143,24 +143,25 @@ function InputForm({ currency }: { currency: string }) {
     token:
       currency.toLocaleLowerCase() !== "eth"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-        chainId
-        ]
+            chainId
+          ]
         : undefined,
   });
 
   // getting current LTV value
-  const { data: currentDebtCeilingMintLimit, refetch: refetchCurrentData } = useReadContract({
-    scopeKey: "currentData",
-    abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
-      ],
-    functionName: "getDebtCeilingMintLimit",
-    query: {
-      select: (data) => formatUnits(data, 6)
-    }
-  });
+  const { data: currentDebtCeilingMintLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      scopeKey: "currentData",
+      abi: borrowingContractAbi,
+      address:
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+      functionName: "getDebtCeilingMintLimit",
+      query: {
+        select: (data) => formatUnits(data, 6),
+      },
+    });
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -170,13 +171,13 @@ function InputForm({ currency }: { currency: string }) {
     abi: wrsETHABI,
     address:
       borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-      chainId || NetworkId.BaseSepolia
+        chainId || NetworkId.BaseSepolia
       ],
     functionName: "allowance",
     args: [
       address,
       borrowingDepositContractAddress[
-      chainId as keyof typeof borrowingDepositContractAddress
+        chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -204,7 +205,7 @@ function InputForm({ currency }: { currency: string }) {
       return;
     }
     // checking mint ratio
-    const checkMintRatioResult = checkMintRatio()
+    const checkMintRatioResult = checkMintRatio();
     // if mint ratio is not valid then return
     if (!checkMintRatioResult) {
       return;
@@ -225,7 +226,7 @@ function InputForm({ currency }: { currency: string }) {
       setApproveLoading(true);
       await approveWrapETHDynamic(
         borrowingDepositContractAddress[
-        chainId as keyof typeof borrowingDepositContractAddress
+          chainId as keyof typeof borrowingDepositContractAddress
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
@@ -326,8 +327,9 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${Depositdata.transactionHash
-          } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+          Depositdata.transactionHash
+        } `;
 
         return (
           <ToastNotification
@@ -462,7 +464,7 @@ function InputForm({ currency }: { currency: string }) {
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
-            nativeFee.nativeFee
+              nativeFee.nativeFee
             : nativeFee.nativeFee,
       });
     }
@@ -622,16 +624,16 @@ function InputForm({ currency }: { currency: string }) {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-        .minutes > 0
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-        .minutes > 0
-        ? 5
-        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-          ? 10
-          : 0;
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
 
   // total boaster for token
   const totalBooster =
@@ -643,11 +645,11 @@ function InputForm({ currency }: { currency: string }) {
   const totalTimeStamp = Math.max(
     farmLuckDetails?.deadLine5xTimestamp
       ? // convert date to timestamp
-      new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
       : 0,
     farmLuckDetails?.deadLine10xTimestamp
       ? // convert date to timestamp
-      new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
     Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
@@ -656,11 +658,11 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on depositing amount
   const depositTokenPoint =
     (tokenRewardDetailBorrow?.minAmount || 0) <=
-      Number(formik.values.collateralAmount || 0)
+    Number(formik.values.collateralAmount || 0)
       ? Number(
-        formik.values.collateralAmount /
-        (tokenRewardDetailBorrow?.minAmount || 0) || 0
-      ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+          formik.values.collateralAmount /
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
   // calculate the total point
@@ -672,7 +674,9 @@ function InputForm({ currency }: { currency: string }) {
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
-  const ethAmountForRatio = Number((formik.values.collateralAmount || 0) * Number((BigInt(exchangeRate || 0))))
+  const ethAmountForRatio = Number(
+    (formik.values.collateralAmount || 0) * Number(BigInt(exchangeRate || 0))
+  );
 
   // Getting ratio value for mint amount
   const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
@@ -680,18 +684,17 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   // get borrowed position list
-  const {
-    positionList,
-  } = useGetPositionList();
+  const { positionList } = useGetPositionList();
 
   // get last 24 hour position list
   const last24HourPositionList = useMemo(
     () =>
       positionList
-        ? positionList.filter((position) =>
-          Number(position.depositedTime) >=
-          (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
-        )
+        ? positionList.filter(
+            (position) =>
+              Number(position.depositedTime) >=
+              (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
+          )
         : [],
     [positionList]
   );
@@ -703,7 +706,6 @@ function InputForm({ currency }: { currency: string }) {
     }, 0);
   }, [last24HourPositionList]);
 
-
   // Checking mint ratio for user input amount
   const checkMintRatio = () => {
     if (formik.values.collateralAmount > 0) {
@@ -713,10 +715,18 @@ function InputForm({ currency }: { currency: string }) {
           "collateralAmount",
           "USDA+ mint cap reached. Reduce the amount and try again"
         );
-        return false
-        // Checking last mint amount and last mint time is valid or not from mint limit 
-      } else if (last24HourPositionList.length > 0 && totalDepositAmount24Hour > Number(currentDebtCeilingMintLimit || 0)) {
-        const remainingTimeInHours = Math.round((Number(last24HourPositionList[0].depositedTime) + 24 * 60 * 60 - (new Date().getTime() / 1000)) / (60 * 60));
+        return false;
+        // Checking last mint amount and last mint time is valid or not from mint limit
+      } else if (
+        last24HourPositionList.length > 0 &&
+        totalDepositAmount24Hour > Number(currentDebtCeilingMintLimit || 0)
+      ) {
+        const remainingTimeInHours = Math.round(
+          (Number(last24HourPositionList[0].depositedTime) +
+            24 * 60 * 60 -
+            new Date().getTime() / 1000) /
+            (60 * 60)
+        );
         formik.setFieldError(
           "collateralAmount",
           `USDA+ mint cap reached. Please try again after ${remainingTimeInHours} hours`
@@ -727,14 +737,18 @@ function InputForm({ currency }: { currency: string }) {
             onClose={() => toast.dismiss(t)}
           />
         ));
-        return false
+        return false;
         // If all conditions are valid setting error to empty
       } else {
         formik.setFieldError("collateralAmount", "");
-        return true
+        return true;
       }
     }
-  }
+  };
+
+  const LiquidationPrice = useMemo(() => {
+    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
+  }, [selectedAssetPrice]);
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -756,6 +770,14 @@ function InputForm({ currency }: { currency: string }) {
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
+              <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
+                <span className="dark:text-white text-textBlack">
+                  {currency} Price:{" "}
+                </span>{" "}
+                <span className="text-grayLight ml-1">
+                  ${Number(selectedAssetPrice) / 100 || 0}
+                </span>
+              </div>
               <div className="flex">
                 <Input
                   disabled={!isConnected || !address}
@@ -779,7 +801,7 @@ function InputForm({ currency }: { currency: string }) {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                  formik.touched.collateralAmount
+                formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>
@@ -789,14 +811,16 @@ function InputForm({ currency }: { currency: string }) {
               <span className=" font-medium text-lg text-grayLight">
                 {/* Min: 0.05 ETH */}
               </span>
-              <span className=" font-medium text-lg text-grayLight">
-                Bal: {formattedBalance} {currency}
+              <span className=" font-medium text-[14px] 3xl:text-lg text-grayLight">
+                <span className="dark:text-white text-textBlack">Bal:</span>{" "}
+                <span className="ml-1">{formattedBalance}</span>{" "}
+                <span className="ml-1">{currency}</span>
               </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-[18px]">
-            <div className="flex">
+            <div className="">
               <div className="relative w-full">
                 <Input
                   value={usdaToBeMinted}
@@ -811,6 +835,14 @@ function InputForm({ currency }: { currency: string }) {
                 >
                   USDA+
                 </Button>
+              </div>
+              <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
+                <span className="dark:text-white text-textBlack">
+                  Liquidation Price:{" "}
+                </span>{" "}
+                <span className="text-grayLight ml-1">
+                  ${LiquidationPrice || 0}
+                </span>
               </div>
             </div>
             <div>
