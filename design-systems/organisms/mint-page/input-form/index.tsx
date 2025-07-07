@@ -19,7 +19,7 @@ import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { parseEther } from "viem";
 
@@ -631,6 +631,10 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on token boaster
   const tokenBoasterPoint = totalPoint - depositTokenPoint;
 
+  // calculate the liquidation price
+  const LiquidationPrice = useMemo(() => {
+    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
+  }, [selectedAssetPrice]);
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -651,6 +655,14 @@ function InputForm({ currency }: { currency: string }) {
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
+              <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
+                <span className="dark:text-white text-textBlack">
+                  {currency} Price:{" "}
+                </span>{" "}
+                <span className="text-grayLight ml-1">
+                  ${Number(selectedAssetPrice) / 100 || 0}
+                </span>
+              </div>
               <div className="flex">
                 <Input
                   disabled={!isConnected || !address}
@@ -684,14 +696,16 @@ function InputForm({ currency }: { currency: string }) {
               <span className=" font-medium text-lg text-grayLight">
                 {/* Min: 0.05 ETH */}
               </span>
-              <span className=" font-medium text-lg text-grayLight">
-                Bal: {formattedBalance} {currency}
+              <span className=" font-medium text-[14px] 3xl:text-lg text-grayLight">
+                <span className="dark:text-white text-textBlack">Bal:</span>{" "}
+                <span className="ml-1">{formattedBalance}</span>{" "}
+                <span className="ml-1">{currency}</span>
               </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-[18px]">
-            <div className="flex">
+            <div className="">
               <div className="relative w-full">
                 <Input
                   value={usdaToBeMinted}
@@ -706,6 +720,14 @@ function InputForm({ currency }: { currency: string }) {
                 >
                   USDA+
                 </Button>
+              </div>
+              <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
+                <span className="dark:text-white text-textBlack">
+                  Liquidation Price:{" "}
+                </span>{" "}
+                <span className="text-grayLight ml-1">
+                  ${LiquidationPrice || 0}
+                </span>
               </div>
             </div>
             <div>
