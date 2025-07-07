@@ -96,7 +96,6 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
     },
   ];
 
-
   const MobileNavOption = () => {
     return (
       <>
@@ -105,10 +104,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           variant={"shadowOutline"}
           className="border-[#041A50] lg:hidden  p-0 gap-0 shadow-outlined-none lg:shadow-outlined   h-fit dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] "
         >
-          <div className="relative flex p-[12px] px-5  border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
+          <div className="relative flex    border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
             <Popover>
               <PopoverTrigger className="" asChild>
-                <div className="relative flex items-center gap-1">
+                <div className="relative flex  h-full items-center gap-1 p-[12px]  bg-[#ABFFDE]">
                   {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                     <Image
                       src={modeIconNew}
@@ -138,7 +137,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       style={{ width: "20px", height: "20px" }}
                     />
                   )}
-                  <DownArrowIcon className="w-2 h-2 dark:stroke-white stroke-black  " />
+                  <DownArrowIcon className="w-2 h-2  stroke-black  " />
                 </div>
               </PopoverTrigger>
               <PopoverContent
@@ -166,7 +165,10 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 </div>
               </PopoverContent>
             </Popover>
-            <div onClick={() => setIsDialogOpen(true)}>
+            <div
+              className="p-[12px] pl-0"
+              onClick={() => setIsDialogOpen(true)}
+            >
               <Typography size="body" className="">
                 {isConnected ? sortWalletAddress(address) : "Connect Wallet"}
               </Typography>

@@ -228,9 +228,8 @@ export function WithdrawFund({
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
-    position.status == BorrowStatus.LIQUIDATED || calculateRemainingDays(
-      Number(position.validTill)
-    ) <= 0
+    position.status == BorrowStatus.LIQUIDATED ||
+    calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
@@ -396,7 +395,8 @@ export function WithdrawFund({
       headline: "Total Interest",
       value: `$${
         Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
-        Number(position.noOfUSDaMinted) || position.status === BorrowStatus.LIQUIDATED
+          Number(position.noOfUSDaMinted) ||
+        position.status === BorrowStatus.LIQUIDATED
           ? 0
           : position.status === BorrowStatus.DEPOSITED
           ? // if position withdrawn using totalDebtAmount else total usda with cumulative
@@ -828,8 +828,6 @@ export function WithdrawFund({
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
   );
 
-
-
   const handleRenew = () => {
     setRenewLoading(true);
 
@@ -882,8 +880,8 @@ export function WithdrawFund({
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className=" max-w-[98%] sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
-          <div className="flex gap-4 justify-start items-center mb-4">
+        <DialogContent className=" max-w-[98%] overflow-y-scroll sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+          <div className="flex sm:flex-row flex-col sm:gap-4  sm:justify-start justify-start sm:items-center items-start mb-4">
             <div className="text-2xl font-semibold ">Borrow Details</div>
             <div className="text-grayLight">Balance: {balance} USDA+</div>
           </div>
@@ -1003,14 +1001,14 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={` h-[50px] ${
+                className={` sm:h-[50px] h-[80px] ${
                   position.status == BorrowStatus.WITHDREW
                     ? "md:h-[150px]"
                     : "md:h-[70px]"
                 } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
-                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
+                  <div className="sm:text-sm text-[10px] text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
                     You can use your ABOND tokens to redeem your remaining 1/2
                     collateral. They are earning AAVE lending yields and
                     internal liquidation gains since your USDA+ mint.
@@ -1029,7 +1027,7 @@ export function WithdrawFund({
                             !readyForNewTx
                           }
                           onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${
                             position.status == BorrowStatus.WITHDREW
                               ? "md:p-12"
                               : "md:p-8"
@@ -1063,7 +1061,7 @@ export function WithdrawFund({
                             )}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
-                            <div className="text-sm text-wrap">
+                            <div className="sm:text-sm text-[10px] text-wrap">
                               (Final ETH amount may be lower due to option fees,
                               5% price upside share, and conversion based on
                               current ETH/USD value){" "}
@@ -1318,10 +1316,10 @@ export function WithdrawFund({
                       key={item.heading}
                       className="flex justify-between font-medium"
                     >
-                      <span className="text-grayLight text-[20px]">
+                      <span className="text-grayLight text-[16px] md:text-[20px]">
                         {item.heading}
                       </span>
-                      <span className="text-textBlack dark:text-white text-[20px]">
+                      <span className="text-textBlack dark:text-white text-[16px] md:text-[20px]">
                         {item.value}
                       </span>
                     </div>
@@ -1361,10 +1359,10 @@ export function WithdrawFund({
                       key={index}
                       className="flex justify-between font-medium "
                     >
-                      <span className="text-[20px] text-grayLight">
+                      <span className="text-[16px] md:text-[20px] text-grayLight">
                         {item.label}
                       </span>
-                      <span className="text-textBlack dark:text-white text-[20px]">
+                      <span className="text-textBlack dark:text-white text-[16px] md:text-[20px]">
                         {item.value}
                       </span>
                     </div>

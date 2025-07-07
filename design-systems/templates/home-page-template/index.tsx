@@ -71,8 +71,11 @@ export default function HomeTemplate() {
       orgName: "Autonomint",
       amount: (
         <div className="flex gap-2 items-baseline">
-          {oneEthOptionFees.toFixed(2)}
-          <span className="text-[14px]">per month</span>
+          <span className="hidden sm:block">{oneEthOptionFees.toFixed(2)}</span>
+          <span className="text-[14px] hidden sm:block">per month</span>
+          <span className="text-[14px] sm:hidden">
+            {oneEthOptionFees.toFixed(2)}/m
+          </span>
         </div>
       ),
       tag: "Lowest Fee",
@@ -258,7 +261,7 @@ export default function HomeTemplate() {
           <div
             className={`relative  closeAnimateMint cursor-pointer  ${
               hoveredIndex === 0
-                ? "w-full lg:w-[80%] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
+                ? "w-full lg:w-[80%] h-[380px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
                 : // height and width style based on hoveredIndex
                 hoveredIndex === 1
                 ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
@@ -300,7 +303,7 @@ export default function HomeTemplate() {
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                  "w-full lg:w-[60%]  sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  "w-full lg:w-[60%] h-[320px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
                   " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"

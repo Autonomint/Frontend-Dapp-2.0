@@ -166,7 +166,7 @@ function DepositTable({
           sortedPositionList.length < 3 ? "h-[400px]" : ""
         }`}
       >
-        <table className="table-auto   w-full border-collapse text-[20px]">
+        <table className="table-auto   w-full border-collapse text-lg md:text-[20px]">
           <thead
             className={`text-left border-x z-1 border-grayLight bg-white dark:bg-black sm:birder-y-0 font-normal text-grayLight ${
               // if sticky is true then sticky the table header
@@ -381,7 +381,7 @@ function DepositTable({
         ) : null}
       </div>
       {positionList.length > 0 && (
-        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto pb-4  justify-around items-center">
+        <div className="flex w-full md:w-1/2 xl:w-1/3 mx-auto py-4 lg:py-0 lg:pb-4   justify-around items-center">
           <Button
             disabled={currentPage === 1}
             className="text-lg"

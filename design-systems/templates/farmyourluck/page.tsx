@@ -395,7 +395,7 @@ function FarmYourLuckTemplate() {
       <AppNavbar tabOptions={tabs} />
       <div className="grid grid-cols-1 lg:grid-cols-6  border-b xl:min-h-[calc(100vh-160px)] border-grayLight">
         <div className="grid col-span-1 lg:col-span-4 ">
-          <div className="grid grid-cols-3 gap-6 md:p-8 p-5">
+          <div className="grid grid-cols-3 gap-3 md:gap-6 md:p-8 p-5">
             {Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={index}
@@ -449,7 +449,7 @@ function FarmYourLuckTemplate() {
           <div
             className={`pb-0 lg:pb-[25px]  xl:pb-0 flex flex-col  justify-between border border-solid border-grayLight lg:border-0 p-5 lg:p-0 2xl:gap-0 lg:gap-0`}
           >
-            <span className="text-grayLight font-medium lg:text-[28px] text-[24px] lg:text-left">
+            <span className="text-grayLight font-medium lg:text-[28px] text-[20px] sm:text-[24px] lg:text-left">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={buttonText}
@@ -496,7 +496,7 @@ function FarmYourLuckTemplate() {
                   className={`flex overflow-hidden transition-all delay-150 duration-300 ease-in-out flex-col text-left   ${
                     isShowRewardDetails
                       ? "h-[0px]  mb-0 "
-                      : "h-[180px] lg:h-[205px] xl:h-[220px] md:h-[166px] hxl:h-[175px] 2xl:h-[201px] 3xl:h-[211px] mb-2  2xl:mb-0 "
+                      : "h-[190px] lg:h-[205px] xl:h-[220px] md:h-[166px] hxl:h-[175px] 2xl:h-[201px] 3xl:h-[211px] mb-2  2xl:mb-0 "
                   }`}
                 >
                   <div className="text-textBlack lg:text-[28px] 2xl:text-3xl text-[20px] font-medium dark:text-white">
@@ -576,14 +576,14 @@ function FarmYourLuckTemplate() {
                   </div>
                 </div>
               </div>
-              <div className="absolute w-full  overflow-hidden  left-0 bottom-0 h-[90px]">
+              <div className="absolute w-full  overflow-hidden  left-0 bottom-0 h-[60px] md:h-[90px]">
                 {isWalletConnected && address ? (
                   <>
                     {!payLoading && (
                       <button
                         disabled={isLuckPriceLoading || isLoadingWalletAddress}
                         onClick={() => handleButtonClick()}
-                        className={` w-full  text-white h-[90px] font-bold text-[32px]  ${
+                        className={` w-full  text-white   h-[60px] md:h-[90px] font-bold text-[24px] md:text-[32px]  ${
                           false
                             ? "!bg-[#7A7A7A] !text-[#AFAFAF]"
                             : " bg-black  dark:bg-custom-gradient-to-top"

@@ -1,4 +1,4 @@
-import DCDSTemplate from "@/design-systems/templates/dcds/page";
+import DCDSTemplate from "@/design-systems/templates/dcds";
 
 function Page() {
   return <DCDSTemplate />;

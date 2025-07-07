@@ -13,6 +13,7 @@ export default {
     extend: {
       screens: {
         nss: "368px",
+        xs: "420px",
         hxl: "1366px",
         "3xl": "1920px",
         "4xl": "2560px",

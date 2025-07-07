@@ -63,8 +63,11 @@ function SingleListItem({ item }: { item: any }) {
       label: "Yield",
       value: (
         <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
-          <p className="text-[14px]">Max upto 16.17% per month</p>
-          <div className="flex items-center gap-2">
+          <p className="text-[14px] sm:block hidden">
+            Max upto 16.17% per month
+          </p>
+          <p className="text-[14px] sm:hidden block">Upto 16.17%/m</p>
+          <div className="flex items-center text-[14px] lg:text-lg gap-2">
             <Link href={item.link}>
               <p>Strategies</p>
             </Link>
@@ -86,7 +89,7 @@ function SingleListItem({ item }: { item: any }) {
       >
         <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full">
           <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[211px] lg:h-[160px]">
+          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[230px] lg:h-[160px]">
             {metrics.map((metric, index) => (
               <div key={index} className="md:flex-1 h-full">
                 <ListItemMetric {...metric} />

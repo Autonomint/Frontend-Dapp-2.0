@@ -38,7 +38,7 @@ function DCDSHoverElement() {
           alt="Price Graph"
           className="2xl:w-[900px] w-[900px] md:w-[800px]  object-fit hidden dark:block"
         />
-        <div className="mt-4 text-textBlack text-[14px] sm:text-[18px] lg:text-[20px] 2xl:text-[24px]  font-medium dark:text-white flex items-center justify-between gap-8">
+        <div className="mt-4 text-textBlack text-[14px] sm:text-[18px] lg:text-[20px] 2xl:text-[24px]  font-medium dark:text-white flex flex-col sm:flex-row justify-start items-start sm:justify-between  sm:items-center gap-1 sm:gap-8">
           <div className="flex h-full mt-2 items-center justify-start gap-2">
             Get up to 200% APY
             <TooltipProvider>
@@ -61,7 +61,7 @@ function DCDSHoverElement() {
               Assets Accepted
             </p>
             <div className="flex relative mt-2 items-center justify-start pr-28">
-              <div className="flex absolute z-[10] left-0   w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
+              <div className="flex absolute z-[9] left-0   w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
@@ -78,7 +78,7 @@ function DCDSHoverElement() {
                 </Tooltip>
               </div>
 
-              <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
+              <div className="flex absolute z-[8] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
@@ -94,7 +94,7 @@ function DCDSHoverElement() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[30%] flex-col items-center justify-center gap-2">
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[30%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image
@@ -110,7 +110,7 @@ function DCDSHoverElement() {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[40%] flex-col items-center justify-center gap-2">
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[6] left-[40%] flex-col items-center justify-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Image

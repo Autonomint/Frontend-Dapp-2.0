@@ -8,7 +8,7 @@ function SingleListItemImage({
   stakedToken: string;
 }) {
   return (
-    <div className="flex flex-col items-start justify-center gap-2 lg:gap-14 min-w-[197px]">
+    <div className="flex sm:flex-col items-start  justify-start sm:justify-center gap-2 lg:gap-14 min-w-[197px]">
       <Image
         src={src}
         className="w-[40px] h-[40px] lg:w-[58px] lg:h-[58px]"

@@ -35,7 +35,7 @@ export default function DepositSummary({
       </div>
 
       <div className="flex justify-between">
-        <span className="text-grayLight text-[16px] flex items-center  font-medium">
+        <span className="text-grayLight text-[16px] flex items-center ">
           <HoverCard
             disabled={individualPoints.length === 0}
             title={

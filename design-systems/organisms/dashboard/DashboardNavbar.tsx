@@ -34,7 +34,7 @@ function DashboardNavbar() {
             prefetch={true}
             href={path}
             key={nameA}
-            className={`flex-1 px-5 py-2 text-[18px] sm:text-[24px] 2xl:text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
+            className={`flex-1 p-2 sm:px-5 sm:py-2 text-[18px] sm:text-[24px] 2xl:text-[32px] font-medium border-r border-grayLight last:border-r-0 hover:cursor-pointer ${
               isActive
                 ? "bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
                 : ""

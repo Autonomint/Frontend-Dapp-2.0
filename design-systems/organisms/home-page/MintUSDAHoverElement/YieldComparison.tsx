@@ -111,7 +111,13 @@ function YieldComparison() {
           }}
           className={` text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
-          Max of 16.17% <span className="text-[14px]">per month</span>
+          <span className="text-[14px] ml-1 hidden sm:block">
+            Max of 16.17%
+          </span>
+          <span className="text-[14px] sm:hidden">Max of 16.17%/m</span>
+          <span className="text-[14px] ml-1 hidden sm:block">
+            per month
+          </span>{" "}
         </span>
       </div>
     </div>

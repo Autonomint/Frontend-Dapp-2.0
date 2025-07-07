@@ -1429,11 +1429,11 @@ function DCDSTemplate() {
                   <div className="flex justify-between">
                     <div>
                       {token?.minTokenAmount > 0 && (
-                        <div className="text-[16px] font-medium text-grayLight">
+                        <div className=" text-[12px] sm:text-[16px] font-medium text-grayLight">
                           Min ${token?.minTokenAmount}
                         </div>
                       )}
-                      <span className="text-[18px] font-medium text-grayLight">
+                      <span className="text-[12px] sm:text-[18px] font-medium text-grayLight">
                         <Typography
                           size="sm"
                           variant="regular"
@@ -1451,7 +1451,7 @@ function DCDSTemplate() {
                         </Typography>
                       </span>
                     </div>
-                    <span className="text-[16px] font-medium text-grayLight">
+                    <span className="text-[12px] sm:text-[16px] font-medium text-grayLight">
                       Bal {token.balanceAvailable}{" "}
                       <span
                         onClick={() => {
@@ -1460,7 +1460,7 @@ function DCDSTemplate() {
                             Number(token.tokenCount)
                           );
                         }}
-                        className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border px-2 py-[2px] rounded-[24px]"
+                        className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border p-1 py-[0px] mt-4  sm:px-2 sm:py-[2px] rounded-[24px]"
                       >
                         Max
                       </span>

@@ -38,9 +38,9 @@ function MintUSDa({ currency }: { currency: string }) {
         <div className="col-span-1 block lg:hidden border border-solid border-grayLight">
           <InputForm currency={currency} />
         </div>
-        <div className="col-span-2 block lg:hidden border border-solid border-grayLight">
+        {/* <div className="col-span-2 block lg:hidden border border-solid border-grayLight">
           <ChartComponent currency={currency} />
-        </div>
+        </div> */}
 
         <div className="col-span-2 border border-solid border-grayLight p-4 lg:p-6">
           <div className="flex flex-col justify-start">

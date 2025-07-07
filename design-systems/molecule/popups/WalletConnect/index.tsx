@@ -144,7 +144,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                     open();
                   }}
                   variant={"shadowOutline"}
-                  className="p-5 cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-white"
+                  className="p-5 cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white dark:text-white text-black"
                 >
                   Connect Wallet
                 </Button>

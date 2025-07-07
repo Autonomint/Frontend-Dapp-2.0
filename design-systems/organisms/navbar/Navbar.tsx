@@ -366,12 +366,38 @@ function Navbar() {
 
       {/* Menu Links */}
       <div
-        className={`w-[100%]      h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`w-[100%]      h-[calc(100vh)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
-        style={{ top: 94, left: 0 }}
+        style={{ top: 0, left: 0 }}
       >
         <ul className="  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
+          <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
+            <div className="w-full flex items-center justify-between">
+              <div className="w-[3rem] lg:hidden h-[3rem]">
+                <Image
+                  src={getIconMapping(theme || "dark", "usda")}
+                  alt="autonomint-dapp"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexShrink: 0,
+                  }}
+                />
+              </div>
+              <div
+                onClick={toggleMenu}
+                className="w-[44px] h-[44px]  lg:hidden cursor-pointer flex justify-center items-center border-[1px] dark:border-white border-solid border-black"
+              >
+                {isOpen ? (
+                  <CloseIcon className="dark:stroke-white stroke-black" />
+                ) : (
+                  <MenuIcon className="dark:stroke-white stroke-black" />
+                )}
+              </div>
+            </div>
+          </li>
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
             <Link onClick={closeMenu} href="/mintusdalist">
               <Typography
