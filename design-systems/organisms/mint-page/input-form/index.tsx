@@ -847,9 +847,27 @@ function InputForm({ currency }: { currency: string }) {
             </div>
             <div>
               <div className="flex justify-between">
-                <span className=" font-medium text-lg text-grayLight">
-                  5% of collateral upside
-                </span>
+                <div className="flex gap-1 items-center">
+                  <span className=" font-medium text-lg text-grayLight">
+                    5% of collateral upside
+                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="">
+                        <Info className="stroke-grayLight w-[18px] h-[18px]" />
+                      </div>
+                    </TooltipTrigger>
+                    {
+                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                        <p>
+                          This upside is shared with users depositing funds in
+                          dCDS.
+                        </p>
+                      </TooltipContent>
+                    }
+                  </Tooltip>
+                </div>
+
                 <span className=" font-medium text-lg dark:text-white text-black">
                   ${upsideCollateral.toFixed(2)}
                 </span>
