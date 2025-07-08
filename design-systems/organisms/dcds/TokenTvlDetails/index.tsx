@@ -14,10 +14,10 @@ function TokenTvlDetails({
 
   return (
     <div className="bg-gradient-to-b from-[#E5F3FF] to-[#E5F3FF] sm:p-4 p-4 md:p-8 flex justify-between border border-solid border-grayLight border-b-0 dark:bg-none">
-      <div className="flex flex-row lg:flex-col md:gap-6 gap-1 items-center  lg:gap-8">
+      <div className="w-[80px] md:w-[130px] lg:w-[80px] justify-start lg:justify-center flex flex-row lg:flex-col md:gap-6 gap-1 items-center  lg:gap-8">
         {tokenName === "USDA+" && theme === "dark" ? (
           <svg
-            className="ml-[-8px]"
+            className=""
             width="40"
             height="40"
             viewBox="0 0 116 200"
@@ -62,7 +62,7 @@ function TokenTvlDetails({
         )}
         <span
           className={`text-[16px]  md:text-[24px] text-textBlack dark:text-white ${
-            tokenName === "USDA+" && theme === "dark" ? "ml-[-4px]" : ""
+            tokenName === "USDA+" && theme === "dark" ? "" : ""
           }`}
         >
           {tokenName}
