@@ -80,6 +80,7 @@ import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
 import { scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import { useCalculateGainCDS } from "@/hookes/contract-hooks/useCalculateGainCDS";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -257,6 +258,10 @@ function DCDSTemplate() {
     address: cdsAddress[chainId as keyof typeof cdsAddress],
     functionName: "getUsdtLimit",
   });
+
+  const { data: calculateGainCDS } = useCalculateGainCDS();
+
+  console.log(calculateGainCDS, "calculateGainCDS");
 
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
 
@@ -1532,6 +1537,7 @@ function DCDSTemplate() {
             </div>
             <div className=" px-5 py-3 md:px-16 md:py-5  lg:px-5">
               <DepositSummary
+                calculateGainCDS={calculateGainCDS}
                 apy="Expected range 5% to 200%"
                 depositing={depositValue ? `$${depositValue.toFixed(2)}` : "-"}
                 points={pointToGiven.totalPoints}

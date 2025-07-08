@@ -1,6 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren, useRef, useState } from "react";
+import { useAccount } from "wagmi";
 
 /**
  * This component is used to provide a query client to the app
@@ -9,12 +10,14 @@ import { PropsWithChildren, useRef, useState } from "react";
  */
 export default function QueryProvider({ children }: PropsWithChildren) {
   const toastId = useRef<number | string>("");
+  const { chainId, isConnected, address } = useAccount();
   const [queryClient] = useState(
     () =>
       new QueryClient({
         defaultOptions: {
           queries: {
             // refetchInterval: 8000,
+            enabled: isConnected && !!address && !!chainId,
           },
           mutations: {
             onError(error: any) {},
