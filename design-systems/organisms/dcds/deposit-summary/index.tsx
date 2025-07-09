@@ -42,7 +42,7 @@ export default function DepositSummary({
                 className="stroke-grayLight w-[18px] h-[18px]"
               />
             </TooltipTrigger>
-            <TooltipContent className=" dark:text-white dark:bg-black w-[400px]">
+            <TooltipContent className=" dark:text-white bg-white text-black dark:bg-black w-[400px]">
               <p>
                 These are rolling 1-month yields earned from option fees paid by
                 USDA+ minters. Option fees accrue as users hedge their ETH, so
@@ -66,7 +66,7 @@ export default function DepositSummary({
                 className="stroke-grayLight w-[18px] h-[18px]"
               />
             </TooltipTrigger>
-            <TooltipContent className=" dark:text-white dark:bg-black w-[400px]">
+            <TooltipContent className=" dark:text-white bg-white text-black dark:bg-black w-[400px]">
               <p>
                 By participating in dCDS, you are taking a long exposure to ETH
                 so your returns are dependent on ETH price movement. If ETH

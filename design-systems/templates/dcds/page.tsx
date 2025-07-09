@@ -1499,7 +1499,7 @@ function DCDSTemplate() {
                   <TooltipTrigger asChild>
                     <Info width={24} height={24} className="ml-2" />
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white dark:bg-black">
+                  <TooltipContent className="dark:text-white bg-white text-black dark:bg-black w-[400px] ">
                     <p>
                       Get discounted ETH and earn USDA+ by backing liquidations
                       when USDA+ borrowers default
