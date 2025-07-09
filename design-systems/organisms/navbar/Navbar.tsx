@@ -459,7 +459,7 @@ function Navbar() {
             </Link>
           </li>
           <li className="py-5 px-6 border-b border-[1px] border-grayLight  w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/buy">
+            <Link onClick={closeMenu} href="/">
               <Typography
                 className="text-[32px] font-medium "
                 variant="regular"
