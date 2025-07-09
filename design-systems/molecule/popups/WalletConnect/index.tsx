@@ -1,5 +1,9 @@
 "use client";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import { Typography } from "@/design-systems/atoms/Typography";
 import Terms_Privacy from "@/design-systems/organisms/navbar/Terms_Privacy";
 import { useEffect, useState } from "react";
@@ -60,6 +64,8 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
         title="Terms & Privacy Policy"
         className="rounded-[10px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0 connect-wallet "
       >
+        <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
         {chainId &&
           !["/bridge", "/"].includes(pathname) &&
           ![11155420, 84532].includes(chainId || 0) &&
@@ -131,7 +137,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
           )}
         {!isConnected && (
           <div>
-            <Typography size="h4" className="text-center">
+            <Typography size="h4" className="text-center leading-9">
               Please Connect Your Wallet
             </Typography>
             <div className="flex flex-col justify-center py-10  w-[60%] rounded-lg overflow-hidden mx-auto ">
