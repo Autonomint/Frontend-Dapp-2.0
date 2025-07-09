@@ -14,7 +14,11 @@ import {
 } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import {
   Popover,
   PopoverContent,
@@ -107,7 +111,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
           <div className="relative flex    border-solid border-0 lg:border-l-2 border-black flex-row items-center gap-3 ">
             <Popover>
               <PopoverTrigger className="" asChild>
-                <div className="relative flex  h-full items-center gap-1 p-[12px]  bg-[#ABFFDE]">
+                <div className="relative flex  h-full items-center gap-1 p-[12px] px-[8px] border-r border-[1px] border-black border-y-0 border-l-0  bg-[#ABFFDE]">
                   {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                     <Image
                       src={modeIconNew}
@@ -178,6 +182,8 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         {/* Mobile Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
           <DialogContent className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+            <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
             <div className="text-2xl  font-semibold mb-4">Wallet Info</div>
 
             <div className="flex  flex-row justify-between items-center">
