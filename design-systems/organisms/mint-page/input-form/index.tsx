@@ -771,10 +771,8 @@ function InputForm({ currency }: { currency: string }) {
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
               <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
-                <span className="dark:text-white text-textBlack">
-                  {currency} Price:{" "}
-                </span>{" "}
-                <span className="text-grayLight ml-1">
+                <span className="text-grayLight">{currency} Price: </span>{" "}
+                <span className=" dark:text-white text-textBlack font-semibold ml-1">
                   ${Number(selectedAssetPrice) / 100 || 0}
                 </span>
               </div>
@@ -811,10 +809,14 @@ function InputForm({ currency }: { currency: string }) {
               <span className=" font-medium text-lg text-grayLight">
                 {/* Min: 0.05 ETH */}
               </span>
-              <span className=" font-medium text-[14px] 3xl:text-lg text-grayLight">
-                <span className="dark:text-white text-textBlack">Bal:</span>{" "}
-                <span className="ml-1">{formattedBalance}</span>{" "}
-                <span className="ml-1">{currency}</span>
+              <span className="  text-[14px] 3xl:text-lg text-grayLight">
+                <span className="">Bal:</span>{" "}
+                <span className="ml-1 dark:text-white font-semibold  text-textBlack">
+                  {formattedBalance}
+                </span>{" "}
+                <span className="ml-1 dark:text-white font-semibold text-textBlack">
+                  {currency}
+                </span>
               </span>
             </div>
           </div>
@@ -837,10 +839,11 @@ function InputForm({ currency }: { currency: string }) {
                 </Button>
               </div>
               <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
-                <span className="dark:text-white text-textBlack">
+                <span className="dark:text-grayLight text-grayLight">
                   Liquidation Price:{" "}
                 </span>{" "}
-                <span className="text-grayLight ml-1">
+                <span className="text-black font-semibold dark:text-white ml-1 flex items-center gap-1">
+                  <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
                   ${LiquidationPrice || 0}
                 </span>
               </div>

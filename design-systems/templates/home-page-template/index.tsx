@@ -303,7 +303,7 @@ export default function HomeTemplate() {
             className={`relative closeAnimateDCDS cursor-pointer  ${
               hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                  "w-full lg:w-[60%] h-[320px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  "w-full lg:w-[60%] h-[360px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
                 ? // height and width style based on hoveredIndex
                   " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
