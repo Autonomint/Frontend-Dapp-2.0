@@ -38,12 +38,12 @@ export interface dcdsDepositDetails {
 }
 
 export interface CdsWithdrawAPYs {
-  APY: number | Number;
-  amountAccured: number | Number;
-  priceChangePL: number | Number;
-  liquidatedCollateralInETH: number | Number;
-  liquidatedETHValue: number | Number;
-  currentTimeAPYTillNow: number | Number;
+  APY: number;
+  amountAccured: number;
+  priceChangePL: number;
+  liquidatedCollateralInETH: number;
+  liquidatedETHValue: number;
+  currentTimeAPYTillNow: number;
 }
 
 export interface DcdsDetailsResponse {

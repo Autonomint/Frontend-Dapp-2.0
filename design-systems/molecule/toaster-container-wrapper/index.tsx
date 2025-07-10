@@ -15,7 +15,6 @@ const ToasterContainerWrapper = () => {
   return (
     <div>
       <Toaster
-        pauseWhenPageIsHidden={true}
         richColors
         position="top-right"
         className="dark:bg-custom-gradient-to-top"

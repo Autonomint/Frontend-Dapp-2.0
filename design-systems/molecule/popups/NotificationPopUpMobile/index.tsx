@@ -1,7 +1,7 @@
 "use client";
 import { useEthersSigner } from "@/blockchain/WalletConfigs/EtherSigner";
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/design-systems/atoms/dialog";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI } from "@/utils/constants";
 
@@ -63,6 +63,8 @@ const NotificationPopupMobile: React.FC<NotificationPopupProps> = ({
           title="Notification"
           className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0"
         >
+        <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+      
           <div className="pb-2">
             <div>
               <Typography size="lg" className="" variant="regular">

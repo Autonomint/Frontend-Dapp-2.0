@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/design-systems/atoms/dialog";
 import { Typography } from "@/design-systems/atoms/Typography";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
@@ -27,6 +27,8 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className=" w-[98%] overflow-y-scroll h-[500px] lg:h-auto rounded-lg no-scrollbar lg:w-[750px] max-w-none  bg-white dark:bg-[#0D0D0D] md:p-8 gap-0">
+        <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
         <div className="col-span-2  ">
           <div className="flex flex-col justify-start">
             <div className=" text-textBlack text-center text-[24px] md:text-3xl font-medium dark:text-white">

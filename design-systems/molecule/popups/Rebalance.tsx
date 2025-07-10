@@ -1,5 +1,9 @@
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import { Label } from "@/design-systems/atoms/label";
 import { RadioGroup, RadioGroupItem } from "@/design-systems/atoms/radio-group";
 
@@ -13,6 +17,8 @@ export function RebalancePopup({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] dark:bg-[#0D0D0D]  bg-white">
+        <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
         <div
           style={{
             fontSize: "28px",

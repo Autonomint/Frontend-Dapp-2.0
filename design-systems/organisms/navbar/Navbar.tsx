@@ -397,7 +397,7 @@ function Navbar() {
             </div>
           </div>
         </div>
-        <ul className="  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
+        <ul className=" mb-12  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
             <Link onClick={closeMenu} href="/mintusdalist">
               <Typography
@@ -470,7 +470,7 @@ function Navbar() {
           </li>
         </ul>
 
-        <div className=" gap-6 p-3 w-full border-t flex-row flex justify-center items-center border-grayLight border-[1px]">
+        <div className=" absolute left-0 bottom-[-17px] bg-white dark:bg-black  gap-6 p-3 w-full border-t flex-row flex justify-center items-center border-grayLight border-[1px]">
           {isClient && (
             <Button
               variant={"shadowOutline"}

@@ -5,7 +5,11 @@ import {
   usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import { Label } from "@/design-systems/atoms/label";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
@@ -671,9 +675,11 @@ export function DcdsWithdrawModal({
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
-        <div className="text-2xl font-semibold mb-2 dark:text-white text-textBlack">
-          Deposit Details
-        </div>
+        <DialogTitle className="text-2xl font-semibold ">
+          <div className="text-2xl font-semibold mb-2 dark:text-white text-textBlack">
+            Deposit Details
+          </div>
+        </DialogTitle>
         {/* <div className="flex">
           <div className="flex flex-1 items-center ps-4 border border-gray-200 rounded-none dark:border-gray-700">
             <div className="inline-flex items-center">

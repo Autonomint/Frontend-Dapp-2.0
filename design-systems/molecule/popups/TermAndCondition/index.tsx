@@ -1,4 +1,4 @@
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/design-systems/atoms/dialog";
 import Terms_Privacy from "@/design-systems/organisms/navbar/Terms_Privacy";
 import { useState } from "react";
 
@@ -17,6 +17,8 @@ const TermAndCondition = ({
         title="Terms & Privacy Policy"
         className=" dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0"
       >
+        <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
         <Terms_Privacy />
       </DialogContent>
     </Dialog>

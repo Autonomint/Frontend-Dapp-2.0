@@ -7,7 +7,11 @@ import {
   usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
@@ -881,6 +885,7 @@ export function WithdrawFund({
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className=" max-w-[98%] overflow-y-scroll sm:max-w-[610px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+          <DialogTitle className="text-2xl font-semibold "></DialogTitle>
           <div className="flex sm:flex-row flex-col sm:gap-4  sm:justify-start justify-start sm:items-center items-start mb-4">
             <div className="text-2xl font-semibold ">Borrow Details</div>
             <div className="text-grayLight">Balance: {balance} USDA+</div>

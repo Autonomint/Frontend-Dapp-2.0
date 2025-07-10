@@ -1,6 +1,10 @@
 import twitter from "@/app/assets/new-twitter.svg";
 import { Button } from "@/design-systems/atoms/button";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import { Input } from "@/design-systems/atoms/input";
 import Popup from "@/design-systems/atoms/PopUp";
 import { Typography } from "@/design-systems/atoms/Typography";
@@ -150,6 +154,8 @@ const ReferPopupMobile: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
       </Button>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className="w-[90%] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
+          <DialogTitle className="text-2xl font-semibold "></DialogTitle>
+
           <div className="text-2xl  font-semibold mb-4">Refer and Earn</div>
           <div className="mt-4">
             <Typography size="body" className="text-grayLight">
