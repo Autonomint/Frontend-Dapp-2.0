@@ -47,8 +47,8 @@ export default function RootLayout({
 
       <body className={`h-screen w-screen flex justify-center items-center`}>
         <div className="bg-white rounded-lg shadow-lg w-full h-full md:w-[100%] md:max-w-full md:h-[100vh] md:max-h-[100vh] flex flex-col dark:bg-black">
-          <QueryProvider>
-            <WalletProvider cookies={""}>
+          <WalletProvider cookies={""}>
+            <QueryProvider>
               <Provider>
                 <ThemeProvider attribute="class">
                   <Ticker />
@@ -65,8 +65,8 @@ export default function RootLayout({
                   </div>
                 </ThemeProvider>
               </Provider>
-            </WalletProvider>
-          </QueryProvider>
+            </QueryProvider>
+          </WalletProvider>
         </div>
         <ToasterContainerWrapper />
       </body>

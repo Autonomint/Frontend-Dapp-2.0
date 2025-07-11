@@ -62,7 +62,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
       >
         {chainId &&
           !["/bridge", "/"].includes(pathname) &&
-          ![11155420, 84532].includes(chainId || 0) &&
+          ![NetworkId.Optimism, NetworkId.BaseSepolia].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">
