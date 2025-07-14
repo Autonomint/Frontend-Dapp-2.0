@@ -1,10 +1,10 @@
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
-  borrowingWithdrawContractAddress,
-  cdsAddress,
   testusdtAbiAddress,
-  usDaAddress,
+  usDaAddress
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import {
@@ -12,59 +12,51 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/design-systems/atoms/dialog";
+import Spinner from "@/design-systems/atoms/Spinner";
+import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/design-systems/atoms/tooltip";
 import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
 import useInterestGain from "@/hookes/api-hooks/useInterateGain";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
-import useCalculateInterest from "@/hookes/contract-hooks/useCalculateInterest";
+import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
+import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
+import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
+import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
+import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import { BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
-  getDownsideProtectionTillNow,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isFifteenDaysCompleted,
+  isFifteenDaysCompleted
 } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
+import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
-import { use, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { InfoIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { formatUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useReadContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
 import LoadingBox from "../LoadingBox";
-import PopupDropdown from "../PopupDropdown";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
-import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
-import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
-import { formatUnits, zeroAddress } from "viem";
-import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
-import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/design-systems/atoms/tooltip";
-import { Network } from "ethers";
-import { cdsAbi } from "@/blockchain/abis/dcds";
-import { InfoIcon } from "lucide-react";
-import { usDaAbi } from "@/blockchain/abis/usda";
-import PageLoader from "../page-loader";
-import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import Spinner from "@/design-systems/atoms/Spinner";
-import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
-import useUsdtApprove from "@/hookes/contract-hooks/useApproveUsdt";
 export function WithdrawFund({
   position,
   isDialogOpen,

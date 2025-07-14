@@ -237,7 +237,8 @@ function DCDSTemplate() {
       };
     });
   }, [cdsLockinRewardDetailList]);
-  console.log(lockInPeriodOption, "lockInPeriodOption");
+
+
   // Define the initial state for the options variable
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(400000, 0)
@@ -245,9 +246,6 @@ function DCDSTemplate() {
     .toString() as `0x${string}`;
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
-
-  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
-    useGetUsdtAmountDepositedTillNow();
 
   //checking is Cds Deposit pause or not
   const { isFunctionPausedCDS_Deposit } = useCdsPause();
@@ -261,9 +259,6 @@ function DCDSTemplate() {
 
   const { data: calculateGainCDS } = useCalculateGainCDS();
 
-  console.log(calculateGainCDS, "calculateGainCDS");
-
-  const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
 
   // assigning the formik values to the local variables because getting old values from formik directly
   const liquidationGains = formik.values.liquidationGains;

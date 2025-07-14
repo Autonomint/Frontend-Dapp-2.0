@@ -191,14 +191,6 @@ function ChartComponent({ currency }: { currency: string }) {
     }
   };
 
-  const { tokenRewardDetailList } = useGetTokenReward();
-
-  const tokenRewardDetailBorrow =
-    tokenRewardDetailList?.[
-      assetNameForRewardDataBorrow[
-        currency as keyof typeof assetNameForRewardDataBorrow
-      ]
-    ];
   return (
     <div className="lg:p-6 p-2 h-full">
       <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">

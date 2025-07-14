@@ -148,7 +148,7 @@ function InputForm({ currency }: { currency: string }) {
         : undefined,
   });
 
-  // getting current LTV value
+  // getting current currentDebtCeilingMintLimit value
   const { data: currentDebtCeilingMintLimit, refetch: refetchCurrentData } =
     useReadContract({
       scopeKey: "currentData",
