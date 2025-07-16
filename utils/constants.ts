@@ -62,7 +62,7 @@ export const RedeemAssets = {
   tusdt: AssetName.USDT,
 };
 // WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE
-export const alchemyApiKeys = "p3uGu6Owoecg4A4tSuxz11VTcdXmK00z";
+export const alchemyApiKeys = "WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
@@ -108,9 +108,9 @@ export enum AssetStatus {
 }
 export interface AssetDetails {
   status: AssetStatus;
-  LTV: BigInt;
-  tokenDecimals: BigInt;
-  priceDecimals: BigInt;
+  LTV: bigint;
+  tokenDecimals: bigint;
+  priceDecimals: bigint;
 }
 
 // Footer Social & Documentation Links
