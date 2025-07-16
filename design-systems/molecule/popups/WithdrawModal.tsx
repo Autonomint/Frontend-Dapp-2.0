@@ -847,10 +847,28 @@ export function DcdsWithdrawModal({
                           : apy[1]
                       ).toFixed(4)}
                     </Label>
-                    <div>
+
+                    <div className="flex gap-1">
                       <Label className="text-[14px] font-normal text-[#777777]">
                         Option Fee + Liquidation Gains
                       </Label>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <Info width={18} height={18} className="ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                          <p>
+                            These are option fee yields paid by USDA+ borrowers
+                            for acting as a risk underwriter and essentially
+                            providing price hedge to borrowers. These are
+                            upfront yields which are immediately received after
+                            deductions from their USDA+ borrowed amount. If you
+                            opt into liquidations, you also receive a portion of
+                            the Liquidation gains from liquidated users, and
+                            your will get their ETH at a discount
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
                   </div>
 
@@ -860,7 +878,7 @@ export function DcdsWithdrawModal({
                       <Label className=" text-[14px] font-normal text-[#777777]">
                         Fixed Yields
                       </Label>
-                      <div className="flex gap-1">
+                      {/* <div className="flex gap-1">
                         <Image
                           src={baseIconNew}
                           alt="eth"
@@ -873,7 +891,7 @@ export function DcdsWithdrawModal({
                           width={18}
                           height={18}
                         />
-                      </div>
+                      </div> */}
                     </div>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
                       {`${Number(
@@ -898,9 +916,27 @@ export function DcdsWithdrawModal({
                           : apy[2]
                       ).toFixed(4)}
                     </Label>
-                    <Label className="text-[14px]  font-normal text-[#777777]">
-                      Price Gains
-                    </Label>
+
+                    <div className="flex">
+                      <Label className="text-[14px]  font-normal text-[#777777]">
+                        Price Gains
+                      </Label>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <Info width={18} height={18} className="ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                          <p>
+                            These are 3% ETH price gains taken from each USDA+
+                            borrower if ETH rises after they mint. The gains are
+                            shared proportionally across all dCDS users.
+                            However, they’re impermanent—if ETH price drops, the
+                            gains shrink and can even turn negative if ETH falls
+                            below the borrower’s entry price.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </div>
                   <div className="flex w-full relative  items-center justify-between">
                     <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
