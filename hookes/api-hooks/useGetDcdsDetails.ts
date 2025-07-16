@@ -12,7 +12,7 @@ import { useQuery } from "wagmi/query";
  */
 function getDeposits(
   address: `0x${string}` | undefined,
-  chainId: Number
+  chainId: number
 ): Promise<DcdsDetailsResponse> {
   return fetch(
     `${BACKEND_API_URL}/cds/totalDeposits/${chainId}/${address}`
@@ -89,6 +89,12 @@ const useGetDcdsDepositList = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+  useEffect(() => {
+    if (chainId) {
+      setCurrentPage(1);
+    }
+  }, [chainId]);
 
   return {
     dcdsPositionList: (dcdsPositionList || []) as dcdsDepositDetails[], // Complete list of positions
