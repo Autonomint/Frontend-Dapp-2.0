@@ -431,3 +431,21 @@ export function hasDaysPassed(
   const now = Date.now(); // Current time in milliseconds
   return now - timestampInMs >= durationInMs;
 }
+
+export function toPositiveDecimalString(value: string): string {
+  const parsed = parseFloat(value);
+  const decimals = value.split(".")[1]?.length || 0;
+
+  // Handle zero or -0
+  if (Object.is(parsed, 0) || Object.is(parsed, -0)) {
+    return Math.abs(parsed).toFixed(decimals);
+  }
+
+  // If it's truly negative (e.g., -0.01), return original string
+  if (parsed < 0) {
+    return value;
+  }
+
+  // Positive values, return with original decimals
+  return parsed.toFixed(decimals);
+}

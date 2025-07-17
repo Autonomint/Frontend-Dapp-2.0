@@ -32,7 +32,11 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { NetworkId } from "@/utils/constants";
-import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
+import {
+  calculateTimeDifference,
+  hasDaysPassed,
+  toPositiveDecimalString,
+} from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -908,13 +912,15 @@ export function DcdsWithdrawModal({
                   <div className="flex flex-col w-full items-start justify-between">
                     <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
                       $
-                      {Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                          ? position?.apys?.priceChangePL
-                          : apy[2]
-                      ).toFixed(4)}
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? position?.apys?.priceChangePL
+                            : apy[2]
+                        ).toFixed(4)
+                      )}
                     </Label>
 
                     <div className="flex">
@@ -944,17 +950,19 @@ export function DcdsWithdrawModal({
                       Variable yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                          ? (Number(position?.apys?.priceChangePL) /
-                              Number(position?.totalDepositedAmount)) *
-                            100
-                          : (Number(apy[2]) /
-                              Number(position?.totalDepositedAmount)) *
-                            100
-                      ).toFixed(2)}
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? (Number(position?.apys?.priceChangePL) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                            : (Number(apy[2]) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                        ).toFixed(2)
+                      )}
                       %
                     </Label>
                   </div>
