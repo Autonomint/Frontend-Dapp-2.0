@@ -29,7 +29,11 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId } from "@/utils/constants";
-import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
+import {
+  calculateTimeDifference,
+  hasDaysPassed,
+  toPositiveDecimalString,
+} from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -427,7 +431,7 @@ export function DcdsWithdrawModal({
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.liquidatedCollateralInETH 
+          ? position?.apys?.liquidatedCollateralInETH
           : apy[3]
       ).toFixed(2)} ETH (${Number(
         apy == undefined
@@ -652,19 +656,18 @@ export function DcdsWithdrawModal({
           setWithdrawGainLoading(true);
         }, 1000);
         dcdsPositionListRefetch();
-        
+
         setTimeout(async () => {
           const res = await refetchBorrowWithDrawGainsSignedData();
           // If close position is success then call withdraw gain function
-        handleDcdsWithdrawGain?.([
-          BigInt(position.index),
-          res?.odosAssembledData,
-          res?.nonce,
-          res?.deadline,
-          res?.signature,
-        ]);
+          handleDcdsWithdrawGain?.([
+            BigInt(position.index),
+            res?.odosAssembledData,
+            res?.nonce,
+            res?.deadline,
+            res?.signature,
+          ]);
         }, 3000);
-       
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
         setTimeout(() => {
@@ -694,7 +697,6 @@ export function DcdsWithdrawModal({
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
       if (nativeFeeAll) {
-
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
@@ -953,13 +955,15 @@ export function DcdsWithdrawModal({
                   <div className="flex flex-col w-full items-start justify-between">
                     <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
                       $
-                      {Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                          ? position?.apys?.priceChangePL
-                          : apy[2]
-                      ).toFixed(4)}
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? position?.apys?.priceChangePL
+                            : apy[2]
+                        ).toFixed(4)
+                      )}
                     </Label>
 
                     <div className="flex">
@@ -989,17 +993,19 @@ export function DcdsWithdrawModal({
                       Variable yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                          ? (Number(position?.apys?.priceChangePL) /
-                              Number(position?.totalDepositedAmount)) *
-                            100
-                          : (Number(apy[2]) /
-                              Number(position?.totalDepositedAmount)) *
-                            100
-                      ).toFixed(2)}
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? (Number(position?.apys?.priceChangePL) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                            : (Number(apy[2]) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                        ).toFixed(2)
+                      )}
                       %
                     </Label>
                   </div>
