@@ -29,13 +29,17 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId } from "@/utils/constants";
-import { calculateTimeDifference, hasDaysPassed } from "@/utils/helpers";
+import {
+  calculateTimeDifference,
+  hasDaysPassed,
+  toPositiveDecimalString,
+} from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Info } from "lucide-react";
+import { CornerDownRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { padHex } from "viem";
@@ -47,6 +51,9 @@ import {
 import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
+import Image from "next/image";
+import opIconNew from "@/app/assets/op.svg";
+import baseIconNew from "@/app/assets/op-blue.svg";
 
 export function DcdsWithdrawModal({
   position,
@@ -64,6 +71,8 @@ export function DcdsWithdrawModal({
   const { address, chainId } = useAccount();
 
   const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
+
+  const [showAPYTooltip, setShowAPYTooltip] = useState(false);
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
     queryKey: ["getPointEarned", address, chainId, position.index],
@@ -125,7 +134,7 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "APY till now",
+      headline: "Yields till now",
       value: "0%",
       tooltip: false,
       tooltipText: "APY of the index",
@@ -238,12 +247,12 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Tokens deposited`,
-      value: `${Number(position?.depositedAmounts?.nativeToken).toFixed(
-        2
-      )} ($${(
-        Number(position?.depositedAmounts?.nativeToken) *
-        Number(position?.nativeTokenPriceAtDeposit)
-      ).toFixed(2)})`,
+      value: Number(position?.depositedAmounts?.nativeToken)
+        ? `${Number(position?.depositedAmounts?.nativeToken).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.nativeToken) *
+            Number(position?.nativeTokenPriceAtDeposit)
+          ).toFixed(2)})`
+        : null,
       tooltip: false,
       tooltipText: "",
       comment: "Will be converted to USDT at 30% price fall",
@@ -253,12 +262,14 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Adjusted Deposit Value (Discounted by 30%)`,
-      value: `$${(
-        (Number(position?.depositedAmounts?.nativeToken) *
-          Number(position?.nativeTokenPriceAtDeposit) *
-          70) /
-        100
-      ).toFixed(2)}`,
+      value: Number(position?.depositedAmounts?.nativeToken)
+        ? `$${(
+            (Number(position?.depositedAmounts?.nativeToken) *
+              Number(position?.nativeTokenPriceAtDeposit) *
+              70) /
+            100
+          ).toFixed(2)}`
+        : null,
       tooltip: true,
       tooltipText:
         "After factoring in volatility, the token is deposited at 30% lower value",
@@ -268,7 +279,9 @@ export function DcdsWithdrawModal({
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
       } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit).toFixed(4),
+      value: Number(position?.nativeTokenPriceAtDeposit)
+        ? Number(position?.nativeTokenPriceAtDeposit).toFixed(4)
+        : null,
       tooltip: false,
       tooltipText: "",
     },
@@ -370,14 +383,14 @@ export function DcdsWithdrawModal({
       updatedData[0].value =
         position.depositedAmint == "undefined" ||
         position.depositedAmint == "NaN"
-          ? "0"
+          ? 0
           : position.depositedAmounts.usda;
-      // Update depositedAmint value
+      // Update deposited USDA+ value
       updatedData[1].value =
         position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
-          ? "0"
+          ? 0
           : position.depositedAmounts.usdt;
-      // Update depositedAmint value
+      // Update deposited ETH value
       updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
@@ -418,7 +431,7 @@ export function DcdsWithdrawModal({
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
-          ? position?.apys?.liquidatedCollateralInETH 
+          ? position?.apys?.liquidatedCollateralInETH
           : apy[3]
       ).toFixed(2)} ETH (${Number(
         apy == undefined
@@ -643,19 +656,18 @@ export function DcdsWithdrawModal({
           setWithdrawGainLoading(true);
         }, 1000);
         dcdsPositionListRefetch();
-        
+
         setTimeout(async () => {
           const res = await refetchBorrowWithDrawGainsSignedData();
           // If close position is success then call withdraw gain function
-        handleDcdsWithdrawGain?.([
-          BigInt(position.index),
-          res?.odosAssembledData,
-          res?.nonce,
-          res?.deadline,
-          res?.signature,
-        ]);
+          handleDcdsWithdrawGain?.([
+            BigInt(position.index),
+            res?.odosAssembledData,
+            res?.nonce,
+            res?.deadline,
+            res?.signature,
+          ]);
         }, 3000);
-       
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
         setTimeout(() => {
@@ -685,7 +697,6 @@ export function DcdsWithdrawModal({
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
       if (nativeFeeAll) {
-
         setWithdrawMethodLoading(true);
         const res = await refetchBorrowWithDrawSignedData();
         handleDcdsFundWithdraw?.(
@@ -783,7 +794,7 @@ export function DcdsWithdrawModal({
             <div>
               <div className="h-[275px] overflow-auto no-scrollbar">
                 {NewDetails.map((dcdsWidthDrawMetricsObj, idx) => {
-                  return (
+                  return dcdsWidthDrawMetricsObj.value ? (
                     <div
                       key={idx}
                       className="flex flex-col justify-between mb-2"
@@ -821,86 +832,188 @@ export function DcdsWithdrawModal({
                         </div>
                       )}
                     </div>
-                  );
+                  ) : null;
                 })}
-                {depositData.map((dcdsWidthDrawMetricsObj, idx) => {
-                  return (
-                    <div key={idx} className="flex justify-between mb-2">
-                      <span
-                        className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${
-                          dcdsWidthDrawMetricsObj?.titleColor || ""
-                        }`}
+                {depositData
+                  .filter((depositData) => {
+                    if (
+                      ["USDA+ Deposited", "USDT Deposited"].includes(
+                        depositData.headline
+                      ) &&
+                      Number(depositData.value) <= 0
+                    ) {
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((dcdsWidthDrawMetricsObj, idx) => {
+                    return (
+                      <div
+                        key={idx}
+                        className="flex relative justify-between mb-2"
                       >
-                        {" "}
-                        {dcdsWidthDrawMetricsObj.headline}
-                        {dcdsWidthDrawMetricsObj.tooltip && (
-                          <Tooltip delayDuration={100}>
-                            <TooltipTrigger asChild>
-                              <Info width={18} height={18} className="ml-2" />
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white dark:bg-black">
-                              <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </span>
-                      <span
-                        className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${
-                          dcdsWidthDrawMetricsObj?.valueColor || ""
-                        }`}
-                      >
-                        {dcdsWidthDrawMetricsObj.value}
-                      </span>
-                    </div>
-                  );
-                })}
+                        <span
+                          className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${
+                            dcdsWidthDrawMetricsObj?.titleColor || ""
+                          }`}
+                        >
+                          {" "}
+                          {dcdsWidthDrawMetricsObj.headline}
+                          {dcdsWidthDrawMetricsObj.tooltip && (
+                            <Tooltip delayDuration={100}>
+                              <TooltipTrigger asChild>
+                                <Info width={18} height={18} className="ml-2" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white dark:bg-black">
+                                <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </span>
+                        <span
+                          className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${
+                            dcdsWidthDrawMetricsObj?.valueColor || ""
+                          } `}
+                        >
+                          {dcdsWidthDrawMetricsObj.value}
+                        </span>
+                      </div>
+                    );
+                  })}
               </div>
-              <div className="flex w-full pt-4">
-                <div className="flex-1 flex flex-col justify-start items-start  gap-  border border-solid border-grayLight py-2 px-4">
-                  <Label className=" tex-[16px] md:text-[16px]  font-normal text-[#777777]">
-                    Option Fee + Liquidation Gains
-                  </Label>
-                  <Label className=" text-[20px] md:text-[24px] font-medium dark:text-white">
-                    {Number(
-                      apy == undefined
-                        ? 0
-                        : position.status !== "DEPOSITED"
-                        ? position?.apys?.amountAccured
-                        : apy[1]
-                    ).toFixed(4)}
-                  </Label>
-                  <div className="h-2"></div>
-                  <Label className=" text-[12px] font-normal text-[#777777]">
-                    Price Gains
-                  </Label>
-                  <Label className=" text-[14px] font-medium dark:text-white">
-                    {Number(
-                      apy == undefined
-                        ? 0
-                        : position.status !== "DEPOSITED"
-                        ? position?.apys?.priceChangePL
-                        : apy[2]
-                    ).toFixed(4)}
-                  </Label>
+              <div className="flex w-full mt-4  border-solid  border-[1px]  justify-between border-gray-200 rounded-[12px] bg-gray-100 dark:border-[rgb(51,51,51)] dark:bg-[#121212] flex-col sm:flex-row">
+                <div className="flex-1 relative flex flex-col justify-start items-start  gap- border-r-0    py-2 px-4">
+                  <div className="flex flex-col w-full  items-start justify-between">
+                    <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                      $
+                      {Number(
+                        apy == undefined
+                          ? 0
+                          : position.status !== "DEPOSITED"
+                          ? position?.apys?.amountAccured
+                          : apy[1]
+                      ).toFixed(4)}
+                    </Label>
+
+                    <div className="flex gap-1">
+                      <Label className="text-[14px] font-normal text-[#777777]">
+                        Option Fee + Liquidation Gains
+                      </Label>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <Info width={18} height={18} className="ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                          <p>
+                            These are option fee yields paid by USDA+ borrowers
+                            for acting as a risk underwriter and essentially
+                            providing price hedge to borrowers. These are
+                            upfront yields which are immediately received after
+                            deductions from their USDA+ borrowed amount. If you
+                            opt into liquidations, you also receive a portion of
+                            the Liquidation gains from liquidated users, and
+                            your will get their ETH at a discount
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+
+                  <div className="flex w-full relative items-center justify-between">
+                    <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
+                    <div className="flex gap-1 ml-8">
+                      <Label className=" text-[14px] font-normal text-[#777777]">
+                        Fixed Yields
+                      </Label>
+                      {/* <div className="flex gap-1">
+                        <Image
+                          src={baseIconNew}
+                          alt="eth"
+                          width={18}
+                          height={18}
+                        />
+                        <Image
+                          src={opIconNew}
+                          alt="eth"
+                          width={18}
+                          height={18}
+                        />
+                      </div> */}
+                    </div>
+                    <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
+                      {`${Number(
+                        apy == undefined
+                          ? 0
+                          : position.status !== "DEPOSITED"
+                          ? position?.apys?.currentTimeAPYTillNow
+                          : apy[5]
+                      ).toFixed(2)}%`}
+                    </Label>
+                  </div>
                 </div>
-                <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1 border border-solid border-grayLight py-2 px-4 font-medium">
-                  <Label className="text-[14px] md:text-[18px] font-normal text-[#777777]">
-                    Yield Earned (All chains)
-                  </Label>
-                  <Label className="text-[20px] md:text-[24px] font-medium dark:text-white">
-                    {`${Number(
-                      apy == undefined
-                        ? 0
-                        : position.status !== "DEPOSITED"
-                        ? position?.apys?.currentTimeAPYTillNow
-                        : apy[5]
-                    ).toFixed(2)}%`}
-                  </Label>
+                <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1  py-2 px-4 font-medium">
+                  <div className="flex flex-col w-full items-start justify-between">
+                    <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
+                      $
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? position?.apys?.priceChangePL
+                            : apy[2]
+                        ).toFixed(4)
+                      )}
+                    </Label>
+
+                    <div className="flex">
+                      <Label className="text-[14px]  font-normal text-[#777777]">
+                        Price Gains
+                      </Label>
+                      <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                          <Info width={18} height={18} className="ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                          <p>
+                            These are 3% ETH price gains taken from each USDA+
+                            borrower if ETH rises after they mint. The gains are
+                            shared proportionally across all dCDS users.
+                            However, they’re impermanent—if ETH price drops, the
+                            gains shrink and can even turn negative if ETH falls
+                            below the borrower’s entry price.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  <div className="flex w-full relative  items-center justify-between">
+                    <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
+                    <Label className="text-[14px] font-normal text-[#777777] ml-8">
+                      Variable yields
+                    </Label>
+                    <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
+                      {toPositiveDecimalString(
+                        Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                            ? (Number(position?.apys?.priceChangePL) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                            : (Number(apy[2]) /
+                                Number(position?.totalDepositedAmount)) *
+                              100
+                        ).toFixed(2)
+                      )}
+                      %
+                    </Label>
+                  </div>
                 </div>
               </div>
               <Typography
                 variant="regular"
-                className="text-[14px] md:text-[16px] my-3 text-[#777777] "
+                className="text-[14px] my-3 text-[#777777] "
               >
                 Note: Your amount will be used to offer protection to borrowers
                 & protocol in return for fixed yields
