@@ -993,10 +993,12 @@ export function DcdsWithdrawModal({
                         apy == undefined
                           ? 0
                           : position.status !== "DEPOSITED"
-                          ? Number(position?.apys?.priceChangePL) /
-                            Number(position?.totalDepositedAmount)
-                          : Number(apy[2]) /
-                            Number(position?.totalDepositedAmount)
+                          ? (Number(position?.apys?.priceChangePL) /
+                              Number(position?.totalDepositedAmount)) *
+                            100
+                          : (Number(apy[2]) /
+                              Number(position?.totalDepositedAmount)) *
+                            100
                       ).toFixed(2)}
                       %
                     </Label>
