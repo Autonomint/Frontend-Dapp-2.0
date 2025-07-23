@@ -42,8 +42,8 @@ function LeaderboardTable({
                 Rank
               </th>
               <th className="pl-5 font-normal w-1/2 lg:w-auto">Address</th>
-              <th className="pl-5  table-cell font-normal">USDA+</th>
-              <th className="pl-5  table-cell font-normal">dCDS</th>
+              <th className="pl-5  table-cell font-normal">USDA+ minted</th>
+              <th className="pl-5  table-cell font-normal">Deposited</th>
               <th className="pl-5   font-normal sm:table-cell hidden">Type</th>
               <th className="pr-5  table-cell text-right font-normal">
                 Points
