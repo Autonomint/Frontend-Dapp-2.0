@@ -9,7 +9,8 @@ export interface SignedDataReturn {
   signature: string;
   nonce: number;
   deadline: number;
-
+  usdtFromOdos: string;
+  expiredETHAmount: bigint;
 }
 
 /**

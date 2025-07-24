@@ -10,7 +10,6 @@ export interface SignedDataReturn {
   odosAssembledData: string;
   usdtFromOdos: string;
   expiredETHAmount: number;
-  pythUpdateSucceeded: boolean;
 }
 /**
  *
@@ -86,7 +85,7 @@ async function signedDataForDcdsWithGainsDrawDeposit(
  *   - BorrowWithdrawSignedData: The borrow signed data
  *   - isPendingBorrowWithDrawSignedData: The pending state of the borrow signed data
  */
-const useGetDcdsWithdrawSignedData = (index: number) => {
+const useGetDcdsWithdrawSignedData = (index?: number) => {
   const { address, chainId } = useAccount();
   const {
     data: BorrowWithdrawSignedData,
@@ -131,6 +130,9 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
     isPendingBorrowWithDrawSignedData,
     refetchBorrowWithDrawSignedData,
     refetchBorrowWithDrawGainsSignedData,
+    cdsDepositSignedData,
+    isPendingcdsDepositSignedData,
+    refetchcdsDepositSignedData,
   };
 };
 

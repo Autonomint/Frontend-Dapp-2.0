@@ -10,13 +10,14 @@ interface BorrowInputs {
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint; // uint256 can be represented by bigint
   assetName: AssetName;
+  expiredETHAmount: bigint;
   deadline: bigint;
   signature: `0x${string}`;
   nonce: bigint;
 }
 
 const useDepositTokens = (mutation: any) => {
-  const { chainId } = useAccount();
+  const { chainId, address } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const {
     isPending: isDepositsLoading,
@@ -38,6 +39,7 @@ const useDepositTokens = (mutation: any) => {
     assetName,
     deadline,
     signature,
+    expiredETHAmount,
     nonce,
   }: BorrowInputs) => {
     writeContract?.({
@@ -48,7 +50,14 @@ const useDepositTokens = (mutation: any) => {
         ],
       functionName: "depositTokens",
       args: [
-        { strikePercent, volatility, assetName, depositingAmount },
+        {
+          user: address as `0x${string}`,
+          strikePercent,
+          volatility,
+          assetName,
+          depositingAmount,
+          expiredETHAmount,
+        },
         {
           nonce,
           deadline,

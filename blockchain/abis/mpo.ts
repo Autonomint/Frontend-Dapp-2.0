@@ -1,322 +1,378 @@
-export const mpoABI =  [
+export const mpoABI = [
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "target",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "target",
+        type: "address",
+      },
     ],
-    "name": "AddressEmptyCode",
-    "type": "error"
+    name: "AddressEmptyCode",
+    type: "error",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "implementation",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
     ],
-    "name": "ERC1967InvalidImplementation",
-    "type": "error"
+    name: "ERC1967InvalidImplementation",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "ERC1967NonPayable",
-    "type": "error"
+    inputs: [],
+    name: "ERC1967NonPayable",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "FailedInnerCall",
-    "type": "error"
+    inputs: [],
+    name: "FailedInnerCall",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "InvalidInitialization",
-    "type": "error"
+    inputs: [],
+    name: "InvalidInitialization",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "NotInitializing",
-    "type": "error"
+    inputs: [],
+    name: "NotInitializing",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "Oracle_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
-    "type": "error"
+    inputs: [],
+    name: "Oracle_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "Oracle_InvalidChain",
-    "type": "error"
-  },
-  {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+        internalType: "uint8",
+        name: "input",
+        type: "uint8",
+      },
     ],
-    "name": "OwnableInvalidOwner",
-    "type": "error"
+    name: "Oracle_InvalidAverageRoundIds",
+    type: "error",
   },
   {
-    "inputs": [
+    inputs: [],
+    name: "Oracle_InvalidChain",
+    type: "error",
+  },
+  {
+    inputs: [
       {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
     ],
-    "name": "OwnableUnauthorizedAccount",
-    "type": "error"
+    name: "OwnableInvalidOwner",
+    type: "error",
   },
   {
-    "inputs": [],
-    "name": "UUPSUnauthorizedCallContext",
-    "type": "error"
-  },
-  {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "bytes32",
-        "name": "slot",
-        "type": "bytes32"
-      }
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
     ],
-    "name": "UUPSUnsupportedProxiableUUID",
-    "type": "error"
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    inputs: [],
+    name: "UUPSUnauthorizedCallContext",
+    type: "error",
+  },
+  {
+    inputs: [
       {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "version",
-        "type": "uint64"
-      }
+        internalType: "bytes32",
+        name: "slot",
+        type: "bytes32",
+      },
     ],
-    "name": "Initialized",
-    "type": "event"
+    name: "UUPSUnsupportedProxiableUUID",
+    type: "error",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
+        indexed: false,
+        internalType: "uint64",
+        name: "version",
+        type: "uint64",
+      },
+    ],
+    name: "Initialized",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
       },
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    name: "OwnershipTransferred",
+    type: "event",
   },
   {
-    "anonymous": false,
-    "inputs": [
+    anonymous: false,
+    inputs: [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "implementation",
-        "type": "address"
-      }
+        indexed: true,
+        internalType: "address",
+        name: "implementation",
+        type: "address",
+      },
     ],
-    "name": "Upgraded",
-    "type": "event"
+    name: "Upgraded",
+    type: "event",
   },
   {
-    "inputs": [],
-    "name": "UPGRADE_INTERFACE_VERSION",
-    "outputs": [
+    inputs: [],
+    name: "UPGRADE_INTERFACE_VERSION",
+    outputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address[]",
-        "name": "underlyings",
-        "type": "address[]"
+        internalType: "address[]",
+        name: "underlyings",
+        type: "address[]",
       },
       {
-        "internalType": "address[]",
-        "name": "oracles_",
-        "type": "address[]"
+        internalType: "address[]",
+        name: "oracles_",
+        type: "address[]",
       },
       {
-        "internalType": "enum BasePriceOracle.Assets[]",
-        "name": "assetNames",
-        "type": "uint8[]"
-      }
+        internalType: "enum BasePriceOracle.Assets[]",
+        name: "assetNames",
+        type: "uint8[]",
+      },
     ],
-    "name": "addOrUpdateAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "addOrUpdateAsset",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "enum BasePriceOracle.Assets",
-        "name": "",
-        "type": "uint8"
-      }
+        internalType: "enum BasePriceOracle.Assets",
+        name: "",
+        type: "uint8",
+      },
     ],
-    "name": "assetAddress",
-    "outputs": [
+    name: "assetAddress",
+    outputs: [
       {
-        "internalType": "address",
-        "name": "assetAddress",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "assetAddress",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [],
+    name: "averageroundIds",
+    outputs: [
       {
-        "internalType": "address[]",
-        "name": "underlyings",
-        "type": "address[]"
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract AggregatorV3Interface",
+        name: "oracle",
+        type: "address",
+      },
+    ],
+    name: "findAveragePrice",
+    outputs: [
+      {
+        internalType: "int256",
+        name: "",
+        type: "int256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "underlyings",
+        type: "address[]",
       },
       {
-        "internalType": "address[]",
-        "name": "_oracles",
-        "type": "address[]"
+        internalType: "address[]",
+        name: "_oracles",
+        type: "address[]",
       },
       {
-        "internalType": "enum BasePriceOracle.Assets[]",
-        "name": "assetNames",
-        "type": "uint8[]"
-      }
+        internalType: "enum BasePriceOracle.Assets[]",
+        name: "assetNames",
+        type: "uint8[]",
+      },
     ],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "underlying",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "underlying",
+        type: "address",
+      },
     ],
-    "name": "oracles",
-    "outputs": [
+    name: "oracles",
+    outputs: [
       {
-        "internalType": "address",
-        "name": "oracleAddress",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "oracleAddress",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
+    inputs: [],
+    name: "owner",
+    outputs: [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "underlying",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "underlying",
+        type: "address",
+      },
     ],
-    "name": "price",
-    "outputs": [
+    name: "price",
+    outputs: [
       {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
       },
       {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      }
+        internalType: "uint128",
+        name: "",
+        type: "uint128",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "proxiableUUID",
-    "outputs": [
+    inputs: [],
+    name: "proxiableUUID",
+    outputs: [
       {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
     ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "address",
-        "name": "newImplementation",
-        "type": "address"
+        internalType: "uint8",
+        name: "averageroundIds_",
+        type: "uint8",
+      },
+    ],
+    name: "updateAverageRoundIds",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newImplementation",
+        type: "address",
       },
       {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
     ],
-    "name": "upgradeToAndCall",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  }
+    name: "upgradeToAndCall",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
 ];

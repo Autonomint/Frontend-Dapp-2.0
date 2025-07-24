@@ -1,8 +1,7 @@
 import {
   borrowAssetsAddress,
   borrowingContractAddress,
-  borrowingWithdrawContractAddress,
-  cdsAddress,
+  testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
@@ -21,7 +20,7 @@ import displayNumberWithPrecision, {
   getDownsideProtectionTillNow,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isRenewActiveDaysCompleted,
+  isFifteenDaysCompleted,
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -666,25 +665,26 @@ export function WithdrawFund({
     // else {
     //   callRepayInContract();
     // }
+
+    // const callRepayInContract = async () => {
+    //   setIsApproveLoadingLocal(false);
+    //   setTimeout(() => {
+    //     setWithdrawLoadingLocal(true);
+    //   }, 800);
+
+    const borrowSignedData = await refetchBorrowWithDrawSignedData();
+
+    withdrawUsda(
+      position.index,
+      nativeFee?.nativeFee || BigInt(0n),
+      borrowSignedData?.odosAssembledData,
+      BigInt(borrowSignedData?.nonce || 0),
+      BigInt(borrowSignedData?.deadline || 0),
+      (borrowSignedData?.signature || "") as `0x${string}`,
+      BigInt(borrowSignedData?.expiredETHAmount || 0)
+    );
   };
 
-  // const callRepayInContract = async () => {
-  //   setIsApproveLoadingLocal(false);
-  //   setTimeout(() => {
-  //     setWithdrawLoadingLocal(true);
-  //   }, 800);
-
-  //   const borrowSignedData = await refetchBorrowWithDrawSignedData();
-
-  //   withdrawUsda(
-  //     position.index,
-  //     nativeFee?.nativeFee || BigInt(0n),
-  //     borrowSignedData?.odosAssembledData,
-  //     BigInt(borrowSignedData?.nonce || 0),
-  //     BigInt(borrowSignedData?.deadline || 0),
-  //     (borrowSignedData?.signature || "") as `0x${string}`
-  //   );
-  // };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -733,7 +733,8 @@ export function WithdrawFund({
             borrowSignedData?.odosAssembledData,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
-            (borrowSignedData?.signature || "") as `0x${string}`
+            (borrowSignedData?.signature || "") as `0x${string}`,
+            BigInt(borrowSignedData?.expiredETHAmount || 0)
           );
         }
         if (toggleView == "renew") {
@@ -1175,7 +1176,7 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${position.status == BorrowStatus.WITHDREW
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${position.status == BorrowStatus.WITHDREW
                             ? "md:p-4"
                             : "md:p-4"
                             }`}
