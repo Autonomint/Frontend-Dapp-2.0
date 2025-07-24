@@ -79,9 +79,10 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
  * @returns {isTVLPending: boolean, totalTVLList: number[]}
  */
 const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
-  const { address, chainId } = useAccount();
+  const { chainId } = useAccount();
   const [otherChainTvl, setOtherChainTvl] = useState<number[]>([]);
 
+  const [otherChainDataLoading, setOtherChainDataLoading] = useState(false);
   // fetching the tvl of the tokens on the current chain
   const { isPending: isTVLPending, data: tvlValue } = useReadContracts({
     contracts: tokenAddressArr.map((address) => ({
@@ -120,15 +121,17 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
 
   useEffect(() => {
     getOtherChainData();
-  }, [tokenAddressArr, chainId, address]);
+  }, [tokenAddressArr, chainId]);
 
   // fetching the tvl of the tokens on the other chain
   const getOtherChainData = async () => {
+    setOtherChainDataLoading(true);
     // fetching the list of the token addresses on the other chain
     const otherChainAddressList =
       (await cdsContract.getSupportedTokenAddresses()) || [];
     const tvls = [];
     // fetching the tvl of the tokens on the other chain
+    // removing OP address by slicing because its values already from both chain
     for (const tokenAddress of otherChainAddressList.slice(
       0,
       otherChainAddressList.length - 1
@@ -138,6 +141,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     }
 
     setOtherChainTvl(tvls);
+    setOtherChainDataLoading(false);
   };
 
   // calculating the total tvl of the tokens on both chains
@@ -148,8 +152,10 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     );
   }, [tvlValue, otherChainTvl]);
 
+
+
   return {
-    isTVLPending,
+    isTVLPending: isTVLPending || otherChainDataLoading,
     totalTVLList: totalTVLList,
   };
 };

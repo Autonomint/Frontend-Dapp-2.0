@@ -1,3 +1,4 @@
+import Spinner from "@/design-systems/atoms/Spinner";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -5,10 +6,12 @@ function TokenTvlDetails({
   tokenName,
   tvl,
   icon,
+  isLoading,
 }: {
   icon: any;
   tokenName: string;
   tvl: string;
+  isLoading: boolean;
 }) {
   const { theme } = useTheme();
 
@@ -68,7 +71,7 @@ function TokenTvlDetails({
           TVL
         </span>
         <span className="text-[24px] font-medium text-textBlack dark:text-white">
-          {tvl}
+          {isLoading ? <Spinner /> : tvl}
         </span>
       </div>
     </div>

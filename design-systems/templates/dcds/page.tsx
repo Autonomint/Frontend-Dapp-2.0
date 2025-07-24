@@ -731,7 +731,7 @@ function DCDSTemplate() {
     },
   });
 
-  const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
+  const { totalTVLList, isTVLPending } = useGetTVLBothChain(tokenAddress || []);
 
   // checking the token pause state
   const {
@@ -1638,6 +1638,7 @@ function DCDSTemplate() {
           icon={token.tokenImage}
           tokenName={token.tokenLabel}
           tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
+          isLoading={isTVLPending}
         />
       ))}
 
