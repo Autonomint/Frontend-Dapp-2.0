@@ -9,6 +9,7 @@ export interface SignedDataReturn {
   deadline: number;
   odosAssembledData: string;
   usdtFromOdos: string;
+  expiredETHAmount: number;
 }
 /**
  *
@@ -25,6 +26,23 @@ async function signedDataForDcdsWithDrawDeposit(
   index: number
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSWithdraw`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      address: address,
+      chainId: chainId,
+      index: index,
+    }),
+  }).then((response) => response.json());
+}
+async function signedDataForDcdsDeposit(
+  address: `0x${string}` | undefined,
+  chainId: number,
+  index: number
+): Promise<SignedDataReturn> {
+  return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSDeposit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -67,7 +85,7 @@ async function signedDataForDcdsWithGainsDrawDeposit(
  *   - BorrowWithdrawSignedData: The borrow signed data
  *   - isPendingBorrowWithDrawSignedData: The pending state of the borrow signed data
  */
-const useGetDcdsWithdrawSignedData = (index: number) => {
+const useGetDcdsWithdrawSignedData = (index?: number) => {
   const { address, chainId } = useAccount();
   const {
     data: BorrowWithdrawSignedData,
@@ -94,12 +112,27 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
         index || 0
       ),
   });
+  const {
+    data: cdsDepositSignedData,
+    isPending: isPendingcdsDepositSignedData,
+    mutateAsync: refetchcdsDepositSignedData,
+  } = useMutation({
+    mutationFn: () =>
+      signedDataForDcdsDeposit(
+        address ? address : undefined,
+        chainId as number,
+        index || 0
+      ),
+  });
 
   return {
     BorrowWithdrawSignedData,
     isPendingBorrowWithDrawSignedData,
     refetchBorrowWithDrawSignedData,
     refetchBorrowWithDrawGainsSignedData,
+    cdsDepositSignedData,
+    isPendingcdsDepositSignedData,
+    refetchcdsDepositSignedData,
   };
 };
 

@@ -461,6 +461,7 @@ function InputForm({ currency }: { currency: string }) {
         deadline: BigInt(borrowSignedData?.deadline || 0),
         nonce: BigInt(borrowSignedData?.nonce || 0),
         signature: borrowSignedData?.signature || ("" as `0x${string}`),
+        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +

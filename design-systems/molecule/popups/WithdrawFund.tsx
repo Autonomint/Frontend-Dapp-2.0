@@ -4,7 +4,7 @@ import {
   borrowAssetsAddress,
   borrowingContractAddress,
   testusdtAbiAddress,
-  usDaAddress
+  usDaAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import {
@@ -38,7 +38,7 @@ import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isFifteenDaysCompleted
+  isFifteenDaysCompleted,
 } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
@@ -677,7 +677,8 @@ export function WithdrawFund({
       borrowSignedData?.usdtFromOdos,
       BigInt(borrowSignedData?.nonce || 0),
       BigInt(borrowSignedData?.deadline || 0),
-      (borrowSignedData?.signature || "") as `0x${string}`
+      (borrowSignedData?.signature || "") as `0x${string}`,
+      BigInt(borrowSignedData?.expiredETHAmount || 0)
     );
   };
 
@@ -732,7 +733,8 @@ export function WithdrawFund({
             borrowSignedData?.usdtFromOdos,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
-            (borrowSignedData?.signature || "") as `0x${string}`
+            (borrowSignedData?.signature || "") as `0x${string}`,
+            BigInt(borrowSignedData?.expiredETHAmount || 0)
           );
         }
         if (toggleView == "renew") {
@@ -1014,7 +1016,11 @@ export function WithdrawFund({
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className=" mt-4">
+                      <div
+                        className={` ${
+                          position.status == BorrowStatus.WITHDREW ? "mt-4" : ""
+                        }`}
+                      >
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -1026,8 +1032,8 @@ export function WithdrawFund({
                           onClick={handleRepay}
                           className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${
                             position.status == BorrowStatus.WITHDREW
-                              ? "md:p-12"
-                              : "md:p-8"
+                              ? "md:p-4"
+                              : "md:p-4"
                           }`}
                         >
                           <div>

@@ -21,7 +21,8 @@ const useWithdrawUsda = (mutation: any) => {
     usdtFromOdos: any,
     nonce: bigint,
     deadline: bigint,
-    signature: `0x${string}`
+    signature: `0x${string}`,
+    expiredETHAmount: bigint,
   ) => {
     try {
       borrowWithdrawAsync({
@@ -36,6 +37,7 @@ const useWithdrawUsda = (mutation: any) => {
           BigInt(index),
           odosAssembledData,
           usdtFromOdos,
+          expiredETHAmount,
           {
             nonce,
             deadline,

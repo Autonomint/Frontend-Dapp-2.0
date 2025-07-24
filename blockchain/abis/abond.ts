@@ -1,4 +1,4 @@
-export const abondAbi = [
+export const abondAbi =  [
   {
     "inputs": [],
     "name": "Abond_CreditFailed",

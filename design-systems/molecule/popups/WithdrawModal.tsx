@@ -652,6 +652,7 @@ export function DcdsWithdrawModal({
           [
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
+            res?.expiredETHAmount,
             res?.deadline,
             res?.signature,
           ],

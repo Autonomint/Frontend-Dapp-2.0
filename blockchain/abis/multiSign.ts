@@ -141,6 +141,32 @@ export const multiSignABI = [
     inputs: [
       {
         internalType: "uint8[]",
+        name: "assets",
+        type: "uint8[]",
+      },
+    ],
+    name: "approveBorrowAssetsToUpdate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address[]",
+        name: "assets",
+        type: "address[]",
+      },
+    ],
+    name: "approveCDSTokensToUpdate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8[]",
         name: "functions",
         type: "uint8[]",
       },
@@ -179,6 +205,54 @@ export const multiSignABI = [
   {
     inputs: [
       {
+        internalType: "enum IBorrowing.AssetName",
+        name: "",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "approvedBorrowAssetsToUpdate",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "tokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "approvedCDSTokensToUpdate",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "approved",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "enum IMultiSign.SetterFunctions",
         name: "",
         type: "uint8",
@@ -198,6 +272,44 @@ export const multiSignABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+    ],
+    name: "executeBorrowAssetUpdateFunction",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "asset",
+        type: "address",
+      },
+    ],
+    name: "executeCDSAssetUpdateFunction",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -233,6 +345,44 @@ export const multiSignABI = [
         internalType: "bool",
         name: "paused",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "enum IBorrowing.AssetName",
+        name: "asset",
+        type: "uint8",
+      },
+    ],
+    name: "getApprovalBorrowAssetUpdateCount",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "asset",
+        type: "address",
+      },
+    ],
+    name: "getApprovalCDSAssetUpdateCount",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64",
       },
     ],
     stateMutability: "view",

@@ -81,6 +81,7 @@ import { FormValues, TokenDetails } from "./interface";
 import { scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { useCalculateGainCDS } from "@/hookes/contract-hooks/useCalculateGainCDS";
+import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -238,7 +239,6 @@ function DCDSTemplate() {
     });
   }, [cdsLockinRewardDetailList]);
 
-
   // Define the initial state for the options variable
   const options = Options.newOptions()
     .addExecutorLzReceiveOption(400000, 0)
@@ -258,7 +258,6 @@ function DCDSTemplate() {
   });
 
   const { data: calculateGainCDS } = useCalculateGainCDS();
-
 
   // assigning the formik values to the local variables because getting old values from formik directly
   const liquidationGains = formik.values.liquidationGains;
@@ -353,45 +352,63 @@ function DCDSTemplate() {
     }
   }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
-  // function to call the deposit function in the contract
-  const callDepositFnInContract = () => {
-    setTimeout(() => {
-      setDcdsDepositLoadingLocal(true);
-    }, 600);
+  const expiredETHAmount = 0;
 
-    if (nativeFee?.nativeFee) {
-      handleDcdsDeposit?.(
-        [
-          // token addresses
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
-          }),
-          // token amount in wei
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return formik.values[
-              `${tokenDetail?.tokenName.toLowerCase()}Amount`
-            ]
-              ? parseUnits(
-                  formik.values[
-                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(tokenDetail?.tokenDecimals)
-                )
-              : 0n;
-          }),
-          // liquidation gains
-          liquidationGains,
-          liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400),
-        ],
-        nativeFee.nativeFee
-      );
+  const { refetchcdsDepositSignedData } = useGetDcdsWithdrawSignedData();
+
+  // function to call the deposit function in the contract
+  const callDepositFnInContract = async () => {
+    try {
+      setTimeout(() => {
+        setDcdsDepositLoadingLocal(true);
+      }, 600);
+      const cdsDepositSignedData = await refetchcdsDepositSignedData();
+
+      if (nativeFee?.nativeFee) {
+        handleDcdsDeposit?.(
+          [
+            {
+              user: address as `0x${string}`,
+              // token addresses
+              tokenAddresses: tokenList.map((token) => {
+                const tokenDetail = selectedTokens.find((selectedToken) => {
+                  return selectedToken.tokenAddress === token.tokenAddress;
+                });
+                return (tokenDetail?.tokenAddress ??
+                  zeroAddress) as `0x${string}`;
+              }),
+              // token amount in wei
+              tokenAmounts: tokenList.map((token) => {
+                const tokenDetail = selectedTokens.find((selectedToken) => {
+                  return selectedToken.tokenAddress === token.tokenAddress;
+                });
+                return formik.values[
+                  `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                ]
+                  ? parseUnits(
+                      formik.values[
+                        `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                      ].toString(),
+                      Number(tokenDetail?.tokenDecimals)
+                    )
+                  : 0n;
+              }),
+              // liquidation gains
+              liquidate: liquidationGains,
+              liquidationAmount: liquidationGains
+                ? BigInt(liqAmnt.toString())
+                : 0n,
+              lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+              expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+            },
+            BigInt(cdsDepositSignedData.deadline),
+            cdsDepositSignedData.signature as `0x${string}`,
+          ],
+          nativeFee.nativeFee
+        );
+      }
+    } catch (error) {
+      console.log(error, "error");
     }
   };
 
