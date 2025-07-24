@@ -890,8 +890,8 @@ export function DcdsWithdrawModal({
                         apy == undefined
                           ? 0
                           : position.status !== "DEPOSITED"
-                          ? position?.apys?.amountAccured
-                          : apy[1]
+                          ? position?.apys?.amountAccured || 0
+                          : apy[1] || 0
                       ).toFixed(4)}
                     </Label>
 
@@ -945,8 +945,8 @@ export function DcdsWithdrawModal({
                         apy == undefined
                           ? 0
                           : position.status !== "DEPOSITED"
-                          ? position?.apys?.currentTimeAPYTillNow
-                          : apy[5]
+                          ? position?.apys?.currentTimeAPYTillNow || 0
+                          : apy[5] || 0
                       ).toFixed(2)}%`}
                     </Label>
                   </div>
@@ -960,8 +960,8 @@ export function DcdsWithdrawModal({
                           apy == undefined
                             ? 0
                             : position.status !== "DEPOSITED"
-                            ? position?.apys?.priceChangePL
-                            : apy[2]
+                            ? position?.apys?.priceChangePL || 0
+                            : apy[2] || 0
                         ).toFixed(4)
                       )}
                     </Label>
@@ -998,11 +998,11 @@ export function DcdsWithdrawModal({
                           apy == undefined
                             ? 0
                             : position.status !== "DEPOSITED"
-                            ? (Number(position?.apys?.priceChangePL) /
-                                Number(position?.totalDepositedAmount)) *
+                            ? (Number(position?.apys?.priceChangePL || 0) /
+                                Number(position?.totalDepositedAmount || 0)) *
                               100
-                            : (Number(apy[2]) /
-                                Number(position?.totalDepositedAmount)) *
+                            : (Number(apy[2] || 0) /
+                                Number(position?.totalDepositedAmount || 0)) *
                               100
                         ).toFixed(2)
                       )}
