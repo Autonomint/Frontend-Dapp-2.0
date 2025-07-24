@@ -19,7 +19,6 @@ const riskColor = {
 
 export default function StrategiesTemplate() {
   const { theme } = useTheme();
-  console.log(theme, "theme");
 
   const [selectedStrategy, setSelectedStrategy] = useState({
     label: "Strategy - All",
