@@ -97,7 +97,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Market",
@@ -177,7 +177,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Market",
@@ -251,7 +251,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Market",
@@ -337,7 +337,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Market",
@@ -427,7 +427,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Market",
@@ -499,7 +499,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "$0",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
     ],
     monthlyYield: [
@@ -563,7 +563,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "$0",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
     ],
     monthlyYield: [
@@ -641,7 +641,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Deribit",
@@ -710,7 +710,7 @@ export const strategies: StrategyData[] = [
         subHeading: [
           "Deposit 1 ETH and borrow 1600 USDA+",
           "Go to Deribit and deposit 400 USDT as margin",
-          "Sell a 1 month expiry ETH ATM Put option for $160",
+          "Sell a 1 week expiry ETH ATM Put Option for $70 - $100",
           "Keep on repeating previous step after a week till entire month is over",
         ],
       },
@@ -719,7 +719,7 @@ export const strategies: StrategyData[] = [
       {
         platform: "Autonomint",
         monthlyBorrowingFee: "0.16%",
-        optionFee: "0.16%",
+        optionFee: "3.5%",
       },
       {
         platform: "Deribit",

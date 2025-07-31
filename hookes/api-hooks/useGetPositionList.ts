@@ -11,7 +11,7 @@ import { useQuery } from "wagmi/query";
  */
 const getDeposits = (
   address: `0x${string}` | undefined,
-  chainId: Number
+  chainId: number
 ): Promise<PositionData[]> => {
   return fetch(`${BACKEND_API_URL}/borrows/${chainId}/${address}`).then(
     (response) =>
@@ -88,6 +88,12 @@ const useGetPositionList = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+  useEffect(() => {
+    if (chainId) {
+      setCurrentPage(1);
+    }
+  }, [chainId]);
 
   return {
     positionList: (positionList || []) as PositionData[], // Complete list of positions
