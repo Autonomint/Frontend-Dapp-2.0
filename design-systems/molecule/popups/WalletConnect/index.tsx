@@ -115,7 +115,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                       setSwitchingChain(NetworkId.BaseSepolia);
                     }}
                     variant={"shadowOutline"}
-                    className="p-5 cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-black dark:text-white "
+                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-black dark:text-white "
                   >
                     <div>
                       <BaseIcon
