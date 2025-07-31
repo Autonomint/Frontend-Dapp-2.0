@@ -407,14 +407,22 @@ export function WithdrawFund({
       tooltipText: "",
     },
     {
-      headline: "Downside Protection till now",
+      headline: "Downside Protection Till Now",
       value: `$${downsideProtection.toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Repay amount",
+      headline: "Repay Amount",
       value: `$${repayAmount.toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Liquidation Price",
+      value: `$${Number((position?.liquidationEthPrice || 0) / 100)?.toFixed(
+        2
+      )}`,
       tooltip: false,
       tooltipText: "",
     },
@@ -1030,6 +1038,7 @@ export function WithdrawFund({
             </>
           )}
 
+          {/* Renew selection */}
           {toggleView === "renew" && !isPopupLoading && (
             <>
               <div className="w-full h-[67px]">

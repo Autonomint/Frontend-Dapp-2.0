@@ -91,6 +91,7 @@ export interface PositionData {
   noOfAbondMinted: string;
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
   totalDebtAmount: string;
+  liquidationEthPrice: number;
 }
 
 export interface LeaderboardDetails {
