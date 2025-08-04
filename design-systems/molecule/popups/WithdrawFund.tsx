@@ -211,7 +211,7 @@ export function WithdrawFund({
         chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
-  });
+  }) as { data: number[]; isLoading: boolean };
 
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
@@ -888,7 +888,171 @@ export function WithdrawFund({
           )}
           {toggleView === "repay" && !isPopupLoading && (
             <>
-              <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
+              <div className="w-full h-[67px]">
+                {
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex w-full h-[60px] mb-2">
+                      {[
+                        {
+                          label: "Maturity",
+                          value: Number(
+                            calculateRemainingDays(Number(position.validTill))
+                          ),
+                          days: Number(
+                            calculateRemainingDays(Number(position.validTill))
+                          ),
+                          gradient:
+                            "linear-gradient(to right, #08c8646e,#627EEA00)",
+                          gradientText: "#0ea658",
+                          percentLeftPx: "0px",
+                          borderLeftPx: "0px",
+                        },
+
+                        {
+                          label: "",
+                          value:
+                            30 -
+                            Number(
+                              calculateRemainingDays(position.validTill) || 0
+                            ),
+                          gradient:
+                            "linear-gradient(to right, #7a7a7a94, #FF527000)",
+                          gradientText: "#7a7a7a",
+                          percentLeftPx: "8px",
+                          borderLeftPx: "0px",
+                        },
+                      ].map((metric, index, arr) => {
+                        const total = 30;
+                        const percentage = (metric.value / total) * 100 || 0;
+
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              width: `${percentage}%`,
+                            }}
+                            className={` ${
+                              index == 1 && "mr-1"
+                            } relative h-full flex flex-col justify-end truncate`}
+                          >
+                            {index == 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                            <div
+                              className="mx-[5px] truncate"
+                              style={{
+                                position: "absolute",
+                                backgroundColor: "transparent",
+                                color: metric.gradientText,
+                                left: metric.percentLeftPx,
+                              }}
+                            >
+                              {metric.days || metric.value} Days{" "}
+                              {metric.label ? `(${metric.label})` : ""}
+                            </div>
+
+                            <div
+                              style={{
+                                position: "absolute",
+                                height: "48px",
+                                width: "2px",
+                                backgroundColor: metric.gradientText,
+                                left: metric.borderLeftPx,
+                              }}
+                            />
+
+                            {index !== 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                }
+              </div>
+              <div className="w-full  h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+                {[
+                  {
+                    label: "days",
+                    value: Number(
+                      isFifteenDaysCompleted(
+                        position.validTill,
+                        Number(optionsFeesTimeLimits?.[0]) / 86400
+                      )
+                        ? calculateRemainingDays(Number(position.validTill))
+                        : 15
+                    ),
+
+                    color: "#05a552",
+                  },
+
+                  {
+                    label: "maturity",
+                    value:
+                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                    color: "gray",
+                  },
+                ].map((metric, index, arr) => {
+                  const total = arr.reduce((acc, item) => acc + item.value, 0);
+                  const percentage = (metric.value / total) * 100;
+
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        width: `${percentage}%`,
+                        background: metric.color,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-8 mb-3">
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-[#05A552]"></span>
+                  {calculateRemainingDays(Number(position.validTill))} Days days
+                  left until the hedge ends.
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoIcon
+                        className="w-5 text-lg h-5  "
+                        width={24}
+                        height={24}
+                      />
+                    </TooltipTrigger>
+                    {
+                      <TooltipContent className="bg-white w-[300px] text-black dark:text-white dark:bg-black">
+                        <p>
+                          Once the hedge ends, your position loses downside
+                          protection. During the hedge, we cover only up to a
+                          20% price drop. If the position isn’t closed within
+                          the - 20% price range and the price drops to 20% or
+                          reaches 100% LTV, it will be liquidated.
+                        </p>
+                      </TooltipContent>
+                    }
+                  </Tooltip>
+                </div>
+              </div>
+              <div
+                className={` space-y-3 mt-2  ${
+                  position.status == BorrowStatus.WITHDREW
+                    ? "h-[265px]"
+                    : "h-[350px]"
+                } overflow-auto no-scrollbar`}
+              >
                 {depositData.map((item) => (
                   <div
                     key={item.headline}
@@ -937,10 +1101,10 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={` h-[50px] ${
+                className={`  ${
                   position.status == BorrowStatus.WITHDREW
-                    ? "md:h-[150px]"
-                    : "md:h-[70px]"
+                    ? "h-[150px]"
+                    : "md:h-[70px] sm:h-[50px] h-[80px]"
                 } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
