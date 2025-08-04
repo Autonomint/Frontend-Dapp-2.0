@@ -948,6 +948,8 @@ function DCDSTemplate() {
     isFunctionPausedCDS_Deposit,
   ]);
 
+  console.log(selectedTokens, "selectedTokens");
+
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
     setSelectedTokens((prev) =>
