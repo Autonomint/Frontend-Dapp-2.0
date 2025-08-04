@@ -3,6 +3,7 @@ import OPIcon from "@/app/assets/optimism.png";
 import USDaIcon from "@/app/assets/logo.svg";
 import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
 import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
+import boldIcon from "@/app/assets/bold-logo.svg";
 import {
   nativeTokenAddress,
   rsETHAddress,
@@ -137,10 +138,11 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
 
 export const getIconMapping = (theme: string, token: string) => {
   const mapping = {
-    usda: theme === "dark"  ? USDaIconGreen : USDaIcon,
+    usda: theme === "dark" ? USDaIconGreen : USDaIcon,
     usdt: UsdtIcon,
     aero: AEROIcon,
     op: OPIcon,
+    bold: boldIcon,
   };
   return mapping[token as keyof typeof mapping];
 };

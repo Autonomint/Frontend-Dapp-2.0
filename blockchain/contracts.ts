@@ -6,52 +6,52 @@ type ChainAddresses = {
 
 // Addresses for the multi-sign contract
 export const multiSignAddress = {
-  84532: "0xE4cd803312bd41F719eCDC21D51c961cA57c6B0f",
-  11155420: "0xED0d14799C80c0533a128e61705a5B64F5367F8D",
+  84532: "0xD2121D7979650Bf50969207dC78aa9d3c3cfE204",
+  11155420: "0x2f4A8f47AA7dd43881FA8B6233B08bD9bC73e3bA",
 } as const;
 
 // Addresses for the usDa contract
 export const usDaAddress = {
-  84532: "0xD78bd3A6937977c5f89513bdF9cCf30B567F4189",
+  84532: "0x528DF5A715876A61EACF9ebcCD7f1e9ca8C08C4F",
   11155111: "0x343f4E70e2489A566d056b12c647382f58857CC5",
-  11155420: "0xcCc59Cabdbf6028B78DCE4Ea7d4E74DFbbC06aa6",
+  11155420: "0x1aADdb3d892f4Ceb82252E5826045b36e640d1Cc",
   919: "0x39B54D1631205F7FD2B29454CF73Ee85fA6C5E45",
 } as const;
 
 // Addresses for the borrowing contract
 export const borrowingContractAddress = {
-  84532: "0x35645c4870CE383c745e200B44BC6a6e87c63E86",
-  11155420: "0x10EE8dC1B68039178989fFefeeE791519069e220",
+  84532: "0x37dd8a3F1195B8d3dbd76FA30dE04dF247F3a02E",
+  11155420: "0x102545F40D9F707e9FBB656d714E24a35A289683",
 } as const;
 
 // Addresses for the borrowing deposit contract
 export const borrowingDepositContractAddress = {
-  84532: "0x79b4c9F408702a904ea70bCA538E591d08E33EF0",
-  11155420: "0x0c2A3d2EB1787F05263A9E1E685a5DC0b410E435",
+  84532: "0xF3c96a27Ef2b3469D744ea85C2C92Eba2393626a",
+  11155420: "0x65994CcA324b08c70F47D8468C2915771D04a60a",
 } as const;
 
 // Addresses for the borrowing withdraw contract
 export const borrowingWithdrawContractAddress = {
-  84532: "0x718BDf21C71ED621bdcc5e33a66e21Bc0D2ebB5b",
-  11155420: "0x6Dca68026a1449e15da3C1D007F36F19b8Ea4A79",
+  84532: "0x05D0D554BeCf47648CF7CdbE5270EDdfad989997",
+  11155420: "0xEcFe29e7BC5d7f1068F2a8A38869508349dbE78b",
 } as const;
 
 // Addresses for the cds contract
 export const cdsAddress = {
-  84532: "0x5aD374eCF70fa4ab23A6B7ac2Cc2Bf11C2A30630",
-  11155420: "0xE0828CafCa48aDa33F5353eAE2873097a0c063BF",
+  84532: "0x6F2e7070F38797107885c2bdd51427224eBFB96E",
+  11155420: "0x2772AcB7c92B3d300222EbB6e516E5A8aC27B402",
 } as const;
 
 // Addresses for the cds deposit contract
 export const cdsDepositAddress = {
-  84532: "0x36E4a1590768477A3cfE2Ca78c3D0fd098855701",
-  11155420: "0x783487b17e7B80d264421a0d52bc5E68a5F36757",
+  84532: "0xd5A2e88dE643f04e6577975e7Da7fDd17c837ae8",
+  11155420: "0x311a01DAC6E2DACC698e5995CBBad7FDC5AE4121",
 } as const;
 
 // Addresses for the cds withdraw contract
 export const cdsWithdrawAddress = {
-  84532: "0xc3414FF2bB20A226967DF827267b4F3f465D60f7",
-  11155420: "0xE34D631201720f662f09a500fAE4923fa3bDE6E2",
+  84532: "0xD4CD7809Cce48c9008794595E2E271ED6e372453",
+  11155420: "0x053De3d2Da8F77b534dF1E1728683E21643f9B23",
 } as const;
 
 // Addresses for the USDT contract
@@ -74,8 +74,8 @@ export const sUSDAddress = {
 
 // Addresses for the abond contract
 export const abondAddress = {
-  84532: "0xCF9F6335dF0055cf66DafD8CD63FbCC974A60767",
-  11155420: "0xC86FFf9d2e53a551777807Bd40548b23EC1817A6",
+  84532: "0x3Cc46516D062838c1F27A153De519F1579B4348C",
+  11155420: "0x8a64C6Dd4F257E7D498bD1Ddc293a779A918DA27",
 } as const;
 
 // Addresses for the native token
@@ -125,18 +125,24 @@ export const borrowAssetsAddress = {
 
 // Addresses for the global contract
 export const globalAddress = {
-  84532: "0xa951da9E64ed59aC8ceFf4028b737Ca5Cf13F8D4",
-  11155420: "0xC10348965d9425810eA4aCaC19D0f053b6CfD4b9",
+  84532: "0xDE5C0d41Bc70842086c83106b918CBA7CDdE8D70",
+  11155420: "0x98015b7458825B7d463B29Ff38D66aA6eCcd1479",
 } as const;
 
 // Addresses for the mpo contract
 export const mpoAddress = {
-  84532: "0x68c98C664e0E8D265Db4dA7E38253Ac3856f5e9b",
-  11155420: "0x6fb19C9d62D008B50f91F09315456BFAe08AEf5c",
+  84532: "0xAa506b51aD7834efAA120A9B17Fe071B08Cdca29",
+  11155420: "0x099786b09C075F798de410b69a0E86B6A908593F",
 } as const;
 
 // Addresses for the borrow lib contract
 export const borrowLibAddress = {
-  84532: "0x8A08258Bf7448604a354094182137A47296A5BB5",
-  11155420: "0x84ef34218255C3A0EcD4100820cd3ab3D23DFDed",
+  84532: "0xCDEAc33b6C9E0f0470A2B2db83D115EE5A920516",
+  11155420: "0xa1222aa38AAee1cc21491cC6bB18E3618471bf9f",
+} as const;
+
+// Addresses for the borrow lib contract
+export const boltTokenAddress = {
+  84532: "0xDDc9fcE09bf6d5310973bD3b24cF787Ee3Ef2bcB",
+  11155420: "0x814BD144aeBF04a6cE6452438540125158ff9625",
 } as const;
