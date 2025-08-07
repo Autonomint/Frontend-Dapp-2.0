@@ -142,7 +142,7 @@ export const borrowLibAddress = {
 } as const;
 
 // Addresses for the borrow lib contract
-export const boltTokenAddress = {
+export const boldTokenAddress = {
   84532: "0xDDc9fcE09bf6d5310973bD3b24cF787Ee3Ef2bcB",
   11155420: "0x814BD144aeBF04a6cE6452438540125158ff9625",
 } as const;

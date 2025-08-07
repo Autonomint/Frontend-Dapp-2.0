@@ -362,6 +362,7 @@ function DCDSTemplate() {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
+      debugger;
       // checking is bold token is selected or not for getting Signed data
       const isBoldDepositing = selectedTokens.some((tokenDetails) => {
         return tokenDetails.tokenName === "BOLD";
@@ -370,7 +371,7 @@ function DCDSTemplate() {
         isBoldDepositing
       );
 
-      if (isBoldDepositing && cdsDepositSignedData.pythUpdateSucceeded) {
+      if (isBoldDepositing && !cdsDepositSignedData.pythUpdateSucceeded) {
         return toast.custom((t) => (
           <ToastNotificationError
             title="Please Try Again Later"
