@@ -5,6 +5,7 @@ import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
 import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import boldIcon from "@/app/assets/bold-logo.svg";
 import {
+  boldTokenAddress,
   nativeTokenAddress,
   rsETHAddress,
   testusdtAbiAddress,
@@ -120,6 +121,16 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             // image: "https://yourdomain.com/token-image.png",
           },
         };
+      case "bold":
+        return {
+          type: "ERC20",
+          options: {
+            address: boldTokenAddress[chainId as keyof typeof boldTokenAddress],
+            symbol: "bold",
+            decimals: 18,
+            // image: "https://yourdomain.com/token-image.png",
+          },
+        };
       default:
         return {
           type: "ERC20",
@@ -144,7 +155,7 @@ export const getIconMapping = (theme: string, token: string) => {
     aero: AEROIcon,
     op: OPIcon,
     bold: boldIcon,
-    
+    boldToken: boldIcon,
   };
   return mapping[token as keyof typeof mapping];
 };

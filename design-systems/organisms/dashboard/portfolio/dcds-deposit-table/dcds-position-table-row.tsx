@@ -78,6 +78,7 @@ const DcdsPositionTableRow = ({
           {(
             Number(position.depositedAmounts.usda) +
             Number(position.depositedAmounts.usdt) +
+            Number(position.depositedAmounts.boldToken) +
             Number(position.depositedAmounts.nativeToken) *
               Number(position.nativeTokenPriceAtDeposit)
           ).toFixed(2)}
@@ -85,6 +86,7 @@ const DcdsPositionTableRow = ({
             {depositedTokenNames.map((tokenName) => {
               return (
                 <Image
+                  key={tokenName}
                   src={getIconMapping(theme || "dark", tokenName)}
                   alt={tokenName}
                   className="w-5 h-5"

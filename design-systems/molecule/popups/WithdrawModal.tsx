@@ -277,15 +277,15 @@ export function DcdsWithdrawModal({
     {
       // Token deposited
       headline: `Bold Tokens deposited`,
-      value: Number(position?.depositedAmounts?.bold)
-        ? `${Number(position?.depositedAmounts?.bold).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.bold) *
-            Number(position?.nativeTokenPriceAtDeposit)
+      value: Number(position?.depositedAmounts?.boldToken)
+        ? `${Number(position?.depositedAmounts?.boldToken).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.boldToken) *
+            Number(position?.boldPriceAtDeposit)
           ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
-      comment: "Will be converted to USDT at 30% price fall",
+      comment: "",
     },
     {
       // Token Price at Deposit

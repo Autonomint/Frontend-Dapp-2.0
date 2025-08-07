@@ -30,9 +30,10 @@ export interface dcdsDepositDetails {
     usda: string;
     usdt: string;
     nativeToken: string;
-    bold:string;
+    boldToken: string;
   };
   nativeTokenPriceAtDeposit: number;
+  boldPriceAtDeposit: number;
   liquidationPrice: number;
   apys: CdsWithdrawAPYs;
   liquidatedAmount: string | number;
