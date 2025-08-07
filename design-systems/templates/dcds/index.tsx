@@ -278,8 +278,6 @@ function DCDSTemplate() {
     },
   }) as any;
 
-  console.log(getPrices, "getPrices");
-
   // calculating the liquidation amount
   // this will run when token amount is changed
   const liqAmnt = useMemo(() => {
@@ -307,13 +305,7 @@ function DCDSTemplate() {
       );
     }
     return res;
-  }, [
-    formik.values.aeroAmount,
-    formik.values.opAmount,
-    formik.values.usdaAmount,
-    formik.values.usdtAmount,
-    getPrices,
-  ]);
+  }, [formik.values, getPrices, selectedTokens]);
 
   console.log(liqAmnt, "liqAmnt");
 
@@ -362,7 +354,6 @@ function DCDSTemplate() {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
-      debugger;
       // checking is bold token is selected or not for getting Signed data
       const isBoldDepositing = selectedTokens.some((tokenDetails) => {
         return tokenDetails.tokenName === "BOLD";
