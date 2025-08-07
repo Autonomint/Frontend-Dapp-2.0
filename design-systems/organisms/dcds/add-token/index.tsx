@@ -190,13 +190,13 @@ function AddToken({
                       </div>
                     )}
                   <span className="text-[12px] 3xl:text-[16px] md:mt-1 text-[#7a7a7a]">
-                    {tokenDetails.pointToGiven}Points Per $
+                    {tokenDetails.pointToGiven} Points Per $
                     {tokenDetails.minTokenAmount}
                   </span>
                 </div>
               </div>
             )}
-          {/* <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
+          <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />
@@ -204,7 +204,7 @@ function AddToken({
                 <CircleFadingPlus className="stroke-black dark:stroke-white " />
               )}
             </div>
-          </div> */}
+          </div>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>

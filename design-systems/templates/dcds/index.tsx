@@ -362,7 +362,22 @@ function DCDSTemplate() {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
-      const cdsDepositSignedData = await refetchcdsDepositSignedData();
+      // checking is bold token is selected or not for getting Signed data
+      const isBoldDepositing = selectedTokens.some((tokenDetails) => {
+        return tokenDetails.tokenName === "BOLD";
+      });
+      const cdsDepositSignedData = await refetchcdsDepositSignedData(
+        isBoldDepositing
+      );
+
+      if (isBoldDepositing && cdsDepositSignedData.pythUpdateSucceeded) {
+        return toast.custom((t) => (
+          <ToastNotificationError
+            title="Please Try Again Later"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+      }
 
       if (nativeFee?.nativeFee) {
         handleDcdsDeposit?.(
@@ -713,6 +728,8 @@ function DCDSTemplate() {
       },
     });
 
+  console.log(tokenBalances, "tokenBalances");
+
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
     useReadContracts({
@@ -728,6 +745,8 @@ function DCDSTemplate() {
         },
       },
     });
+
+  console.log(tokenPrices, "tokenPrices");
 
   const {
     data: tokenAllowanceByUser,
@@ -1227,6 +1246,17 @@ function DCDSTemplate() {
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
+  // Changing order of token in new array to show in UI
+  const orderedTokenList = useMemo(() => {
+    if (tokenList.length === 0) return [];
+    const list = [];
+    if (tokenList[0]) list.push(tokenList[0]);
+    if (tokenList[3]) list.push(tokenList[3]);
+    if (tokenList[1]) list.push(tokenList[1]);
+    if (tokenList[2]) list.push(tokenList[2]);
+    return list;
+  }, [tokenList]);
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1239,7 +1269,7 @@ function DCDSTemplate() {
           ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
-            tokenList.map((token: TokenDetails, key: number) => (
+            orderedTokenList.map((token: TokenDetails, key: number) => (
               <AddToken
                 formik={formik}
                 key={key}
@@ -1666,7 +1696,7 @@ function DCDSTemplate() {
         </div>
       </div>
       {/* showing the token tvl details */}
-      {tokenList.map((token) => (
+      {orderedTokenList.map((token) => (
         <TokenTvlDetails
           key={token.tokenName}
           icon={token.tokenImage}

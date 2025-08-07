@@ -163,6 +163,8 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
+  console.log(currentDebtCeilingMintLimit, "currentDebtCeilingMintLimit");
+
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
 
@@ -684,6 +686,8 @@ function InputForm({ currency }: { currency: string }) {
     BigInt(ethAmountForRatio)
   );
 
+  console.log(ratioValue, "ratioValue");
+
   // get borrowed position list
   const { positionList } = useGetPositionList();
 
@@ -710,7 +714,7 @@ function InputForm({ currency }: { currency: string }) {
   // Checking mint ratio for user input amount
   const checkMintRatio = () => {
     if (formik.values.collateralAmount > 0) {
-      // Checking mint ratio
+      // Checking mint ratio (30000 is limit of mint amount)
       if (ratioValue && Number(ratioValue) < 30000) {
         formik.setFieldError(
           "collateralAmount",
@@ -720,7 +724,8 @@ function InputForm({ currency }: { currency: string }) {
         // Checking last mint amount and last mint time is valid or not from mint limit
       } else if (
         last24HourPositionList.length > 0 &&
-        totalDepositAmount24Hour > Number(currentDebtCeilingMintLimit || 0)
+        totalDepositAmount24Hour > Number(currentDebtCeilingMintLimit || 0) &&
+        Number(currentDebtCeilingMintLimit || 0) > 0
       ) {
         const remainingTimeInHours = Math.round(
           (Number(last24HourPositionList[0].depositedTime) +
