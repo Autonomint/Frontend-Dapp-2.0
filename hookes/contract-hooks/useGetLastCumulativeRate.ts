@@ -24,7 +24,10 @@ const useLastCumulativeRate = () => {
       },
     });
 
-  return { lastCumulativeRate, isLastCumulativeRatePending };
+  return {
+    lastCumulativeRate: lastCumulativeRate as number,
+    isLastCumulativeRatePending,
+  };
 };
 
 export default useLastCumulativeRate;

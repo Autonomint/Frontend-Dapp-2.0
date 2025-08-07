@@ -455,7 +455,7 @@ function InputForm({ currency }: { currency: string }) {
       const downsideProtection =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          (100 - (ltv ? ltv : 0))) /
+          (100 - (ltv ? Number(ltv) : 0))) /
         10000;
 
       // display the downside protection amount with 2 decimal places
