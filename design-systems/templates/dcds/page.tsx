@@ -307,14 +307,7 @@ function DCDSTemplate() {
       );
     }
     return res;
-  }, [
-    formik.values.aeroAmount,
-    formik.values.opAmount,
-    formik.values.usdaAmount,
-    formik.values.usdtAmount,
-    getPrices,
-    liquidationGains,
-  ]);
+  }, [formik.values, getPrices, selectedTokens]);
 
   // deposit function hook
   const {
