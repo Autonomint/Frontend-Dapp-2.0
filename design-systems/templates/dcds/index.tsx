@@ -372,12 +372,8 @@ function DCDSTemplate() {
       );
 
       if (isBoldDepositing && !cdsDepositSignedData.pythUpdateSucceeded) {
-        return toast.custom((t) => (
-          <ToastNotificationError
-            title="Please Try Again Later"
-            onClose={() => toast.dismiss(t)}
-          />
-        ));
+        handleDepositFailure();
+        return;
       }
 
       if (nativeFee?.nativeFee) {
