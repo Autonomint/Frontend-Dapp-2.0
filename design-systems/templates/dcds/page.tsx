@@ -259,8 +259,6 @@ function DCDSTemplate() {
 
   const { data: calculateGainCDS } = useCalculateGainCDS();
 
-  console.log(calculateGainCDS, "calculateGainCDS");
-
   const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
 
   // assigning the formik values to the local variables because getting old values from formik directly

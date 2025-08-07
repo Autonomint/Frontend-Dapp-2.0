@@ -164,8 +164,6 @@ export const useLayerZeroMessages = () => {
     return data.data.every((msg) => msg.status.name === "DELIVERED");
   }, [data, chainId]);
 
-  console.log(readyForNewTx, "readyForNewTx");
-
   return {
     layerZeroTxData: data,
     readyForNewTx: true,
