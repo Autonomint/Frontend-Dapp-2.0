@@ -24,7 +24,7 @@ export const HoverCard: React.FC<HoverCardProps> = ({
         {title}
       </div>
       <div
-        className={`absolute overflow-hidden dark:bg-[#171B21] rounded-[12px] top-8 w-[350px] shadow-md left-0 bg-white  border-[1px] border-grayLight  transition duration-500 ease-in-out opacity-0 ${
+        className={`absolute overflow-hidden dark:bg-[#171B21] rounded-[12px] top-8 w-[350px] shadow-md left-[-10px] bg-white  border-[1px] border-grayLight  transition duration-500 ease-in-out opacity-0 ${
           isHovered && !disabled ? "opacity-100 visible" : "hidden"
         }`}
       >
