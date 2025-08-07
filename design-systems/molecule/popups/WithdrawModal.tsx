@@ -275,6 +275,19 @@ export function DcdsWithdrawModal({
         "After factoring in volatility, the token is deposited at 30% lower value",
     },
     {
+      // Token deposited
+      headline: `Bold Tokens deposited`,
+      value: Number(position?.depositedAmounts?.bold)
+        ? `${Number(position?.depositedAmounts?.bold).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.bold) *
+            Number(position?.nativeTokenPriceAtDeposit)
+          ).toFixed(2)})`
+        : null,
+      tooltip: false,
+      tooltipText: "",
+      comment: "Will be converted to USDT at 30% price fall",
+    },
+    {
       // Token Price at Deposit
       headline: `${
         Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"

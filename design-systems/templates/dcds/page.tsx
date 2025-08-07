@@ -352,44 +352,48 @@ function DCDSTemplate() {
   }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
   // function to call the deposit function in the contract
-  const callDepositFnInContract = () => {
-    setTimeout(() => {
-      setDcdsDepositLoadingLocal(true);
-    }, 600);
-
-    if (nativeFee?.nativeFee) {
-      handleDcdsDeposit?.(
-        [
-          // token addresses
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
-          }),
-          // token amount in wei
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return formik.values[
-              `${tokenDetail?.tokenName.toLowerCase()}Amount`
-            ]
-              ? parseUnits(
-                  formik.values[
-                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(tokenDetail?.tokenDecimals)
-                )
-              : 0n;
-          }),
-          // liquidation gains
-          liquidationGains,
-          liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400),
-        ],
-        nativeFee.nativeFee
-      );
+  const callDepositFnInContract = async () => {
+    try {
+      setTimeout(() => {
+        setDcdsDepositLoadingLocal(true);
+      }, 600);
+      if (nativeFee?.nativeFee) {
+        handleDcdsDeposit?.(
+          [
+            // token addresses
+            tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return (tokenDetail?.tokenAddress ??
+                zeroAddress) as `0x${string}`;
+            }),
+            // token amount in wei
+            tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return formik.values[
+                `${tokenDetail?.tokenName.toLowerCase()}Amount`
+              ]
+                ? parseUnits(
+                    formik.values[
+                      `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(tokenDetail?.tokenDecimals)
+                  )
+                : 0n;
+            }),
+            // liquidation gains
+            liquidationGains,
+            liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
+            BigInt(Number(lockInPeriodLocal || 0) * 86400),
+          ],
+          nativeFee.nativeFee
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -690,6 +694,8 @@ function DCDSTemplate() {
       },
     });
 
+  console.log(tokenBalances, "tokenBalances");
+
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
     useReadContracts({
@@ -705,6 +711,8 @@ function DCDSTemplate() {
         },
       },
     });
+
+  console.log(tokenPrices, "tokenPrices");
 
   const {
     data: tokenAllowanceByUser,
@@ -1202,6 +1210,17 @@ function DCDSTemplate() {
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
+  // Changing order of token in new array to show in UI
+  const orderedTokenList = useMemo(() => {
+    if (tokenList.length === 0) return [];
+    const list = [];
+    if (tokenList[0]) list.push(tokenList[0]);
+    if (tokenList[3]) list.push(tokenList[3]);
+    if (tokenList[1]) list.push(tokenList[1]);
+    if (tokenList[2]) list.push(tokenList[2]);
+    return list;
+  }, [tokenList]);
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1214,7 +1233,7 @@ function DCDSTemplate() {
           ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
-            tokenList.map((token: TokenDetails, key: number) => (
+            orderedTokenList.map((token: TokenDetails, key: number) => (
               <AddToken
                 formik={formik}
                 key={key}
@@ -1632,7 +1651,7 @@ function DCDSTemplate() {
         </div>
       </div>
       {/* showing the token tvl details */}
-      {tokenList.map((token) => (
+      {orderedTokenList.map((token) => (
         <TokenTvlDetails
           key={token.tokenName}
           icon={token.tokenImage}
