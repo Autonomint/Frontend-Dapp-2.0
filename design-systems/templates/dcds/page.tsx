@@ -1632,14 +1632,16 @@ function DCDSTemplate() {
         </div>
       </div>
       {/* showing the token tvl details */}
-      {tokenList.map((token) => (
-        <TokenTvlDetails
-          key={token.tokenName}
-          icon={token.tokenImage}
-          tokenName={token.tokenLabel}
-          tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
-        />
-      ))}
+      {tokenList
+        .filter((token) => token.tokenName.toLocaleLowerCase() !== "bold")
+        .map((token) => (
+          <TokenTvlDetails
+            key={token.tokenName}
+            icon={token.tokenImage}
+            tokenName={token.tokenLabel}
+            tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
+          />
+        ))}
 
       <HowItWorksPopUp
         isDialogOpen={isOpenHowItWork}
