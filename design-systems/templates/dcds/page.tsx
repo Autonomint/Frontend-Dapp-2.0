@@ -648,8 +648,6 @@ function DCDSTemplate() {
     }, 0);
   }, [formik.values, selectedTokens]);
 
-
-
   // fetching list of the token addresses for the deposit
   const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
     {
@@ -718,7 +716,6 @@ function DCDSTemplate() {
       },
     });
 
-
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
     useReadContracts({
@@ -734,8 +731,6 @@ function DCDSTemplate() {
         },
       },
     });
-
-
 
   const {
     data: tokenAllowanceByUser,
@@ -978,7 +973,6 @@ function DCDSTemplate() {
     tokensPauseState,
     isFunctionPausedCDS_Deposit,
   ]);
-
 
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
