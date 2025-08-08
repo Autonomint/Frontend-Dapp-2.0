@@ -1212,15 +1212,17 @@ function DCDSTemplate() {
           ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
-            tokenList.map((token: TokenDetails, key: number) => (
-              <AddToken
-                formik={formik}
-                key={key}
-                tokenDetails={token}
-                setSelectedTokens={setSelectedTokens}
-                selectedTokens={selectedTokens}
-              />
-            ))
+            tokenList
+              .filter((token) => token.tokenName.toLocaleLowerCase() !== "bold")
+              .map((token: TokenDetails, key: number) => (
+                <AddToken
+                  formik={formik}
+                  key={key}
+                  tokenDetails={token}
+                  setSelectedTokens={setSelectedTokens}
+                  selectedTokens={selectedTokens}
+                />
+              ))
           )}
         </div>
 
