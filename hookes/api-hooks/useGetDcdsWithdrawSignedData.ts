@@ -41,8 +41,7 @@ async function signedDataForDcdsWithDrawDeposit(
 async function signedDataForDcdsDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
-  index: number,
-  isBoldDepositing: boolean
+  index: number
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSDeposit`, {
     method: "POST",
@@ -50,8 +49,9 @@ async function signedDataForDcdsDeposit(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      getCdsDeposit: { address: address, chainId: chainId, index: index },
-      isBoldDepositing: isBoldDepositing,
+      address: address,
+      chainId: chainId,
+      index: index,
     }),
   }).then((response) => response.json());
 }
@@ -118,12 +118,11 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
     isPending: isPendingcdsDepositSignedData,
     mutateAsync: refetchcdsDepositSignedData,
   } = useMutation({
-    mutationFn: (isBoldDepositing: boolean) =>
+    mutationFn: () =>
       signedDataForDcdsDeposit(
         address ? address : undefined,
         chainId as number,
-        index || 0,
-        isBoldDepositing
+        index || 0
       ),
   });
 

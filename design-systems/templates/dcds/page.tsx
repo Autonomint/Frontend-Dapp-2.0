@@ -266,7 +266,7 @@ function DCDSTemplate() {
   const lockInPeriodLocal = formik.values.lockInPeriod;
 
   // fetching the prices from the contract of usda, usdt and native token from the blockchain
-  const { data: getPrices } = useReadContract({
+  const { data: getPrices, refetch: refetchPrices } = useReadContract({
     address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
     abi: cdsAbi,
     functionName: "getPrices",
@@ -282,32 +282,34 @@ function DCDSTemplate() {
 
   // calculating the liquidation amount
   // this will run when token amount is changed
-  const liqAmnt = useMemo(() => {
-    let res = 0;
-    if (selectedTokens.length > 0 && getPrices?.length > 0) {
-      res = getTotalDepositingAmount(
-        getPrices,
-        // token addresses
-        selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
-        //  amount in wei
-        selectedTokens.map((token) => {
-          return BigInt(
-            formik.values[`${token.tokenName.toLowerCase()}Amount`]
-              ? parseUnits(
-                  formik.values[
-                    `${token.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(token.tokenDecimals)
-                )
-              : 0
-          );
-        }),
+  // const liqAmnt = useMemo(() => {
+  //   let res = 0;
+  //   if (selectedTokens.length > 0 && getPrices?.length > 0) {
+  //     res = getTotalDepositingAmount(
+  //       getPrices,
+  //       // token addresses
+  //       selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+  //       //  amount in wei
+  //       selectedTokens.map((token) => {
+  //         return BigInt(
+  //           formik.values[`${token.tokenName.toLowerCase()}Amount`]
+  //             ? parseUnits(
+  //                 formik.values[
+  //                   `${token.tokenName.toLowerCase()}Amount`
+  //                 ].toString(),
+  //                 Number(token.tokenDecimals)
+  //               )
+  //             : 0
+  //         );
+  //       }),
 
-        selectedTokens.map((token) => token.tokenDetails)
-      );
-    }
-    return res;
-  }, [formik.values, getPrices, selectedTokens]);
+  //       selectedTokens.map((token) => token.tokenDetails)
+  //     );
+  //   }
+  //   return res;
+  // }, [formik.values, getPrices, selectedTokens]);
+
+  // console.log(liqAmnt, "liqAmnt");
 
   // deposit function hook
   const {
@@ -347,9 +349,38 @@ function DCDSTemplate() {
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
     try {
+      debugger;
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
+      // checking is bold token is selected or not for getting Signed data
+      const pricesData = await refetchPrices();
+      console.log(pricesData, "pricesData");
+      const getPrices = pricesData?.data;
+      let liqAmnt = 0;
+      if (selectedTokens.length > 0 && getPrices?.length > 0) {
+        liqAmnt = getTotalDepositingAmount(
+          getPrices,
+          // token addresses
+          selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+          //  amount in wei
+          selectedTokens.map((token) => {
+            return BigInt(
+              formik.values[`${token.tokenName.toLowerCase()}Amount`]
+                ? parseUnits(
+                    formik.values[
+                      `${token.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(token.tokenDecimals)
+                  )
+                : 0
+            );
+          }),
+
+          selectedTokens.map((token) => token.tokenDetails)
+        );
+      }
+      console.log(liqAmnt, "liqAmnt");
       if (nativeFee?.nativeFee) {
         handleDcdsDeposit?.(
           [
