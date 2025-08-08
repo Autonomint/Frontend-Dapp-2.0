@@ -473,6 +473,8 @@ export function DcdsWithdrawModal({
     }
   }
 
+
+  // useEffect for updating deposit data to pop up state
   useEffect(() => {
     setSpinner(true);
     handleDepositData();
@@ -744,6 +746,10 @@ export function DcdsWithdrawModal({
   };
 
   const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
+
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  // const { readyForNewTx } = useLayerZeroMessages();
+
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>

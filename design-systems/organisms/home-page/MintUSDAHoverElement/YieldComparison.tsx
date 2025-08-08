@@ -24,7 +24,6 @@ function YieldComparison() {
   ).matches;
 
 
-
   return (
     <div
       // xl:w-[60%]w-[40%] xl:flex-1

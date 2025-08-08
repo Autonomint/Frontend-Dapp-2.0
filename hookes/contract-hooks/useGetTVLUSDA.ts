@@ -67,6 +67,8 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
     setOtherChainUSDa(usdaTvl2);
   };
 
+ 
+
   return {
     isTVLPending,
     tvlValue: Number(tvlValue) + Number(otherChainUDSa),

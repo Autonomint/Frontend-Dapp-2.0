@@ -349,13 +349,11 @@ function DCDSTemplate() {
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
     try {
-      debugger;
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
       // checking is bold token is selected or not for getting Signed data
       const pricesData = await refetchPrices();
-      console.log(pricesData, "pricesData");
       const getPrices = pricesData?.data;
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -380,7 +378,7 @@ function DCDSTemplate() {
           selectedTokens.map((token) => token.tokenDetails)
         );
       }
-      console.log(liqAmnt, "liqAmnt");
+
       if (nativeFee?.nativeFee) {
         handleDcdsDeposit?.(
           [
@@ -650,6 +648,8 @@ function DCDSTemplate() {
     }, 0);
   }, [formik.values, selectedTokens]);
 
+
+
   // fetching list of the token addresses for the deposit
   const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
     {
@@ -718,7 +718,6 @@ function DCDSTemplate() {
       },
     });
 
-  console.log(tokenBalances, "tokenBalances");
 
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
@@ -736,7 +735,7 @@ function DCDSTemplate() {
       },
     });
 
-  console.log(tokenPrices, "tokenPrices");
+
 
   const {
     data: tokenAllowanceByUser,
@@ -980,7 +979,6 @@ function DCDSTemplate() {
     isFunctionPausedCDS_Deposit,
   ]);
 
-  console.log(selectedTokens, "selectedTokens");
 
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
