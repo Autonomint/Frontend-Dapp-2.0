@@ -94,7 +94,7 @@ export function WithdrawFund({
     },
     enabled: !!address && !!chainId && !!position.index,
   });
-  console.log(indexPoint, "indexPoint");
+
   const depositDetails = [
     {
       headline: "ETH Deposited",
@@ -186,7 +186,6 @@ export function WithdrawFund({
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
   );
-  console.log(ethPrice, "ethPrice");
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
   const [amountView, setAmountView] = useState(false);
@@ -429,7 +428,6 @@ export function WithdrawFund({
     },
   ];
 
-  console.log(repayAmountDetails, "repayMountDetails");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
@@ -641,11 +639,6 @@ export function WithdrawFund({
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
-  console.log(
-    lastCumulativeRate,
-    position.normalizedAmount,
-    "lastCumulativeRate"
-  );
 
   const handleRepay = async () => {
     if (balance < repayAmount) {

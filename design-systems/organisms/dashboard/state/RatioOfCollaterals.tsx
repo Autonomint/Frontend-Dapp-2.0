@@ -153,7 +153,7 @@ function RatioOfCollaterals({
   stats: { value: string; headline: string }[];
 }) {
   const [time, setTime] = React.useState<ChartFilter>("allTime");
-  let currentDate = new Date();
+
   const { theme } = useTheme();
 
   const [chartData, setChartData] = React.useState<string[]>([]);

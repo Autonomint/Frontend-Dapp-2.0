@@ -44,7 +44,7 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
     query: { enabled: !!address && !!chainId }, // Only run the query if wallet is connected and chain is available
   });
 
-  console.log(usdValue, "usdValue"); // Debug log for inspecting the returned value
+
 
   return {
     isUsdValuePending, // Indicates if the USD value query is still loading

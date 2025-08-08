@@ -180,7 +180,6 @@ function DCDSTemplate() {
     },
   });
 
-  console.log(formik, "formik.values");
 
   // lock in period dropdown items
   const dropdownItems = [
@@ -351,13 +350,11 @@ function DCDSTemplate() {
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
     try {
-      debugger;
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
       }, 600);
       // checking is bold token is selected or not for getting Signed data
       const pricesData = await refetchPrices();
-      console.log(pricesData, "pricesData");
       const getPrices = pricesData?.data;
       const cdsDepositSignedData = await refetchcdsDepositSignedData();
       let liqAmnt = 0;
@@ -383,7 +380,7 @@ function DCDSTemplate() {
           selectedTokens.map((token) => token.tokenDetails)
         );
       }
-      console.log(liqAmnt, "liqAmnt");
+
       if (nativeFee?.nativeFee) {
         handleDcdsDeposit?.(
           [
@@ -661,7 +658,7 @@ function DCDSTemplate() {
     }, 0);
   }, [formik.values, selectedTokens]);
 
-  console.log(formik, depositValue, "depositValue");
+
 
   // fetching list of the token addresses for the deposit
   const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
@@ -675,7 +672,6 @@ function DCDSTemplate() {
     }
   ) as { data: `0x${string}`[]; isLoading: boolean };
 
-  console.log(tokenAddress, "tokenAddress");
 
   // fetching the token details for the deposit (name, symbol, decimals)
   const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
@@ -709,7 +705,7 @@ function DCDSTemplate() {
               address: tokenAddress?.[i],
             });
           }
-          console.log(tokens, "tokens");
+
           return tokens;
         },
       },
@@ -733,7 +729,6 @@ function DCDSTemplate() {
       },
     });
 
-  console.log(tokenBalances, "tokenBalances");
 
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
@@ -751,7 +746,7 @@ function DCDSTemplate() {
       },
     });
 
-  console.log(tokenPrices, "tokenPrices");
+
 
   const {
     data: tokenAllowanceByUser,
@@ -995,7 +990,6 @@ function DCDSTemplate() {
     isFunctionPausedCDS_Deposit,
   ]);
 
-  console.log(selectedTokens, "selectedTokens");
 
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
@@ -1177,7 +1171,6 @@ function DCDSTemplate() {
     setUserTrackLocalStorageData,
     getUserTrackLocalStorageData,
   } = useTrackUserData();
-  console.log(userTrackingData, "userTrackingData");
 
   // update user tracking data
   useEffect(() => {

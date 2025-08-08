@@ -26,7 +26,7 @@ function Leaderboard() {
   } = useGetLeaderboard();
 
   const { points, referralPoints, totalPoints } = useGetUserPoint();
-  console.log(referralPoints, totalPoints, "referralPoints");
+
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">

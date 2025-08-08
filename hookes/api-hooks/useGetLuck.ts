@@ -57,11 +57,9 @@ export const useBorrowGame = (): UseMutationResult<
     mutationFn: borrowGame,
     onSuccess: (data: BorrowGameResponse) => {
       // Handle success, e.g., show a success message or update the cache
-      console.log("Game borrowed successfully:", data);
     },
     onError: (error: AxiosError) => {
       // Handle error, e.g., show an error message
-      console.error("Error borrowing game:", error.message);
     },
   });
 };

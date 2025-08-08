@@ -61,7 +61,6 @@ function StatsTemplate() {
   const { optionFees: feeOptions, refetchOptionFee: refetch } =
     useFetchOptionFees(1, (ethPrice || 0) as number, 5);
 
-  console.log(!!chainId && !!ethPrice, "ethPrice");
 
   useEffect(() => {
     handleStatsItem();
@@ -197,7 +196,6 @@ function StatsTemplate() {
     }
   };
 
-  console.log(feeOptions, OptionFeesValues, "feeOptions");
 
   return (
     <div className="md:mt-[-20px] sm:mx-4 border-x sm:border-grayLight">

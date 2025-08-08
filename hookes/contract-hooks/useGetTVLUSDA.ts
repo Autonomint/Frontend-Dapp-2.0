@@ -67,19 +67,7 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
     setOtherChainUSDa(usdaTvl2);
   };
 
-  console.log(
-    otherChainUDSa,
-    tokenAddress,
-    chainId === NetworkId.BaseSepolia
-      ? usDaAddress[NetworkId.Optimism]
-      : usDaAddress[NetworkId.BaseSepolia],
-    cdsAddress[
-      chainId === NetworkId.BaseSepolia
-        ? NetworkId.Optimism
-        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
-    ],
-    "usdaTvl2"
-  );
+ 
 
   return {
     isTVLPending,
@@ -150,7 +138,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       const tvl = await cdsContract.getTokenDepositedTillNow(tokenAddress);
       tvls.push(tvl);
     }
-    console.log(tvls, otherChainAddressList, "tvlOtherChainLool");
+
     setOtherChainTvl(tvls);
   };
 
@@ -162,7 +150,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     );
   }, [tvlValue, otherChainTvl]);
 
-  console.log({ totalTVLList, tvlValue, otherChainTvl }, "usd11");
+
 
   return {
     isTVLPending,

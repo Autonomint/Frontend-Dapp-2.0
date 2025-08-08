@@ -24,14 +24,7 @@ const useBorrowRatio = (amount: bigint) => {
     args: [amount],
     query: { enabled: !!address },
   });
-  console.log(
-    {
-      amount,
-    },
-    "calculateRatio",
-    ratioValue,
-    ratioError
-  );
+  
 
   return {
     isRatioPending,

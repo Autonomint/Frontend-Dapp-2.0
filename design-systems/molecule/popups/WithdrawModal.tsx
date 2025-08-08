@@ -471,7 +471,6 @@ export function DcdsWithdrawModal({
     }
   }
 
-  console.log(apy, "apy");
 
   // useEffect for updating deposit data to pop up state
   useEffect(() => {
@@ -503,7 +502,6 @@ export function DcdsWithdrawModal({
     resetDcdsWithdrawGain,
   } = useDcdsWithdrawGain({
     onError: (error: any) => {
-      console.log(error, "error");
 
       // setting loading to false of withdraw
       setTimeout(() => {
@@ -654,7 +652,6 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
-    debugger;
     setDcdsFundWithdrawLoadingLocal(true);
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {
@@ -699,7 +696,6 @@ export function DcdsWithdrawModal({
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
-  console.log(depositData, "depositData");
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>

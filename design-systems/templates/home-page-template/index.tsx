@@ -56,7 +56,6 @@ export default function HomeTemplate() {
 
   // getting eth price from blockchain
   const { usdValue: ethPrice } = useGetUsdValue();
-  console.log(ethPrice, "ethPrice");
 
   // getting option fee for one ETH
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(

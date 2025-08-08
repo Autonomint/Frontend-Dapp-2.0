@@ -163,7 +163,7 @@ export const useLayerZeroMessages = () => {
   }, [data]);
 
   // Log ready status for debugging
-  console.log(readyForNewTx, "readyForNewTx");
+
 
   // Memoize the return value to prevent unnecessary re-renders
   return useMemo(

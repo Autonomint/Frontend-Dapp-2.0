@@ -28,7 +28,7 @@ const useGetBalance = (
         : abondAddress[chainId as keyof typeof abondAddress],
   });
 
-  console.log(data, "rawData");
+
 
   return {
     balanceString: `$${data?.formatted.slice(0, 8) || 0} `,

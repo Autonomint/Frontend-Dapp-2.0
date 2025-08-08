@@ -38,7 +38,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
-    console.log(prefersDarkMode, "prefersDarkMode");
+
 
     const script = document.createElement("script");
     script.src =
@@ -167,7 +167,7 @@ function ChartComponent({ currency }: { currency: string }) {
   // Token config for adding token to wallet based on the selected token
   const tokenConfig = useTokenConfig(currency);
 
-  console.log(tokenConfig, "tokenConfig");
+
 
   // Function to add token to wallet
   const handleAddToken = async () => {

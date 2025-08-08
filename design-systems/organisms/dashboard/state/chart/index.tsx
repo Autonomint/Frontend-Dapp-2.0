@@ -91,7 +91,6 @@ export function ChartComponent({
   maxH?: string;
   hideElements: boolean;
 }) {
-  let currentDate = new Date();
 
   const [time, setTime] = React.useState<ChartFilter>("allTime");
 

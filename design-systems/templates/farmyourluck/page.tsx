@@ -80,7 +80,6 @@ function FarmYourLuckTemplate() {
   const { data: walletAddress, isLoading: isLoadingWalletAddress } =
     useFarmYourLuckWalletAddress();
 
-  console.log(luckPrice, walletAddress, "luckPrice");
 
   // hook for getting the farm your luck data (current reward data) from the backend api
   const {
@@ -96,7 +95,6 @@ function FarmYourLuckTemplate() {
   const [payLoading, setPayLoading] = useState(false);
   // eth price in dollars
   const { usdValue: ethPrice } = useGetUsdValue();
-  console.log(ethPrice, "ethPrice");
 
   // checking is current luck so don't need to pay again
   useEffect(() => {
@@ -319,7 +317,6 @@ function FarmYourLuckTemplate() {
       ));
     }
   };
-  console.log(ethPrice, "ethPrice");
 
   // handle the button click
   const handleButtonClick = async () => {

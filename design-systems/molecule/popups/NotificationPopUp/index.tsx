@@ -43,7 +43,6 @@ const NotificationPopup: React.FC<NotificationPopupProps> = ({
     },
   };
 
-  console.log(CARD_ID_NOTIFI, DAPP_ADDRESS_NOTIFI, "DAPP_ADDRESS_NOTIFI");
 
   // if the address is undefined or the signer is undefined, then the user can return null
   return (

@@ -23,7 +23,6 @@ function YieldComparison() {
     "(prefers-color-scheme: dark)"
   ).matches;
 
-  console.log(prefersDarkMode, theme, "theme");
 
   return (
     <div

@@ -132,7 +132,7 @@ function InputForm({ currency }: { currency: string }) {
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
-  console.log(ethPrice, assetPrice, "eth");
+
 
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
@@ -163,7 +163,6 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
-  console.log(currentDebtCeilingMintLimit, "currentDebtCeilingMintLimit");
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -319,7 +318,7 @@ function InputForm({ currency }: { currency: string }) {
     refetchInterval: 0,
   });
 
-  console.log(minUSDAforLuck, "minUSDAforLuck");
+
 
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
@@ -571,7 +570,7 @@ function InputForm({ currency }: { currency: string }) {
     setUserTrackLocalStorageData,
     getUserTrackLocalStorageData,
   } = useTrackUserData();
-  console.log(userTrackingData, "userTrackingData");
+
 
   // update user tracking data
   useEffect(() => {
@@ -685,8 +684,6 @@ function InputForm({ currency }: { currency: string }) {
   const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
     BigInt(ethAmountForRatio)
   );
-
-  console.log(ratioValue, "ratioValue");
 
   // get borrowed position list
   const { positionList } = useGetPositionList();
