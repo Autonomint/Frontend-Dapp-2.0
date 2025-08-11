@@ -449,3 +449,18 @@ export function toPositiveDecimalString(value: string): string {
   // Positive values, return with original decimals
   return parsed.toFixed(decimals);
 }
+
+// truncate decimals
+export function truncateDecimals(
+  value: number | string,
+  decimals: number
+): string {
+  const num = typeof value === "string" ? parseFloat(value) : value;
+
+  if (isNaN(num)) return "0"; // handle invalid input
+
+  const factor = Math.pow(10, decimals);
+  const truncated = Math.trunc(num * factor) / factor;
+
+  return truncated.toString();
+}

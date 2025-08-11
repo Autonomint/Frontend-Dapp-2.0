@@ -59,6 +59,7 @@ import {
   getTotalDepositingAmount,
   handleWheel,
   toLocalISOString,
+  truncateDecimals,
 } from "@/utils/helpers";
 import { getIconMapping } from "@/utils/token-config";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -180,6 +181,13 @@ function DCDSTemplate() {
     },
   });
 
+  // useEffect to reset the selected tokens and form values when chain id changes
+  useEffect(() => {
+    if (chainId) {
+      setSelectedTokens([]);
+      formik.resetForm();
+    }
+  }, [chainId]);
 
   // lock in period dropdown items
   const dropdownItems = [
@@ -658,8 +666,6 @@ function DCDSTemplate() {
     }, 0);
   }, [formik.values, selectedTokens]);
 
-
-
   // fetching list of the token addresses for the deposit
   const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
     {
@@ -671,7 +677,6 @@ function DCDSTemplate() {
       },
     }
   ) as { data: `0x${string}`[]; isLoading: boolean };
-
 
   // fetching the token details for the deposit (name, symbol, decimals)
   const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
@@ -729,7 +734,6 @@ function DCDSTemplate() {
       },
     });
 
-
   // fetching the token prices for the deposit
   const { data: tokenPrices, isPending: isLoadingOraclePrices } =
     useReadContracts({
@@ -745,8 +749,6 @@ function DCDSTemplate() {
         },
       },
     });
-
-
 
   const {
     data: tokenAllowanceByUser,
@@ -989,7 +991,6 @@ function DCDSTemplate() {
     tokensPauseState,
     isFunctionPausedCDS_Deposit,
   ]);
-
 
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
@@ -1504,7 +1505,7 @@ function DCDSTemplate() {
                         onClick={() => {
                           formik.setFieldValue(
                             `${token?.tokenName?.toLocaleLowerCase()}Amount`,
-                            Number(token.tokenCount)
+                            Number(truncateDecimals(token.tokenCount || "", 4))
                           );
                         }}
                         className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border p-1 py-[0px] mt-4  sm:px-2 sm:py-[2px] rounded-[24px]"
