@@ -15,7 +15,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, NetworkId } from "@/utils/constants";
+import { BorrowAssetsEnum, BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -23,7 +23,7 @@ import displayNumberWithPrecision, {
   hasFiveMinutesPassed,
   isRenewActiveDaysCompleted,
 } from "@/utils/helpers";
-import { PositionData } from "@/utils/interface";
+import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -214,28 +214,39 @@ export function WithdrawFund({
   }) as { data: number[]; isLoading: boolean };
 
   // getting renew time limit in days
-  const { data: currentOptionFeeTimeLimit, refetch: refetchCurrentData } =
-    useReadContract({
-      abi: borrowingContractAbi,
-      address:
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ],
-      functionName: "optionsFeesTimeLimits",
+  const { data: currentOptionFeeTimeLimit } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "optionsFeesTimeLimits",
 
-      query: {
-        placeholderData: [0n, 0n],
-        select: (data) => {
-          console.log(data, "data");
-          return {
-            minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
-            maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
-          };
-        },
+    query: {
+      placeholderData: [0n, 0n],
+      select: (data: any) => {
+        return {
+          minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+          maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+        };
       },
-    });
+    },
+  });
 
-  console.log(currentOptionFeeTimeLimit, "currentOptionFeeTimeLimit");
+  // getting token details
+  const { data: assetDetails, refetch: refetchCurrentData } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    args: [
+      BorrowAssetsEnum[
+        position?.collateralType as keyof typeof BorrowAssetsEnum
+      ],
+    ],
+    functionName: "getAssetDetails",
+  }) as { data: AssetDetailsInterface; refetch: () => void };
 
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
@@ -444,13 +455,27 @@ export function WithdrawFund({
     },
     {
       headline: "Liquidation Price",
-      value: `$${Number((position?.liquidationEthPrice || 0) / 100)?.toFixed(
-        2
-      )}`,
+      // value: `$${Number((position?.liquidationEthPrice || 0) / 100)?.toFixed(
+      //   2
+      // )}`,
+      value: position?.downsideProtectionStatus
+        ? (
+            (Number(position?.ethPrice || 0) / 100) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            Number(assetDetails?.LTV || 0)
+          ).toFixed(2)
+        : (
+            (Number(position?.ethPrice || 0) / 100) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            Number(assetDetails?.optionsExpiredLTV || 0)
+          ).toFixed(2),
+
       tooltip: false,
       tooltipText: "",
     },
   ];
+
+  console.log(position, " position");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
