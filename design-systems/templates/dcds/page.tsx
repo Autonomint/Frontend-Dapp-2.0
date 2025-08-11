@@ -59,6 +59,7 @@ import {
   getTotalDepositingAmount,
   handleWheel,
   toLocalISOString,
+  truncateDecimals,
 } from "@/utils/helpers";
 import { getIconMapping } from "@/utils/token-config";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -178,6 +179,14 @@ function DCDSTemplate() {
       handleDeposit();
     },
   });
+
+  // useEffect to reset the selected tokens and form values when chain id changes
+  useEffect(() => {
+    if (chainId) {
+      setSelectedTokens([]);
+      formik.resetForm();
+    }
+  }, [chainId]);
 
   // lock in period dropdown items
   const dropdownItems = [
@@ -1486,7 +1495,7 @@ function DCDSTemplate() {
                         onClick={() => {
                           formik.setFieldValue(
                             `${token?.tokenName?.toLocaleLowerCase()}Amount`,
-                            Number(token.tokenCount)
+                            Number(truncateDecimals(token.tokenCount || "", 4))
                           );
                         }}
                         className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border px-2 py-[2px] rounded-[24px]"

@@ -18,6 +18,7 @@ export default function QueryProvider({ children }: PropsWithChildren) {
           queries: {
             // refetchInterval: 8000,
             enabled: isConnected && !!address && !!chainId,
+            retry: 0,
           },
           mutations: {
             onError(error: any) {},
