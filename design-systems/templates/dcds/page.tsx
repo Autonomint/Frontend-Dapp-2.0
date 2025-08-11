@@ -213,7 +213,7 @@ function DCDSTemplate() {
 
   const lockInPeriodOption = useMemo(() => {
     const list = cdsLockinRewardDetailList || {};
-    return ["30", "60", "90", "180"].map((key) => {
+    return ["30", "60", "90"].map((key) => {
       const booster = list[Number(key) as keyof typeof list]?.lockingBooster;
       return {
         value: key,
