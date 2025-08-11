@@ -302,7 +302,7 @@ export function calculateRemainingDays(timestamp: number): number {
   return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
 }
 
-export function isFifteenDaysCompleted(
+export function isRenewActiveDaysCompleted(
   timestamp: number,
   days?: number
 ): boolean {

@@ -38,7 +38,7 @@ import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isFifteenDaysCompleted,
+  isRenewActiveDaysCompleted,
 } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
@@ -213,6 +213,30 @@ export function WithdrawFund({
       ],
     abi: borrowingContractAbi,
   });
+
+  // getting renew time limit in days
+  const { data: currentOptionFeeTimeLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      abi: borrowingContractAbi,
+      address:
+        borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ],
+      functionName: "optionsFeesTimeLimits",
+
+      query: {
+        placeholderData: [0n, 0n],
+        select: (data) => {
+          console.log(data, "data");
+          return {
+            minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+            maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+          };
+        },
+      },
+    });
+
+  console.log(currentOptionFeeTimeLimit, "currentOptionFeeTimeLimit");
 
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
@@ -428,7 +452,6 @@ export function WithdrawFund({
     },
   ];
 
-
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
     if (ethPrice) {
@@ -638,7 +661,6 @@ export function WithdrawFund({
       }, 1000);
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
-
 
   const handleRepay = async () => {
     if (balance < repayAmount) {
@@ -975,7 +997,7 @@ export function WithdrawFund({
                         {
                           label: "",
                           value:
-                            30 -
+                            (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
                             Number(
                               calculateRemainingDays(position.validTill) || 0
                             ),
@@ -1050,12 +1072,7 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isFifteenDaysCompleted(
-                        position.validTill,
-                        Number(optionsFeesTimeLimits?.[0]) / 86400
-                      )
-                        ? calculateRemainingDays(Number(position.validTill))
-                        : 15
+                      calculateRemainingDays(Number(position.validTill))
                     ),
 
                     color: "#05a552",
@@ -1064,7 +1081,8 @@ export function WithdrawFund({
                   {
                     label: "maturity",
                     value:
-                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                      (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      calculateRemainingDays(Number(position.validTill)),
                     color: "gray",
                   },
                 ].map((metric, index, arr) => {
@@ -1287,14 +1305,15 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            isFifteenDaysCompleted(
+                            isRenewActiveDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
                             )
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
-                              : 15
+                              : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                                  (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                           ),
                           days: Number(
                             calculateRemainingDays(Number(position.validTill))
@@ -1307,10 +1326,16 @@ export function WithdrawFund({
                         },
                         {
                           label: "Renew",
-                          value:
+                          value: Number(
                             Number(
-                              calculateRemainingDays(position.validTill) || 0
-                            ) - 15,
+                              currentOptionFeeTimeLimit?.minTimeLimit || 0
+                            ) -
+                              (Number(
+                                currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                              ) -
+                                (calculateRemainingDays(position.validTill) +
+                                  1 || 0))
+                          ),
                           gradient:
                             "linear-gradient(to right, #386fe86e,#FF527000)",
                           gradientText: "#2563eb",
@@ -1322,7 +1347,9 @@ export function WithdrawFund({
                         {
                           label: "",
                           value:
-                            30 -
+                            Number(
+                              currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                            ) -
                             Number(
                               calculateRemainingDays(position.validTill) || 0
                             ),
@@ -1399,22 +1426,25 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isFifteenDaysCompleted(
+                      isRenewActiveDaysCompleted(
                         position.validTill,
                         Number(optionsFeesTimeLimits?.[0]) / 86400
                       )
                         ? calculateRemainingDays(Number(position.validTill))
-                        : 15
+                        : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                            (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                     ),
 
                     color: "#05a552",
                   },
                   {
                     label: "repay",
-                    value:
-                      Number(calculateRemainingDays(position.validTill) || 0) -
-                      15,
-                    color: !isFifteenDaysCompleted(
+                    value: Number(
+                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                          (calculateRemainingDays(position.validTill) + 1 || 0))
+                    ),
+                    color: !isRenewActiveDaysCompleted(
                       position.validTill,
                       Number(optionsFeesTimeLimits?.[0]) / 86400
                     )
@@ -1424,7 +1454,8 @@ export function WithdrawFund({
                   {
                     label: "maturity",
                     value:
-                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                      Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      calculateRemainingDays(Number(position.validTill)), // 28 ,
                     color: "gray",
                   },
                 ].map((metric, index, arr) => {
@@ -1449,11 +1480,18 @@ export function WithdrawFund({
                   {calculateRemainingDays(Number(position.validTill))} Days
                   remaining till maturity
                 </div>
-                {calculateRemainingDays(Number(position.validTill)) > 15 && (
+                {Number(
+                  Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                    (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      (calculateRemainingDays(position.validTill) + 1 || 0))
+                ) > 0 && (
                   <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                     <span className="block w-3 h-3 bg-blue-600"></span>
-                    {calculateRemainingDays(Number(position.validTill)) -
-                      15}{" "}
+                    {Number(
+                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                          (calculateRemainingDays(position.validTill) + 1 || 0))
+                    )}{" "}
                     Days remaining to activate renew
                   </div>
                 )}
@@ -1500,10 +1538,15 @@ export function WithdrawFund({
                   </div>
 
                   {[
-                    { label: "Time Period", value: "30 days" },
+                    {
+                      label: "Time Period",
+                      value: `${
+                        currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                      } Days`,
+                    },
                     {
                       label: "Option Fees",
-                      //  value: isFifteenDaysCompleted(position.validTill)
+                      //  value: isRenewActiveDaysCompleted(position.validTill)
                       //     ? `${formatUnits(
                       //     BigInt(payableOptionFees || 0),
                       //     6
@@ -1551,7 +1594,7 @@ export function WithdrawFund({
                             calculateRemainingDays(
                               Number(position.validTill)
                             ) <= 0 ||
-                            !isFifteenDaysCompleted(
+                            !isRenewActiveDaysCompleted(
                               position.validTill,
                               Number(optionsFeesTimeLimits?.[0]) / 86400
                             ) ||
