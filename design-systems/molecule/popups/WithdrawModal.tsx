@@ -275,9 +275,11 @@ export function DcdsWithdrawModal({
     {
       // Token deposited
       headline: `Bold Tokens deposited`,
-      value: Number(position?.depositedAmounts?.boldToken)
-        ? `${Number(position?.depositedAmounts?.boldToken).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.boldToken) *
+      value: Number(position?.depositedAmounts?.boldToken || 0)
+        ? `${Number(position?.depositedAmounts?.boldToken || 0).toFixed(
+            2
+          )} ($${(
+            Number(position?.depositedAmounts?.boldToken || 0) *
             Number(position?.boldPriceAtDeposit)
           ).toFixed(2)})`
         : null,
@@ -471,7 +473,6 @@ export function DcdsWithdrawModal({
     }
   }
 
-
   // useEffect for updating deposit data to pop up state
   useEffect(() => {
     setSpinner(true);
@@ -502,7 +503,6 @@ export function DcdsWithdrawModal({
     resetDcdsWithdrawGain,
   } = useDcdsWithdrawGain({
     onError: (error: any) => {
-
       // setting loading to false of withdraw
       setTimeout(() => {
         setDcdsFundWithdrawLoadingLocal(false);
@@ -695,7 +695,6 @@ export function DcdsWithdrawModal({
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
-
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
