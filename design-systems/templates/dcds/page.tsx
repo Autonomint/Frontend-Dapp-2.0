@@ -59,6 +59,7 @@ import {
   getTotalDepositingAmount,
   handleWheel,
   toLocalISOString,
+  truncateDecimals,
 } from "@/utils/helpers";
 import { getIconMapping } from "@/utils/token-config";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -179,6 +180,14 @@ function DCDSTemplate() {
     },
   });
 
+  // useEffect to reset the selected tokens and form values when chain id changes
+  useEffect(() => {
+    if (chainId) {
+      setSelectedTokens([]);
+      formik.resetForm();
+    }
+  }, [chainId]);
+
   // lock in period dropdown items
   const dropdownItems = [
     {
@@ -266,7 +275,7 @@ function DCDSTemplate() {
   const lockInPeriodLocal = formik.values.lockInPeriod;
 
   // fetching the prices from the contract of usda, usdt and native token from the blockchain
-  const { data: getPrices } = useReadContract({
+  const { data: getPrices, refetch: refetchPrices } = useReadContract({
     address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
     abi: cdsAbi,
     functionName: "getPrices",
@@ -282,39 +291,34 @@ function DCDSTemplate() {
 
   // calculating the liquidation amount
   // this will run when token amount is changed
-  const liqAmnt = useMemo(() => {
-    let res = 0;
-    if (selectedTokens.length > 0 && getPrices?.length > 0) {
-      res = getTotalDepositingAmount(
-        getPrices,
-        // token addresses
-        selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
-        //  amount in wei
-        selectedTokens.map((token) => {
-          return BigInt(
-            formik.values[`${token.tokenName.toLowerCase()}Amount`]
-              ? parseUnits(
-                  formik.values[
-                    `${token.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(token.tokenDecimals)
-                )
-              : 0
-          );
-        }),
+  // const liqAmnt = useMemo(() => {
+  //   let res = 0;
+  //   if (selectedTokens.length > 0 && getPrices?.length > 0) {
+  //     res = getTotalDepositingAmount(
+  //       getPrices,
+  //       // token addresses
+  //       selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+  //       //  amount in wei
+  //       selectedTokens.map((token) => {
+  //         return BigInt(
+  //           formik.values[`${token.tokenName.toLowerCase()}Amount`]
+  //             ? parseUnits(
+  //                 formik.values[
+  //                   `${token.tokenName.toLowerCase()}Amount`
+  //                 ].toString(),
+  //                 Number(token.tokenDecimals)
+  //               )
+  //             : 0
+  //         );
+  //       }),
 
-        selectedTokens.map((token) => token.tokenDetails)
-      );
-    }
-    return res;
-  }, [
-    formik.values.aeroAmount,
-    formik.values.opAmount,
-    formik.values.usdaAmount,
-    formik.values.usdtAmount,
-    getPrices,
-    liquidationGains,
-  ]);
+  //       selectedTokens.map((token) => token.tokenDetails)
+  //     );
+  //   }
+  //   return res;
+  // }, [formik.values, getPrices, selectedTokens]);
+
+  // console.log(liqAmnt, "liqAmnt");
 
   // deposit function hook
   const {
@@ -352,44 +356,75 @@ function DCDSTemplate() {
   }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
   // function to call the deposit function in the contract
-  const callDepositFnInContract = () => {
-    setTimeout(() => {
-      setDcdsDepositLoadingLocal(true);
-    }, 600);
-
-    if (nativeFee?.nativeFee) {
-      handleDcdsDeposit?.(
-        [
+  const callDepositFnInContract = async () => {
+    try {
+      setTimeout(() => {
+        setDcdsDepositLoadingLocal(true);
+      }, 600);
+      // checking is bold token is selected or not for getting Signed data
+      const pricesData = await refetchPrices();
+      const getPrices = pricesData?.data;
+      let liqAmnt = 0;
+      if (selectedTokens.length > 0 && getPrices?.length > 0) {
+        liqAmnt = getTotalDepositingAmount(
+          getPrices,
           // token addresses
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
+          selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+          //  amount in wei
+          selectedTokens.map((token) => {
+            return BigInt(
+              formik.values[`${token.tokenName.toLowerCase()}Amount`]
+                ? parseUnits(
+                    formik.values[
+                      `${token.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(token.tokenDecimals)
+                  )
+                : 0
+            );
           }),
-          // token amount in wei
-          tokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return formik.values[
-              `${tokenDetail?.tokenName.toLowerCase()}Amount`
-            ]
-              ? parseUnits(
-                  formik.values[
-                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(tokenDetail?.tokenDecimals)
-                )
-              : 0n;
-          }),
-          // liquidation gains
-          liquidationGains,
-          liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          BigInt(Number(lockInPeriodLocal || 0) * 86400),
-        ],
-        nativeFee.nativeFee
-      );
+
+          selectedTokens.map((token) => token.tokenDetails)
+        );
+      }
+
+      if (nativeFee?.nativeFee) {
+        handleDcdsDeposit?.(
+          [
+            // token addresses
+            tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return (tokenDetail?.tokenAddress ??
+                zeroAddress) as `0x${string}`;
+            }),
+            // token amount in wei
+            tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return formik.values[
+                `${tokenDetail?.tokenName.toLowerCase()}Amount`
+              ]
+                ? parseUnits(
+                    formik.values[
+                      `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(tokenDetail?.tokenDecimals)
+                  )
+                : 0n;
+            }),
+            // liquidation gains
+            liquidationGains,
+            liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
+            BigInt(Number(lockInPeriodLocal || 0) * 86400),
+          ],
+          nativeFee.nativeFee
+        );
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -729,7 +764,7 @@ function DCDSTemplate() {
     },
   });
 
-  const { totalTVLList } = useGetTVLBothChain(tokenAddress || []);
+  const { totalTVLList, isTVLPending } = useGetTVLBothChain(tokenAddress || []);
 
   // checking the token pause state
   const {
@@ -1200,6 +1235,17 @@ function DCDSTemplate() {
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
+  // Changing order of token in new array to show in UI
+  const orderedTokenList = useMemo(() => {
+    if (tokenList.length === 0) return [];
+    const list = [];
+    if (tokenList[0]) list.push(tokenList[0]);
+    if (tokenList[3]) list.push(tokenList[3]);
+    if (tokenList[1]) list.push(tokenList[1]);
+    if (tokenList[2]) list.push(tokenList[2]);
+    return list;
+  }, [tokenList]);
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
@@ -1212,17 +1258,15 @@ function DCDSTemplate() {
           ) : isTokenDataLoading ? (
             <PageLoader />
           ) : (
-            tokenList
-              .filter((token) => token.tokenName.toLocaleLowerCase() !== "bold")
-              .map((token: TokenDetails, key: number) => (
-                <AddToken
-                  formik={formik}
-                  key={key}
-                  tokenDetails={token}
-                  setSelectedTokens={setSelectedTokens}
-                  selectedTokens={selectedTokens}
-                />
-              ))
+            orderedTokenList.map((token: TokenDetails, key: number) => (
+              <AddToken
+                formik={formik}
+                key={key}
+                tokenDetails={token}
+                setSelectedTokens={setSelectedTokens}
+                selectedTokens={selectedTokens}
+              />
+            ))
           )}
         </div>
 
@@ -1451,7 +1495,7 @@ function DCDSTemplate() {
                         onClick={() => {
                           formik.setFieldValue(
                             `${token?.tokenName?.toLocaleLowerCase()}Amount`,
-                            Number(token.tokenCount)
+                            Number(truncateDecimals(token.tokenCount || "", 4))
                           );
                         }}
                         className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border px-2 py-[2px] rounded-[24px]"
@@ -1632,16 +1676,15 @@ function DCDSTemplate() {
         </div>
       </div>
       {/* showing the token tvl details */}
-      {tokenList
-        .filter((token) => token.tokenName.toLocaleLowerCase() !== "bold")
-        .map((token) => (
-          <TokenTvlDetails
-            key={token.tokenName}
-            icon={token.tokenImage}
-            tokenName={token.tokenLabel}
-            tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
-          />
-        ))}
+      {orderedTokenList.map((token) => (
+        <TokenTvlDetails
+          key={token.tokenName}
+          icon={token.tokenImage}
+          tokenName={token.tokenLabel}
+          tvl={`$${formatNumber(Number(token.tvl || 0n))}`}
+          isLoading={isTVLPending}
+        />
+      ))}
 
       <HowItWorksPopUp
         isDialogOpen={isOpenHowItWork}

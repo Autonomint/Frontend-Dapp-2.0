@@ -8,6 +8,9 @@ export interface SignedDataReturn {
   nonce: number;
   deadline: number;
   odosAssembledData: string;
+  usdtFromOdos: string;
+  expiredETHAmount: number;
+  pythUpdateSucceeded: boolean;
 }
 /**
  *
@@ -24,6 +27,23 @@ async function signedDataForDcdsWithDrawDeposit(
   index: number
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSWithdraw`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      address: address,
+      chainId: chainId,
+      index: index,
+    }),
+  }).then((response) => response.json());
+}
+async function signedDataForDcdsDeposit(
+  address: `0x${string}` | undefined,
+  chainId: number,
+  index: number
+): Promise<SignedDataReturn> {
+  return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSDeposit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -88,6 +108,18 @@ const useGetDcdsWithdrawSignedData = (index: number) => {
   } = useMutation({
     mutationFn: () =>
       signedDataForDcdsWithGainsDrawDeposit(
+        address ? address : undefined,
+        chainId as number,
+        index || 0
+      ),
+  });
+  const {
+    data: cdsDepositSignedData,
+    isPending: isPendingcdsDepositSignedData,
+    mutateAsync: refetchcdsDepositSignedData,
+  } = useMutation({
+    mutationFn: () =>
+      signedDataForDcdsDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0

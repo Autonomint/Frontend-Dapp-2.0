@@ -139,3 +139,15 @@ export const treasuryAddress = {
   8453: "0xB868684d9E37704327436B94912899747690FfEc",
   10: "0xB868684d9E37704327436B94912899747690FfEc",
 } as const;
+
+// // Addresses for the borrow lib contract
+// export const borrowLibAddress = {
+//   84532: "0xCDEAc33b6C9E0f0470A2B2db83D115EE5A920516",
+//   11155420: "0xa1222aa38AAee1cc21491cC6bB18E3618471bf9f",
+// } as const;
+
+// Addresses for the borrow lib contract
+export const boldTokenAddress = {
+  8453: "0xDDc9fcE09bf6d5310973bD3b24cF787Ee3Ef2bcB",
+  10: "0x814BD144aeBF04a6cE6452438540125158ff9625",
+} as const;

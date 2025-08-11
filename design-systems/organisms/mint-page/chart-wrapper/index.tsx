@@ -164,6 +164,8 @@ function ChartComponent({ currency }: { currency: string }) {
   // Token config for adding token to wallet based on the selected token
   const tokenConfig = useTokenConfig(currency);
 
+
+
   // Function to add token to wallet
   const handleAddToken = async () => {
     if (!walletClient) return console.error("Wallet client not available");

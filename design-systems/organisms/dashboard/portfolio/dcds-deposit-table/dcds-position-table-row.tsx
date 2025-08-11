@@ -76,15 +76,17 @@ const DcdsPositionTableRow = ({
         <div className="flex items-center gap-1">
           $
           {(
-            Number(position.depositedAmounts.usda) +
-            Number(position.depositedAmounts.usdt) +
-            Number(position.depositedAmounts.nativeToken) *
-              Number(position.nativeTokenPriceAtDeposit)
+            Number(position.depositedAmounts.usda || 0) +
+            Number(position.depositedAmounts.usdt || 0) +
+            Number(position.depositedAmounts.boldToken || 0) +
+            Number(position.depositedAmounts.nativeToken || 0) *
+              Number(position.nativeTokenPriceAtDeposit || 0)
           ).toFixed(2)}
           <div className="flex items-center gap-1">
             {depositedTokenNames.map((tokenName) => {
               return (
                 <Image
+                  key={tokenName}
                   src={getIconMapping(theme || "dark", tokenName)}
                   alt={tokenName}
                   className="w-5 h-5"

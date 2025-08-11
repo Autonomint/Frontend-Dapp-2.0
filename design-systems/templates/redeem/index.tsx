@@ -602,6 +602,8 @@ const RedeemContainer = () => {
     },
   }) as { data: number; isPending: boolean };
 
+
+
   // fetching the yield percentage
   const yieldPercentage = useMemo(() => {
     // dollar value of the all redeemable assets
