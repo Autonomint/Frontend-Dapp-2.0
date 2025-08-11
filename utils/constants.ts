@@ -62,7 +62,7 @@ export const RedeemAssets = {
   tusdt: AssetName.USDT,
 };
 // WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE
-export const alchemyApiKeys = "p3uGu6Owoecg4A4tSuxz11VTcdXmK00z";
+export const alchemyApiKeys = "WfZVOiAVMU-JQu__2JHJs_R8HjIsBcKE";
 
 export const LOCAL_STORAGE_KEY = "userTrackingData";
 
