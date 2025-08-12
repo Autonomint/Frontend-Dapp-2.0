@@ -463,20 +463,18 @@ export function WithdrawFund({
         ? (
             (Number(position?.ethPrice || 0) / 100) *
             Number(position?.exchangeRateAtDeposit || 0) *
-            Number(assetDetails?.LTV || 0)
+            (Number(assetDetails?.LTV || 0) / 1e4)
           ).toFixed(2)
         : (
             (Number(position?.ethPrice || 0) / 100) *
             Number(position?.exchangeRateAtDeposit || 0) *
-            Number(assetDetails?.optionsExpiredLTV || 0)
+            (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
           ).toFixed(2),
 
       tooltip: false,
       tooltipText: "",
     },
   ];
-
-  console.log(position, " position");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
