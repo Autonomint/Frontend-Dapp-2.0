@@ -153,12 +153,6 @@ export function WithdrawFund({
         "The final upside value might be slightly different due to slippage",
     },
     {
-      headline: "Liquidated?",
-      value: "No",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
       headline: "Interest Rate Gained",
       value: "-",
       tooltip: false,
@@ -380,14 +374,12 @@ export function WithdrawFund({
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? `${curtUpside.toFixed(2)}`
           : "-";
-      // check is position is liquidated or not
-      updatedData[9].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       // set interest gain
-      updatedData[10].value =
+      updatedData[9].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[11].value = position.noOfAbondMinted
+      updatedData[10].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -407,7 +399,6 @@ export function WithdrawFund({
       updatedData[8].value = "-";
       updatedData[9].value = "-";
       updatedData[10].value = "-";
-      updatedData[11].value = "-";
 
       setDepositData(updatedData);
     }
@@ -470,6 +461,12 @@ export function WithdrawFund({
             (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
           ).toFixed(2),
 
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Liquidated?",
+      value: position.status === "LIQUIDATED" ? "Yes" : "No",
       tooltip: false,
       tooltipText: "",
     },
