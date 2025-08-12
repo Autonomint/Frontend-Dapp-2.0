@@ -451,12 +451,12 @@ export function WithdrawFund({
       // )}`,
       value: position?.downsideProtectionStatus
         ? (
-            (Number(position?.ethPrice || 0) / 100) *
+            Number(position?.ethPrice || 0) *
             Number(position?.exchangeRateAtDeposit || 0) *
             (Number(assetDetails?.LTV || 0) / 1e4)
           ).toFixed(2)
         : (
-            (Number(position?.ethPrice || 0) / 100) *
+            Number(position?.ethPrice || 0) *
             Number(position?.exchangeRateAtDeposit || 0) *
             (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
           ).toFixed(2),
