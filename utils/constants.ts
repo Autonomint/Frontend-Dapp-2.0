@@ -47,13 +47,13 @@ export enum AssetName {
   WSUPER_OETH,
 }
 
-export enum BorrowAssetsEnum {
-  ETH = AssetName.ETH,
-  weETH = AssetName.WeETH,
-  wrsETH = AssetName.WrsETH,
-  rsETH = AssetName.rsETH,
-  wsuperOETHb = AssetName.WSUPER_OETH,
-}
+export const BorrowAssetsEnum = {
+  ETH: AssetName.ETH,
+  weETH: AssetName.WeETH,
+  wrsETH: AssetName.WrsETH,
+  rsETH: AssetName.rsETH,
+  wsuperOETHb: AssetName.WSUPER_OETH,
+};
 
 export const RedeemAssets = {
   usda: AssetName.USDa,

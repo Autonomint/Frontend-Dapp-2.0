@@ -132,8 +132,6 @@ function InputForm({ currency }: { currency: string }) {
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
-
-
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
 
@@ -162,7 +160,6 @@ function InputForm({ currency }: { currency: string }) {
         select: (data) => formatUnits(data, 6),
       },
     });
-
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -317,8 +314,6 @@ function InputForm({ currency }: { currency: string }) {
     enabled: Boolean(chainId),
     refetchInterval: 0,
   });
-
-
 
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
@@ -570,7 +565,6 @@ function InputForm({ currency }: { currency: string }) {
     setUserTrackLocalStorageData,
     getUserTrackLocalStorageData,
   } = useTrackUserData();
-
 
   // update user tracking data
   useEffect(() => {
