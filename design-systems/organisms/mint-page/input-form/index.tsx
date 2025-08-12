@@ -120,8 +120,6 @@ function InputForm({ currency }: { currency: string }) {
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
 
-
-
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
 
@@ -283,8 +281,6 @@ function InputForm({ currency }: { currency: string }) {
     enabled: Boolean(chainId),
     refetchInterval: 0,
   });
-
-
 
   useEffect(() => {
     if (isDepositSuccess && Depositdata) {
