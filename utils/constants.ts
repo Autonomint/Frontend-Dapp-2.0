@@ -48,6 +48,7 @@ export enum AssetName {
   sUSD,
   WSUPER_OETH,
 }
+
 export const BorrowAssetsEnum = {
   ETH: AssetName.ETH,
   weETH: AssetName.WeETH,

@@ -15,15 +15,15 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowStatus, NetworkId } from "@/utils/constants";
+import { BorrowAssetsEnum, BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isFifteenDaysCompleted,
+  isRenewActiveDaysCompleted,
 } from "@/utils/helpers";
-import { PositionData } from "@/utils/interface";
+import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -153,12 +153,6 @@ export function WithdrawFund({
         "The final upside value might be slightly different due to slippage",
     },
     {
-      headline: "Liquidated?",
-      value: "No",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
       headline: "Interest Rate Gained",
       value: "-",
       tooltip: false,
@@ -211,7 +205,42 @@ export function WithdrawFund({
         chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
+  }) as { data: number[]; isLoading: boolean };
+
+  // getting renew time limit in days
+  const { data: currentOptionFeeTimeLimit } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "optionsFeesTimeLimits",
+
+    query: {
+      placeholderData: [0n, 0n],
+      select: (data: any) => {
+        return {
+          minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+          maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+        };
+      },
+    },
   });
+
+  // getting token details
+  const { data: assetDetails, refetch: refetchCurrentData } = useReadContract({
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    args: [
+      BorrowAssetsEnum[
+        position?.collateralType as keyof typeof BorrowAssetsEnum
+      ],
+    ],
+    functionName: "getAssetDetails",
+  }) as { data: AssetDetailsInterface; refetch: () => void };
 
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
@@ -345,14 +374,12 @@ export function WithdrawFund({
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? `${curtUpside.toFixed(2)}`
           : "-";
-      // check is position is liquidated or not
-      updatedData[9].value = position.status === "LIQUIDATED" ? "Yes" : "No";
       // set interest gain
-      updatedData[10].value =
+      updatedData[9].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[11].value = position.noOfAbondMinted
+      updatedData[10].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -372,7 +399,6 @@ export function WithdrawFund({
       updatedData[8].value = "-";
       updatedData[9].value = "-";
       updatedData[10].value = "-";
-      updatedData[11].value = "-";
 
       setDepositData(updatedData);
     }
@@ -407,14 +433,40 @@ export function WithdrawFund({
       tooltipText: "",
     },
     {
-      headline: "Downside Protection till now",
+      headline: "Downside Protection Till Now",
       value: `$${downsideProtection.toFixed(2)}`,
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Repay amount",
+      headline: "Repay Amount",
       value: `$${repayAmount.toFixed(2)}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Liquidation Price",
+      // value: `$${Number((position?.liquidationEthPrice || 0) / 100)?.toFixed(
+      //   2
+      // )}`,
+      value: position?.downsideProtectionStatus
+        ? (
+            Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            (Number(assetDetails?.LTV || 0) / 1e4)
+          ).toFixed(2)
+        : (
+            Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
+          ).toFixed(2),
+
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Liquidated?",
+      value: position.status === "LIQUIDATED" ? "Yes" : "No",
       tooltip: false,
       tooltipText: "",
     },
@@ -880,7 +932,167 @@ export function WithdrawFund({
           )}
           {toggleView === "repay" && !isPopupLoading && (
             <>
-              <div className="space-y-3 mt-2  h-[350px] overflow-auto no-scrollbar">
+              <div className="w-full h-[67px]">
+                {
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex w-full h-[60px] mb-2">
+                      {[
+                        {
+                          label: "Maturity",
+                          value: Number(
+                            calculateRemainingDays(Number(position.validTill))
+                          ),
+                          days: Number(
+                            calculateRemainingDays(Number(position.validTill))
+                          ),
+                          gradient:
+                            "linear-gradient(to right, #08c8646e,#627EEA00)",
+                          gradientText: "#0ea658",
+                          percentLeftPx: "0px",
+                          borderLeftPx: "0px",
+                        },
+
+                        {
+                          label: "",
+                          value:
+                            (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                            Number(
+                              calculateRemainingDays(position.validTill) || 0
+                            ),
+                          gradient:
+                            "linear-gradient(to right, #7a7a7a94, #FF527000)",
+                          gradientText: "#7a7a7a",
+                          percentLeftPx: "8px",
+                          borderLeftPx: "0px",
+                        },
+                      ].map((metric, index, arr) => {
+                        const total = 30;
+                        const percentage = (metric.value / total) * 100 || 0;
+
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              width: `${percentage}%`,
+                            }}
+                            className={` ${
+                              index == 1 && "mr-1"
+                            } relative h-full flex flex-col justify-end truncate`}
+                          >
+                            {index == 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                            <div
+                              className="mx-[5px] truncate"
+                              style={{
+                                position: "absolute",
+                                backgroundColor: "transparent",
+                                color: metric.gradientText,
+                                left: metric.percentLeftPx,
+                              }}
+                            >
+                              {metric.days || metric.value} Days{" "}
+                              {metric.label ? `(${metric.label})` : ""}
+                            </div>
+
+                            <div
+                              style={{
+                                position: "absolute",
+                                height: "48px",
+                                width: "2px",
+                                backgroundColor: metric.gradientText,
+                                left: metric.borderLeftPx,
+                              }}
+                            />
+
+                            {index !== 1 && (
+                              <div
+                                style={{
+                                  height: "80%",
+                                  background: metric.gradient,
+                                }}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                }
+              </div>
+              <div className="w-full  h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+                {[
+                  {
+                    label: "days",
+                    value: Number(
+                      calculateRemainingDays(Number(position.validTill))
+                    ),
+
+                    color: "#05a552",
+                  },
+
+                  {
+                    label: "maturity",
+                    value:
+                      (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      calculateRemainingDays(Number(position.validTill)),
+                    color: "gray",
+                  },
+                ].map((metric, index, arr) => {
+                  const total = arr.reduce((acc, item) => acc + item.value, 0);
+                  const percentage = (metric.value / total) * 100;
+
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        width: `${percentage}%`,
+                        background: metric.color,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-8 mb-3">
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  <span className="block w-3 h-3 bg-[#05A552]"></span>
+                  {calculateRemainingDays(Number(position.validTill))} Days days
+                  left until the hedge ends.
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoIcon
+                        className="w-5 text-lg h-5  "
+                        width={24}
+                        height={24}
+                      />
+                    </TooltipTrigger>
+                    {
+                      <TooltipContent className="bg-white w-[300px] text-black dark:text-white dark:bg-black">
+                        <p>
+                          Once the hedge ends, your position loses downside
+                          protection. During the hedge, we cover only up to a
+                          20% price drop. If the position isn’t closed within
+                          the - 20% price range and the price drops to 20% or
+                          reaches 100% LTV, it will be liquidated.
+                        </p>
+                      </TooltipContent>
+                    }
+                  </Tooltip>
+                </div>
+              </div>
+              <div
+                className={` space-y-3 mt-2  ${
+                  position.status == BorrowStatus.WITHDREW
+                    ? "h-[265px]"
+                    : "h-[350px]"
+                } overflow-auto no-scrollbar`}
+              >
                 {depositData.map((item) => (
                   <div
                     key={item.headline}
@@ -929,10 +1141,10 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={` h-[50px] ${
+                className={`  ${
                   position.status == BorrowStatus.WITHDREW
-                    ? "md:h-[150px]"
-                    : "md:h-[70px]"
+                    ? "h-[150px]"
+                    : "md:h-[70px] sm:h-[50px] h-[80px]"
                 } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
@@ -1030,6 +1242,7 @@ export function WithdrawFund({
             </>
           )}
 
+          {/* Renew selection */}
           {toggleView === "renew" && !isPopupLoading && (
             <>
               <div className="w-full h-[67px]">
@@ -1040,7 +1253,7 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            isFifteenDaysCompleted(
+                            isRenewActiveDaysCompleted(
                               position.validTill,
                               Number(
                                 optionsFeesTimeLimits?.[
@@ -1051,7 +1264,8 @@ export function WithdrawFund({
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
-                              : 15
+                              : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                                  (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                           ),
                           days: Number(
                             calculateRemainingDays(Number(position.validTill))
@@ -1064,10 +1278,16 @@ export function WithdrawFund({
                         },
                         {
                           label: "Renew",
-                          value:
+                          value: Number(
                             Number(
-                              calculateRemainingDays(position.validTill) || 0
-                            ) - 15,
+                              currentOptionFeeTimeLimit?.minTimeLimit || 0
+                            ) -
+                              (Number(
+                                currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                              ) -
+                                (calculateRemainingDays(position.validTill) +
+                                  1 || 0))
+                          ),
                           gradient:
                             "linear-gradient(to right, #386fe86e,#FF527000)",
                           gradientText: "#2563eb",
@@ -1079,7 +1299,9 @@ export function WithdrawFund({
                         {
                           label: "",
                           value:
-                            30 -
+                            Number(
+                              currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                            ) -
                             Number(
                               calculateRemainingDays(position.validTill) || 0
                             ),
@@ -1156,7 +1378,7 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isFifteenDaysCompleted(
+                      isRenewActiveDaysCompleted(
                         position.validTill,
                         Number(
                           optionsFeesTimeLimits?.[
@@ -1165,17 +1387,20 @@ export function WithdrawFund({
                         ) / 86400
                       )
                         ? calculateRemainingDays(Number(position.validTill))
-                        : 15
+                        : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                            (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                     ),
 
                     color: "#05a552",
                   },
                   {
                     label: "repay",
-                    value:
-                      Number(calculateRemainingDays(position.validTill) || 0) -
-                      15,
-                    color: !isFifteenDaysCompleted(
+                    value: Number(
+                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                          (calculateRemainingDays(position.validTill) + 1 || 0))
+                    ),
+                    color: !isRenewActiveDaysCompleted(
                       position.validTill,
                       Number(
                         optionsFeesTimeLimits?.[
@@ -1189,7 +1414,8 @@ export function WithdrawFund({
                   {
                     label: "maturity",
                     value:
-                      30 - calculateRemainingDays(Number(position.validTill)), // 28 ,
+                      Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      calculateRemainingDays(Number(position.validTill)), // 28 ,
                     color: "gray",
                   },
                 ].map((metric, index, arr) => {
@@ -1214,11 +1440,18 @@ export function WithdrawFund({
                   {calculateRemainingDays(Number(position.validTill))} Days
                   remaining till maturity
                 </div>
-                {calculateRemainingDays(Number(position.validTill)) > 15 && (
+                {Number(
+                  Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                    (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      (calculateRemainingDays(position.validTill) + 1 || 0))
+                ) > 0 && (
                   <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                     <span className="block w-3 h-3 bg-blue-600"></span>
-                    {calculateRemainingDays(Number(position.validTill)) -
-                      15}{" "}
+                    {Number(
+                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                          (calculateRemainingDays(position.validTill) + 1 || 0))
+                    )}{" "}
                     Days remaining to activate renew
                   </div>
                 )}
@@ -1265,10 +1498,15 @@ export function WithdrawFund({
                   </div>
 
                   {[
-                    { label: "Time Period", value: "30 days" },
+                    {
+                      label: "Time Period",
+                      value: `${
+                        currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                      } Days`,
+                    },
                     {
                       label: "Option Fees",
-                      //  value: isFifteenDaysCompleted(position.validTill)
+                      //  value: isRenewActiveDaysCompleted(position.validTill)
                       //     ? `${formatUnits(
                       //     BigInt(payableOptionFees || 0),
                       //     6
@@ -1316,7 +1554,7 @@ export function WithdrawFund({
                             calculateRemainingDays(
                               Number(position.validTill)
                             ) <= 0 ||
-                            !isFifteenDaysCompleted(
+                            !isRenewActiveDaysCompleted(
                               position.validTill,
                               Number(
                                 optionsFeesTimeLimits?.[

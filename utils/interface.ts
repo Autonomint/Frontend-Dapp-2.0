@@ -75,6 +75,8 @@ export interface PositionData {
   collateralType: string;
   depositedAmount: string;
   depositedTime: number;
+  ethPriceDeposit: number;
+  downsideProtectionStatus: boolean;
   ethPrice: number;
   noOfAmintMinted: string;
   strikePrice: number;
@@ -91,6 +93,7 @@ export interface PositionData {
   noOfAbondMinted: string;
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
   totalDebtAmount: string;
+  liquidationEthPrice: number;
 }
 
 export interface LeaderboardDetails {
@@ -105,4 +108,12 @@ export interface LeaderboardDetailsList {
   totalDepositedAmount: number;
   totalPoints: number;
   hasLiquidityLandPoints: boolean;
+}
+
+export interface AssetDetailsInterface {
+  status: number;
+  LTV: bigint;
+  tokenDecimals: bigint;
+  priceDecimals: bigint;
+  optionsExpiredLTV: bigint;
 }
