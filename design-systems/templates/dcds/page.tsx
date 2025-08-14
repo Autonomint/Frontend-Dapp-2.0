@@ -1240,7 +1240,7 @@ function DCDSTemplate() {
     if (tokenList.length === 0) return [];
     const list = [];
     if (tokenList[0]) list.push(tokenList[0]);
-    // if (tokenList[3]) list.push(tokenList[3]);
+    if (tokenList[3]) list.push(tokenList[3]);
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
     return list;
