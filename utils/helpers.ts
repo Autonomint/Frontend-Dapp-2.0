@@ -312,10 +312,10 @@ export function isRenewActiveDaysCompleted(
   // Calculate the difference in seconds
   const timeDifferenceInSeconds = timestamp - currentTimestamp;
 
-  // Convert 15 days to seconds (15 days * 24 hours * 60 minutes * 60 seconds)
+  // Convert days to seconds (15 days * 24 hours * 60 minutes * 60 seconds)
   const secondsIn15Days = (days || 15) * 24 * 60 * 60;
 
-  // Check if 15 days have passed
+  // Check if days have passed
   return timeDifferenceInSeconds <= secondsIn15Days;
 }
 
