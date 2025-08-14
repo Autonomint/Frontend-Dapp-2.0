@@ -857,6 +857,14 @@ export function WithdrawFund({
     isQuotePending ||
     isIndexPointLoading;
 
+  const isRenewActive = !(
+    Number(
+      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+          (calculateRemainingDays(position.validTill) + 1 || 0))
+    ) > 0
+  );
+
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -1253,14 +1261,7 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            isRenewActiveDaysCompleted(
-                              position.validTill,
-                              Number(
-                                optionsFeesTimeLimits?.[
-                                  0 as keyof typeof optionsFeesTimeLimits
-                                ]
-                              ) / 86400
-                            )
+                            isRenewActive
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
@@ -1378,14 +1379,7 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      isRenewActiveDaysCompleted(
-                        position.validTill,
-                        Number(
-                          optionsFeesTimeLimits?.[
-                            0 as keyof typeof optionsFeesTimeLimits
-                          ]
-                        ) / 86400
-                      )
+                      isRenewActive
                         ? calculateRemainingDays(Number(position.validTill))
                         : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
                             (currentOptionFeeTimeLimit?.minTimeLimit || 0)
@@ -1400,16 +1394,7 @@ export function WithdrawFund({
                         (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
                           (calculateRemainingDays(position.validTill) + 1 || 0))
                     ),
-                    color: !isRenewActiveDaysCompleted(
-                      position.validTill,
-                      Number(
-                        optionsFeesTimeLimits?.[
-                          0 as keyof typeof optionsFeesTimeLimits
-                        ]
-                      ) / 86400
-                    )
-                      ? "#2563eb"
-                      : "#05a552",
+                    color: isRenewActive ? "#2563eb" : "#05a552",
                   },
                   {
                     label: "maturity",
@@ -1554,14 +1539,7 @@ export function WithdrawFund({
                             calculateRemainingDays(
                               Number(position.validTill)
                             ) <= 0 ||
-                            !isRenewActiveDaysCompleted(
-                              position.validTill,
-                              Number(
-                                optionsFeesTimeLimits?.[
-                                  0 as keyof typeof optionsFeesTimeLimits
-                                ]
-                              ) / 86400
-                            )
+                            !isRenewActive
                           }
                           onClick={handleRenew}
                           className="w-full   p-8 bg-black text-white text-[32px]"
