@@ -98,8 +98,6 @@ function AddToken({
     tokenDetails.tokenLabel || tokenDetails.tokenName
   );
 
-
-
   const handleAddToken = async () => {
     if (!walletClient) return console.error("Wallet client not available");
     setIsAddingToken(true);
@@ -196,7 +194,7 @@ function AddToken({
                 </div>
               </div>
             )}
-          <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
+          {/* <div className=" hidden lg:flex flex-col absolute top-1 right-1 justify-center h-fit gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
                 <Spinner />
@@ -204,7 +202,7 @@ function AddToken({
                 <CircleFadingPlus className="stroke-black dark:stroke-white " />
               )}
             </div>
-          </div>
+          </div> */}
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
