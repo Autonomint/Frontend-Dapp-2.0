@@ -19,8 +19,8 @@ interface ReferPopupProps {
  * ReferPopup is a component that allows the user to refer and earn.
  * It is used to refer and earn points.
  * It is used in the ReferPopup component.
- * 
- * 
+ *
+ *
  */
 const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
   const [showReferral, setShowReferral] = useState(false);
@@ -53,7 +53,6 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
   const { data: referral, refetch } = useQuery({
     queryKey: ["referralcode", address],
     queryFn: () => fetchReferralCode(address),
-    staleTime: Infinity,
     enabled: !!address,
   });
 
@@ -186,7 +185,11 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
         )}
 
         <Button
-          onClick={() => shareOnTwitter("", referralLink)}
+          onClick={() =>
+            shareOnTwitter(
+              "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
+            )
+          }
           variant={"default"}
           className="border-[#041A50] mt-8 h-fit text-[24px] font-normal  w-full p-[10px] dark:bg-custom-gradient-to-bottom"
         >
