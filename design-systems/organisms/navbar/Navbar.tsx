@@ -19,6 +19,8 @@ import { useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
 import { meetUrl } from "@/utils/urls";
+import ReferPopup from "@/design-systems/molecule/popups/ReferPopUp";
+import ReferPopupMobile from "@/design-systems/molecule/popups/ReferPopUpMobile";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -324,9 +326,9 @@ function Navbar() {
           </Button>
 
           <NotificationPopup wrapperClassName={"hidden lg:block"} />
-          {/* <ReferPopup wrapperClassName={"hidden lg:block"} /> */}
+          <ReferPopup wrapperClassName={"hidden lg:block"} />
 
-          <Button
+          {/* <Button
             onClick={() =>
               shareOnTwitter(
                 "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
@@ -351,7 +353,7 @@ function Navbar() {
               />
             </svg>{" "}
             Share
-          </Button>
+          </Button> */}
         </div>
       )}
 
@@ -460,7 +462,7 @@ function Navbar() {
             </Button>
           )}
 
-          <Button
+          {/* <Button
             onClick={() =>
               shareOnTwitter(
                 "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
@@ -485,8 +487,8 @@ function Navbar() {
               />
             </svg>{" "}
             Share
-          </Button>
-          {/* <ReferPopupMobile /> */}
+          </Button> */}
+          <ReferPopupMobile />
           {/* <Button
             onClick={() => shareOnTwitter("")}
             variant={"shadowOutline"}
