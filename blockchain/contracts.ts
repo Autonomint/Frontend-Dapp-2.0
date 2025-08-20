@@ -154,6 +154,6 @@ export const boldTokenAddress = {
 
 // option contract address
 export const optionContractAddress = {
-  84532: "0xC1222756564fdc5B8bb2f99aEF854288C3c97d5e",
-  11155420: "0x08ff83CcE09DbDd4dfC5E7ae42a5617cd54d8C12",
+  8453: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
+  10: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
 } as const;

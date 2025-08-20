@@ -21,13 +21,14 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { parseEther } from "viem";
+import { formatUnits, parseEther } from "viem";
 
 import * as Yup from "yup";
 
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import {
   borrowAssetsAddress,
+  borrowingContractAddress,
   borrowingDepositContractAddress,
   optionContractAddress,
 } from "@/blockchain/contracts";
@@ -60,6 +61,7 @@ import {
 } from "wagmi";
 import InputMetics from "../Input-metrics";
 import { optionABI } from "@/blockchain/abis/option";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 
 /**
  * Yup validation schema for the input form
@@ -131,20 +133,6 @@ function InputForm({ currency }: { currency: string }) {
             chainId
           ]
         : undefined,
-  });
-
-  // getting current currentDebtCeilingMintLimit value
-  const { data: currentDebtCeilingMintLimit } = useReadContract({
-    scopeKey: "currentData",
-    abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-      ],
-    functionName: "getDebtCeilingMintLimit",
-    query: {
-      select: (data) => formatUnits(data, 6),
-    },
   });
 
   // Formatted balance of the selected asset
