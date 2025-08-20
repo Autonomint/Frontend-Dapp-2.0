@@ -1,6 +1,8 @@
 "use client";
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
+import { optionABI } from "@/blockchain/abis/option";
+import { optionContractAddress } from "@/blockchain/contracts";
 import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
@@ -16,7 +18,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 
 export default function HomeTemplate() {
   const router = useRouter();
@@ -57,11 +59,23 @@ export default function HomeTemplate() {
   // getting eth price from blockchain
   const { usdValue: ethPrice } = useGetUsdValue();
 
+  // getting current strike price percent limit from the contract
+  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      abi: optionABI,
+      address:
+        optionContractAddress[chainId as keyof typeof optionContractAddress],
+      functionName: "currentStrikePricePercentLimit",
+      query: {
+        select: (data) => Number(data || 0),
+      },
+    });
+
   // getting option fee for one ETH
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
     (ethPrice || 0) as number,
-    5
+    currentStrikePricePercentLimit as number
   );
 
   // fee list for showing in borrow hover box
