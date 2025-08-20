@@ -11,7 +11,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { formatEther } from "viem";
-import { useChainId } from "wagmi";
+import { useChainId, useReadContract } from "wagmi";
 import RatioOfCollaterals, {
   StatsMetrics,
 } from "../../../organisms/dashboard/state/RatioOfCollaterals";
@@ -27,6 +27,8 @@ import {
 } from "./data";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import { optionABI } from "@/blockchain/abis/option";
+import { optionContractAddress } from "@/blockchain/contracts";
 
 function StatsTemplate() {
   const { isConnected: isWalletConnected } = useCheckWalletConnection();
@@ -37,7 +39,6 @@ function StatsTemplate() {
   const { usdValue: ethPrice } = useGetUsdValue();
   const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda();
   const { totalSupplyAbond } = useGetTotalSupplyAbond();
-
 
   const { omniChainData } = useGetomniChainData();
 
@@ -57,9 +58,25 @@ function StatsTemplate() {
     enabled: !!chainId && !!ethPrice,
   });
 
+  // getting current strike price percent limit from the contract
+  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      abi: optionABI,
+      address:
+        optionContractAddress[chainId as keyof typeof optionContractAddress],
+      functionName: "currentStrikePricePercentLimit",
+      query: {
+        select: (data) => Number(data || 0),
+      },
+    });
+
   // getting option fees for  1 eth
   const { optionFees: feeOptions, refetchOptionFee: refetch } =
-    useFetchOptionFees(1, (ethPrice || 0) as number, 5);
+    useFetchOptionFees(
+      1,
+      (ethPrice || 0) as number,
+      currentStrikePricePercentLimit as number
+    );
 
   useEffect(() => {
     handleStatsItem();
@@ -85,10 +102,10 @@ function StatsTemplate() {
       feeOptions != undefined &&
       totalSupplyAbond != undefined
     ) {
-      // total borrow amount for user   
+      // total borrow amount for user
       USDAPrice[0].value = userTotalBorrowAmount;
 
-      // usda+ supply for user  
+      // usda+ supply for user
       usdaValues[0].value = usdaSupply
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
@@ -98,7 +115,7 @@ function StatsTemplate() {
         ? formatNumber(Number(usdaSupply) / 10 ** 6)
         : "0";
 
-      // total borrow amount + cds deposited amount 
+      // total borrow amount + cds deposited amount
       lockedValues[0].value = omniChainData.totalCdsDepositedAmount
         ? formatNumber(
             Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6 +
@@ -137,7 +154,7 @@ function StatsTemplate() {
             )
           : "0"
       }`;
-      
+
       RatioValues[2].value = `$${
         omniChainData.cdsPoolValue
           ? formatNumber(Number(omniChainData.cdsPoolValue / BigInt(10 ** 6)))
