@@ -44,6 +44,7 @@ import {
   borrowAssetsAddress,
   borrowingContractAddress,
   borrowingDepositContractAddress,
+  optionContractAddress,
 } from "@/blockchain/contracts";
 import useGetBorroowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
@@ -70,6 +71,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
+import { optionABI } from "@/blockchain/abis/option";
 
 /**
  * Yup validation schema for the input form
@@ -147,19 +149,18 @@ function InputForm({ currency }: { currency: string }) {
   });
 
   // getting current currentDebtCeilingMintLimit value
-  const { data: currentDebtCeilingMintLimit, refetch: refetchCurrentData } =
-    useReadContract({
-      scopeKey: "currentData",
-      abi: borrowingContractAbi,
-      address:
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ],
-      functionName: "getDebtCeilingMintLimit",
-      query: {
-        select: (data) => formatUnits(data, 6),
-      },
-    });
+  const { data: currentDebtCeilingMintLimit } = useReadContract({
+    scopeKey: "currentData",
+    abi: borrowingContractAbi,
+    address:
+      borrowingContractAddress[
+        chainId as keyof typeof borrowingContractAddress
+      ],
+    functionName: "getDebtCeilingMintLimit",
+    query: {
+      select: (data) => formatUnits(data, 6),
+    },
+  });
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -239,7 +240,7 @@ function InputForm({ currency }: { currency: string }) {
     initialValues: {
       collateral: currency || "eth", // assets type
       collateralAmount: 0, // collateral amount
-      strikePricePercent: 5, // strike price percent
+      strikePricePercent: 0, // strike price percent
       balance: 0, // balance
     },
     validationSchema: formSchema,
@@ -379,8 +380,26 @@ function InputForm({ currency }: { currency: string }) {
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     (Number(formik.values.collateralAmount) * exchangeRate) / 1e18,
     (ethPrice || 0) as number,
-    getStrikePercent(formik.values.strikePricePercent)
+    formik.values.strikePricePercent
   );
+
+  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      abi: optionABI,
+      address:
+        optionContractAddress[chainId as keyof typeof optionContractAddress],
+      functionName: "currentStrikePricePercentLimit",
+      query: {
+        select: (data) => Number(data || 0),
+      },
+    });
+
+  useEffect(() => {
+    formik.setFieldValue(
+      "strikePricePercent",
+      Number(currentStrikePricePercentLimit || 0)
+    );
+  }, [currentStrikePricePercentLimit]);
 
   // Custom hook to approve the wrap eth
   const {
@@ -849,7 +868,7 @@ function InputForm({ currency }: { currency: string }) {
               <div className="flex justify-between">
                 <div className="flex gap-1 items-center">
                   <span className=" font-medium text-lg text-grayLight">
-                    5% of collateral upside
+                    {currentStrikePricePercentLimit}% of collateral upside
                   </span>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -860,8 +879,9 @@ function InputForm({ currency }: { currency: string }) {
                     {
                       <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
                         <p>
-                          This upside is shared with users depositing funds in
-                          dCDS.
+                          This {currentStrikePricePercentLimit}% of your
+                          collateral upside will be shared proportionally with
+                          dCDS users.
                         </p>
                       </TooltipContent>
                     }
