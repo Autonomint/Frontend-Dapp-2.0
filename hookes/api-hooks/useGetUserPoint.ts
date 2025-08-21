@@ -36,20 +36,20 @@ const useGetUserPoint = () => {
     retry: 1,
   });
 
-  const { data: referralPoints, refetch: refetchReferalPoints } = useQuery({
-    queryKey: ["referralPoints", address],
-    queryFn: () =>
-      fetch(`${BACKEND_API_URL}/points/get-referral-points/${address}`, {
-        method: "GET",
-      }).then((res) => res.text()),
-    staleTime: Infinity,
-    enabled: !!address,
-    retry: 1,
-  });
+  // const { data: referralPoints, refetch: refetchReferalPoints } = useQuery({
+  //   queryKey: ["referralPoints", address],
+  //   queryFn: () =>
+  //     fetch(`${BACKEND_API_URL}/points/get-referral-points/${address}`, {
+  //       method: "GET",
+  //     }).then((res) => res.text()),
+  //   staleTime: Infinity,
+  //   enabled: !!address,
+  //   retry: 1,
+  // });
 
   return {
     points: Number(opPoints?.[0] || 0) + Number(modePoints?.[0] || 0),
-    referralPoints,
+    // referralPoints,
     totalPoints: Number(opPoints?.[1] || 0),
     hasLiquidityLandPoints: opPoints?.[2] || false,
   };

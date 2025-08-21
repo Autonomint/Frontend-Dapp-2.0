@@ -1406,9 +1406,8 @@ function DCDSTemplate() {
                   </TooltipTrigger>
                   <TooltipContent className="bg-white dark:bg-black max-w-[400px]">
                     <p>
-                      We will take 70% of the token dollar value considering
-                      it&apos;s volatility, As price decreases by 30%, we will
-                      swap the token to USDT.
+                      If price decreases by 30%, we will swap the token to USDT
+                      to minimize dCDS pool volatility
                     </p>
                   </TooltipContent>
                 </Tooltip>
