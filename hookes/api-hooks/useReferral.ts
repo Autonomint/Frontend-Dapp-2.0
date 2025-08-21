@@ -22,14 +22,13 @@ export function useReferral(
   address: `0x${string}` | undefined
 ): ReferralResponse {
   const [isMounted, setIsMounted] = useState(false);
-  const [showReferral, setShowReferral] = useState(false);
   const searchParams = useSearchParams();
-  
+
   // Extract referral code from URL
   const getReferralCodeFromUrl = (): string | null => {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
     const params = new URLSearchParams(window.location.search);
-    return params.get('ref');
+    return params.get("ref");
   };
 
   const {
@@ -54,40 +53,45 @@ export function useReferral(
     const data = await res.text();
 
     if (data) {
-      refetch().then(() => setShowReferral(true));
+      refetch().then();
     }
   };
 
   // Post referral code from URL when component mounts
   useEffect(() => {
     if (!address) return;
-    
+
     const refCode = getReferralCodeFromUrl();
-    if (refCode) {
+    if (
+      refCode &&
+      refCode !== "null" &&
+      refCode !== referralCode &&
+      referralCode
+    ) {
       postReferredCodeFromUrl({
         address,
-        referral: refCode
+        referral: refCode,
       });
     }
-  }, [address]);
+  }, [address, referralCode]);
 
   const postReferredCodeFromUrl = async (data: postReferredCodeFromUrlData) => {
     try {
       const res = await fetch(`${BACKEND_API_URL}/points/referral`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      
+
       if (!res.ok) {
-        throw new Error('Failed to submit referral code');
+        throw new Error("Failed to submit referral code");
       }
-      
+
       return await res.json();
     } catch (error) {
-      console.error('Error submitting referral code:', error);
+      console.error("Error submitting referral code:", error);
       throw error;
     }
   };
@@ -107,7 +111,7 @@ export function useReferral(
   }, [referralCode, isMounted]);
 
   return {
-    code: showReferral ? referralCode || "" : "",
+    code: referralCode || "",
     referralLink,
     generateReferral,
     postReferredCodeFromUrl,

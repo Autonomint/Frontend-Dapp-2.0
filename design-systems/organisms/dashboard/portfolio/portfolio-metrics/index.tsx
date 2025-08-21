@@ -24,7 +24,7 @@ function PortfolioMetrics({
             <div>{value}</div>
             {subHeading === "Points (All Chain)" && hasLiquidityLandPoints && (
               <div className="flex relative  ml-4 items-center w-fit     ">
-                <span className="absolute left-[-20px] z-10 ">
+                <span className="absolute left-[-20px] z-9 ">
                   <LiquidityLandIcon />
                 </span>
                 <span className="text-black dark:text-white rounded-[24px] pl-4 pr-2  text-[14px] border-[1px] border-grayLight border-l-0 py-[px] mr-2">

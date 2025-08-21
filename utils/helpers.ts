@@ -266,20 +266,7 @@ export function generateEthOptionName(
   return `ETH-${expiryDate}-${strikePrice}-${optionType}`;
 }
 // get strikePercent flag for smart contract
-export function getStrikePercent(strikePrice: number): number {
-  switch (strikePrice) {
-    case 5:
-      return 5;
-    case 10:
-      return 10;
-    case 15:
-      return 15;
-    case 20:
-      return 20;
-    default:
-      return 5;
-  }
-}
+
 export function calculateEthAmount(
   currentEthPrice: number,
   usdAmount: number

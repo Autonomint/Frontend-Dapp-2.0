@@ -10,7 +10,6 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
-  getStrikePercent,
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
@@ -81,10 +80,7 @@ const formSchema = Yup.object({
   collateralAmount: Yup.number()
     .max(Yup.ref("balance"), `Amount must be less than or equal to balance`)
     .required("Collateral amount is required"),
-  strikePricePercent: Yup.number()
-    .min(5, "Minimum is 5")
-    .max(25, "Maximum is 25")
-    .required("Strike price is required"),
+  strikePricePercent: Yup.number().required("Strike price is required"),
   balance: Yup.number(),
 });
 
@@ -456,7 +452,7 @@ function InputForm({ currency }: { currency: string }) {
 
   async function handleMint(values: any) {
     // get the strike percent
-    const strikePercent = getStrikePercent(values.strikePricePercent);
+    const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData();
@@ -765,6 +761,8 @@ function InputForm({ currency }: { currency: string }) {
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
+
+  console.log(formik.errors, "errors");
 
   return (
     <form onSubmit={formik.handleSubmit}>

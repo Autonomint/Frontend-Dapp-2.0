@@ -20,14 +20,14 @@ interface ReferPopupProps {
 const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");
-  const { 
-    code: referral, 
-    referralLink, 
-    generateReferral, 
-    isLoading, 
-    isError 
+  const {
+    code: referral,
+    referralLink,
+    generateReferral,
+    isLoading,
+    isError,
   } = useReferral(address);
-  
+
   const showReferral = !!referral && referral !== "null";
 
   const copyToClipboard = async () => {
@@ -101,7 +101,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
             Refer Autonomint to your friends and boost your earnings!
           </Typography>
         </div>
-        {referral !== "null" ? (
+        {referral !== "null" && referral ? (
           <div className="flex mt-3">
             <Input
               readOnly
