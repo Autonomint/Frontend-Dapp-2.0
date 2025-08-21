@@ -1404,10 +1404,11 @@ function DCDSTemplate() {
                       className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
                     />
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white dark:bg-black">
+                  <TooltipContent className="bg-white dark:bg-black max-w-[400px]">
                     <p>
                       We will take 70% of the token dollar value considering
-                      it&apos;s volatility.
+                      it&apos;s volatility, As price decreases by 30%, we will
+                      swap the token to USDT.
                     </p>
                   </TooltipContent>
                 </Tooltip>
