@@ -4,6 +4,7 @@ import USDaIcon from "@/app/assets/logo.svg";
 import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
 import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import boldIcon from "@/app/assets/bold-logo.svg";
+import UsdcIcon from "@/app/assets/usdc.svg";
 import {
   boldTokenAddress,
   nativeTokenAddress,
@@ -155,6 +156,7 @@ export const getIconMapping = (theme: string, token: string) => {
     op: OPIcon,
     bold: boldIcon,
     boldToken: boldIcon,
+    usdc: UsdcIcon,
   };
   return mapping[token as keyof typeof mapping];
 };
