@@ -10,3 +10,18 @@ export interface OptionFeesRequest {
   ethPrice: number;
   strikePercent: number;
 }
+
+export interface ReferralResponse {
+  code: string;
+  referralLink: string;
+  generateReferral: () => Promise<void>;
+  postReferredCodeFromUrl: (data: postReferredCodeFromUrlData) => Promise<any>;
+  getReferralCodeFromUrl: () => string | null;
+  isLoading: boolean;
+  isError: boolean;
+}
+
+export interface postReferredCodeFromUrlData {
+  address: string;
+  referral: string;
+}

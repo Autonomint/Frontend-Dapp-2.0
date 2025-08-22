@@ -67,10 +67,7 @@ const formSchema = Yup.object({
   collateralAmount: Yup.number()
     .max(Yup.ref("balance"), `Amount must be less than or equal to balance`)
     .required("Collateral amount is required"),
-  strikePricePercent: Yup.number()
-    .min(5, "Minimum is 5")
-    .max(25, "Maximum is 25")
-    .required("Strike price is required"),
+  strikePricePercent: Yup.number().required("Strike price is required"),
   balance: Yup.number(),
 });
 
@@ -404,7 +401,7 @@ function InputForm({ currency }: { currency: string }) {
 
   async function handleMint(values: any) {
     // get the strike percent
-    const strikePercent = getStrikePercent(values.strikePricePercent);
+    const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData();

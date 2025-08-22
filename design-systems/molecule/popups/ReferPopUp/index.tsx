@@ -3,89 +3,32 @@ import { Button } from "@/design-systems/atoms/button";
 import { Input } from "@/design-systems/atoms/input";
 import Popup from "@/design-systems/atoms/PopUp";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { BACKEND_API_URL } from "@/utils/urls";
-import { useQuery } from "@tanstack/react-query";
+import { useReferral } from "@/hookes/api-hooks/useReferral";
 import { Gift } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useAccount } from "wagmi";
 
 interface ReferPopupProps {
-  //   twitter: string; // Path to the twitter icon image
   wrapperClassName?: string;
 }
 
 /**
- * ReferPopup is a component that allows the user to refer and earn.
- * It is used to refer and earn points.
- * It is used in the ReferPopup component.
- *
- *
+ * ReferPopup is a component that allows the user to refer and earn points.
+ * It provides functionality to generate and share referral links.
  */
 const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
-  const [showReferral, setShowReferral] = useState(false);
   const { address } = useAccount();
   const [copy, setCopy] = useState("Copy");
+  const {
+    code: referral,
+    referralLink,
+    generateReferral,
+    isLoading,
+    isError,
+  } = useReferral(address);
 
-  // Generate referral code
-  const generateReferral = async () => {
-    const res = await fetch(
-      `${BACKEND_API_URL}/points/generate-referral-code/${address}`,
-      {
-        method: "POST",
-      }
-    );
-    const data = await res.text();
-
-    if (data) {
-      refetch().then(() => setShowReferral(true));
-    }
-  };
-
-  // Fetch referral code
-  async function fetchReferralCode(
-    address: `0x${string}` | undefined
-  ): Promise<any> {
-    return fetch(`${BACKEND_API_URL}/points/referral/${address}`, {
-      method: "GET",
-    }).then((res) => res.text());
-  }
-  const { data: referral, refetch } = useQuery({
-    queryKey: ["referralcode", address],
-    queryFn: () => fetchReferralCode(address),
-    enabled: !!address,
-  });
-
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-    return () => {
-      setIsMounted(false);
-    };
-  }, []);
-
-  const referralLink = useMemo(() => {
-    if (isMounted) {
-      // browser current url
-      const currentUrl = window?.location?.origin;
-
-      // creating referral url
-      const referralLink = `${currentUrl}?ref=${referral}`;
-      return referralLink;
-    }
-    return "";
-  }, [referral]);
-
-  useEffect(() => {
-    if (referral != undefined) {
-      if (referral != "null") {
-        setShowReferral(true);
-      } else {
-        setShowReferral(false);
-      }
-    }
-  }, [referral]);
+  const showReferral = !!referral && referral !== "null";
 
   const copyToClipboard = async () => {
     try {
@@ -158,7 +101,7 @@ const ReferPopup: React.FC<ReferPopupProps> = ({ wrapperClassName }) => {
             Refer Autonomint to your friends and boost your earnings!
           </Typography>
         </div>
-        {referral !== "null" ? (
+        {referral !== "null" && referral ? (
           <div className="flex mt-3">
             <Input
               readOnly
