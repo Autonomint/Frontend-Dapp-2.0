@@ -275,6 +275,17 @@ export function DcdsWithdrawModal({
         "After factoring in volatility, the token is deposited at 30% lower value",
     },
     {
+      // Token Price at Deposit
+      headline: `${
+        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
+      } Token Price at Deposit`,
+      value: Number(position?.nativeTokenPriceAtDeposit)
+        ? Number(position?.nativeTokenPriceAtDeposit).toFixed(4)
+        : null,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
       // Token deposited
       headline: `Bold Tokens deposited`,
       value: Number(position?.depositedAmounts?.boldToken || 0)
@@ -291,16 +302,37 @@ export function DcdsWithdrawModal({
     },
     {
       // Token Price at Deposit
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Token Price at Deposit`,
-      value: Number(position?.nativeTokenPriceAtDeposit)
-        ? Number(position?.nativeTokenPriceAtDeposit).toFixed(4)
+      headline: `Bold Token Price at Deposit`,
+      value: Number(position?.boldPriceAtDeposit)
+        ? Number(position?.boldPriceAtDeposit).toFixed(4)
         : null,
       tooltip: false,
       tooltipText: "",
     },
-
+    {
+      // Token deposited
+      headline: `USDC Tokens deposited`,
+      value: Number(position?.depositedAmounts?.usdcToken || 0)
+        ? `${Number(position?.depositedAmounts?.usdcToken || 0).toFixed(
+            2
+          )} ($${(
+            Number(position?.depositedAmounts?.usdcToken || 0) *
+            Number(position?.usdcPriceAtDeposit)
+          ).toFixed(2)})`
+        : null,
+      tooltip: false,
+      tooltipText: "",
+      comment: "",
+    },
+    {
+      // Token Price at Deposit
+      headline: `USDC Token Price at Deposit`,
+      value: Number(position?.usdcPriceAtDeposit)
+        ? Number(position?.usdcPriceAtDeposit).toFixed(4)
+        : null,
+      tooltip: false,
+      tooltipText: "",
+    },
     // {
     //   headline: `${
     //     Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
