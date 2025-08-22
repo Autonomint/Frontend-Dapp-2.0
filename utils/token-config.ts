@@ -11,6 +11,7 @@ import {
   rsETHAddress,
   testusdtAbiAddress,
   usDaAddress,
+  usdcAddress,
   weETHAddress,
   wrsETHAddress,
   wsuperOETHAddress,
@@ -129,6 +130,16 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             address: boldTokenAddress[chainId as keyof typeof boldTokenAddress],
             symbol: "bold",
             decimals: 18,
+            // image: "https://yourdomain.com/token-image.png",
+          },
+        };
+      case "usdc":
+        return {
+          type: "ERC20",
+          options: {
+            address: usdcAddress[chainId as keyof typeof usdcAddress],
+            symbol: "USDC",
+            decimals: 6,
             // image: "https://yourdomain.com/token-image.png",
           },
         };
