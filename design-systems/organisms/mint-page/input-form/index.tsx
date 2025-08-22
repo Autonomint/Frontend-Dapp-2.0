@@ -11,6 +11,7 @@ import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
+  getStrikePercent,
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";

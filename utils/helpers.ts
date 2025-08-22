@@ -12,8 +12,8 @@ export function cn(...inputs: ClassValue[]) {
 export const sortWalletAddress = (walletAddress: string | undefined) => {
   return walletAddress
     ? walletAddress.substring(0, 5) +
-        "..." +
-        walletAddress.substring(walletAddress.length - 4)
+    "..." +
+    walletAddress.substring(walletAddress.length - 4)
     : "";
 };
 
@@ -451,4 +451,20 @@ export function truncateDecimals(
   const truncated = Math.trunc(num * factor) / factor;
 
   return truncated.toString();
+}
+
+// get strikePercent flag for smart contract
+export function getStrikePercent(strikePrice: number): number {
+  switch (strikePrice) {
+    case 5:
+      return 5;
+    case 10:
+      return 10;
+    case 15:
+      return 15;
+    case 20:
+      return 20;
+    default:
+      return 5;
+  }
 }
