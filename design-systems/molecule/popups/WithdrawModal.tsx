@@ -310,11 +310,9 @@ export function DcdsWithdrawModal({
     {
       // Token deposited
       headline: `USDC Tokens deposited`,
-      value: Number(position?.depositedAmounts?.usdcToken || 0)
-        ? `${Number(position?.depositedAmounts?.usdcToken || 0).toFixed(
-            2
-          )} ($${(
-            Number(position?.depositedAmounts?.usdcToken || 0) *
+      value: Number(position?.depositedAmounts?.usdc || 0)
+        ? `${Number(position?.depositedAmounts?.usdc || 0).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.usdc || 0) *
             Number(position?.usdcPriceAtDeposit)
           ).toFixed(2)})`
         : null,

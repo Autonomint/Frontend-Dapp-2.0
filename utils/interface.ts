@@ -32,7 +32,7 @@ export interface dcdsDepositDetails {
     usdt: string;
     nativeToken: string;
     boldToken: string;
-    usdcToken: string;
+    usdc: string;
   };
   nativeTokenPriceAtDeposit: number;
   boldPriceAtDeposit: number;
