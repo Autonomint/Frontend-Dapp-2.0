@@ -53,7 +53,7 @@ function PortfolioTemplate() {
   // get total user deposit
   const { totalUserDeposit } = useGetTotalUserDeposit();
   // get user point
-  const { points,  hasLiquidityLandPoints } = useGetUserPoint();
+  const { points, referralPoints, hasLiquidityLandPoints } = useGetUserPoint();
 
   // get borrowed position list
   const {
@@ -237,7 +237,9 @@ function PortfolioTemplate() {
         <div className="col-span-1">
           <PortfolioMetrics
             subHeading={`Points (All Chain)`}
-            value={formatNumber(Number(points || 0))}
+            value={formatNumber(
+              Number(referralPoints || 0) + Number(points || 0)
+            )}
             hasLiquidityLandPoints={hasLiquidityLandPoints}
           />
         </div>
