@@ -78,7 +78,7 @@ const DcdsPositionTableRow = ({
           {(
             Number(position.depositedAmounts.usda || 0) +
             Number(position.depositedAmounts.usdt || 0) +
-            Number(position.depositedAmounts.boldToken || 0) +
+            Number(position.depositedAmounts.usdc || 0) +
             Number(position.depositedAmounts.nativeToken || 0) *
               Number(position.nativeTokenPriceAtDeposit || 0) +
             Number(position.depositedAmounts.usdc || 0) *
