@@ -151,3 +151,9 @@ export const boldTokenAddress = {
   8453: "0xDDc9fcE09bf6d5310973bD3b24cF787Ee3Ef2bcB",
   10: "0x814BD144aeBF04a6cE6452438540125158ff9625",
 } as const;
+
+// option contract address
+export const optionContractAddress = {
+  8453: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
+  10: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
+} as const;

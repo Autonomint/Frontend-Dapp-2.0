@@ -54,7 +54,7 @@ const DcdsPositionTableRow = ({
             ? chainId === NetworkId.BaseSepolia
               ? "aero"
               : "op"
-            : token 
+            : token
         );
       }
     }
@@ -78,9 +78,11 @@ const DcdsPositionTableRow = ({
           {(
             Number(position.depositedAmounts.usda || 0) +
             Number(position.depositedAmounts.usdt || 0) +
-            Number(position.depositedAmounts.boldToken || 0) +
+            Number(position.depositedAmounts.usdc || 0) +
             Number(position.depositedAmounts.nativeToken || 0) *
-              Number(position.nativeTokenPriceAtDeposit || 0)
+              Number(position.nativeTokenPriceAtDeposit || 0) +
+            Number(position.depositedAmounts.usdc || 0) *
+              Number(position.usdcPriceAtDeposit || 0)
           ).toFixed(2)}
           <div className="flex items-center gap-1">
             {depositedTokenNames.map((tokenName) => {

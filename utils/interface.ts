@@ -26,11 +26,13 @@ export interface dcdsDepositDetails {
   withdrawRsEthAmount: string | null;
   fees: string | null;
   status: string;
+  usdcPriceAtDeposit: string;
   depositedAmounts: {
     usda: string;
     usdt: string;
     nativeToken: string;
     boldToken: string;
+    usdc: string;
   };
   nativeTokenPriceAtDeposit: number;
   boldPriceAtDeposit: number;
