@@ -1500,7 +1500,7 @@ export function WithdrawFund({
                         //   )}`
                         //    : "-",
                         value: `${formatUnits(
-                          BigInt((payableOptionFees as number) || 0),
+                          BigInt((Number(payableOptionFees) as number) || 0),
                           6
                         )}`,
                       },

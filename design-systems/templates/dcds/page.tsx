@@ -418,11 +418,11 @@ function DCDSTemplate() {
                   `${tokenDetail?.tokenName.toLowerCase()}Amount`
                 ]
                   ? parseUnits(
-                      formik.values[
-                        `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                      ].toString(),
-                      Number(tokenDetail?.tokenDecimals)
-                    )
+                    formik.values[
+                      `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(tokenDetail?.tokenDecimals)
+                  )
                   : 0n;
               }),
               // liquidation gains
