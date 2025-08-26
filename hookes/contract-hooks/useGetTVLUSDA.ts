@@ -34,12 +34,11 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
   });
 
   const provider = new ethers.JsonRpcProvider(
-    `${
-      rpcUrls[
-        chainId === NetworkId.BaseSepolia
-          ? NetworkId.Optimism
-          : NetworkId.BaseSepolia
-      ]
+    `${rpcUrls[
+    chainId === NetworkId.BaseSepolia
+      ? NetworkId.Optimism
+      : NetworkId.BaseSepolia
+    ]
     }/${alchemyApiKeys}`
   );
 
@@ -67,7 +66,7 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
     setOtherChainUSDa(usdaTvl2);
   };
 
- 
+
 
   return {
     isTVLPending,
@@ -101,20 +100,19 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
 
   // Provider for fetching other chain data
   const provider = new ethers.JsonRpcProvider(
-    `${
-      rpcUrls[
-        chainId === NetworkId.BaseSepolia
-          ? NetworkId.Optimism
-          : NetworkId.BaseSepolia
-      ]
+    `${rpcUrls[
+    chainId === NetworkId.BaseSepolia
+      ? NetworkId.Optimism
+      : NetworkId.BaseSepolia
+    ]
     }/${alchemyApiKeys}`
   );
 
   const cdsContract = new ethers.Contract(
     cdsAddress[
-      chainId === NetworkId.BaseSepolia
-        ? NetworkId.Optimism
-        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
+    chainId === NetworkId.BaseSepolia
+      ? NetworkId.Optimism
+      : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
     ],
     cdsAbi,
     provider
@@ -131,10 +129,8 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       (await cdsContract.getSupportedTokenAddresses()) || [];
     const tvls = [];
     // fetching the tvl of the tokens on the other chain
-    for (const tokenAddress of otherChainAddressList.slice(
-      0,
-      otherChainAddressList.length - 1
-    )) {
+    // removing OP address by slicing because its values already from both chain
+    for (const tokenAddress of otherChainAddressList) {
       const tvl = await cdsContract.getTokenDepositedTillNow(tokenAddress);
       tvls.push(tvl);
     }
@@ -142,15 +138,14 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     setOtherChainTvl(tvls);
   };
 
+
   // calculating the total tvl of the tokens on both chains
   const totalTVLList = useMemo(() => {
     return tvlValue?.map(
       (item: any, index: number) =>
-        Number(item) + Number(otherChainTvl[index] || 0)
+        Number(item) + (index === 2 ? 0 : Number(otherChainTvl[index] || 0))
     );
   }, [tvlValue, otherChainTvl]);
-
-
 
   return {
     isTVLPending,
