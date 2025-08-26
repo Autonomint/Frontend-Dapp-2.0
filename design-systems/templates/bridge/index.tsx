@@ -124,7 +124,7 @@ function BridgeTemplate() {
       setCollateralAmountString("0");
       letamount = "0";
     } else {
-      setCollateralAmountString((Number(sendAmount) * 10 ** 6).toString());
+      setCollateralAmountString((Number(parseUnits(sendAmount.toString(), 6))).toString());
     }
     let amount = 0n;
     if (sendToken === "USDa" && nativeFee1) {
@@ -181,7 +181,7 @@ function BridgeTemplate() {
         handleTransferFail();
       },
       // Handle success and show a custom toast notification
-      onSuccess: (data) => {},
+      onSuccess: (data) => { },
     },
   });
 
@@ -217,7 +217,7 @@ function BridgeTemplate() {
       onError(error: any) {
         handleTransferFail();
       },
-      onSuccess: (data) => {},
+      onSuccess: (data) => { },
     },
   });
 
@@ -240,9 +240,8 @@ function BridgeTemplate() {
         setTransferLoadingLocal(false);
       }, 1000);
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          usdaTransactionConfirmed.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${usdaTransactionConfirmed.transactionHash
+          } `;
         setSendAmount(0);
         refetchUsdaBalance();
         resetUsdaApprove();

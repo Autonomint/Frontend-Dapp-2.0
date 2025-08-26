@@ -126,7 +126,7 @@ const RedeemContainer = () => {
       address || zeroAddress,
 
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`,
     ],
   }) as { data: number | undefined };
@@ -171,7 +171,7 @@ const RedeemContainer = () => {
       },
 
       // Handle success and show a custom toast notification
-      onSuccess: (data) => {},
+      onSuccess: (data) => { },
     },
   });
 
@@ -208,7 +208,7 @@ const RedeemContainer = () => {
         handleFail();
         // Show a custom toast notification for the error
       },
-      onSuccess: (data) => {},
+      onSuccess: (data) => { },
     },
   });
 
@@ -247,9 +247,8 @@ const RedeemContainer = () => {
   // function to handle the success case
   const handleSuccess = () => {
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-        redeemdataEth?.transactionHash
-      } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${redeemdataEth?.transactionHash
+        } `;
       return (
         <ToastNotification
           title="Redeem Successful"
@@ -291,12 +290,12 @@ const RedeemContainer = () => {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAbondYields",
     args: [
       accountAddress as `0x${string}`,
-      parseUnits((formik.values.collateralAmount || 0).toString(),18),
+      parseUnits((formik.values.collateralAmount || 0).toString(), 18),
     ],
   });
 
@@ -446,7 +445,7 @@ const RedeemContainer = () => {
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      const redeemAmountUSDa = BigInt((values.collateralAmount || 0) * 10 ** 6);
+      const redeemAmountUSDa = BigInt((parseUnits(values.collateralAmount || '0', 6)));
       // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
         setUsdaApproveLocal(true);
@@ -467,7 +466,7 @@ const RedeemContainer = () => {
       setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
-        (values.collateralAmount || 0) * 10 ** 18
+        parseUnits(values.collateralAmount || '0', 18)
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
@@ -478,7 +477,7 @@ const RedeemContainer = () => {
           functionName: "approve",
           args: [
             borrowingContractAddress[
-              chainId as keyof typeof borrowingContractAddress
+            chainId as keyof typeof borrowingContractAddress
             ] as `0x${string}`,
             redeemAmountABond,
           ],
@@ -500,10 +499,10 @@ const RedeemContainer = () => {
       abi: borrowingContractAbi,
       address:
         borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "redeemYields",
-      args: [BigInt(Number(formik.values.collateralAmount) * 10 ** 18)],
+      args: [parseUnits(formik.values.collateralAmount || '0', 18)],
     });
   };
 
@@ -518,14 +517,14 @@ const RedeemContainer = () => {
       address: cdsAddress[chainId as keyof typeof cdsAddress],
       functionName: "redeemAssets",
       args: [
-        BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
+        BigInt(parseUnits(formik.values.collateralAmount || '0', 6)),
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
-          ? usdcAddress[chainId as keyof typeof usdcAddress]
-          : formik.values.redeemTokenName === "sUSD"
-          ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-          : zeroAddress,
+            ? usdcAddress[chainId as keyof typeof usdcAddress]
+            : formik.values.redeemTokenName === "sUSD"
+              ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+              : zeroAddress,
       ],
       // value: nativeFee1.nativeFee,
     });
@@ -627,7 +626,7 @@ const RedeemContainer = () => {
     const x =
       (Number(formatEther(outputData?.[4] || 0n)) -
         Number(formatEther(outputData?.[0] || 0n))) *
-        Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
+      Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
       redeemableUsdaDollarValue;
 
     const y =
@@ -646,7 +645,7 @@ const RedeemContainer = () => {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAbondYields",
     args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
@@ -739,7 +738,7 @@ const RedeemContainer = () => {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                formik.touched.collateralAmount
+                  formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>
@@ -752,11 +751,10 @@ const RedeemContainer = () => {
                 <GenericDropdownMenu
                   buttonText={
                     formik.values.inputCollateral
-                      ? `${
-                          formik.values.inputCollateral === "amint"
-                            ? "USDA+"
-                            : "ABond"
-                        }`
+                      ? `${formik.values.inputCollateral === "amint"
+                        ? "USDA+"
+                        : "ABond"
+                      }`
                       : "Select"
                   }
                   items={dropdownItems}
@@ -771,7 +769,7 @@ const RedeemContainer = () => {
                     className="text-red-500"
                   >
                     {formik.errors.inputCollateral &&
-                    formik.touched.inputCollateral
+                      formik.touched.inputCollateral
                       ? formik.errors.inputCollateral
                       : ""}
                   </Typography>
@@ -936,14 +934,14 @@ const RedeemContainer = () => {
                   formik.values.inputCollateral === "abond") ||
                   (isFunctionPausedCDS_Redeem &&
                     formik.values.inputCollateral)) && (
-                  <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                    <p>
-                      {formik.values.inputCollateral === "abond"
-                        ? "ABond redeem is pause now"
-                        : "USDa redeem is paused now"}
-                    </p>
-                  </TooltipContent>
-                )}
+                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                      <p>
+                        {formik.values.inputCollateral === "abond"
+                          ? "ABond redeem is pause now"
+                          : "USDa redeem is paused now"}
+                      </p>
+                    </TooltipContent>
+                  )}
               </Tooltip>
             )}
             <LoadingBox

@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ChartFilter } from "./interface";
 import { WheelEvent } from "react";
-import { zeroAddress } from "viem";
+import { parseUnits, zeroAddress } from "viem";
 import { AssetDetails } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
@@ -12,8 +12,8 @@ export function cn(...inputs: ClassValue[]) {
 export const sortWalletAddress = (walletAddress: string | undefined) => {
   return walletAddress
     ? walletAddress.substring(0, 5) +
-        "..." +
-        walletAddress.substring(walletAddress.length - 4)
+    "..." +
+    walletAddress.substring(walletAddress.length - 4)
     : "";
 };
 
@@ -372,8 +372,7 @@ export function getTotalDepositingAmount(
       totalDepositingAmount +=
         (BigInt(tokenAmounts[i]) *
           BigInt(prices[i + 1]) *
-          BigInt(assetDetails[i].LTV) *
-          BigInt(1e6)) /
+          BigInt(parseUnits(String(assetDetails[i].LTV), 6))) /
         (BigInt(assetDetails[i].tokenDecimals) *
           BigInt(assetDetails[i].priceDecimals) *
           BigInt(100));
