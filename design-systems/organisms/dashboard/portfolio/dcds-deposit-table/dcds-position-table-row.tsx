@@ -39,6 +39,30 @@ const DcdsPositionTableRow = ({
   };
   const { chainId } = useAccount();
   const { theme } = useTheme();
+  
+  // Calculate the total deposited amount in USD by summing up the value of all tokens
+  const totalDepositedAmount = useMemo(() => {
+    // USDA is already in USD, no need for price conversion
+    const usdaAmount = Number(position.depositedAmounts.usda || 0);
+    
+    // USDT amount - if priceAtDeposit is available, multiply by it, otherwise use as is
+    const usdtAmount = position.usdtPriceAtDeposit 
+      ? Number(position.depositedAmounts.usdt || 0) * Number(position.usdtPriceAtDeposit || 0)
+      : Number(position.depositedAmounts.usdt || 0);
+      
+    // Calculate value of BOLD tokens in USD
+    const boldAmount = Number(position.depositedAmounts.boldToken || 0) * Number(position.boldPriceAtDeposit || 0);
+    
+    // Calculate value of native tokens (like ETH) in USD
+    const nativeAmount = Number(position.depositedAmounts.nativeToken || 0) * Number(position.nativeTokenPriceAtDeposit || 0);
+    
+    // Calculate value of USDC in USD (1:1 unless priceAtDeposit is different)
+    const usdcAmount = Number(position.depositedAmounts.usdc || 0) * Number(position.usdcPriceAtDeposit || 1);
+    
+    // Return sum of all token values, formatted to 2 decimal places
+    return (usdaAmount + usdtAmount + boldAmount + nativeAmount + usdcAmount).toFixed(2);
+  }, [position]);
+  
   const depositedTokenNames = useMemo(() => {
     const tokenNames: string[] = [];
     for (const token in position.depositedAmounts) {
@@ -73,16 +97,7 @@ const DcdsPositionTableRow = ({
         {/* {position.depositedAmint == "undefined" ? 0 : position.depositedAmint} /{" "}
         {position.depositedUsdt == "undefined" ? 0 : position.depositedUsdt} */}
         <div className="flex items-center gap-1">
-          $
-          {(
-            Number(position.depositedAmounts.usda || 0) +
-            Number(position.depositedAmounts.usdt || 0) * Number(position.usdtPriceAtDeposit || 0) +
-            Number(position.depositedAmounts.boldToken || 0) * Number(position.boldPriceAtDeposit || 0) +
-            Number(position.depositedAmounts.nativeToken || 0) *
-            Number(position.nativeTokenPriceAtDeposit || 0) +
-            Number(position.depositedAmounts.usdc || 0) *
-            Number(position.usdcPriceAtDeposit || 0)
-          ).toFixed(2)}
+          ${totalDepositedAmount}
           <div className="flex items-center gap-1">
             {depositedTokenNames.map((tokenName) => {
               return (
