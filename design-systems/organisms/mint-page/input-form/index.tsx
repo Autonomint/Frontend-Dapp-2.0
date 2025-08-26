@@ -130,10 +130,12 @@ function InputForm({ currency }: { currency: string }) {
     token:
       currency.toLocaleLowerCase() !== "eth"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-            chainId
-          ]
+        chainId
+        ]
         : undefined,
   });
+
+
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -143,13 +145,13 @@ function InputForm({ currency }: { currency: string }) {
     abi: wrsETHABI,
     address:
       borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-        chainId || NetworkId.BaseSepolia
+      chainId || NetworkId.BaseSepolia
       ],
     functionName: "allowance",
     args: [
       address,
       borrowingDepositContractAddress[
-        chainId as keyof typeof borrowingDepositContractAddress
+      chainId as keyof typeof borrowingDepositContractAddress
       ],
     ],
   }) as { data: number | undefined };
@@ -192,7 +194,7 @@ function InputForm({ currency }: { currency: string }) {
       setApproveLoading(true);
       await approveWrapETHDynamic(
         borrowingDepositContractAddress[
-          chainId as keyof typeof borrowingDepositContractAddress
+        chainId as keyof typeof borrowingDepositContractAddress
         ],
         parseEther(formik.values.collateralAmount.toString())
       );
@@ -291,9 +293,8 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          Depositdata.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${Depositdata.transactionHash
+          } `;
 
         return (
           <ToastNotification
@@ -345,7 +346,7 @@ function InputForm({ currency }: { currency: string }) {
 
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    (Number(formik.values.collateralAmount) * exchangeRate) / 1e18,
+    Number(formatUnits(BigInt(Number(formik.values.collateralAmount || 0) * Number(exchangeRate || 0)), 18)),
     (ethPrice || 0) as number,
     formik.values.strikePricePercent
   );
@@ -446,7 +447,7 @@ function InputForm({ currency }: { currency: string }) {
         value:
           currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
-              nativeFee.nativeFee
+            nativeFee.nativeFee
             : nativeFee.nativeFee,
       });
     }
@@ -468,7 +469,7 @@ function InputForm({ currency }: { currency: string }) {
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
       // set the usda to be minted
-      setUsdaToBeMinted((Number(udsa2Decimal) - optionf).toFixed(2));
+      setUsdaToBeMinted((Number(udsa2Decimal) - Number(optionf)).toFixed(2));
 
       // Calculate the downside protection amount
       const downsideProtection =
@@ -490,7 +491,7 @@ function InputForm({ currency }: { currency: string }) {
         10000;
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   /**
@@ -603,16 +604,16 @@ function InputForm({ currency }: { currency: string }) {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-      .minutes > 0
+      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+        .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+        .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+          ? 10
+          : 0;
 
   // total boaster for token
   const totalBooster =
@@ -624,11 +625,11 @@ function InputForm({ currency }: { currency: string }) {
   const totalTimeStamp = Math.max(
     farmLuckDetails?.deadLine5xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+      new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
       : 0,
     farmLuckDetails?.deadLine10xTimestamp
       ? // convert date to timestamp
-        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+      new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
     Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
@@ -637,11 +638,11 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on depositing amount
   const depositTokenPoint =
     (tokenRewardDetailBorrow?.minAmount || 0) <=
-    Number(formik.values.collateralAmount || 0)
+      Number(formik.values.collateralAmount || 0)
       ? Number(
-          formik.values.collateralAmount /
-            (tokenRewardDetailBorrow?.minAmount || 0) || 0
-        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+        formik.values.collateralAmount /
+        (tokenRewardDetailBorrow?.minAmount || 0) || 0
+      ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
   // calculate the total point
@@ -703,7 +704,7 @@ function InputForm({ currency }: { currency: string }) {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                formik.touched.collateralAmount
+                  formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>
@@ -832,7 +833,7 @@ function InputForm({ currency }: { currency: string }) {
             (Number(selectedAssetPrice || 0) / 100) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
-          optionFees={optionFees.toFixed(2)}
+          optionFees={Number(optionFees).toFixed(2)}
           usdaBorrowed={usdaToBeMinted == "0" ? "0.00" : usdaToBeMinted}
           Dp={Number(downsideProtectionAmnt).toFixed(2)}
         />

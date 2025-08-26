@@ -10,7 +10,7 @@ import { formatNumber } from "@/utils/helpers";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useChainId, useReadContract } from "wagmi";
 import RatioOfCollaterals, {
   StatsMetrics,
@@ -37,8 +37,8 @@ function StatsTemplate() {
 
   // Get the ethprice, usda+ supply abond supply and global data from the contracts
   const { usdValue: ethPrice } = useGetUsdValue();
-  const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda();
-  const { totalSupplyAbond } = useGetTotalSupplyAbond();
+  const { totalSupplyUsda: usdaSupply } = useGetTotalSupplyUsda() as { totalSupplyUsda: bigint };
+  const { totalSupplyAbond } = useGetTotalSupplyAbond() as { totalSupplyAbond: bigint };
 
   const { omniChainData } = useGetomniChainData();
 
@@ -107,30 +107,30 @@ function StatsTemplate() {
 
       // usda+ supply for user
       usdaValues[0].value = usdaSupply
-        ? formatNumber(Number(usdaSupply) / 10 ** 6)
+        ? formatNumber(Number(formatUnits(BigInt(usdaSupply), 6)))
         : "0";
 
       // usda+ supply for user
       usdaValues[1].value = usdaSupply
-        ? formatNumber(Number(usdaSupply) / 10 ** 6)
+        ? formatNumber(Number(formatUnits(BigInt(usdaSupply), 6)))
         : "0";
 
       // total borrow amount + cds deposited amount
       lockedValues[0].value = omniChainData.totalCdsDepositedAmount
         ? formatNumber(
-            Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6 +
-              Number(
-                formatEther(
-                  omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-                )
-              )
+          Number(formatUnits(BigInt(omniChainData.totalCdsDepositedAmount), 6)) +
+          Number(
+            formatEther(
+              omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
+            )
           )
+        )
         : "0";
       // total cds deposited amount
       lockedValues[1].value = omniChainData.totalCdsDepositedAmount
         ? `${formatNumber(
-            Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
-          )} USDA+`
+          Number(formatUnits(BigInt(omniChainData.totalCdsDepositedAmount), 6))
+        )} USDA+`
         : "0";
       // lockedValues[2].value = omniChainData.totalCdsDepositedAmount
       //   ? formatNumber(
@@ -147,22 +147,20 @@ function StatsTemplate() {
       RatioValues[0].value =
         ratioData == undefined ? "-" : ratioData.toFixed(2);
 
-      RatioValues[1].value = `$${
-        omniChainData.totalCdsDepositedAmount
-          ? formatNumber(
-              Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
-            )
-          : "0"
-      }`;
+      RatioValues[1].value = `$${omniChainData.totalCdsDepositedAmount
+        ? formatNumber(
+          Number(formatUnits(omniChainData.totalCdsDepositedAmount, 6))
+        )
+        : "0"
+        }`;
 
-      RatioValues[2].value = `$${
-        omniChainData.cdsPoolValue
-          ? formatNumber(Number(omniChainData.cdsPoolValue / BigInt(10 ** 6)))
-          : "0"
-      }`;
+      RatioValues[2].value = `$${omniChainData.cdsPoolValue
+        ? formatNumber(Number(formatUnits(omniChainData.cdsPoolValue, 6)))
+        : "0"
+        }`;
       RatioValues[3].value = `$${(
-        Number(omniChainData.cdsPoolValue / BigInt(10 ** 6)) -
-        Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6
+        Number(formatUnits(omniChainData.cdsPoolValue, 6)) -
+        Number(formatUnits(omniChainData.totalCdsDepositedAmount, 6))
       ).toFixed(2)}`;
       const total =
         Number(
@@ -170,7 +168,7 @@ function StatsTemplate() {
             omniChainData.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
           )
         ) +
-        Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6;
+        Number(formatUnits(omniChainData.totalCdsDepositedAmount, 6));
       RatioValuesBottom[0].value = `${(
         (Number(
           formatEther(
@@ -181,14 +179,13 @@ function StatsTemplate() {
         100
       ).toFixed(1)}%`;
       RatioValuesBottom[1].value = `${(
-        (Number(omniChainData.totalCdsDepositedAmount) / 10 ** 6 / total) *
+        (Number(formatUnits(omniChainData.totalCdsDepositedAmount, 6)) / total) *
         100
       ).toFixed(1)}%`;
 
       // fees values
-      OptionFeesValues[0].value = `$${
-        feeOptions == undefined ? 0 : feeOptions.toFixed(2)
-      }`;
+      OptionFeesValues[0].value = `$${feeOptions == undefined ? 0 : Number(feeOptions).toFixed(2)
+        }`;
       // FeesValues[1].value = `${
       //   feeOptions[1] == undefined
       //     ? 0
@@ -204,7 +201,7 @@ function StatsTemplate() {
 
       // set abond Data
       abondValues[1].value = totalSupplyAbond
-        ? formatNumber(Number(totalSupplyAbond) / 10 ** 18)
+        ? formatNumber(Number(formatUnits(totalSupplyAbond, 18)))
         : "0";
       // abondValues[2].value = totalSupplyAbond
       //   ? formatNumber(Number(totalSupplyAbond) / 10 ** 18)
@@ -278,11 +275,10 @@ function StatsTemplate() {
                     value={item.value}
                     key={index}
                     metricVal={item.headline}
-                    classNameValue={` ${
-                      item.headline === "dCDS Profit/Loss"
-                        ? "text-[#05A552] dark:text-[#06BE5F]"
-                        : "dark:text-white"
-                    }`}
+                    classNameValue={` ${item.headline === "dCDS Profit/Loss"
+                      ? "text-[#05A552] dark:text-[#06BE5F]"
+                      : "dark:text-white"
+                      }`}
                   />
                 );
               })}
@@ -294,11 +290,10 @@ function StatsTemplate() {
                     value={item.value}
                     key={index}
                     metricVal={item.headline}
-                    classNameValue={` ${
-                      item.headline === "dCDS Profit/Loss"
-                        ? "text-[#05A552] dark:text-[#06BE5F]"
-                        : "dark:text-white"
-                    }`}
+                    classNameValue={` ${item.headline === "dCDS Profit/Loss"
+                      ? "text-[#05A552] dark:text-[#06BE5F]"
+                      : "dark:text-white"
+                      }`}
                   />
                 );
               })}
@@ -315,22 +310,20 @@ function StatsTemplate() {
             <div className=" w-full   md:w-[50%]   top-[20px] right-[20px]">
               <div className="flex w-[100%] flex-1 border border-grayLight text-left relative">
                 <div
-                  className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${
-                    feeOption === "Option Fees"
-                      ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
-                      : ""
-                  }`}
+                  className={`flex-1 text-[15px] 2xl:text-[18px] flex items-center justify-center p-[2px] 2xl:p-[8px] text-center cursor-pointer ${feeOption === "Option Fees"
+                    ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
+                    : ""
+                    }`}
                   onClick={() => setFeeOption("Option Fees")}
                 >
                   Option Fees
                 </div>
                 <div className="w-[1px] bg-grayLight h-auto"></div>
                 <div
-                  className={`flex-1 p-[2px] py-[10px] flex items-center justify-center  text-[15px] 2xl:text-[18px] 2xl:p-[8px] text-center cursor-pointer ${
-                    feeOption === "Borrowing Fees"
-                      ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
-                      : ""
-                  }`}
+                  className={`flex-1 p-[2px] py-[10px] flex items-center justify-center  text-[15px] 2xl:text-[18px] 2xl:p-[8px] text-center cursor-pointer ${feeOption === "Borrowing Fees"
+                    ? "bg-[#ABFFDE] border border-grayLight dark:text-textBlack "
+                    : ""
+                    }`}
                 >
                   Borrowing Fees
                 </div>

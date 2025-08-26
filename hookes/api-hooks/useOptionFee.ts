@@ -4,7 +4,7 @@ import { OptionFeesRequest, OptionFeesResponse } from "./interface";
 import { useAccount } from "wagmi";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "wagmi/query";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 
 /**
  * Fetches option fees from the backend API using provided parameters.
@@ -84,7 +84,7 @@ const useFetchOptionFees = (
 
   // Convert fee from micro-units (1e6) to readable format; fallback to 0
   const optionFees = (Fees as number[])?.[1]
-    ? (Fees as number[])?.[1] / 10 ** 6
+    ? formatUnits(BigInt((Fees as number[])?.[1]), 6)
     : 0;
 
   return {

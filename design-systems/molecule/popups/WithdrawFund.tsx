@@ -27,6 +27,7 @@ import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { formatUnits, parseUnits, zeroAddress } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -38,7 +39,6 @@ import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import useBorrowRenew from "@/hookes/contract-hooks/useBorrowRenew";
-import { formatUnits, zeroAddress } from "viem";
 import useGetBalance from "@/hookes/contract-hooks/useGetBalance";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
@@ -202,7 +202,7 @@ export function WithdrawFund({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
   }) as { data: number[]; isLoading: boolean };
@@ -212,7 +212,7 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "optionsFeesTimeLimits",
 
@@ -232,11 +232,11 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     args: [
       BorrowAssetsEnum[
-        position?.collateralType as keyof typeof BorrowAssetsEnum
+      position?.collateralType as keyof typeof BorrowAssetsEnum
       ],
     ],
     functionName: "getAssetDetails",
@@ -252,14 +252,14 @@ export function WithdrawFund({
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     position.status == BorrowStatus.LIQUIDATED ||
-    calculateRemainingDays(Number(position.validTill)) <= 0
+      calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
-      ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-          Number(position?.depositedAmountInETH) -
+        ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+        Number(position?.depositedAmountInETH) -
         Number(formatUnits(BigInt(currentEthPrice), 2)) *
-          Number(position?.depositedAmountInETH)
-      : 0;
+        Number(position?.depositedAmountInETH)
+        : 0;
 
   // fetching allowance of usda for repay
   const { data: allowance, isLoading: isAllowancePending } = useReadContract({
@@ -269,40 +269,42 @@ export function WithdrawFund({
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean };
   // usda amount multiply by cumulative rate
   const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
-      ? BigInt(Number(position?.normalizedAmount || 0) * 10 ** 6)
+      ? parseUnits((position?.normalizedAmount?.toString() || "0"), 6)
       : BigInt(
-          BigInt(
-            Math.round(
-              position.normalizedAmount
-                ? Number(position?.normalizedAmount || 0) * 10 ** 6
-                : 0
-            )
-          ) * BigInt(lastCumulativeRate || 0n)
-        ) / BigInt(10 ** 27);
+        BigInt(
+          Math.round(
+            position.normalizedAmount
+              ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
+              : 0
+          )
+        ) * lastCumulativeRate
+      ) / BigInt(10 ** 27);
+
+  console.log("totalUsdaAmntWithCumulativeRate", totalUsdaAmntWithCumulativeRate);
+
 
   // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
-      ? Number(totalUsdaAmntWithCumulativeRate) / 1e6 -
-        Number(downsideProtection) -
-        Number(position?.optionFees)
-      : Number(position.totalDebtAmount) -
-        Number(downsideProtection) -
-        Number(position?.optionFees);
+      ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
+      Number(downsideProtection)
+      : // Number(position?.optionFees)
+      Number(position.totalDebtAmount) - Number(downsideProtection);
+  // Number(position?.optionFees);
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAPR",
   });
@@ -315,9 +317,8 @@ export function WithdrawFund({
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
       // set deposited amount
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
-        position.collateralType
-      }`;
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${position.collateralType
+        }`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
       // set eth price at deposit
       const ethPriceAtDep =
@@ -357,8 +358,8 @@ export function WithdrawFund({
         // else set 0
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? Number(position.depositedAmountInETH) *
-              (Number(currentPrice) / 100) -
-            Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
+          (Number(currentPrice) / 100) -
+          Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
       // if upside is more than 5% so showing 5% max upside or else showing calculated amount that
@@ -414,21 +415,20 @@ export function WithdrawFund({
     },
     {
       headline: "Total Interest",
-      value: `$${
-        Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 <
-          Number(position.noOfUSDaMinted) ||
+      value: `$${Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) <
+        Number(position.noOfUSDaMinted) ||
         position.status === BorrowStatus.LIQUIDATED
-          ? 0
-          : position.status === BorrowStatus.DEPOSITED
+        ? 0
+        : position.status === BorrowStatus.DEPOSITED
           ? // if position withdrawn using totalDebtAmount else total usda with cumulative
-            (
-              Number(totalUsdaAmntWithCumulativeRate) / 10 ** 6 -
-              Number(position.noOfUSDaMinted)
-            ).toFixed(4)
+          (
+            Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
+            Number(position.noOfUSDaMinted)
+          ).toFixed(4)
           : (
-              Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
-            ).toFixed(4)
-      }`,
+            Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+          ).toFixed(4)
+        }`,
       tooltip: false,
       tooltipText: "",
     },
@@ -451,15 +451,15 @@ export function WithdrawFund({
       // )}`,
       value: position?.downsideProtectionStatus
         ? (
-            Number(position?.ethPrice || 0) *
-            Number(position?.exchangeRateAtDeposit || 0) *
-            (Number(assetDetails?.LTV || 0) / 1e4)
-          ).toFixed(2)
+          Number(position?.ethPrice || 0) *
+          Number(position?.exchangeRateAtDeposit || 0) *
+          (Number(assetDetails?.LTV || 0) / 1e4)
+        ).toFixed(2)
         : (
-            Number(position?.ethPrice || 0) *
-            Number(position?.exchangeRateAtDeposit || 0) *
-            (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
-          ).toFixed(2),
+          Number(position?.ethPrice || 0) *
+          Number(position?.exchangeRateAtDeposit || 0) *
+          (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
+        ).toFixed(2),
 
       tooltip: false,
       tooltipText: "",
@@ -603,9 +603,8 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          withdrawReceipt.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${withdrawReceipt.transactionHash
+          } `;
         return (
           <ToastNotification
             title="Repay Successful"
@@ -653,7 +652,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round((repayAmount + 0.1) * 1e6));
+    const approveRepayAmount = BigInt(Math.round(Number(parseUnits((repayAmount + 0.001).toString(), 6))));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
@@ -769,9 +768,8 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-        renewReceipt.transactionHash
-      } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${renewReceipt.transactionHash
+        } `;
 
       toast.custom((t) => (
         <ToastNotification
@@ -829,8 +827,8 @@ export function WithdrawFund({
       approveUsdaDynamic(
         renewAmount,
         borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ] as `0x${string}`
+        chainId as keyof typeof borrowingContractAddress
+        ] as `0x${string}`,
       );
     } else {
       callRenewInContract();
@@ -860,8 +858,8 @@ export function WithdrawFund({
   const isRenewActive = !(
     Number(
       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-          (calculateRemainingDays(position.validTill) + 1 || 0))
+      (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+        (calculateRemainingDays(position.validTill) + 1 || 0))
     ) > 0
   );
 
@@ -983,9 +981,8 @@ export function WithdrawFund({
                             style={{
                               width: `${percentage}%`,
                             }}
-                            className={` ${
-                              index == 1 && "mr-1"
-                            } relative h-full flex flex-col justify-end truncate`}
+                            className={` ${index == 1 && "mr-1"
+                              } relative h-full flex flex-col justify-end truncate`}
                           >
                             {index == 1 && (
                               <div
@@ -1095,11 +1092,10 @@ export function WithdrawFund({
                 </div>
               </div>
               <div
-                className={` space-y-3 mt-2  ${
-                  position.status == BorrowStatus.WITHDREW
-                    ? "h-[265px]"
-                    : "h-[350px]"
-                } overflow-auto no-scrollbar`}
+                className={` space-y-3 mt-2  ${position.status == BorrowStatus.WITHDREW
+                  ? "h-[265px]"
+                  : "h-[350px]"
+                  } overflow-auto no-scrollbar`}
               >
                 {depositData.map((item) => (
                   <div
@@ -1149,11 +1145,10 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={`  ${
-                  position.status == BorrowStatus.WITHDREW
-                    ? "h-[150px]"
-                    : "md:h-[70px] sm:h-[50px] h-[80px]"
-                } mt-4 md:mt-4`}
+                className={`  ${position.status == BorrowStatus.WITHDREW
+                  ? "h-[150px]"
+                  : "md:h-[70px] sm:h-[50px] h-[80px]"
+                  } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
                   <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
@@ -1165,7 +1160,10 @@ export function WithdrawFund({
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className=" mt-4">
+                      <div
+                        className={` ${position.status == BorrowStatus.WITHDREW ? "mt-4" : ""
+                          }`}
+                      >
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -1174,26 +1172,25 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED
                           }
                           onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${
-                            position.status == BorrowStatus.WITHDREW
-                              ? "md:p-12"
-                              : "md:p-8"
-                          }`}
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] ${position.status == BorrowStatus.WITHDREW
+                            ? "md:p-4"
+                            : "md:p-4"
+                            }`}
                         >
                           <div>
                             {repayLoading
                               ? "Loading..."
                               : position.status == BorrowStatus.DEPOSITED
-                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                              : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${parseFloat(
-                                  Number(position.depositedAmount).toFixed(6)
-                                )} ${position.collateralType}`
-                              : `Withdrawn ${parseFloat(
-                                  (
-                                    Number(position.depositedAmount) / 2
-                                  ).toFixed(6)
-                                )} ${position.collateralType}`}{" "}
+                                ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
+                                : position.status == BorrowStatus.LIQUIDATED
+                                  ? `Liquidated ${parseFloat(
+                                    Number(position.depositedAmount).toFixed(6)
+                                  )} ${position.collateralType}`
+                                  : `Withdrawn ${parseFloat(
+                                    (
+                                      Number(position.depositedAmount) / 2
+                                    ).toFixed(6)
+                                  )} ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
@@ -1204,9 +1201,8 @@ export function WithdrawFund({
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
-                              {`(Repay will active in ${
-                                5 - getMinutesPassed(position?.depositedTime)
-                              } min)`}{" "}
+                              {`(Repay will active in ${5 - getMinutesPassed(position?.depositedTime)
+                                } min)`}{" "}
                             </div>
                           )}
                           <span className="text-base">
@@ -1215,13 +1211,16 @@ export function WithdrawFund({
                         </Button>
                       </div>
                     </TooltipTrigger>
-                    {isFunctionPausedBorrow_Withdraw && (
-                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                        <p>{"Repay is paused now"}</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                )}
+                    {
+                      isFunctionPausedBorrow_Withdraw && (
+                        <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                          <p>{"Repay is paused now"}</p>
+                        </TooltipContent>
+                      )
+                    }
+                  </Tooltip >
+                )
+                }
                 {/* <LoadingBox
                   isLoading={isLoadingCumulativeLocal}
                   isFailure={cumulativeRateError || cumulativeRateErrorReceipt}
@@ -1246,340 +1245,340 @@ export function WithdrawFund({
                   heading="Withdrawing"
                   loadingCount="2/2"
                 />
-              </div>
+              </div >
             </>
           )}
 
           {/* Renew selection */}
-          {toggleView === "renew" && !isPopupLoading && (
-            <>
-              <div className="w-full h-[67px]">
-                {
-                  <div className="flex flex-col gap-1 w-full">
-                    <div className="flex w-full h-[60px] mb-2">
-                      {[
-                        {
-                          label: "Maturity",
-                          value: Number(
-                            isRenewActive
-                              ? calculateRemainingDays(
+          {
+            toggleView === "renew" && !isPopupLoading && (
+              <>
+                <div className="w-full h-[67px]">
+                  {
+                    <div className="flex flex-col gap-1 w-full">
+                      <div className="flex w-full h-[60px] mb-2">
+                        {[
+                          {
+                            label: "Maturity",
+                            value: Number(
+                              isRenewActive
+                                ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
-                              : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-                                  (currentOptionFeeTimeLimit?.minTimeLimit || 0)
-                          ),
-                          days: Number(
-                            calculateRemainingDays(Number(position.validTill))
-                          ),
-                          gradient:
-                            "linear-gradient(to right, #08c8646e,#627EEA00)",
-                          gradientText: "#0ea658",
-                          percentLeftPx: "0px",
-                          borderLeftPx: "0px",
-                        },
-                        {
-                          label: "Renew",
-                          value: Number(
-                            Number(
-                              currentOptionFeeTimeLimit?.minTimeLimit || 0
-                            ) -
+                                : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                                (currentOptionFeeTimeLimit?.minTimeLimit || 0)
+                            ),
+                            days: Number(
+                              calculateRemainingDays(Number(position.validTill))
+                            ),
+                            gradient:
+                              "linear-gradient(to right, #08c8646e,#627EEA00)",
+                            gradientText: "#0ea658",
+                            percentLeftPx: "0px",
+                            borderLeftPx: "0px",
+                          },
+                          {
+                            label: "Renew",
+                            value: Number(
+                              Number(
+                                currentOptionFeeTimeLimit?.minTimeLimit || 0
+                              ) -
                               (Number(
                                 currentOptionFeeTimeLimit?.maxTimeLimit || 0
                               ) -
                                 (calculateRemainingDays(position.validTill) +
                                   1 || 0))
-                          ),
-                          gradient:
-                            "linear-gradient(to right, #386fe86e,#FF527000)",
-                          gradientText: "#2563eb",
-                          percentLeftPx: "0px",
-                          borderLeftPx: "",
-                          borderRightPx: "",
-                        },
-
-                        {
-                          label: "",
-                          value:
-                            Number(
-                              currentOptionFeeTimeLimit?.maxTimeLimit || 0
-                            ) -
-                            Number(
-                              calculateRemainingDays(position.validTill) || 0
                             ),
-                          gradient:
-                            "linear-gradient(to right, #7a7a7a94, #FF527000)",
-                          gradientText: "#7a7a7a",
-                          percentLeftPx: "8px",
-                          borderLeftPx: "0px",
-                        },
-                      ].map((metric, index, arr) => {
-                        const total = 30;
-                        const percentage = (metric.value / total) * 100 || 0;
+                            gradient:
+                              "linear-gradient(to right, #386fe86e,#FF527000)",
+                            gradientText: "#2563eb",
+                            percentLeftPx: "0px",
+                            borderLeftPx: "",
+                            borderRightPx: "",
+                          },
 
-                        return (
-                          <div
-                            key={index}
-                            style={{
-                              width: `${percentage}%`,
-                            }}
-                            className={` ${
-                              index == 1 && "mr-1"
-                            } relative h-full flex flex-col justify-end truncate`}
-                          >
-                            {index == 1 && (
-                              <div
-                                style={{
-                                  height: "80%",
-                                  background: metric.gradient,
-                                }}
-                              />
-                            )}
+                          {
+                            label: "",
+                            value:
+                              Number(
+                                currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                              ) -
+                              Number(
+                                calculateRemainingDays(position.validTill) || 0
+                              ),
+                            gradient:
+                              "linear-gradient(to right, #7a7a7a94, #FF527000)",
+                            gradientText: "#7a7a7a",
+                            percentLeftPx: "8px",
+                            borderLeftPx: "0px",
+                          },
+                        ].map((metric, index, arr) => {
+                          const total = 30;
+                          const percentage = (metric.value / total) * 100 || 0;
+
+                          return (
                             <div
-                              className="mx-[5px] truncate"
+                              key={index}
                               style={{
-                                position: "absolute",
-                                backgroundColor: "transparent",
-                                color: metric.gradientText,
-                                left: metric.percentLeftPx,
-                                right: metric.borderRightPx,
+                                width: `${percentage}%`,
                               }}
+                              className={` ${index == 1 && "mr-1"
+                                } relative h-full flex flex-col justify-end truncate`}
                             >
-                              {metric.days || metric.value} Days{" "}
-                              {metric.label ? `(${metric.label})` : ""}
-                            </div>
+                              {index == 1 && (
+                                <div
+                                  style={{
+                                    height: "80%",
+                                    background: metric.gradient,
+                                  }}
+                                />
+                              )}
+                              <div
+                                className="mx-[5px] truncate"
+                                style={{
+                                  position: "absolute",
+                                  backgroundColor: "transparent",
+                                  color: metric.gradientText,
+                                  left: metric.percentLeftPx,
+                                  right: metric.borderRightPx,
+                                }}
+                              >
+                                {metric.days || metric.value} Days{" "}
+                                {metric.label ? `(${metric.label})` : ""}
+                              </div>
 
-                            <div
-                              style={{
-                                position: "absolute",
-                                height: "48px",
-                                width: "2px",
-                                backgroundColor: metric.gradientText,
-                                left: metric.borderLeftPx,
-                                right: metric.borderRightPx,
-                              }}
-                            />
-
-                            {index !== 1 && (
                               <div
                                 style={{
-                                  height: "80%",
-                                  background: metric.gradient,
+                                  position: "absolute",
+                                  height: "48px",
+                                  width: "2px",
+                                  backgroundColor: metric.gradientText,
+                                  left: metric.borderLeftPx,
+                                  right: metric.borderRightPx,
                                 }}
                               />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                }
-              </div>
-              <div className="w-full  h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
-                {[
-                  {
-                    label: "days",
-                    value: Number(
-                      isRenewActive
-                        ? calculateRemainingDays(Number(position.validTill))
-                        : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-                            (currentOptionFeeTimeLimit?.minTimeLimit || 0)
-                    ),
 
-                    color: "#05a552",
-                  },
-                  {
-                    label: "repay",
-                    value: Number(
-                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                              {index !== 1 && (
+                                <div
+                                  style={{
+                                    height: "80%",
+                                    background: metric.gradient,
+                                  }}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  }
+                </div>
+                <div className="w-full  h-2 relative bg-gray-200 dark:bg-[#0D0D0D] rounded-none  flex overflow-hidden">
+                  {[
+                    {
+                      label: "days",
+                      value: Number(
+                        isRenewActive
+                          ? calculateRemainingDays(Number(position.validTill))
+                          : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                          (currentOptionFeeTimeLimit?.minTimeLimit || 0)
+                      ),
+
+                      color: "#05a552",
+                    },
+                    {
+                      label: "repay",
+                      value: Number(
+                        Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
                         (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
                           (calculateRemainingDays(position.validTill) + 1 || 0))
-                    ),
-                    color: isRenewActive ? "#2563eb" : "#05a552",
-                  },
-                  {
-                    label: "maturity",
-                    value:
-                      Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-                      calculateRemainingDays(Number(position.validTill)), // 28 ,
-                    color: "gray",
-                  },
-                ].map((metric, index, arr) => {
-                  const total = arr.reduce((acc, item) => acc + item.value, 0);
-                  const percentage = (metric.value / total) * 100;
+                      ),
+                      color: isRenewActive ? "#2563eb" : "#05a552",
+                    },
+                    {
+                      label: "maturity",
+                      value:
+                        Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                        calculateRemainingDays(Number(position.validTill)), // 28 ,
+                      color: "gray",
+                    },
+                  ].map((metric, index, arr) => {
+                    const total = arr.reduce((acc, item) => acc + item.value, 0);
+                    const percentage = (metric.value / total) * 100;
 
-                  return (
-                    <div
-                      key={index}
-                      style={{
-                        width: `${percentage}%`,
-                        background: metric.color,
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="flex gap-8 mb-3">
-                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                  <span className="block w-3 h-3 bg-[#05A552]"></span>
-                  {calculateRemainingDays(Number(position.validTill))} Days
-                  remaining till maturity
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          width: `${percentage}%`,
+                          background: metric.color,
+                        }}
+                      />
+                    );
+                  })}
                 </div>
-                {Number(
-                  Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+
+                <div className="flex gap-8 mb-3">
+                  <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                    <span className="block w-3 h-3 bg-[#05A552]"></span>
+                    {calculateRemainingDays(Number(position.validTill))} Days
+                    remaining till maturity
+                  </div>
+                  {Number(
+                    Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
                     (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
                       (calculateRemainingDays(position.validTill) + 1 || 0))
-                ) > 0 && (
-                  <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                    <span className="block w-3 h-3 bg-blue-600"></span>
-                    {Number(
-                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-                          (calculateRemainingDays(position.validTill) + 1 || 0))
-                    )}{" "}
-                    Days remaining to activate renew
-                  </div>
-                )}
-              </div>
-              <div className="max-h-[280px] overflow-auto no-scrollbar">
-                <div className="space-y-2 mt-4">
-                  {[
-                    {
-                      heading: "ETH price at deposit",
-                      value: `$${Number(
-                        formatUnits(BigInt(position?.ethPrice || 0), 2)
-                      )}`,
-                    },
-                    {
-                      heading: "Current ETH price",
-                      value: `$${formatUnits(BigInt(ethPrice), 2)}`,
-                    },
-                    {
-                      heading: "Downside Protection till now",
-
-                      value: "$" + downsideProtection.toFixed(2),
-                    },
-                    {
-                      heading: "Option Fees paid",
-                      value: `$${Number(position?.optionFees).toFixed(2)}`,
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.heading}
-                      className="flex justify-between font-medium"
-                    >
-                      <span className="text-grayLight text-[20px]">
-                        {item.heading}
-                      </span>
-                      <span className="text-textBlack dark:text-white text-[20px]">
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 space-y-2">
-                  <div className="font-semibold dark:text-white text-textBlack text-[28px]">
-                    For Renewed
-                  </div>
-
-                  {[
-                    {
-                      label: "Time Period",
-                      value: `${
-                        currentOptionFeeTimeLimit?.maxTimeLimit || 0
-                      } Days`,
-                    },
-                    {
-                      label: "Option Fees",
-                      //  value: isRenewActiveDaysCompleted(position.validTill)
-                      //     ? `${formatUnits(
-                      //     BigInt(payableOptionFees || 0),
-                      //     6
-                      //   )}`
-                      //    : "-",
-                      value: `${formatUnits(
-                        BigInt((payableOptionFees as number) || 0),
-                        6
-                      )}`,
-                    },
-                    {
-                      label: "Downside Protection",
-                      value: `Up to $${(
-                        (Number(formatUnits(BigInt(position.ethPrice), 2)) *
-                          Number(position?.depositedAmountInETH) *
-                          20) /
-                        100
-                      ).toFixed(2)} (20%)`,
-                    },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between font-medium "
-                    >
-                      <span className="text-[20px] text-grayLight">
-                        {item.label}
-                      </span>
-                      <span className="text-textBlack dark:text-white text-[20px]">
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
-                {!renewLoading && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="h-full">
-                        <Button
-                          disabled={
-                            position.status == BorrowStatus.WITHDREW ||
-                            position.status == BorrowStatus.LIQUIDATED ||
-                            isFunctionPausedBorrow_Renew ||
-                            calculateRemainingDays(
-                              Number(position.validTill)
-                            ) <= 0 ||
-                            !isRenewActive
-                          }
-                          onClick={handleRenew}
-                          className="w-full   p-8 bg-black text-white text-[32px]"
-                        >
-                          {"Renew"}{" "}
-                          <span className="text-base mt-1">
-                            {isFunctionPausedBorrow_Renew && "(Paused)"}
-                          </span>
-                        </Button>
+                  ) > 0 && (
+                      <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                        <span className="block w-3 h-3 bg-blue-600"></span>
+                        {Number(
+                          Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                          (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                            (calculateRemainingDays(position.validTill) + 1 || 0))
+                        )}{" "}
+                        Days remaining to activate renew
                       </div>
-                    </TooltipTrigger>
-                    {isFunctionPausedBorrow_Renew && (
-                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                        <p>{"Renew is paused now"}</p>
-                      </TooltipContent>
                     )}
-                  </Tooltip>
-                )}
+                </div>
+                <div className="max-h-[280px] overflow-auto no-scrollbar">
+                  <div className="space-y-2 mt-4">
+                    {[
+                      {
+                        heading: "ETH price at deposit",
+                        value: `$${Number(
+                          formatUnits(BigInt(position?.ethPrice || 0), 2)
+                        )}`,
+                      },
+                      {
+                        heading: "Current ETH price",
+                        value: `$${formatUnits(BigInt(ethPrice), 2)}`,
+                      },
+                      {
+                        heading: "Downside Protection till now",
 
-                <LoadingBox
-                  isLoading={renewApproveLoading}
-                  isFailure={usdaApproveError || usdaHashError}
-                  isSuccess={usdaHashSucces}
-                  setSuccessLoading={() => console.log()}
-                  heading="Approving USDA+"
-                  loadingCount="1/2"
-                />
-                <LoadingBox
-                  isLoading={renewLoadingSM}
-                  isFailure={renewReceiptError || renewErrorSm}
-                  isSuccess={isSuccessRenewReceipt}
-                  setSuccessLoading={() => console.log()}
-                  heading="Renewing"
-                  loadingCount="2/2"
-                />
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+                        value: "$" + downsideProtection.toFixed(2),
+                      },
+                      {
+                        heading: "Option Fees paid",
+                        value: `$${Number(position?.optionFees).toFixed(2)}`,
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.heading}
+                        className="flex justify-between font-medium"
+                      >
+                        <span className="text-grayLight text-[20px]">
+                          {item.heading}
+                        </span>
+                        <span className="text-textBlack dark:text-white text-[20px]">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    <div className="font-semibold dark:text-white text-textBlack text-[28px]">
+                      For Renewed
+                    </div>
+
+                    {[
+                      {
+                        label: "Time Period",
+                        value: `${currentOptionFeeTimeLimit?.maxTimeLimit || 0
+                          } Days`,
+                      },
+                      {
+                        label: "Option Fees",
+                        //  value: isRenewActiveDaysCompleted(position.validTill)
+                        //     ? `${formatUnits(
+                        //     BigInt(payableOptionFees || 0),
+                        //     6
+                        //   )}`
+                        //    : "-",
+                        value: `${formatUnits(
+                          BigInt((payableOptionFees as number) || 0),
+                          6
+                        )}`,
+                      },
+                      {
+                        label: "Downside Protection",
+                        value: `Up to $${(
+                          (Number(formatUnits(BigInt(position.ethPrice), 2)) *
+                            Number(position?.depositedAmountInETH) *
+                            20) /
+                          100
+                        ).toFixed(2)} (20%)`,
+                      },
+                    ].map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between font-medium "
+                      >
+                        <span className="text-[20px] text-grayLight">
+                          {item.label}
+                        </span>
+                        <span className="text-textBlack dark:text-white text-[20px]">
+                          {item.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
+                  {!renewLoading && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="h-full">
+                          <Button
+                            disabled={
+                              position.status == BorrowStatus.WITHDREW ||
+                              position.status == BorrowStatus.LIQUIDATED ||
+                              isFunctionPausedBorrow_Renew ||
+                              calculateRemainingDays(
+                                Number(position.validTill)
+                              ) <= 0 ||
+                              !isRenewActive
+                            }
+                            onClick={handleRenew}
+                            className="w-full   p-8 bg-black text-white text-[32px]"
+                          >
+                            {"Renew"} {" "}
+                            <span className="text-base mt-1">
+                              {isFunctionPausedBorrow_Renew && "(Paused)"}
+                            </span>
+                          </Button >
+                        </div >
+                      </TooltipTrigger >
+                      {isFunctionPausedBorrow_Renew && (
+                        <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                          <p>{"Renew is paused now"}</p>
+                        </TooltipContent>
+                      )
+                      }
+                    </Tooltip >
+                  )}
+
+                  <LoadingBox
+                    isLoading={renewApproveLoading}
+                    isFailure={usdaApproveError || usdaHashError}
+                    isSuccess={usdaHashSucces}
+                    setSuccessLoading={() => console.log()}
+                    heading="Approving USDA+"
+                    loadingCount="1/2"
+                  />
+                  <LoadingBox
+                    isLoading={renewLoadingSM}
+                    isFailure={renewReceiptError || renewErrorSm}
+                    isSuccess={isSuccessRenewReceipt}
+                    setSuccessLoading={() => console.log()}
+                    heading="Renewing"
+                    loadingCount="2/2"
+                  />
+                </div >
+              </>
+            )}
+        </DialogContent >
+      </Dialog >
     </>
   );
 }

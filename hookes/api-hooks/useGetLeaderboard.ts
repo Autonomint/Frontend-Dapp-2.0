@@ -1,6 +1,5 @@
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
-import { it } from "node:test";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useQuery } from "wagmi/query";

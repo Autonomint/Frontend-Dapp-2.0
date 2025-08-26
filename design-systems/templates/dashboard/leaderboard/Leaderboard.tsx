@@ -5,7 +5,7 @@ import useGetLeaderboard from "@/hookes/api-hooks/useGetLeaderboard";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import { formatNumber } from "@/utils/helpers";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 
 function Leaderboard() {
   // Fetch the total volume of borrowers amount in USD
@@ -50,12 +50,10 @@ function Leaderboard() {
             subHeading="Total Value Locked (TVL)"
             value={`$${formatNumber(
               omniChainData
-                ? Number(omniChainData?.totalCdsDepositedAmount ?? 0n) /
-                    10 ** 6 +
-                    Number(
-                      (omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n) /
-                        BigInt(10 ** 20)
-                    )
+                ? Number(formatUnits(BigInt(omniChainData?.totalCdsDepositedAmount ?? 0n), 6)) +
+                Number(
+                  formatUnits(BigInt(omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n), 20)
+                )
                 : 0
             )}`}
           />
