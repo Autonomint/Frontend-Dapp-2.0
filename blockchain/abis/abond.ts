@@ -1,4 +1,4 @@
-export const abondAbi =  [
+export const abondAbi = [
   {
     "inputs": [],
     "name": "Abond_CreditFailed",
@@ -11,7 +11,17 @@ export const abondAbi =  [
   },
   {
     "inputs": [],
+    "name": "Abond_InvalidMultiSignAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "Abond_OnlyCoreContracts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Abond_RequiredApprovalsNotMetToSet",
     "type": "error"
   },
   {
@@ -585,7 +595,13 @@ export const abondAbi =  [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -733,6 +749,19 @@ export const abondAbi =  [
       }
     ],
     "name": "setBorrowingContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiSign",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

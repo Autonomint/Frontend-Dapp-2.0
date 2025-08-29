@@ -37,6 +37,7 @@ import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import {
   assetNameForRewardDataBorrow,
   BorrowAssetsEnum,
+  BorrowData,
   NetworkId,
 } from "@/utils/constants";
 import {
@@ -152,9 +153,10 @@ function InputForm({ currency }: { currency: string }) {
       borrowingContractAddress[
       chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "getDebtCeilingMintLimit",
+    args: [BorrowData.debtCeilingMintLimit],
+    functionName: "getBorrowData",
     query: {
-      select: (data) => formatUnits(data, 6),
+      select: (data) => formatUnits(data as bigint, 6),
     },
   });
 
@@ -503,7 +505,7 @@ function InputForm({ currency }: { currency: string }) {
       const downsideProtection =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          (100 - (ltv ? ltv : 0))) /
+          (100 - (ltv ? Number(ltv) : 0))) /
         10000;
 
       // display the downside protection amount with 2 decimal places

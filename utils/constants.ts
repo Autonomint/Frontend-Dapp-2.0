@@ -125,3 +125,31 @@ export const assetNameForRewardDataBorrow = {
   weETH: "WeETH",
   wsuperOETHb: "WSuperOethB",
 };
+
+// enum for borrow contract data 
+export enum BorrowData {
+  APR,
+  ratePerSec,
+  LTV,
+  bondRatio,
+  lastCumulativeRate,
+  collateralRemainingInWithdraw,
+  collateralValueRemainingInWithdraw,
+  pendingUSDaToBurn,
+  debtCeilingTimeLimit,
+  debtCeilingMintLimit,
+  minInterval,
+  totalNormalizedAmount
+}
+
+// enum for cds contract data 
+export enum CdsData {
+  cdsCount,
+  totalCdsDepositedAmount,
+  totalCdsDepositedAmountWithOptionFees,
+  totalAvailableLiquidationAmount,
+  downsideProtected,
+  withdrawTimeLimit,
+  usdaLimit,
+  usdtLimit
+}

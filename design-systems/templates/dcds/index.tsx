@@ -52,7 +52,7 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetStatus, NetworkId } from "@/utils/constants";
+import { AssetStatus, CdsData, NetworkId } from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -261,7 +261,11 @@ function DCDSTemplate() {
   const { data: usdtLimit, refetch: refetchCurrentData } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof cdsAddress],
-    functionName: "getUsdtLimit",
+    args: [CdsData.usdtLimit],
+    functionName: "getBorrowData",
+    query: {
+      select: (data) => formatUnits(data as bigint, 6),
+    },
   });
 
   const { data: calculateGainCDS } = useCalculateGainCDS();

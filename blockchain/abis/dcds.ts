@@ -106,6 +106,11 @@ export const cdsAbi = [
   },
   {
     "inputs": [],
+    "name": "CDS_InvalidMultiSignAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "CDS_InvalidPosition",
     "type": "error"
   },
@@ -123,6 +128,11 @@ export const cdsAbi = [
       }
     ],
     "name": "CDS_LiqAmountExceedsDepositAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CDS_MsgSenderNotAllowed",
     "type": "error"
   },
   {
@@ -1032,13 +1042,19 @@ export const cdsAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getCdsCount",
+    "inputs": [
+      {
+        "internalType": "enum CDSInterface.CdsData",
+        "name": "dataName",
+        "type": "uint8"
+      }
+    ],
+    "name": "getCdsData",
     "outputs": [
       {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
+        "internalType": "uint256",
+        "name": "dataValue",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1263,19 +1279,6 @@ export const cdsAbi = [
   },
   {
     "inputs": [],
-    "name": "getDownsideProtected",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getLatestData",
     "outputs": [
       {
@@ -1339,71 +1342,6 @@ export const cdsAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getTotalAvailableLiquidationAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTotalCdsDepositedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getTotalCdsDepositedAmountWithOptionFees",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getUsdaLimit",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getUsdtLimit",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -1422,19 +1360,6 @@ export const cdsAbi = [
         "internalType": "uint256[]",
         "name": "",
         "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getWithdrawTimeLimit",
-    "outputs": [
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
       }
     ],
     "stateMutability": "view",
@@ -1678,6 +1603,19 @@ export const cdsAbi = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiSign",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "options_",
         "type": "address"
       }
@@ -1696,45 +1634,6 @@ export const cdsAbi = [
       }
     ],
     "name": "setTreasury",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "percent",
-        "type": "uint8"
-      }
-    ],
-    "name": "setUSDaLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "amount",
-        "type": "uint64"
-      }
-    ],
-    "name": "setUsdtLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "_timeLimit",
-        "type": "uint64"
-      }
-    ],
-    "name": "setWithdrawTimeLimit",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1964,12 +1863,22 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "_cdsCount",
-        "type": "uint64"
+        "internalType": "enum CDSInterface.CdsData",
+        "name": "dataName",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "operation",
+        "type": "bool"
       }
     ],
-    "name": "updateCdsCount",
+    "name": "updateCdsData",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -2057,32 +1966,6 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "downsideProtectedAmount",
-        "type": "uint128"
-      }
-    ],
-    "name": "updateDownsideProtected",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_downsideProtected",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateDownsideProtected",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_tokenAddress",
         "type": "address"
@@ -2094,60 +1977,6 @@ export const cdsAbi = [
       }
     ],
     "name": "updateTokenDepositedTillNow",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_totalAvailableLiquidationAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_operation",
-        "type": "bool"
-      }
-    ],
-    "name": "updateTotalAvailableLiquidationAmount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "operation",
-        "type": "bool"
-      }
-    ],
-    "name": "updateTotalCdsDepositedAmount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "operation",
-        "type": "bool"
-      }
-    ],
-    "name": "updateTotalCdsDepositedAmountWithOptionFees",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

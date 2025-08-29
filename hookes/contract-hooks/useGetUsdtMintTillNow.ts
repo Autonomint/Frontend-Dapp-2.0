@@ -18,7 +18,7 @@ const useGetOmniChainData = () => {
   });
 
   return {
-    omniChainData,
+    omniChainData: omniChainData as Record<string, bigint>,
     isOmniChainDataPending,
     omniChainDataError,
   };

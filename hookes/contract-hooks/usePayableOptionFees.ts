@@ -13,7 +13,7 @@ const usePayableOptionFees = (index: any) => {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getOptionFeesToPay",
     args: [address as `0x${string}`, index],

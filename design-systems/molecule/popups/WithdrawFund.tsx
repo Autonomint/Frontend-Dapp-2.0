@@ -33,7 +33,7 @@ import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessag
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowAssetsEnum, BorrowStatus, NetworkId } from "@/utils/constants";
+import { BorrowAssetsEnum, BorrowData, BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
@@ -170,7 +170,7 @@ export function WithdrawFund({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate();
+    useLastCumulativeRate() as { isLastCumulativeRatePending: boolean; lastCumulativeRate: number | undefined };
 
   // interest gain from backend
   const { interestGained, isInterestGainedPending } = useInterestGain(
@@ -219,7 +219,7 @@ export function WithdrawFund({
 
     query: {
       placeholderData: [0n, 0n],
-      select: (data) => {
+      select: (data: any) => {
         return {
           minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
           maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
@@ -285,7 +285,7 @@ export function WithdrawFund({
               ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
               : 0
           )
-        ) * lastCumulativeRate
+        ) * BigInt(lastCumulativeRate || 0)
       ) / BigInt(10 ** 27);
 
   console.log("totalUsdaAmntWithCumulativeRate", totalUsdaAmntWithCumulativeRate);
@@ -307,8 +307,11 @@ export function WithdrawFund({
       borrowingContractAddress[
       chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "getAPR",
-  });
+    args: [BorrowData.APR],
+    functionName: "getBorrowData",
+  }) as { data: number[] | undefined; isLoading: boolean };
+
+  console.log("currentAPR", currentAPR);
 
   function handleDepositData() {
     setIsDataUpdating(true);
@@ -525,7 +528,7 @@ export function WithdrawFund({
     quoteValue: nativeFee,
     quoteError,
     isUsdValuePending: isQuotePending,
-  } = useGetGlobalQuote(options, 3, 1);
+  } = useGetGlobalQuote(options, 3, 1) as { quoteValue: { nativeFee: bigint }; quoteError: any; isUsdValuePending: boolean };
 
   const {
     usdtApprovedHash,
@@ -862,7 +865,7 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  const { payableOptionFees } = usePayableOptionFees(position.index);
+  const { payableOptionFees } = usePayableOptionFees(position.index) as { payableOptionFees: bigint | undefined };
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
