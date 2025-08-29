@@ -19,9 +19,9 @@ const useGetGlobalQuote = (options: any, todoFlag: number, secondFlag = 0) => {
   });
 
   return {
-    isUsdValuePending,
-    quoteValue,
-    quoteError,
+    isUsdValuePending: isUsdValuePending as boolean,
+    quoteValue: quoteValue as { nativeFee: bigint },
+    quoteError: quoteError as Error | undefined,
   };
 };
 

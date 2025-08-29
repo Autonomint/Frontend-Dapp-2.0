@@ -16,7 +16,7 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowingContractAddress } from "@/blockchain/contracts";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import { STRATEGY_LINK } from "@/utils/urls";
-import { NetworkId } from "@/utils/constants";
+import { BorrowData, NetworkId } from "@/utils/constants";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
@@ -45,9 +45,10 @@ function MintEthListTemplate() {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "getAPR",
+    args: [BorrowData.APR],
+    functionName: "getBorrowData",
   });
 
   // Custom hook to check the pause state of borrow functions
@@ -66,16 +67,16 @@ function MintEthListTemplate() {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-      .minutes > 0
+      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+        .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
+        .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+          ? 10
+          : 0;
 
   // List of tokens with their respective data
   const list = [
@@ -105,11 +106,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -140,11 +141,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -175,11 +176,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["weETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -213,11 +214,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     });

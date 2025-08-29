@@ -15,7 +15,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowAssetsEnum, BorrowStatus, NetworkId } from "@/utils/constants";
+import { BorrowAssetsEnum, BorrowData, BorrowStatus, NetworkId } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getDownsideProtectionTillNow,
@@ -169,7 +169,7 @@ export function WithdrawFund({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate();
+    useLastCumulativeRate() as { isLastCumulativeRatePending: boolean; lastCumulativeRate: number | undefined };
 
   // interest gain from backend
   const { interestGained, isInterestGainedPending } = useInterestGain(
@@ -284,7 +284,7 @@ export function WithdrawFund({
               ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
               : 0
           )
-        ) * lastCumulativeRate
+        ) * BigInt(lastCumulativeRate || 0)
       ) / BigInt(10 ** 27);
 
   console.log("totalUsdaAmntWithCumulativeRate", totalUsdaAmntWithCumulativeRate);
@@ -306,8 +306,11 @@ export function WithdrawFund({
       borrowingContractAddress[
       chainId as keyof typeof borrowingContractAddress
       ],
-    functionName: "getAPR",
-  });
+    args: [BorrowData.APR],
+    functionName: "getBorrowData",
+  }) as { data: number[] | undefined; isLoading: boolean };
+
+  console.log("currentAPR", currentAPR);
 
   function handleDepositData() {
     setIsDataUpdating(true);
@@ -524,7 +527,7 @@ export function WithdrawFund({
     quoteValue: nativeFee,
     quoteError,
     isUsdValuePending: isQuotePending,
-  } = useGetGlobalQuote(options, 3, 1);
+  } = useGetGlobalQuote(options, 3, 1) as { quoteValue: { nativeFee: bigint }; quoteError: any; isUsdValuePending: boolean };
 
   const {
     approveUsda,
@@ -814,7 +817,7 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  const { payableOptionFees } = usePayableOptionFees(position.index);
+  const { payableOptionFees } = usePayableOptionFees(position.index) as { payableOptionFees: bigint | undefined };
 
   const handleRenew = () => {
     setRenewLoading(true);

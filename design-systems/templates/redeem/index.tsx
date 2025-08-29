@@ -299,7 +299,8 @@ const RedeemContainer = () => {
       accountAddress as `0x${string}`,
       parseUnits((formik.values.collateralAmount || 0).toString(), 18),
     ],
-  }) as { data: bigint[] | undefined; error: Error | undefined };
+  }) as { data: [bigint, bigint, bigint, bigint, bigint, bigint] | undefined; error: Error | null };
+
 
   useEffect(() => {
     // checking if the input collateral is abond and the collateral amount is greater than 0

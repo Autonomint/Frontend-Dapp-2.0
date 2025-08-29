@@ -38,6 +38,11 @@ export const multiSignABI = [
   },
   {
     "inputs": [],
+    "name": "MultiSign_RequiredApprovalsNotMetToSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotInitializing",
     "type": "error"
   },
@@ -135,6 +140,24 @@ export const multiSignABI = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "ownerAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "toAdd",
+        "type": "bool"
+      }
+    ],
+    "name": "addOrRemoveOwner",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

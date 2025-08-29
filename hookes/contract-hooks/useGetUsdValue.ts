@@ -42,12 +42,9 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>) => {
         ], // Default to ETH address if assetAddress is not provided
     ],
     query: { enabled: !!address && !!chainId }, // Only run the query if wallet is connected and chain is available
-  }) as {
-    data: bigint[] | undefined;
-    error: Error | undefined;
-    isSuccess: boolean;
-    isPending: boolean;
-  };
+  }) as { isPending: boolean; data: [bigint, bigint] | undefined };
+
+
 
   return {
     isUsdValuePending, // Indicates if the USD value query is still loading

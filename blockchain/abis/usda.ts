@@ -295,7 +295,17 @@ export const usDaAbi  =  [
   },
   {
     "inputs": [],
+    "name": "USDa_InvalidMultiSignAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "USDa_OnlyCoreContracts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "USDa_RequiredApprovalsNotMetToSet",
     "type": "error"
   },
   {
@@ -1004,6 +1014,11 @@ export const usDaAbi  =  [
       {
         "internalType": "address",
         "name": "_delegate",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_multiSign",
         "type": "address"
       }
     ],
@@ -1827,6 +1842,19 @@ export const usDaAbi  =  [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiSign",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "options_",
         "type": "address"
       }
@@ -1903,7 +1931,7 @@ export const usDaAbi  =  [
         "type": "string"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

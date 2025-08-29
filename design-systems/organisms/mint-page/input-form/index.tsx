@@ -136,7 +136,6 @@ function InputForm({ currency }: { currency: string }) {
   });
 
 
-
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
 
