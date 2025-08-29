@@ -447,7 +447,7 @@ const RedeemContainer = () => {
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      const redeemAmountUSDa = BigInt((parseUnits(values.collateralAmount || '0', 6)));
+      const redeemAmountUSDa = BigInt((parseUnits(String(values.collateralAmount) || '0', 6)));
       // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
         setUsdaApproveLocal(true);
@@ -468,7 +468,7 @@ const RedeemContainer = () => {
       setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
-        parseUnits(values.collateralAmount || '0', 18)
+        parseUnits(String(values.collateralAmount) || '0', 18)
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
@@ -504,7 +504,7 @@ const RedeemContainer = () => {
         chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "redeemYields",
-      args: [BigInt(parseUnits(formik.values.collateralAmount || "0", 18))],
+      args: [parseUnits(String(formik.values.collateralAmount) || '0', 18)],
     });
   };
 
@@ -519,7 +519,7 @@ const RedeemContainer = () => {
       address: cdsAddress[chainId as keyof typeof cdsAddress],
       functionName: "redeemAssets",
       args: [
-        BigInt(parseUnits(formik.values.collateralAmount || '0', 6)),
+        BigInt(parseUnits(String(formik.values.collateralAmount) || '0', 6)),
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
