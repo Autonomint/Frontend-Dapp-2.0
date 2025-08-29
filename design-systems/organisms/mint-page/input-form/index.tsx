@@ -763,7 +763,7 @@ function InputForm({ currency }: { currency: string }) {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
 
-  console.log(formik.errors, "errors");
+
 
   return (
     <form onSubmit={formik.handleSubmit}>

@@ -288,7 +288,7 @@ export function WithdrawFund({
         ) * BigInt(lastCumulativeRate || 0)
       ) / BigInt(10 ** 27);
 
-  console.log("totalUsdaAmntWithCumulativeRate", totalUsdaAmntWithCumulativeRate);
+
 
 
   // updating repay amount according to status
@@ -311,7 +311,7 @@ export function WithdrawFund({
     functionName: "getBorrowData",
   }) as { data: number[] | undefined; isLoading: boolean };
 
-  console.log("currentAPR", currentAPR);
+
 
   function handleDepositData() {
     setIsDataUpdating(true);
