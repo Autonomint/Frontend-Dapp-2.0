@@ -654,6 +654,9 @@ function InputForm({ currency }: { currency: string }) {
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
+
+
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
