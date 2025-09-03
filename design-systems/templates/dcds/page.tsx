@@ -983,6 +983,7 @@ function DCDSTemplate() {
     isFunctionPausedCDS_Deposit,
   ]);
 
+
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
     setSelectedTokens((prev) =>
@@ -1243,6 +1244,7 @@ function DCDSTemplate() {
     // if (tokenList[3]) list.push(tokenList[3]);
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
+    if (tokenList[4]) list.push(tokenList[4]);
     return list;
   }, [tokenList]);
 
@@ -1404,10 +1406,10 @@ function DCDSTemplate() {
                       className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
                     />
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white dark:bg-black">
+                  <TooltipContent className="bg-white dark:bg-black max-w-[400px]">
                     <p>
-                      We will take 70% of the token dollar value considering
-                      it&apos;s volatility.
+                      If price decreases by 30%, we will swap the token to USDT
+                      to minimize dCDS pool volatility
                     </p>
                   </TooltipContent>
                 </Tooltip>

@@ -45,7 +45,7 @@ const DcdsPositionTableRow = ({
       if (
         Number(
           position.depositedAmounts[
-            token as keyof typeof position.depositedAmounts
+          token as keyof typeof position.depositedAmounts
           ]
         ) > 0
       ) {
@@ -54,7 +54,7 @@ const DcdsPositionTableRow = ({
             ? chainId === NetworkId.BaseSepolia
               ? "aero"
               : "op"
-            : token 
+            : token
         );
       }
     }
@@ -63,11 +63,10 @@ const DcdsPositionTableRow = ({
 
   return (
     <tr
-      className={`border ${
-        highlight
-          ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-          : ""
-      } border-solid border-grayLight `}
+      className={`border ${highlight
+        ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+        : ""
+        } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
       <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">
@@ -80,7 +79,9 @@ const DcdsPositionTableRow = ({
             Number(position.depositedAmounts.usdt || 0) +
             Number(position.depositedAmounts.boldToken || 0) +
             Number(position.depositedAmounts.nativeToken || 0) *
-              Number(position.nativeTokenPriceAtDeposit || 0)
+            Number(position.nativeTokenPriceAtDeposit || 0) +
+            Number(position.depositedAmounts.usdc || 0) *
+            Number(position.usdcPriceAtDeposit || 0)
           ).toFixed(2)}
           <div className="flex items-center gap-1">
             {depositedTokenNames.map((tokenName) => {

@@ -76,9 +76,10 @@ const useFetchOptionFees = (
         ethPrice,
         strikePercent,
       }), // Function to fetch option fees
-    enabled: !!isConnected && !!chainId && !!collateralAmount, // Enable query only if connected and inputs are valid
+    enabled:
+      !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0, // Enable query only if connected and inputs are valid
     refetchOnWindowFocus: true, // Refetch when the window regains focus
-    retry: 1, // Retry once on failure
+    retry: 0, // Retry once on failure
   });
 
   // Convert fee from micro-units (1e6) to readable format; fallback to 0
