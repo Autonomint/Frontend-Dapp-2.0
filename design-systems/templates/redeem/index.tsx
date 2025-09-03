@@ -297,9 +297,10 @@ const RedeemContainer = () => {
     functionName: "getAbondYields",
     args: [
       accountAddress as `0x${string}`,
-      BigInt(Number(formik.values.collateralAmount || 0) * 10 ** 18),
+      parseUnits((String(formik.values.collateralAmount || 0)).toString(), 18),
     ],
-  }) as { data: bigint[] | undefined; error: Error | undefined };
+  }) as { data: [bigint, bigint, bigint, bigint, bigint, bigint] | undefined; error: Error | null };
+
 
   useEffect(() => {
     // checking if the input collateral is abond and the collateral amount is greater than 0
@@ -446,7 +447,7 @@ const RedeemContainer = () => {
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      const redeemAmountUSDa = BigInt((values.collateralAmount || 0) * 10 ** 6);
+      const redeemAmountUSDa = BigInt((parseUnits(String(values.collateralAmount || '0'), 6)));
       // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
         setUsdaApproveLocal(true);
@@ -467,7 +468,7 @@ const RedeemContainer = () => {
       setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
-        (values.collateralAmount || 0) * 10 ** 18
+        parseUnits(String(values.collateralAmount || '0'), 18)
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
@@ -503,7 +504,7 @@ const RedeemContainer = () => {
         chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "redeemYields",
-      args: [BigInt(parseUnits(formik.values.collateralAmount || "0", 18))],
+      args: [parseUnits(String(formik.values.collateralAmount || '0'), 18)],
     });
   };
 
@@ -518,7 +519,7 @@ const RedeemContainer = () => {
       address: cdsAddress[chainId as keyof typeof cdsAddress],
       functionName: "redeemAssets",
       args: [
-        BigInt(Number(formik.values.collateralAmount) * 10 ** 6),
+        BigInt(parseUnits(String(formik.values.collateralAmount || '0'), 6)),
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
@@ -919,16 +920,16 @@ const RedeemContainer = () => {
                     </Button>
                   </div>
                 </TooltipTrigger>
-                {isFunctionPausedBorrow_Redeem &&
-                  formik.values.inputCollateral === "abond" && (
+                {((isFunctionPausedBorrow_Redeem &&
+                  formik.values.inputCollateral === "abond") ||
+                  (isFunctionPausedCDS_Redeem &&
+                    formik.values.inputCollateral)) && (
                     <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                      <p>{"ABond redeem is pause now"}</p>
-                    </TooltipContent>
-                  )}
-                {isFunctionPausedCDS_Redeem &&
-                  formik.values.inputCollateral === "amint" && (
-                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                      <p>{"USDa redeem is paused now"}</p>
+                      <p>
+                        {formik.values.inputCollateral === "abond"
+                          ? "ABond redeem is pause now"
+                          : "USDa redeem is paused now"}
+                      </p>
                     </TooltipContent>
                   )}
               </Tooltip>

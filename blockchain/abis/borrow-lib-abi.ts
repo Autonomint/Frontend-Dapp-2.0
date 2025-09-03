@@ -1,4 +1,4 @@
-export const mpoABI = [
+export const borrowLibAbi = [
   {
     "inputs": [
       {
@@ -8,6 +8,62 @@ export const mpoABI = [
       }
     ],
     "name": "AddressEmptyCode",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_AlreadyLiquidated",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_AlreadySwapped",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_ApproveFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_BorrowHealthHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "BorrowLiq_CantBeEOAOrZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_InvalidMultiSignAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_LiquidateBurnFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_RequiredApprovalsNotMetToSet",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_SlippageExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BorrowLiq_TransferFailed",
     "type": "error"
   },
   {
@@ -42,42 +98,6 @@ export const mpoABI = [
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "Oracle_CollateralAddressesAndPriceFeedIdsMustBeSameLength",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "input",
-        "type": "uint8"
-      }
-    ],
-    "name": "Oracle_InvalidAverageRoundIds",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Oracle_InvalidChain",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Oracle_InvalidMultiSignAddress",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Oracle_MaxPythPriceAgeCantBeZero",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Oracle_RequiredApprovalsNotMetToSet",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -97,6 +117,11 @@ export const mpoABI = [
       }
     ],
     "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
     "type": "error"
   },
   {
@@ -126,6 +151,43 @@ export const mpoABI = [
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "liquidationAmount",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "profits",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "ethAmount",
+        "type": "uint128"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "availableLiquidationAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Liquidate",
     "type": "event"
   },
   {
@@ -174,41 +236,12 @@ export const mpoABI = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "underlyings",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "oracles_",
-        "type": "address[]"
-      },
-      {
-        "internalType": "enum BasePriceOracle.Assets[]",
-        "name": "assetNames",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "addOrUpdateAsset",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "enum BasePriceOracle.Assets",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "name": "assetAddress",
+    "inputs": [],
+    "name": "admin",
     "outputs": [
       {
         "internalType": "address",
-        "name": "assetAddress",
+        "name": "",
         "type": "address"
       }
     ],
@@ -216,47 +249,36 @@ export const mpoABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "autonomintUSDPrice",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "averageroundIds",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "underlyings",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "borrowingAddress",
+        "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "_oracles",
-        "type": "address[]"
+        "internalType": "address",
+        "name": "cdsAddress",
+        "type": "address"
       },
       {
-        "internalType": "enum BasePriceOracle.Assets[]",
-        "name": "assetNames",
-        "type": "uint8[]"
+        "internalType": "address",
+        "name": "usdaAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "abondAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "globalVariablesAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "multiSignAddress",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -265,35 +287,42 @@ export const mpoABI = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "maxPythPriceAge",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
-        "name": "underlying",
+        "name": "user",
         "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
+      },
+      {
+        "internalType": "enum IBorrowing.LiquidationType",
+        "name": "liquidationType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "odosAssembledData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiredETHAmount",
+        "type": "uint256"
       }
     ],
-    "name": "oracles",
+    "name": "liquidateBorrowPosition",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "oracleAddress",
-        "type": "address"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -304,30 +333,6 @@ export const mpoABI = [
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "underlying",
-        "type": "address"
-      }
-    ],
-    "name": "price",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
       }
     ],
     "stateMutability": "view",
@@ -357,6 +362,44 @@ export const mpoABI = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "adminAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "contract ICdsDeposit",
+            "name": "cdsDeposit",
+            "type": "address"
+          },
+          {
+            "internalType": "contract ICdsWithdraw",
+            "name": "cdsWithdraw",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct CDSInterface.ChildContracts",
+        "name": "_childContracts",
+        "type": "tuple"
+      }
+    ],
+    "name": "setCdsChildContracts",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_multiSign",
         "type": "address"
       }
@@ -370,37 +413,24 @@ export const mpoABI = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "treasuryAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "averageroundIds_",
-        "type": "uint8"
-      }
-    ],
-    "name": "updateAverageRoundIds",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_maxPythPriceAge",
-        "type": "uint16"
-      }
-    ],
-    "name": "updateMaxPythPriceAge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

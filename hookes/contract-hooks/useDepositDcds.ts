@@ -11,12 +11,25 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
     isPending: dcdsDepositIsPending,
     writeContract: writeDcdsDeposit,
     reset: resetDcdsDeposit,
+    error: dcdsDepositError,
   } = useWriteContract({
     mutation,
   });
 
   const handleDcdsDeposit = async (
-    args: [`0x${string}`[], bigint[], Widen<boolean>, bigint, bigint],
+    args: [
+      {
+        user: `0x${string}`;
+        tokenAddresses: `0x${string}`[];
+        tokenAmounts: bigint[];
+        liquidate: Widen<boolean>;
+        liquidationAmount: bigint;
+        lockingPeriod: bigint;
+        expiredETHAmount: bigint;
+      },
+      bigint,
+      `0x${string}`
+    ],
     value: bigint
   ) => {
     writeDcdsDeposit({

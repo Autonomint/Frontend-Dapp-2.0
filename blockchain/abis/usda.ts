@@ -1,4 +1,4 @@
-export const usDaAbi  =  [
+export const usDaAbi = [
   {
     "inputs": [
       {
@@ -295,7 +295,17 @@ export const usDaAbi  =  [
   },
   {
     "inputs": [],
+    "name": "USDa_InvalidMultiSignAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "USDa_OnlyCoreContracts",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "USDa_RequiredApprovalsNotMetToSet",
     "type": "error"
   },
   {
@@ -1819,6 +1829,19 @@ export const usDaAbi  =  [
       }
     ],
     "name": "setMsgInspector",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiSign",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

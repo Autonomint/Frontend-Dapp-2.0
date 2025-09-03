@@ -156,4 +156,9 @@ export const boldTokenAddress = {
 export const optionContractAddress = {
   8453: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
   10: "0x3820d1eD09F73C3e9a9fcd39795855b430f9C6E3",
+}
+// Addresses for the borrow lib contract
+export const borrowLibAddress = {
+  84532: "0x8A08258Bf7448604a354094182137A47296A5BB5",
+  11155420: "0x84ef34218255C3A0EcD4100820cd3ab3D23DFDed",
 } as const;

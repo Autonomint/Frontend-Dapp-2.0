@@ -1,4 +1,4 @@
-export const globalAbi =[
+export const globalAbi = [
   {
     "inputs": [
       {
@@ -67,6 +67,11 @@ export const globalAbi =[
       }
     ],
     "name": "Global_CantBeEOAOrZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Global_InvalidMultiSignAddress",
     "type": "error"
   },
   {
@@ -618,6 +623,26 @@ export const globalAbi =[
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getOmniChainData2",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "cdsProfitsCV",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IGlobalVariables.OmniChainData2",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -1086,6 +1111,19 @@ export const globalAbi =[
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_multiSign",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiSign",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -1251,6 +1289,26 @@ export const globalAbi =[
       }
     ],
     "name": "setOmniChainData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "cdsProfitsCV",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IGlobalVariables.OmniChainData2",
+        "name": "_omniChainData2",
+        "type": "tuple"
+      }
+    ],
+    "name": "setOmniChainData2",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1574,4 +1632,4 @@ export const globalAbi =[
     "stateMutability": "payable",
     "type": "receive"
   }
-] as const;
+];

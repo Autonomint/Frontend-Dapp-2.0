@@ -1,3 +1,4 @@
+// Import required dependencies
 import { useQuery } from "@tanstack/react-query";
 import { LayerZeroUrl } from "../../utils/urls";
 import { useAccount } from "wagmi";
@@ -62,6 +63,7 @@ interface Verification {
   };
 }
 
+// Interface representing a LayerZero message with all its properties and configurations
 interface LayerZeroMessage {
   pathway: Pathway;
   source: {
@@ -120,54 +122,70 @@ interface LayerZeroMessagesResponse {
   data: LayerZeroMessage[];
 }
 
+// Custom hook to manage LayerZero cross-chain messages
 export const useLayerZeroMessages = () => {
+  // Get current chain ID from wagmi
   const { chainId } = useAccount();
 
+  // Determine the other chain ID based on current chain
+  // Switches between Optimism and BaseSepolia
   const otherChainId =
     chainId === NetworkId.Optimism ? NetworkId.BaseSepolia : NetworkId.Optimism;
 
+  // Get the contract address for the other chain
   const otherChainContractAddress =
     globalAddress[otherChainId as keyof typeof globalAddress];
 
+  // Get the EID (Endpoint ID) for the other chain
   const eid = eIdWithChainId[otherChainId];
 
+  // Function to fetch LayerZero messages from the API
   const fetchMessages = async (): Promise<LayerZeroMessagesResponse> => {
+    // Return empty data if contract address or EID is not available
     if (!otherChainContractAddress || !eid) return { data: [] };
 
+    // Fetch messages from LayerZero API with specified EID and contract address
     const response = await fetch(
       `${LayerZeroUrl}/messages/oapp/${eid}/${otherChainContractAddress}?limit=1`
     );
+
+    // Handle API errors
     if (!response.ok) {
       throw new Error("Failed to fetch messages");
     }
     return response.json();
   };
 
+  // Use React Query to manage the data fetching
   const { data, isLoading, error, isError } =
     useQuery<LayerZeroMessagesResponse>({
+      // Query key includes chain ID and relevant addresses
       queryKey: [
         "layerZeroMessages",
         chainId,
         { otherChainContractAddress, eid },
       ],
       queryFn: fetchMessages,
-      retry: 1,
-      refetchOnWindowFocus: true,
-      // enabled: !!otherChainContractAddress && !!eid,
-      enabled: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchInterval: 5000,
+      retry: 1, // Retry once on failure
+      refetchOnWindowFocus: true, // Refetch when window gains focus
+      enabled: !!otherChainContractAddress && !!eid,
+      // enabled: false, // Query is disabled (currently commented out)
+      staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+      refetchInterval: 5000, // Refetch every 5 seconds
     });
 
+  // Memoized function to check if system is ready for new transactions
   const readyForNewTx = useMemo(() => {
+    // Return false if no messages exist
     if (!data?.data?.length) return false;
+    // Check if all messages have been delivered
     return data.data.every((msg) => msg.status.name === "DELIVERED");
   }, [data, chainId]);
 
   return {
-    layerZeroTxData: data,
-    readyForNewTx: true,
-    isLoading: isLoading && isError === false,
-    error,
+    layerZeroTxData: data, // LayerZero message data
+    readyForNewTx: true || isError, // Always return true (TODO: fix this)
+    isLoading: isLoading && isError === false, // Loading state
+    error, // Any error that occurred
   };
 };

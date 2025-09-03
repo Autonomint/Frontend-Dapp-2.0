@@ -52,7 +52,7 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetStatus, NetworkId } from "@/utils/constants";
+import { AssetStatus, CdsData, NetworkId } from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -82,6 +82,7 @@ import { FormValues, TokenDetails } from "./interface";
 import { scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { useCalculateGainCDS } from "@/hookes/contract-hooks/useCalculateGainCDS";
+import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -263,12 +264,14 @@ function DCDSTemplate() {
   const { data: usdtLimit, refetch: refetchCurrentData } = useReadContract({
     abi: cdsAbi,
     address: cdsAddress[chainId as keyof typeof cdsAddress],
-    functionName: "getUsdtLimit",
+    args: [CdsData.usdtLimit],
+    functionName: "getBorrowData",
+    query: {
+      select: (data) => formatUnits(data as bigint, 6),
+    },
   });
 
   const { data: calculateGainCDS } = useCalculateGainCDS();
-
-  const USDT_DEPOSIT_LIMIT_IN_DCDS = Number(usdtLimit || 0) / 1e6;
 
   // assigning the formik values to the local variables because getting old values from formik directly
   const liquidationGains = formik.values.liquidationGains;
@@ -355,6 +358,10 @@ function DCDSTemplate() {
     }
   }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
+  const expiredETHAmount = 0;
+
+  const { refetchcdsDepositSignedData } = useGetDcdsWithdrawSignedData();
+
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
     try {
@@ -375,11 +382,11 @@ function DCDSTemplate() {
             return BigInt(
               formik.values[`${token.tokenName.toLowerCase()}Amount`]
                 ? parseUnits(
-                    formik.values[
-                      `${token.tokenName.toLowerCase()}Amount`
-                    ].toString(),
-                    Number(token.tokenDecimals)
-                  )
+                  formik.values[
+                    `${token.tokenName.toLowerCase()}Amount`
+                  ].toString(),
+                  Number(token.tokenDecimals)
+                )
                 : 0
             );
           }),
@@ -387,38 +394,47 @@ function DCDSTemplate() {
           selectedTokens.map((token) => token.tokenDetails)
         );
       }
+      const cdsDepositSignedData = await refetchcdsDepositSignedData();
 
       if (nativeFee?.nativeFee) {
         handleDcdsDeposit?.(
           [
-            // token addresses
-            tokenList.map((token) => {
-              const tokenDetail = selectedTokens.find((selectedToken) => {
-                return selectedToken.tokenAddress === token.tokenAddress;
-              });
-              return (tokenDetail?.tokenAddress ??
-                zeroAddress) as `0x${string}`;
-            }),
-            // token amount in wei
-            tokenList.map((token) => {
-              const tokenDetail = selectedTokens.find((selectedToken) => {
-                return selectedToken.tokenAddress === token.tokenAddress;
-              });
-              return formik.values[
-                `${tokenDetail?.tokenName.toLowerCase()}Amount`
-              ]
-                ? parseUnits(
+            {
+              user: address as `0x${string}`,
+              // token addresses
+              tokenAddresses: tokenList.map((token) => {
+                const tokenDetail = selectedTokens.find((selectedToken) => {
+                  return selectedToken.tokenAddress === token.tokenAddress;
+                });
+                return (tokenDetail?.tokenAddress ??
+                  zeroAddress) as `0x${string}`;
+              }),
+              // token amount in wei
+              tokenAmounts: tokenList.map((token) => {
+                const tokenDetail = selectedTokens.find((selectedToken) => {
+                  return selectedToken.tokenAddress === token.tokenAddress;
+                });
+                return formik.values[
+                  `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                ]
+                  ? parseUnits(
                     formik.values[
                       `${tokenDetail?.tokenName.toLowerCase()}Amount`
                     ].toString(),
                     Number(tokenDetail?.tokenDecimals)
                   )
-                : 0n;
-            }),
-            // liquidation gains
-            liquidationGains,
-            liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-            BigInt(Number(lockInPeriodLocal || 0) * 86400),
+                  : 0n;
+              }),
+              // liquidation gains
+              liquidate: liquidationGains,
+              liquidationAmount: liquidationGains
+                ? BigInt(liqAmnt.toString())
+                : 0n,
+              lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+              expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+            },
+            BigInt(cdsDepositSignedData.deadline),
+            cdsDepositSignedData.signature as `0x${string}`,
           ],
           nativeFee.nativeFee
         );
@@ -495,7 +511,7 @@ function DCDSTemplate() {
           functionName: "approve",
           args: [
             cdsDepositAddress[
-              chainId as keyof typeof cdsDepositAddress
+            chainId as keyof typeof cdsDepositAddress
             ] as `0x${string}`,
             allowanceAmount,
           ],
@@ -543,9 +559,8 @@ function DCDSTemplate() {
     handleResetTransactionState();
     refetchAllowanceDynamic();
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-        DepositdataReceipt?.transactionHash
-      } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${DepositdataReceipt?.transactionHash
+        } `;
       return (
         <ToastNotification
           title="Deposit Successful"
@@ -712,11 +727,11 @@ function DCDSTemplate() {
     useReadContracts({
       contracts: tokenAddress
         ? tokenAddress.map((contractAddress) => ({
-            address: contractAddress as `0x${string}`,
-            abi: erc20Abi,
-            functionName: "balanceOf",
-            args: [address],
-          }))
+          address: contractAddress as `0x${string}`,
+          abi: erc20Abi,
+          functionName: "balanceOf",
+          args: [address],
+        }))
         : [],
       query: {
         select: (data) => {
@@ -753,7 +768,7 @@ function DCDSTemplate() {
       args: [
         address,
         cdsDepositAddress[
-          chainId as keyof typeof cdsDepositAddress
+        chainId as keyof typeof cdsDepositAddress
         ] as `0x${string}`,
       ],
     })),
@@ -840,55 +855,55 @@ function DCDSTemplate() {
       const luckBoaster =
         calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
           .minutes > 0 &&
-        calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
+          calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+            .minutes > 0
           ? 10
           : calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine5xTimestamp || ""
-            ).minutes > 0
-          ? 5
-          : calculateRemainingTimeDate(
+            farmLuckDetails?.deadLine5xTimestamp || ""
+          ).minutes > 0
+            ? 5
+            : calculateRemainingTimeDate(
               farmLuckDetails?.deadLine10xTimestamp || ""
             ).minutes > 0
-          ? 10
-          : 0;
+              ? 10
+              : 0;
 
       // total boaster for token
       const totalBooster =
         (token.symbol
           ? Number(
-              tokenRewardDetailList?.[
-                token.symbol === "USDa" || token.symbol === "USDA+"
-                  ? "USDA"
-                  : token.symbol === "OP" || token.symbol === "AERO"
+            tokenRewardDetailList?.[
+              token.symbol === "USDa" || token.symbol === "USDA+"
+                ? "USDA"
+                : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
                   : token.symbol?.toString()
-              ]?.assetBooster ?? 0
-            )
+            ]?.assetBooster ?? 0
+          )
           : 0) + luckBoaster;
 
       // Finding the max timestamp
       const totalTimeStamp = Math.max(
         farmLuckDetails?.deadLine5xTimestamp
           ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+          new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
           : 0,
         farmLuckDetails?.deadLine10xTimestamp
           ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+          new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
           : 0,
         // timestamp for campaign booster
         Number(
           token.symbol
             ? Number(
-                tokenRewardDetailList?.[
-                  token.symbol === "USDa" || token.symbol === "USDA+"
-                    ? "USDA"
-                    : token.symbol === "OP" || token.symbol === "AERO"
+              tokenRewardDetailList?.[
+                token.symbol === "USDa" || token.symbol === "USDA+"
+                  ? "USDA"
+                  : token.symbol === "OP" || token.symbol === "AERO"
                     ? "NATIVE"
                     : token.symbol?.toString()
-                ]?.assetBoosterValidity ?? 0
-              )
+              ]?.assetBoosterValidity ?? 0
+            )
             : 0
         )
       );
@@ -916,26 +931,26 @@ function DCDSTemplate() {
         // fetching from backend variable
         minTokenAmount: token.symbol
           ? Number(
-              tokenRewardDetailList?.[
-                token.symbol === "USDa" || token.symbol === "USDA+"
-                  ? "USDA"
-                  : token.symbol === "OP" || token.symbol === "AERO"
+            tokenRewardDetailList?.[
+              token.symbol === "USDa" || token.symbol === "USDA+"
+                ? "USDA"
+                : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
                   : token.symbol?.toString()
-              ]?.minAmount ?? 0
-            )
+            ]?.minAmount ?? 0
+          )
           : 0,
         // points to be given on per min deposit
         pointToGiven: token.symbol
           ? Number(
-              tokenRewardDetailList?.[
-                token.symbol === "USDa" || token.symbol === "USDA+"
-                  ? "USDA"
-                  : token.symbol === "OP" || token.symbol === "AERO"
+            tokenRewardDetailList?.[
+              token.symbol === "USDa" || token.symbol === "USDA+"
+                ? "USDA"
+                : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
                   : token.symbol?.toString()
-              ]?.pointsToBeGiven ?? 0
-            )
+            ]?.pointsToBeGiven ?? 0
+          )
           : 0,
         // default booster for token (specific token booster)
         defaultBooster: totalBooster,
@@ -1018,10 +1033,10 @@ function DCDSTemplate() {
     // getting the lockin booster value
     const lockInBooster = isLockinBoosterActive
       ? Number(
-          lockInPeriodOption.find(
-            (option) => option.value === formik.values.lockInPeriod
-          )?.booster || 0
-        )
+        lockInPeriodOption.find(
+          (option) => option.value === formik.values.lockInPeriod
+        )?.booster || 0
+      )
       : 0;
     const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
@@ -1060,8 +1075,8 @@ function DCDSTemplate() {
       const pointsForToken =
         valueInUSD >= token.minTokenAmount
           ? (valueInUSD / token.minTokenAmount) *
-            token.pointToGiven *
-            totalBooster
+          token.pointToGiven *
+          totalBooster
           : 0;
 
       return total + (isNaN(pointsForToken) ? 0 : pointsForToken);
@@ -1148,10 +1163,9 @@ function DCDSTemplate() {
             )}
             setSuccessLoading={() => console.log(true)}
             heading={`Approving ${token.tokenLabel}`}
-            loadingCount={`${
-              selectedTokens.findIndex((t) => t.tokenName === token.tokenName) +
+            loadingCount={`${selectedTokens.findIndex((t) => t.tokenName === token.tokenName) +
               1
-            }/${selectedTokens.length + 1}`}
+              }/${selectedTokens.length + 1}`}
           />
         )
     );
@@ -1313,16 +1327,16 @@ function DCDSTemplate() {
                           theme === "dark" && token.tokenName === "USDA+"
                             ? USDaIconGreen
                             : theme === "light" && token.tokenName === "USDA+"
-                            ? USDaIcon
-                            : token?.tokenImage
+                              ? USDaIcon
+                              : token?.tokenImage
                         }
                         alt={token?.tokenName}
                         width={
                           theme === "dark" && token.tokenName === "USDA+"
                             ? 55
-                            : theme === "light" && token.tokenName === "USDA+"
-                            ? 55
-                            : 80
+                            : theme === "light" && token.tokenName === "USDa"
+                              ? 55
+                              : 80
                         }
                         height={80}
                         className="object-cover"
@@ -1398,22 +1412,22 @@ function DCDSTemplate() {
               {selectedTokens.some((token) =>
                 nativeTokenName.includes(token.tokenLabel)
               ) && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info
-                      width={24}
-                      height={24}
-                      className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white dark:bg-black max-w-[400px]">
-                    <p>
-                      If price decreases by 30%, we will swap the token to USDT
-                      to minimize dCDS pool volatility
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info
+                        width={24}
+                        height={24}
+                        className="ml-2 stroke-[#58a574] fill-[#22c55e30] "
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white dark:bg-black max-w-[400px]">
+                      <p>
+                        If price decreases by 30%, we will swap the token to USDT
+                        to minimize dCDS pool volatility
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
             </div>
             <div
               ref={scrollRef}
@@ -1434,11 +1448,10 @@ function DCDSTemplate() {
                       type="number"
                       name={`${token?.tokenName?.toLocaleLowerCase()}Amount`}
                       id={`token-${key}`}
-                      className={`flex  py-1 items-center h-[44px] border   font-medium md:text-[20px] dark:text-[20px] ${
-                        nativeTokenName.includes(token.tokenLabel)
-                          ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
-                          : "border-grayLight border-[1px]"
-                      }`}
+                      className={`flex  py-1 items-center h-[44px] border   font-medium md:text-[20px] dark:text-[20px] ${nativeTokenName.includes(token.tokenLabel)
+                        ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                        : "border-grayLight border-[1px]"
+                        }`}
                       placeholder="0"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
@@ -1448,18 +1461,17 @@ function DCDSTemplate() {
                     />
                     {/* showing the token value in usd */}
                     <div
-                      className={`p-1 flex justify-center items-center  border-y border-x  font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight ${
-                        nativeTokenName.includes(token.tokenLabel)
-                          ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
-                          : "border-grayLight border-[1px] "
-                      }`}
+                      className={`p-1 flex justify-center items-center  border-y border-x  font-medium md:text-[18px] dark:text-[20px] border-l-0 text-grayLight ${nativeTokenName.includes(token.tokenLabel)
+                        ? "border-[#58a574] border-x-[2px] border-y-[2px] bg-[#22c55e30]"
+                        : "border-grayLight border-[1px] "
+                        }`}
                     >
                       <span>
                         $
                         {(
                           Number(
                             formik.values[
-                              `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
+                            `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
                             ]
                           ) * Number(token?.tokenPrice || 0)
                         ).toFixed(2)}
@@ -1482,7 +1494,7 @@ function DCDSTemplate() {
                           {(() => {
                             const error =
                               formik.errors?.[
-                                `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
+                              `${token.tokenName.toLocaleLowerCase()}Amount` as keyof FormValues
                               ];
                             return error === "max"
                               ? "Amount exceeded balance"
@@ -1667,10 +1679,10 @@ function DCDSTemplate() {
                   selectedTokens.length === 3
                     ? "4/4"
                     : selectedTokens.length === 2
-                    ? "3/3"
-                    : selectedTokens.length === 2
-                    ? "2/2"
-                    : "2/2"
+                      ? "3/3"
+                      : selectedTokens.length === 2
+                        ? "2/2"
+                        : "2/2"
                 }
               />
             </div>

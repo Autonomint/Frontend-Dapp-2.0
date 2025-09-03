@@ -20,20 +20,22 @@ const useWithdrawUsda = (mutation: any) => {
     odosAssembledData: any,
     nonce: bigint,
     deadline: bigint,
-    signature: `0x${string}`
+    signature: `0x${string}`,
+    expiredETHAmount: bigint,
   ) => {
     try {
       borrowWithdrawAsync({
         abi: borrowingContractAbi,
         address:
           borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
+          chainId as keyof typeof borrowingContractAddress
           ],
         functionName: "withDraw",
         args: [
           address as `0x${string}`,
           BigInt(index),
           odosAssembledData,
+          expiredETHAmount,
           {
             nonce,
             deadline,
@@ -42,7 +44,7 @@ const useWithdrawUsda = (mutation: any) => {
         ],
         value: nativeFee,
       });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return {

@@ -8,7 +8,7 @@ export type calculateData = {
   ethPrice: string;
 };
 async function calculateWithdrawAmount(data: calculateData) {
-  let bodyValue = JSON.stringify({
+  const bodyValue = JSON.stringify({
     ...data,
   });
   const response = await fetch(
