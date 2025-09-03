@@ -703,7 +703,6 @@ export function DcdsWithdrawModal({
           handleDcdsWithdrawGain?.([
             BigInt(position.index),
             res?.odosAssembledData,
-            res?.nonce,
             res?.deadline,
             res?.signature,
           ]);
@@ -757,7 +756,6 @@ export function DcdsWithdrawModal({
       handleDcdsWithdrawGain?.([
         BigInt(position.index),
         res?.odosAssembledData,
-        res?.nonce,
         res?.deadline,
         res?.signature,
       ]);
