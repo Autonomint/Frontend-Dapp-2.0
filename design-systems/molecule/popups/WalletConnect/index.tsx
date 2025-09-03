@@ -14,7 +14,7 @@ import { useParams, usePathname } from "next/navigation";
 import { NetworkId } from "@/utils/constants";
 import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
 import { useAppKit } from "@reown/appkit/react";
-interface SwitchChainPopupProps {}
+interface SwitchChainPopupProps { }
 
 /**
  * SwitchChainPopup is a component that allows the user to switch the chain.
@@ -23,7 +23,7 @@ interface SwitchChainPopupProps {}
  *
  *
  */
-const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
+const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
   const { chainId, isConnected, address } = useAccount();
@@ -45,8 +45,9 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
       (chainId &&
         !["/bridge", "/"].includes(pathname) &&
         ![NetworkId.Optimism, NetworkId.BaseSepolia].includes(chainId || 0) &&
-        isConnected) ||
-      !isConnected
+        isConnected)
+      //   ||
+      // !isConnected
     ) {
       setIsPopUpOpen(true);
     } else {
