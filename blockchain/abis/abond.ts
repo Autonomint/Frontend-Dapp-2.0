@@ -1,4 +1,4 @@
-export const abondAbi =  [
+export const abondAbi = [
   {
     "inputs": [],
     "name": "Abond_CreditFailed",
@@ -595,13 +595,7 @@ export const abondAbi =  [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_multiSign",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",

@@ -1,4 +1,4 @@
-export const globalAbi =[
+export const globalAbi = [
   {
     "inputs": [
       {

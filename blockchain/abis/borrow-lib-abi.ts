@@ -249,41 +249,6 @@ export const borrowLibAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "closeThePositionInSynthetix",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes[]",
-        "name": "priceUpdateData",
-        "type": "bytes[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "closeExecution",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint128",
-        "name": "usdcFromOdos",
-        "type": "uint128"
-      },
-      {
-        "internalType": "bytes",
-        "name": "odosAssembledData",
-        "type": "bytes"
-      }
-    ],
-    "name": "executeOrdersInSynthetix",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -314,46 +279,6 @@ export const borrowLibAbi = [
         "internalType": "address",
         "name": "multiSignAddress",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "wethAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "wrapperAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "synthetixPerpsV2Address",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "synthetixAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "oneInchAggregatorV6RouterAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "multiAccountAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "usdcAddressMode",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "susdTokenAddress",
-        "type": "address"
       }
     ],
     "name": "initialize",
@@ -374,11 +299,6 @@ export const borrowLibAbi = [
         "type": "uint64"
       },
       {
-        "internalType": "uint128",
-        "name": "tokenAmountFromOdos",
-        "type": "uint128"
-      },
-      {
         "internalType": "enum IBorrowing.LiquidationType",
         "name": "liquidationType",
         "type": "uint8"
@@ -392,33 +312,6 @@ export const borrowLibAbi = [
         "internalType": "uint256",
         "name": "expiredETHAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "oneInchSwapData",
-        "type": "bytes"
-      },
-      {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "solver",
-            "type": "address"
-          },
-          {
-            "internalType": "bytes4[]",
-            "name": "selectors",
-            "type": "bytes4[]"
-          }
-        ],
-        "internalType": "struct IBorrowLiquidation.ModeLiquidationParams",
-        "name": "modeParams",
-        "type": "tuple"
       }
     ],
     "name": "liquidateBorrowPosition",
@@ -532,44 +425,12 @@ export const borrowLibAbi = [
   {
     "inputs": [
       {
-        "internalType": "enum IBorrowing.AssetName",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "name": "swapAmounts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_usdcAddress",
-        "type": "address"
-      }
-    ],
-    "name": "updateUSDC",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -590,44 +451,6 @@ export const borrowLibAbi = [
     "name": "upgradeToAndCall",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "subAccount",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "borrower",
-        "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint128",
-        "name": "usdcFromOdos",
-        "type": "uint128"
-      },
-      {
-        "internalType": "bytes",
-        "name": "odosAssembledData",
-        "type": "bytes"
-      }
-    ],
-    "name": "withdrawFromSubAccount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   }
 ];

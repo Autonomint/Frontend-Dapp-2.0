@@ -1,4 +1,4 @@
-export const cdsAbi =  [
+export const cdsAbi = [
   {
     "inputs": [
       {
@@ -253,33 +253,6 @@ export const cdsAbi =  [
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "ECDSAInvalidSignature",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "length",
-        "type": "uint256"
-      }
-    ],
-    "name": "ECDSAInvalidSignatureLength",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "s",
-        "type": "bytes32"
-      }
-    ],
-    "name": "ECDSAInvalidSignatureS",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -425,6 +398,31 @@ export const cdsAbi =  [
       }
     ],
     "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "liquidatingToken",
+        "type": "address[]"
+      }
+    ],
+    "name": "Liquidated",
     "type": "event"
   },
   {
@@ -617,6 +615,11 @@ export const cdsAbi =  [
         "internalType": "uint128",
         "name": "lastETHPrice",
         "type": "uint128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiredETHAmount",
+        "type": "uint256"
       }
     ],
     "name": "calculateCumulativeValue",
@@ -657,6 +660,11 @@ export const cdsAbi =  [
       {
         "internalType": "uint256",
         "name": "excessProfitCumulativeValue",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiredETHAmount",
         "type": "uint256"
       }
     ],
@@ -702,29 +710,56 @@ export const cdsAbi =  [
   {
     "inputs": [
       {
-        "internalType": "address[]",
-        "name": "tokenAddresses",
-        "type": "address[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "tokenAddresses",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint128[]",
+            "name": "tokenAmounts",
+            "type": "uint128[]"
+          },
+          {
+            "internalType": "bool",
+            "name": "liquidate",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidationAmount",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "lockingPeriod",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct CDSInterface.DepositUserParams",
+        "name": "params",
+        "type": "tuple"
       },
       {
-        "internalType": "uint128[]",
-        "name": "tokenAmounts",
-        "type": "uint128[]"
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
       },
       {
-        "internalType": "bool",
-        "name": "liquidate",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint128",
-        "name": "liquidationAmount",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "lockingPeriod",
-        "type": "uint128"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "deposit",
@@ -1429,11 +1464,6 @@ export const cdsAbi =  [
       },
       {
         "internalType": "uint256",
-        "name": "nonce",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
       },
@@ -2003,7 +2033,7 @@ export const cdsAbi =  [
       },
       {
         "internalType": "uint256",
-        "name": "nonce",
+        "name": "expiredETHAmount",
         "type": "uint256"
       },
       {
@@ -2033,11 +2063,6 @@ export const cdsAbi =  [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "nonce",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
