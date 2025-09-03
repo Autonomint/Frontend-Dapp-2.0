@@ -50,6 +50,7 @@ import {
 import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
+import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -267,6 +268,19 @@ export function WithdrawFund({
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean };
+
+  // fetching allowance of usda for repay
+  const { data: allowanceUSDT, isLoading: isAllowancePendingUSDT, refetch: refetchAllowanceUSDT } = useReadContract({
+    abi: testusdtAbiAbi,
+    address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+    functionName: "allowance",
+    args: [
+      address || zeroAddress,
+      borrowingContractAddress[
+      chainId as keyof typeof borrowingContractAddress
+      ],
+    ],
+  }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
   // usda amount multiply by cumulative rate
   const totalUsdaAmntWithCumulativeRate =
     lastCumulativeRate === undefined
@@ -737,6 +751,7 @@ export function WithdrawFund({
     renewError: renewErrorSm,
   } = useBorrowRenew({
     onError: () => {
+      refetchAllowanceUSDT()
       setTimeout(() => {
         setRenewLoading(false);
       }, 800);
@@ -834,6 +849,7 @@ export function WithdrawFund({
       setTimeout(() => {
         positionListRefetech();
       }, 3000);
+      refetchAllowanceUSDT()
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);
@@ -844,6 +860,7 @@ export function WithdrawFund({
           onClose={() => toast.dismiss(t)}
         />
       ));
+      refetchAllowanceUSDT()
     }
   }, [renewReceipt, renewReceiptError, isSuccessRenewReceipt]);
 
@@ -875,7 +892,7 @@ export function WithdrawFund({
       ) + 1e6
     );
 
-    if ((allowance || 0) < renewAmount) {
+    if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
       handleUsdtApprove([
         borrowingContractAddress[
