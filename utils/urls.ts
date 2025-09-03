@@ -18,10 +18,10 @@ export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
 export const scanUrls = {
-  919: "https://sepolia.explorer.mode.network/",
-  11155420: "https://sepolia-optimism.etherscan.io/",
-  11155111: `https://sepolia.etherscan.io/`,
-  84532: `https://sepolia.basescan.org/`,
+  919: "https://explorer.mode.network/",
+  10: "https://optimistic.etherscan.io/",
+  1: `https://etherscan.io/`,
+  8453: `https://basescan.org/`,
 } as Record<number, string>;
 
 // urls

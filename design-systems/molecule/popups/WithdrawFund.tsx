@@ -694,7 +694,7 @@ export function WithdrawFund({
 
   const handleRepay = async () => {
     if (balance < repayAmount) {
-      toast.error("You don't have enough USDa to repay");
+      toast.error("You don't have enough USDA+ to repay");
       return;
     }
     setRepayLoading(true);
