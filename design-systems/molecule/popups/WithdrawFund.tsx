@@ -20,7 +20,6 @@ import displayNumberWithPrecision, {
   getDownsideProtectionTillNow,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  isFifteenDaysCompleted,
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
