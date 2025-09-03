@@ -699,12 +699,13 @@ export function WithdrawFund({
     // else {
     //   callRepayInContract();
     // }
+  };
 
-    // const callRepayInContract = async () => {
-    //   setIsApproveLoadingLocal(false);
-    //   setTimeout(() => {
-    //     setWithdrawLoadingLocal(true);
-    //   }, 800);
+  const callRepayInContract = async () => {
+    setIsApproveLoadingLocal(false);
+    setTimeout(() => {
+      setWithdrawLoadingLocal(true);
+    }, 800);
 
     const borrowSignedData = await refetchBorrowWithDrawSignedData();
 
