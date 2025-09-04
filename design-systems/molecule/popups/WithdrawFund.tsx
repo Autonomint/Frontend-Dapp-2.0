@@ -186,7 +186,8 @@ export function WithdrawFund({
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
   const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
-
+  const { balanceString: USDTBalance, balance: USDTBalanceFormatted, balanceUnformatted } = useGetBalance("USDT");
+  console.log(USDTBalance, USDTBalanceFormatted, balanceUnformatted, 'USDTBalanceFormatted')
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
     useState<boolean>(false);
@@ -872,11 +873,7 @@ export function WithdrawFund({
   );
 
   const handleRenew = () => {
-    setRenewLoading(true);
-
-    resetUsdtApprove?.();
-    resetBorrowRenew?.();
-
+    // calculate renew amount
     const renewAmount = BigInt(
       Number(
         Number(payableOptionFees || 0) /
@@ -884,6 +881,23 @@ export function WithdrawFund({
       ) + 1e6
     );
 
+    // check if renew amount is greater than 0
+    if (balanceUnformatted < renewAmount) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="You don't have enough USDT to renew"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
+    // start loading and reset states
+    setRenewLoading(true);
+    resetUsdtApprove?.();
+    resetBorrowRenew?.();
+
+    // check if allowance is less than renew amount
     if ((allowance || 0) < renewAmount) {
       setRenewApproveLoading(true);
       handleUsdtApprove([
