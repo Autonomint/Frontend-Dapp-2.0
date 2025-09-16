@@ -506,6 +506,12 @@ export const cdsCoreABI = [
       },
       {
         "indexed": false,
+        "internalType": "enum CDSCoreInterface.WithdrawType",
+        "name": "withdrawType",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "withdrawAmount",
         "type": "uint256"
@@ -570,6 +576,12 @@ export const cdsCoreABI = [
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum CDSCoreInterface.WithdrawType",
+        "name": "withdrawType",
+        "type": "uint8"
       }
     ],
     "name": "WithdrewGains",
@@ -1109,6 +1121,11 @@ export const cdsCoreABI = [
             "internalType": "uint64",
             "name": "index",
             "type": "uint64"
+          },
+          {
+            "internalType": "enum CDSCoreInterface.WithdrawType",
+            "name": "withdrawType",
+            "type": "uint8"
           },
           {
             "internalType": "uint256",
@@ -1818,6 +1835,11 @@ export const cdsCoreABI = [
             "type": "uint64"
           },
           {
+            "internalType": "enum CDSCoreInterface.WithdrawType",
+            "name": "withdrawType",
+            "type": "uint8"
+          },
+          {
             "internalType": "uint256",
             "name": "excessProfitCumulativeValue",
             "type": "uint256"
@@ -1864,6 +1886,11 @@ export const cdsCoreABI = [
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
+      },
+      {
+        "internalType": "enum CDSCoreInterface.WithdrawType",
+        "name": "withdrawType",
+        "type": "uint8"
       }
     ],
     "name": "withdrawGains",

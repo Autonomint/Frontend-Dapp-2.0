@@ -168,3 +168,6 @@ export const tokenFormatDecimal = {
   wsuperOETHb: 4,
   cbBTC: 6,
 }
+export enum WithdrawType {
+  FULL_WITHDRAW, WITHDRAW_YIELDS
+}

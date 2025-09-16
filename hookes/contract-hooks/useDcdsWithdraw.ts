@@ -16,7 +16,7 @@ const useDcdsWithdraw = (mutation: any) => {
     mutation,
   });
   const { chainId } = useAccount();
-  console.log(dcdsFundWithdrawErrorData, 'dcdsFundWithdrawErrorData');
+
   const handleDcdsFundWithdraw = (args: any, value: any, token: string) => {
     const contract = token === "cbBTC" ? cdsCoreAddress : cdsAddress;
     dcdsFundWithdraw({
