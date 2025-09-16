@@ -9,6 +9,7 @@ const useDcdsWithdraw = (mutation: any) => {
     isPending: isDcdsFundWithdrawPending,
     writeContract: dcdsFundWithdraw,
     reset: resetDcdsFundWithdraw,
+    error: dcdsFundWithdrawErrorDetails,
   } = useWriteContract({
     mutation,
   });

@@ -153,3 +153,7 @@ export enum CdsData {
   usdaLimit,
   usdtLimit
 }
+
+export enum WithdrawType {
+  FULL_WITHDRAW, WITHDRAW_YIELDS
+}

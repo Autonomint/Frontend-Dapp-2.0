@@ -1,5 +1,7 @@
 import {
   borrowAssetsAddress,
+  cdsAddress,
+  cdsDepositAddress,
   nativeTokenAddress,
   testusdtAbiAddress,
   usDaAddress,
@@ -31,7 +33,7 @@ import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeR
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { NetworkId } from "@/utils/constants";
+import { NetworkId, WithdrawType } from "@/utils/constants";
 import {
   calculateTimeDifference,
   hasDaysPassed,
@@ -45,13 +47,15 @@ import axios from "axios";
 import { CornerDownRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import Image from "next/image";
 import opIconNew from "@/app/assets/op.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
+import { cdsAbi } from "@/blockchain/abis/dcds";
+import { cdsDepositABI } from "@/blockchain/abis/cds-deposit";
 
 export function DcdsWithdrawModal({
   position,
@@ -71,6 +75,8 @@ export function DcdsWithdrawModal({
   const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
 
   const [showAPYTooltip, setShowAPYTooltip] = useState(false);
+
+  const [halfWithdraw, setHalfWithdraw] = useState(false);
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
     queryKey: ["getPointEarned", address, chainId, position.index],
@@ -237,6 +243,22 @@ export function DcdsWithdrawModal({
     isOPPauseInAllStatus ||
     isUSDaPauseInAllStatus ||
     isUSDTPauseInAllStatus;
+
+  // Checking is position partial withdrawn or not 
+  const {
+    data: cdsDepositDetails,
+    isLoading: isCdsDepositDetailsLoading,
+  } = useReadContract({
+    address:
+      cdsDepositAddress[
+      chainId as keyof typeof cdsDepositAddress
+      ],
+    abi: cdsDepositABI,
+    functionName: 'getCdsDepositDetails',
+    args: [address, position.index]
+  }) as { data: { pendingFixedYields: number }, isLoading: boolean };
+
+  const pendingFixedYields = Number(cdsDepositDetails?.pendingFixedYields || 0)
 
   // new details for withdraw modal
   const NewDetails = [
@@ -645,6 +667,7 @@ export function DcdsWithdrawModal({
           // If close position is success then call withdraw gain function
           handleDcdsWithdrawGain?.([
             BigInt(position.index),
+            halfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW,
             res?.odosAssembledData,
             res?.usdtFromOdos,
             res?.deadline,
@@ -675,43 +698,53 @@ export function DcdsWithdrawModal({
   } = useGetDcdsWithdrawSignedData(position.index);
 
   // handle withdrawing funds
-  const handleWithdrawFund = async () => {
-    setDcdsFundWithdrawLoadingLocal(true);
-    // if position status is deposited then call withdraw function
-    if (position.status == "DEPOSITED") {
-      if (nativeFee) {
-        setWithdrawMethodLoading(true);
-        const res = await refetchBorrowWithDrawSignedData();
-        handleDcdsFundWithdraw?.(
-          [
-            BigInt(position.index),
-            res?.excessProfitCumulativeValue,
-            res?.expiredETHAmount,
-            res?.deadline,
-            res?.signature,
-          ],
-          nativeFee?.nativeFee
-        );
+  const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
+    try {
+      setHalfWithdraw(isHalfWithdraw || false)
+      setDcdsFundWithdrawLoadingLocal(true);
+      // if position status is deposited then call withdraw function
+      if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
+        if (nativeFee) {
+          setWithdrawMethodLoading(true);
+          const res = await refetchBorrowWithDrawSignedData();
+          handleDcdsFundWithdraw?.(
+            [
+              [address, BigInt(position.index),
+                res?.excessProfitCumulativeValue,
+                res?.expiredETHAmount,
+                isHalfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW
+              ],
+              res?.deadline,
+              res?.signature,
+            ],
+            nativeFee?.nativeFee
+          );
+        }
+      } else if (position.status == "WITHDREW" || pendingFixedYields > 0) {
+        // if position status is withdrawn then call withdraw gain function
+        setWithdrawGainLoading(true);
+        const res = await refetchBorrowWithDrawGainsSignedData();
+        handleDcdsWithdrawGain?.([
+          BigInt(position.index),
+          isHalfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW,
+          res?.odosAssembledData,
+          res?.usdtFromOdos,
+          res?.deadline,
+          res?.signature,
+        ]);
+
       }
-    } else if (position.status == "WITHDREW") {
-      // if position status is withdrawn then call withdraw gain function
-      setWithdrawGainLoading(true);
-      const res = await refetchBorrowWithDrawGainsSignedData();
-      handleDcdsWithdrawGain?.([
-        BigInt(position.index),
-        res?.odosAssembledData,
-        res?.usdtFromOdos,
-        res?.deadline,
-        res?.signature,
-      ]);
-    }
-  };
+    } catch (error) {
+      console.log(error);
+    };
+  }
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     resetDcdsFundWithdraw();
     setDcdsFundWithdrawLoadingLocal(false);
     setWithdrawMethodLoading(false);
+    setHalfWithdraw(false)
   };
 
   // loading state for withdraw modal
@@ -872,16 +905,39 @@ export function DcdsWithdrawModal({
               <div className="flex w-full mt-4  border-solid  border-[1px]  justify-between border-gray-200 rounded-[12px] bg-gray-100 dark:border-[rgb(51,51,51)] dark:bg-[#121212] flex-col sm:flex-row">
                 <div className="flex-1 relative flex flex-col justify-start items-start  gap- border-r-0    py-2 px-4">
                   <div className="flex flex-col w-full  items-start justify-between">
-                    <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                      $
-                      {Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                            ? position?.apys?.amountAccured || 0
-                            : apy[1] || 0
-                      ).toFixed(4)}
-                    </Label>
+                    <div className="flex items-center justify-between gap-3">
+
+                      <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                        $
+                        {Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                              ? position?.apys?.amountAccured || 0
+                              : apy[1] || 0
+                        ).toFixed(4)}
+                      </Label>
+                      {!(position.status == "WITHDREW") && <Button
+                        onClick={() => handleWithdrawFund(true)}
+                        disabled={
+                          (position.status === "WITHDREW_GAINS"
+                            ? true
+                            : false) ||
+                          !hasDaysPassed(
+                            Number(position?.depositedTime || 0),
+                            Number(position?.lockingPeriod || 0)
+                          ) ||
+                          isWithdrawPause ||
+                          !readyForNewTx || dcdsFundWithdrawLoadingLocal
+                        }
+                        className=" py-0 px-2 h-[32px] bg-black text-white font-normal text-[12px] text-center rounded-2xl"
+                      >
+                        {
+                          (dcdsFundWithdrawLoadingLocal && halfWithdraw) ? "Withdrawing..." : "Withdraw Yields"
+                        }
+
+                      </Button>}
+                    </div>
 
                     <div className="flex gap-1">
                       <Label className="text-[14px] font-normal text-[#777777]">
@@ -1012,7 +1068,7 @@ export function DcdsWithdrawModal({
                     <TooltipTrigger asChild>
                       <div className="h-full">
                         <Button
-                          onClick={handleWithdrawFund}
+                          onClick={() => handleWithdrawFund(false)}
                           disabled={
                             (position.status === "WITHDREW_GAINS"
                               ? true
@@ -1022,7 +1078,7 @@ export function DcdsWithdrawModal({
                               Number(position?.lockingPeriod || 0)
                             ) ||
                             isWithdrawPause ||
-                            !readyForNewTx
+                            !readyForNewTx || pendingFixedYields > 0
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >
@@ -1070,7 +1126,7 @@ export function DcdsWithdrawModal({
                   isFailure={dcdsFundWithdrawError}
                   isSuccess={Boolean(dcdsFundWithdrawData)}
                   setSuccessLoading={() => false}
-                  heading="Closing Position"
+                  heading={halfWithdraw ? "Withdrawing Yields" : "Closing Position"}
                   loadingCount="1/2"
                 />
                 <LoadingBox
@@ -1080,7 +1136,7 @@ export function DcdsWithdrawModal({
                   setSuccessLoading={() =>
                     setDcdsFundWithdrawLoadingLocal(false)
                   }
-                  heading="Withdrawing Gains"
+                  heading={halfWithdraw ? "Withdrawing Yields" : "Withdrawing Gains"}
                   loadingCount="2/2"
                 />
               </div>
@@ -1149,7 +1205,7 @@ export function DcdsWithdrawModal({
               <div className="h-[50px] overflow-hidden  md:h-[86px] mt-4">
                 {true && (
                   <Button
-                    onClick={handleWithdrawFund}
+                    onClick={() => handleWithdrawFund(false)}
                     // disabled={
                     //   (position.status === "WITHDREW" ? true : false) ||
                     //   Number(position.lockingPeriod) * 1000 > Date.now()

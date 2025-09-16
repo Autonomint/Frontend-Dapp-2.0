@@ -44,9 +44,9 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
 
   const cdsContract = new ethers.Contract(
     cdsAddress[
-      chainId === NetworkId.BaseSepolia
-        ? NetworkId.Optimism
-        : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
+    chainId === NetworkId.BaseSepolia
+      ? NetworkId.Optimism
+      : (NetworkId.BaseSepolia as keyof typeof cdsAddress)
     ],
     cdsAbi,
     provider
