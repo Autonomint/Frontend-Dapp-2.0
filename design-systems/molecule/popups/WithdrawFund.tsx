@@ -302,10 +302,10 @@ export function WithdrawFund({
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-      Number(downsideProtection)
-      : // Number(position?.optionFees)
-      Number(position.totalDebtAmount) - Number(downsideProtection);
-  // Number(position?.optionFees);
+      (Number(downsideProtection) + Number(position?.optionFees))
+      :
+      Number(position.totalDebtAmount) - (Number(downsideProtection) + Number(position?.optionFees))
+
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
