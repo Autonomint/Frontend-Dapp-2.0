@@ -292,7 +292,7 @@ export function WithdrawFund({
       chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined; isLoading: boolean };
+  }) as { data: number | undefined; isLoading: boolean , refetch: () => void };
 
   // fetching allowance of usda for repay
   const { data: allowanceUSDT, isLoading: isAllowancePendingUSDT, refetch: refetchAllowanceUSDT } = useReadContract({
@@ -307,20 +307,25 @@ export function WithdrawFund({
     ],
   }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
   // usda amount multiply by cumulative rate
-  const totalUsdaAmntWithCumulativeRate =
-    lastCumulativeRate === undefined
-      ? parseUnits(position?.normalizedAmount?.toString() || "0", 6)
-      : BigInt(
-        BigInt(
-          Math.round(
-            position.normalizedAmount
-              ? Number(
-                parseUnits(position?.normalizedAmount?.toString() || "0", 6)
-              )
-              : 0
-          )
-        ) * BigInt(lastCumulativeRate || 0)
-      ) / BigInt(10 ** 27);
+  // const totalUsdaAmntWithCumulativeRate =
+  //   lastCumulativeRate === undefined
+  //     ? parseUnits((position?.normalizedAmount?.toString() || "0"), 6)
+  //     : BigInt(
+  //       BigInt(
+  //         Math.round(
+  //           position.normalizedAmount
+  //             ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
+  //             : 0
+  //         )
+  //       ) * BigInt(lastCumulativeRate || 0)
+  //     ) / BigInt(10 ** 27);
+
+  const totalUsdaAmntWithCumulativeRate = BigInt(
+    position.normalizedAmount
+      ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
+      : 0
+  )
+
 
   // updating repay amount according to status
   const repayAmount =
@@ -728,9 +733,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(
-      Math.round(Number(parseUnits((repayAmount + 0.001).toString(), 6)))
-    );
+    const approveRepayAmount = BigInt(Math.round(Number(parseUnits((repayAmount).toString(), 6))));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
