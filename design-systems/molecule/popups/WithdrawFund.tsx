@@ -855,10 +855,12 @@ export function WithdrawFund({
         positionListRefetech();
       }, 3000);
       refetchAllowanceUSDT()
+      refetchPayableOptionFees()
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);
       setRenewLoadingSM(false);
+      refetchPayableOptionFees()
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
@@ -879,7 +881,7 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  const { payableOptionFees } = usePayableOptionFees(position.index) as { payableOptionFees: bigint | undefined };
+  const { payableOptionFees, refetchPayableOptionFees } = usePayableOptionFees(position.index);
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
