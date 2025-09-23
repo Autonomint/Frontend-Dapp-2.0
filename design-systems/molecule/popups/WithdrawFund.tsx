@@ -886,14 +886,13 @@ export function WithdrawFund({
 
   const handleRenew = () => {
     setRenewLoading(true);
-
     resetUsdtApprove?.();
     resetBorrowRenew?.();
 
     const renewAmount = BigInt(
-      Number(
-        Number(payableOptionFees || 0) / Number(getOraclePrice[0] || 0) || 0
-      ) + 1e6
+      Math.floor(Number(
+        Number(payableOptionFees || 0) / Number(getOraclePrice?.[0] || 0) || 0
+      ) + 1e6)
     );
 
     if ((allowanceUSDT || 0) < renewAmount) {
