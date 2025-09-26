@@ -292,7 +292,7 @@ export function WithdrawFund({
       chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined; isLoading: boolean , refetch: () => void };
+  }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
 
   // fetching allowance of usda for repay
   const { data: allowanceUSDT, isLoading: isAllowancePendingUSDT, refetch: refetchAllowanceUSDT } = useReadContract({
@@ -917,7 +917,6 @@ export function WithdrawFund({
   );
 
   const handleRenew = () => {
-    debugger;
     if (Number(payableOptionFees || 0) < 0) {
       toast.custom((t) => (
         <ToastNotificationError
@@ -939,10 +938,10 @@ export function WithdrawFund({
     }
     // calculate renew amount
     const renewAmount = BigInt(
-      Number(
+      Math.round(Number(
         Number(payableOptionFees || 0) /
-        Number(parseUnits(getOraclePrice[0]?.toString(), 18)) || 0
-      ) + 1e6
+        Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0
+      )) + 1e6
     );
 
     // check if renew amount is greater than 0
