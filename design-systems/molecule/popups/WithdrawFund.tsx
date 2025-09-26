@@ -27,7 +27,12 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
-import { BorrowAssetsEnum, BorrowData, BorrowStatus, NetworkId } from "@/utils/constants";
+import {
+  BorrowAssetsEnum,
+  BorrowData,
+  BorrowStatus,
+  NetworkId,
+} from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
@@ -164,7 +169,10 @@ export function WithdrawFund({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate() as { isLastCumulativeRatePending: boolean; lastCumulativeRate: number | undefined };
+    useLastCumulativeRate() as {
+      isLastCumulativeRatePending: boolean;
+      lastCumulativeRate: number | undefined;
+    };
 
   // interest gain from backend
   const { interestGained, isInterestGainedPending } = useInterestGain(
@@ -180,8 +188,17 @@ export function WithdrawFund({
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
   const { balanceString: usdaBalance, balance } = useGetBalance("USDa");
-  const { balanceString: USDTBalance, balance: USDTBalanceFormatted, balanceUnformatted } = useGetBalance("USDT");
-  console.log(USDTBalance, USDTBalanceFormatted, balanceUnformatted, 'USDTBalanceFormatted')
+  const {
+    balanceString: USDTBalance,
+    balance: USDTBalanceFormatted,
+    balanceUnformatted,
+  } = useGetBalance("USDT");
+  console.log(
+    USDTBalance,
+    USDTBalanceFormatted,
+    balanceUnformatted,
+    "USDTBalanceFormatted"
+  );
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
     useState<boolean>(false);
@@ -258,7 +275,7 @@ export function WithdrawFund({
         : 0;
 
   // fetching allowance of usda for repay
-  const { data: allowance, isLoading: isAllowancePending } = useReadContract({
+  const { data: allowance, isLoading: isAllowancePending, refetch: refetchAllowance } = useReadContract({
     abi: usDaAbi,
     address: usDaAddress[chainId as keyof typeof usDaAddress],
     functionName: "allowance",
@@ -268,7 +285,7 @@ export function WithdrawFund({
       chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined; isLoading: boolean };
+  }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
 
   // fetching allowance of usda for repay
   const { data: allowanceUSDT, isLoading: isAllowancePendingUSDT, refetch: refetchAllowanceUSDT } = useReadContract({
@@ -322,8 +339,6 @@ export function WithdrawFund({
     args: [BorrowData.APR],
     functionName: "getBorrowData",
   }) as { data: number[] | undefined; isLoading: boolean };
-
-
 
   function handleDepositData() {
     setIsDataUpdating(true);
@@ -540,7 +555,11 @@ export function WithdrawFund({
     quoteValue: nativeFee,
     quoteError,
     isUsdValuePending: isQuotePending,
-  } = useGetGlobalQuote(options, 3, 1) as { quoteValue: { nativeFee: bigint }; quoteError: any; isUsdValuePending: boolean };
+  } = useGetGlobalQuote(options, 3, 1) as {
+    quoteValue: { nativeFee: bigint };
+    quoteError: any;
+    isUsdValuePending: boolean;
+  };
 
   const {
     usdtApprovedHash,
@@ -762,6 +781,7 @@ export function WithdrawFund({
       }, 800);
       setRenewApproveLoading(false);
       setRenewLoadingSM(false);
+      refetchAllowance();
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
@@ -860,6 +880,7 @@ export function WithdrawFund({
       setRenewLoading(false);
       setRenewApproveLoading(false);
       setRenewLoadingSM(false);
+      refetchAllowance()
       refetchPayableOptionFees()
       toast.custom((t) => (
         <ToastNotificationError
@@ -888,11 +909,31 @@ export function WithdrawFund({
   );
 
   const handleRenew = () => {
+    if (Number(payableOptionFees || 0) < 0) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Option fees not found"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
+    if (Number(payableOptionFees || 0) < 0) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Price not found"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
     // calculate renew amount
     const renewAmount = BigInt(
-      Math.floor(Number(
-        Number(payableOptionFees || 0) / Number(getOraclePrice?.[0] || 0) || 0
-      ) + 1e6)
+      Math.round(Number(
+        Number(payableOptionFees || 0) /
+        Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0
+      )) + 1e6
     );
 
     // check if renew amount is greater than 0
@@ -912,7 +953,7 @@ export function WithdrawFund({
     resetBorrowRenew?.();
 
     // check if allowance is less than renew amount
-    if ((allowance || 0) < renewAmount) {
+    if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
       handleUsdtApprove([
         borrowingContractAddress[
@@ -920,6 +961,7 @@ export function WithdrawFund({
         ] as `0x${string}`,
         renewAmount,
       ]);
+      refetchAllowanceUSDT();
     } else {
       callRenewInContract();
     }
@@ -1154,7 +1196,7 @@ export function WithdrawFund({
                 })}
               </div>
 
-              <div className="flex gap-8 mb-3">
+              <div className="flex justify-between mb-3">
                 <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                   <span className="block w-3 h-3 bg-[#05A552]"></span>
                   {calculateRemainingDays(Number(position.validTill))} Days days
@@ -1180,6 +1222,11 @@ export function WithdrawFund({
                     }
                   </Tooltip>
                 </div>
+                {/* <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  Hedge end at {new Date(
+                    (Number(position.validTill * 1000))
+                  ).toLocaleString()}
+                </div> */}
               </div>
               <div
                 className={` space-y-3 mt-2  ${position.status == BorrowStatus.WITHDREW
@@ -1585,7 +1632,7 @@ export function WithdrawFund({
                         //     6
                         //   )}`
                         //    : "-",
-                        value: `${formatUnits(
+                        value: `$${formatUnits(
                           BigInt((Number(payableOptionFees) as number) || 0),
                           6
                         )}`,
