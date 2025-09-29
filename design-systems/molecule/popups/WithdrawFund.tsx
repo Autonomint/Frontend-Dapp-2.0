@@ -308,33 +308,29 @@ export function WithdrawFund({
     ],
   }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
   // usda amount multiply by cumulative rate
-  // const totalUsdaAmntWithCumulativeRate =
-  //   lastCumulativeRate === undefined
-  //     ? parseUnits((position?.normalizedAmount?.toString() || "0"), 6)
-  //     : BigInt(
-  //       BigInt(
-  //         Math.round(
-  //           position.normalizedAmount
-  //             ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
-  //             : 0
-  //         )
-  //       ) * BigInt(lastCumulativeRate || 0)
-  //     ) / BigInt(10 ** 27);
-
-  const totalUsdaAmntWithCumulativeRate = BigInt(
-    position.normalizedAmount
-      ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
-      : 0
-  )
-
+  const totalUsdaAmntWithCumulativeRate =
+    lastCumulativeRate === undefined
+      ? parseUnits(position?.normalizedAmount?.toString() || "0", 6)
+      : BigInt(
+        BigInt(
+          Math.round(
+            position.normalizedAmount
+              ? Number(
+                parseUnits(position?.normalizedAmount?.toString() || "0", 6)
+              )
+              : 0
+          )
+        ) * BigInt(lastCumulativeRate || 0)
+      ) / BigInt(10 ** 27);
 
   // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-      (Number(downsideProtection) + Number(position?.optionFees))
-      :
-      Number(position.totalDebtAmount) - (Number(downsideProtection) + Number(position?.optionFees))
+      Number(downsideProtection)
+      : // Number(position?.optionFees)
+      Number(position.totalDebtAmount) - Number(downsideProtection);
+  // Number(position?.optionFees);
 
 
   // getting current APR value
@@ -725,7 +721,7 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async () => {
-    const repayAmountFormated = Number(truncateDecimals(repayAmount || 0, 6))
+    const repayAmountFormated = Number(truncateDecimals((repayAmount || 0) + 0.001, 6))
     if (balance < repayAmountFormated) {
       toast.error("You don't have enough USDA+ to repay");
       return;
