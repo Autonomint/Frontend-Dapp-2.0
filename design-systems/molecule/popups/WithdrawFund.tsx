@@ -36,7 +36,8 @@ import {
 import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
-  hasFiveMinutesPassed
+  hasFiveMinutesPassed,
+  truncateDecimals
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
@@ -717,7 +718,7 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async () => {
-    if (balance < repayAmount) {
+    if (balance < Number(truncateDecimals(repayAmount || 0, 4))) {
       toast.error("You don't have enough USDA+ to repay");
       return;
     }
