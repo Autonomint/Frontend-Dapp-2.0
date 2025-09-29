@@ -718,7 +718,8 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async () => {
-    if (balance < Number(truncateDecimals(repayAmount || 0, 4))) {
+    const repayAmountFormated = Number(truncateDecimals(repayAmount || 0, 6))
+    if (balance < repayAmountFormated) {
       toast.error("You don't have enough USDA+ to repay");
       return;
     }
@@ -727,7 +728,7 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round(Number(parseUnits((repayAmount).toString(), 6))));
+    const approveRepayAmount = BigInt(Math.round(Number(parseUnits((repayAmountFormated).toString(), 6))));
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
