@@ -55,7 +55,7 @@ const useGetBalance = (
     // Format as currency string with $ prefix, limited to 8 decimal places
     balanceString: `$${data?.formatted.slice(0, 8) || 0} `,
     // Convert to number with 8 decimal places precision
-    balance: Number(data?.formatted.slice(0, 8) || 0),
+    balance: Number(data?.formatted || 0),
     // Return raw balance value in wei/smallest unit
     balanceUnformatted: Number(data?.value || 0),
   };
