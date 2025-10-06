@@ -1,6 +1,6 @@
 // Import required dependencies
 import { useQuery } from "@tanstack/react-query";
-import { LayerZeroUrl } from "../../utils/urls";
+import { BACKEND_API_URL, LayerZeroUrl } from "../../utils/urls";
 import { useAccount } from "wagmi";
 import { eId, eIdWithChainId, NetworkId } from "@/utils/constants";
 import { globalAddress } from "@/blockchain/contracts";
@@ -146,7 +146,7 @@ export const useLayerZeroMessages = () => {
 
     // Fetch messages from LayerZero API with specified EID and contract address
     const response = await fetch(
-      `${LayerZeroUrl}/messages/oapp/${eid}/${otherChainContractAddress}?limit=1`
+      `${BACKEND_API_URL}/global/is-all-lz-message-delivered/${chainId}`
     );
 
     // Handle API errors
