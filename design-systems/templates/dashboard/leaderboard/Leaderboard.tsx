@@ -27,6 +27,7 @@ function Leaderboard() {
 
   const { points, totalPoints } = useGetUserPoint();
 
+
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
