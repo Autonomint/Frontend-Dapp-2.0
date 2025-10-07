@@ -21,6 +21,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
 
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
@@ -212,6 +213,10 @@ function PortfolioTemplate() {
     return 0;
   }, [userGains]);
 
+  // Checking OG address
+  const { ogAddresses } = useGetOgAddresses();
+  const isOG = ogAddresses?.map((address) => address.toLowerCase()).includes(address?.toLowerCase() || "");
+
   return (
     <div className="flex sm:px-4 flex-col">
       <div className="grid lg:grid-cols-4 grid-cols-2">
@@ -241,14 +246,14 @@ function PortfolioTemplate() {
               Number(referralPoints || 0) + Number(points || 0)
             )}
             hasLiquidityLandPoints={hasLiquidityLandPoints}
+            isOG={isOG}
           />
         </div>
       </div>
       <div
         id="dashboard-nav"
-        className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
-          isSticky ? "sticky top-0 " : ""
-        }`}
+        className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${isSticky ? "sticky top-0 " : ""
+          }`}
       >
         <div
           onClick={() => {
@@ -256,10 +261,9 @@ function PortfolioTemplate() {
           }}
           className={
             "xl:w-[24%] w-1/2 xl:flex-1 lg:px-5 lg:py-3 p-3 text-center xl:text-left  2xl:text-[32px] text-[18px] font-medium md:text-[24px] border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
-            `${
-              tabPosition == "Borrowed"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
-                : ""
+            `${tabPosition == "Borrowed"
+              ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+              : ""
             }`
           }
         >
@@ -271,10 +275,9 @@ function PortfolioTemplate() {
           }}
           className={
             "xl:w-[24%] w-1/2 xl:flex-1 text-center xl:text-left  lg:px-5 lg:py-3 p-2 sm:p-3   2xl:text-[32px] text-[18px] md:text-[24px] font-medium border xl:border-r-0 border-grayLight border-r  border-solid hover:cursor-pointer flex items-center justify-center" +
-            `${
-              tabPosition == "Deposited"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
-                : ""
+            `${tabPosition == "Deposited"
+              ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+              : ""
             }`
           }
         >
@@ -282,9 +285,8 @@ function PortfolioTemplate() {
         </div>
         <div
           onClick={handleRefresh}
-          className={`w-1/2  xl:w-[15%] text-center xl:text-left   justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid ${
-            isConnected ? "cursor-pointer " : "opacity-50 cursor-not-allowed"
-          }`}
+          className={`w-1/2  xl:w-[15%] text-center xl:text-left   justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid ${isConnected ? "cursor-pointer " : "opacity-50 cursor-not-allowed"
+            }`}
         >
           Refresh
           <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>

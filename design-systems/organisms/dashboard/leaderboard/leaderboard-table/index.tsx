@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
+import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
 import { formatNumber, sortWalletAddress } from "@/utils/helpers";
 import { LeaderboardDetails, LeaderboardDetailsList } from "@/utils/interface";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -32,6 +33,8 @@ function LeaderboardTable({
   handlePrevPage: () => void;
   leaderboardData: LeaderboardDetailsList[];
 }) {
+  const { ogAddresses } = useGetOgAddresses();
+
   return (
     <div>
       <div className="overflow-x-auto min-h-[500px]  ">
@@ -52,18 +55,32 @@ function LeaderboardTable({
           </thead>
           <tbody className="font-normal ">
             {leaderboardData.map((item, index) => {
+
+              // Checking OG address
+              const isOG = ogAddresses?.map((address) => address.toLowerCase()).includes(item.address?.toLowerCase() || "");
               return (
                 <tr
                   key={index}
-                  className={`border border-grayLight ${
-                    leaderboardData.length === index + 1 ? "" : ""
-                  }`}
+                  className={`border border-grayLight ${leaderboardData.length === index + 1 ? "" : ""
+                    }`}
                 >
                   <td className="px-5 py-4 2xl:py-6">
                     {index + 1 + (currentPage - 1) * pageSize}
                   </td>
                   <td className="px-5 py-4 2xl:py-6">
-                    {sortWalletAddress(item.address)}
+                    <div className="flex gap-2">
+
+                      {sortWalletAddress(item.address)}
+
+                      {isOG && <div className="flex relative  items-center w-fit    ">
+                        <span className="absolute  z-10 ">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-circle-star-icon lucide-circle-star stroke-[#3cc68f] dark:stroke-[#ABFFDE]"><path d="M11.051 7.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.867l-1.156-1.152a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z" /><circle cx="12" cy="12" r="10" /></svg>
+                        </span>
+                        <span className="text-black dark:text-white rounded-[24px] pl-6 pr-2 py-0 text-[14px] border-[1px] border-grayLight mr-2">
+                          OG
+                        </span>
+                      </div>}
+                    </div>
                   </td>
                   <td className="px-5 py-4 2xl:py-6  table-cell">
                     {item.totalBorrowedAmount
@@ -116,8 +133,8 @@ function LeaderboardTable({
                             <div>
                               {item.totalPoints
                                 ? formatNumber(
-                                    Math.round(Number(item?.totalPoints || 0))
-                                  )
+                                  Math.round(Number(item?.totalPoints || 0))
+                                )
                                 : 0}
                             </div>
                           </TooltipTrigger>
