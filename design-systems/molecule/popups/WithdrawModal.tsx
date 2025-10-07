@@ -54,6 +54,7 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import Image from "next/image";
 import opIconNew from "@/app/assets/op.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
 export function DcdsWithdrawModal({
   position,
@@ -771,7 +772,7 @@ export function DcdsWithdrawModal({
   const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
-  // const { readyForNewTx } = useLayerZeroMessages();
+  const { readyForNewTx } = useLayerZeroMessages();
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -1072,7 +1073,7 @@ export function DcdsWithdrawModal({
                               Number(position?.depositedTime || 0),
                               Number(position?.lockingPeriod || 0)
                             ) ||
-                            isWithdrawPause
+                            isWithdrawPause || !readyForNewTx
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >
