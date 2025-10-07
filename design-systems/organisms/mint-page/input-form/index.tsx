@@ -61,6 +61,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
 /**
  * Yup validation schema for the input form
@@ -655,6 +656,9 @@ function InputForm({ currency }: { currency: string }) {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
 
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -845,7 +849,7 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit}
+                    disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6

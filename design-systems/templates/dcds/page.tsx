@@ -1600,7 +1600,7 @@ function DCDSTemplate() {
                       <div className="h-full">
                         <Button
                           disabled={
-                            isFunctionPausedCDS_Deposit || allowanceLoading
+                            isFunctionPausedCDS_Deposit || allowanceLoading || !readyForNewTx
                           }
                           type="submit"
                           onClick={() => formik.handleSubmit()}

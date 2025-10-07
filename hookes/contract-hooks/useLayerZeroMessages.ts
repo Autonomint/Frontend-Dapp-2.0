@@ -157,7 +157,7 @@ export const useLayerZeroMessages = () => {
   };
 
   // Use React Query to manage the data fetching
-  const { data, isLoading, error, isError } =
+  const { data: readyForNewTx, isLoading, error, isError } =
     useQuery<LayerZeroMessagesResponse>({
       // Query key includes chain ID and relevant addresses
       queryKey: [
@@ -174,17 +174,8 @@ export const useLayerZeroMessages = () => {
       refetchInterval: 5000, // Refetch every 5 seconds
     });
 
-  // Memoized function to check if system is ready for new transactions
-  const readyForNewTx = useMemo(() => {
-    // Return false if no messages exist
-    if (!data?.data?.length) return false;
-    // Check if all messages have been delivered
-    return data.data.every((msg) => msg.status.name === "DELIVERED");
-  }, [data, chainId]);
-
   return {
-    layerZeroTxData: data, // LayerZero message data
-    readyForNewTx: true || isError, // Always return true (TODO: fix this)
+    readyForNewTx: readyForNewTx || isError, // Always return true (TODO: fix this)
     isLoading: isLoading && isError === false, // Loading state
     error, // Any error that occurred
   };

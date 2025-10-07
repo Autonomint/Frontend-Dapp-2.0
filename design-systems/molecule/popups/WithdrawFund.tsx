@@ -51,6 +51,7 @@ import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -160,6 +161,9 @@ export function WithdrawFund({
       tooltipText: "",
     },
   ];
+
+  // fetching layer zero transaction data to add loading state to user to initiate transaction
+  const { readyForNewTx } = useLayerZeroMessages();
 
   const [depositData, setDepositData] = useState(depositDetails);
 
@@ -1259,7 +1263,7 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW ||
                             isFunctionPausedBorrow_Withdraw ||
                             !hasFiveMinutesPassed(position?.depositedTime) ||
-                            position.status == BorrowStatus.LIQUIDATED
+                            position.status == BorrowStatus.LIQUIDATED || !readyForNewTx
                           }
                           onClick={handleRepay}
                           className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${position.status == BorrowStatus.WITHDREW
@@ -1627,7 +1631,7 @@ export function WithdrawFund({
                               calculateRemainingDays(
                                 Number(position.validTill)
                               ) <= 0 ||
-                              !isRenewActive
+                              !isRenewActive || !readyForNewTx
                             }
                             onClick={handleRenew}
                             className="w-full   p-8 bg-black text-white text-[32px]"
