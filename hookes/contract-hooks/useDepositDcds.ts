@@ -105,11 +105,11 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
       bigint,
       `0x${string}`
     ],
-    value: bigint
+    value: bigint | undefined
   ) => {
     writeDcdsDeposit({
       abi: cdsAbi,
-      address: cdsAddress[chainId as keyof typeof cdsAddress],
+      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
       functionName: "deposit",
       args,
       value,

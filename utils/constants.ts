@@ -2,7 +2,7 @@ export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
 // network id reference for app
 export enum NetworkId {
-  EthereumSepolia = 11155111,
+  Ethereum = 11155111,
   BaseSepolia = 84532,
   Optimism = 11155420,
   Mode = 919,
@@ -86,7 +86,7 @@ export const eId = {
 export const eIdWithChainId = {
   [NetworkId.Optimism]: eidOpSepolia,
   [NetworkId.Mode]: eidModeSepolia,
-  [NetworkId.EthereumSepolia]: eidSepolia,
+  [NetworkId.Ethereum]: eidSepolia,
   [NetworkId.BaseSepolia]: eidBaseSepolia,
 };
 

@@ -8,7 +8,7 @@ interface BorrowInputs {
   // strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
-  value: bigint; // uint256 can be represented by bigint
+  value: bigint | undefined; // uint256 can be represented by bigint
   assetName: AssetName;
   expiredETHAmount: bigint;
   deadline: bigint;
@@ -46,7 +46,7 @@ const useDepositTokens = (mutation: any) => {
       abi: borrowingContractAbi,
       address:
         borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "depositTokens",
       args: [

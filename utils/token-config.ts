@@ -168,6 +168,7 @@ export const getIconMapping = (theme: string, token: string) => {
     bold: boldIcon,
     boldToken: boldIcon,
     usdc: UsdcIcon,
+    wmUSD: undefined,
   };
   return mapping[token as keyof typeof mapping];
 };

@@ -475,7 +475,7 @@ function InputForm({ currency }: { currency: string }) {
         signature: borrowSignedData?.signature || ("" as `0x${string}`),
         expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
         value:
-          currency.toLocaleLowerCase() == "eth"
+          chainId === NetworkId.Ethereum ? parseEther(formik.values.collateralAmount.toString()) : currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
             nativeFee.nativeFee
             : nativeFee.nativeFee,

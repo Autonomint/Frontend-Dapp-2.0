@@ -1,4 +1,4 @@
-export const cdsAbi = [
+export const cdsAbiEthereum = [
   {
     "inputs": [
       {

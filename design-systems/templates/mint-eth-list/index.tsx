@@ -115,41 +115,7 @@ function MintEthListTemplate() {
             : 0
         ),
     },
-    {
-      token: "wrsETH",
-      tokenImage: WrsETH,
-      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtection}%`,
-      ltv: `${ltv || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
-        ),
-    },
+
     {
       token: "weETH",
       tokenImage: WeETH,
@@ -185,6 +151,44 @@ function MintEthListTemplate() {
         ),
     },
   ];
+
+  if (chainId !== NetworkId.Ethereum) {
+    list.push({
+      token: "wrsETH",
+      tokenImage: WrsETH,
+      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtection}%`,
+      ltv: `${ltv || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "wrsETH borrow is paused now",
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.minAmount) ||
+        0,
+      link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["wrsETH"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
+    })
+  }
 
   if (chainId == NetworkId.BaseSepolia) {
     list.push({

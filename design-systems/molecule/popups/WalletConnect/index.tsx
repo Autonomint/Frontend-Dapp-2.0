@@ -1,24 +1,21 @@
 "use client";
+import opImage from "@/app/assets/op.svg";
+import { Button } from "@/design-systems/atoms/button";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/design-systems/atoms/dialog";
-import { Typography } from "@/design-systems/atoms/Typography";
-import Terms_Privacy from "@/design-systems/organisms/navbar/Terms_Privacy";
-import { useEffect, useState } from "react";
-import WalletConnectButton from "../../WalletConnectButton";
-import Image from "next/image";
-import opImage from "@/app/assets/op.svg";
-import modeImage from "@/app/assets/mode.svg";
-import { Button } from "@/design-systems/atoms/button";
-import { useAccount, useSwitchChain } from "wagmi";
 import Spinner from "@/design-systems/atoms/Spinner";
-import { useParams, usePathname } from "next/navigation";
-import { NetworkId } from "@/utils/constants";
 import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
+import { Typography } from "@/design-systems/atoms/Typography";
+import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
-interface SwitchChainPopupProps {}
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useAccount, useSwitchChain } from "wagmi";
+interface SwitchChainPopupProps { }
 
 /**
  * SwitchChainPopup is a component that allows the user to switch the chain.
@@ -27,7 +24,7 @@ interface SwitchChainPopupProps {}
  *
  *
  */
-const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
+const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
   const { chainId, isConnected, address } = useAccount();
@@ -47,8 +44,8 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
     // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true
     if (
       (chainId &&
-        !["/bridge", "/"].includes(pathname) &&
-        ![11155420, 84532].includes(chainId || 0) &&
+        !["/bridge"].includes(pathname) &&
+        ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
         isConnected) ||
       !isConnected
     ) {
@@ -67,8 +64,8 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
         <DialogTitle className="text-2xl font-semibold "></DialogTitle>
 
         {chainId &&
-          !["/bridge", "/"].includes(pathname) &&
-          ![11155420, 84532].includes(chainId || 0) &&
+          !["/bridge"].includes(pathname) &&
+          ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">

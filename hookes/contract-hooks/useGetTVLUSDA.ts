@@ -143,7 +143,9 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
   const totalTVLList = useMemo(() => {
     return tvlValue?.map(
       (item: any, index: number) =>
-        Number(item) + (index === 2 ? 0 : Number(otherChainTvl[index] || 0))
+        // if the token is OP then add 0 else add the tvl of the token on the other chain
+        // if the chain id is ethereum then add 0 else add the tvl of the token on the other chain
+        Number(item) + (index === 2 || chainId === NetworkId.Ethereum ? 0 : Number(otherChainTvl[index] || 0))
     );
   }, [tvlValue, otherChainTvl]);
 

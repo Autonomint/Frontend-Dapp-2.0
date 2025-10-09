@@ -1,5 +1,4 @@
 "use client";
-
 import modeIconNew from "@/app/assets/mode.svg";
 import opIconNew from "@/app/assets/op.svg";
 import { usDaAddress } from "@/blockchain/contracts";
@@ -40,6 +39,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
+import ethIconNew from "@/app/assets/eth-icon.svg";
+import baseIconNew from "@/app/assets/op-blue.svg";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -52,7 +53,7 @@ interface WalletPopupProps {
  *
  *
  */
-const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
+const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
   const router = useRouter();
@@ -86,7 +87,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
       id: Number(NetworkId.BaseSepolia),
       name: "Base",
       Icon: () => (
-        <BaseIcon className="w-6   h-6 stroke-black dark:stroke-white" />
+        <Image src={baseIconNew} alt="opIconNew" width={24} height={24} />
       ),
       loading: chainId != NetworkId.BaseSepolia && isPending,
     },
@@ -97,6 +98,14 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
         <Image src={opIconNew} alt="opIconNew" width={24} height={24} />
       ),
       loading: chainId != NetworkId.Optimism && isPending,
+    },
+    {
+      id: Number(NetworkId.Ethereum),
+      name: "Ethereum",
+      Icon: () => (
+        <Image src={ethIconNew} alt="opIconNew" width={24} height={24} />
+      ),
+      loading: chainId != NetworkId.Ethereum && isPending,
     },
   ];
 
@@ -124,7 +133,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.EthereumSepolia &&
+                  ) : chainId == NetworkId.Ethereum &&
                     pathName == "/bridge" ? (
                     <EthereumIcon
                       className=" stroke-black  "
@@ -272,8 +281,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.EthereumSepolia &&
-                    pathName == "/bridge" ? (
+                  ) : chainId == NetworkId.Ethereum ? (
                     <EthereumIcon
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
@@ -352,8 +360,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                         className=" fill-black  "
                         style={{ width: "20px", height: "20px" }}
                       />
-                    ) : chainId == NetworkId.EthereumSepolia &&
-                      pathName == "/bridge" ? (
+                    ) : chainId == NetworkId.Ethereum ? (
                       <EthereumIcon
                         className=" stroke-black  "
                         style={{ width: "20px", height: "20px" }}

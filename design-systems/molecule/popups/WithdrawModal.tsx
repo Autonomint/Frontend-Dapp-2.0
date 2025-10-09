@@ -348,6 +348,19 @@ export function DcdsWithdrawModal({
       tooltip: false,
       tooltipText: "",
     },
+    {
+      // Token deposited
+      headline: `wmUSD Tokens deposited`,
+      value: Number(position?.depositedAmounts?.wmUSD || 0)
+        ? `${Number(position?.depositedAmounts?.wmUSD || 0).toFixed(2)} ($${(
+          Number(position?.depositedAmounts?.wmUSD || 0) *
+          Number(position?.wmUSDPriceAtDeposit)
+        ).toFixed(2)})`
+        : null,
+      tooltip: false,
+      tooltipText: "",
+      comment: "",
+    },
     // {
     //   headline: `${
     //     Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
@@ -664,15 +677,25 @@ export function DcdsWithdrawModal({
 
         setTimeout(async () => {
           const res = await refetchBorrowWithDrawGainsSignedData();
-          // If close position is success then call withdraw gain function
-          handleDcdsWithdrawGain?.([
+          let params = [
             BigInt(position.index),
             halfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW,
             res?.odosAssembledData,
             res?.usdtFromOdos,
             res?.deadline,
             res?.signature,
-          ]);
+          ]
+          if (chainId === NetworkId.Ethereum) {
+            params = [
+              BigInt(position.index),
+              res?.odosAssembledData,
+              res?.usdtFromOdos,
+              res?.deadline,
+              res?.signature,
+            ]
+          }
+          // If close position is success then call withdraw gain function
+          handleDcdsWithdrawGain?.(params);
         }, 3000);
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
@@ -700,23 +723,35 @@ export function DcdsWithdrawModal({
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
     try {
+      debugger
       setHalfWithdraw(isHalfWithdraw || false)
       setDcdsFundWithdrawLoadingLocal(true);
       // if position status is deposited then call withdraw function
       if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
+        const res = await refetchBorrowWithDrawSignedData();
+        let params: any = [
+          [address, BigInt(position.index),
+            res?.excessProfitCumulativeValue,
+            res?.expiredETHAmount,
+            isHalfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW
+          ],
+          res?.deadline,
+          res?.signature,
+        ]
+
+        if (chainId === NetworkId.Ethereum) {
+          params = [
+            BigInt(position.index),
+            res?.excessProfitCumulativeValue,
+            res?.expiredETHAmount,
+            res?.deadline,
+            res?.signature,
+          ]
+        }
         if (nativeFee) {
           setWithdrawMethodLoading(true);
-          const res = await refetchBorrowWithDrawSignedData();
           handleDcdsFundWithdraw?.(
-            [
-              [address, BigInt(position.index),
-                res?.excessProfitCumulativeValue,
-                res?.expiredETHAmount,
-                isHalfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW
-              ],
-              res?.deadline,
-              res?.signature,
-            ],
+            params,
             nativeFee?.nativeFee
           );
         }
@@ -724,14 +759,24 @@ export function DcdsWithdrawModal({
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
         const res = await refetchBorrowWithDrawGainsSignedData();
-        handleDcdsWithdrawGain?.([
+        let params = [
           BigInt(position.index),
           isHalfWithdraw ? WithdrawType.WITHDRAW_YIELDS : WithdrawType.FULL_WITHDRAW,
           res?.odosAssembledData,
           res?.usdtFromOdos,
           res?.deadline,
           res?.signature,
-        ]);
+        ]
+        if (chainId === NetworkId.Ethereum) {
+          params = [
+            BigInt(position.index),
+            res?.odosAssembledData,
+            res?.usdtFromOdos,
+            res?.deadline,
+            res?.signature,
+          ]
+        }
+        handleDcdsWithdrawGain?.(params);
 
       }
     } catch (error) {

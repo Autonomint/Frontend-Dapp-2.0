@@ -324,7 +324,7 @@ const RedeemContainer = () => {
           // setting the output collateral amount
           formik.setFieldValue(
             "outputCollateralAmount",
-            Number(formatEther(outputData[0]) || 1)
+            Number(formatEther(outputData?.[0] || 0n) || 1)
           );
         }
       }
@@ -831,7 +831,7 @@ const RedeemContainer = () => {
                     <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-2 mr-1 ">
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[4])).toFixed(5)
+                          ? Number(formatEther(outputData?.[4] || 0n)).toFixed(5)
                           : 0}{" "}
                         ETH
                       </div>
@@ -839,30 +839,36 @@ const RedeemContainer = () => {
 
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[1])).toFixed(5)
+                          ? Number(formatEther(outputData?.[1] || 0n)).toFixed(5)
                           : 0}{" "}
                         weETH
                       </div>
-                      <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-xl  text-bold">
-                        {outputData
-                          ? Number(formatEther(outputData[2])).toFixed(5)
-                          : 0}{" "}
-                        wrsETH
-                      </div>
+                      {chainId !== NetworkId.Ethereum && <>
+                        <div className="text-xl">+</div>
+                        <div className="flex items-center p-1 text-xl  text-bold">
+                          {outputData
+                            ? Number(formatEther(outputData?.[2] || 0n)).toFixed(5)
+                            : 0}{" "}
+                          wrsETH
+                        </div>
+                      </>
+                      }
+
+                      {chainId !== NetworkId.Ethereum && <>
+                        <div className="text-xl">+</div>
+                        <div className="flex items-center p-1 text-xl  text-bold">
+                          {outputData
+                            ? Number(formatEther(outputData?.[3] || 0n)).toFixed(5)
+                            : 0}{" "}
+                          wsuperOETHb
+                        </div>
+                      </>
+                      }
 
                       <div className="text-xl">+</div>
                       <div className="flex items-center p-1 text-xl  text-bold">
                         {outputData
-                          ? Number(formatEther(outputData[3])).toFixed(5)
-                          : 0}{" "}
-                        wsuperOETHb
-                      </div>
-
-                      <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-xl  text-bold">
-                        {outputData
-                          ? Number(formatUnits(outputData[5], 6)).toFixed(2)
+                          ? Number(formatUnits(outputData?.[5] || 0n, 6)).toFixed(2)
                           : 0}{" "}
                         USDA+
                       </div>

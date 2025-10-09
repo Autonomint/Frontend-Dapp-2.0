@@ -1,5 +1,6 @@
 import { globalAbi } from "@/blockchain/abis/global";
 import { globalAddress } from "@/blockchain/contracts";
+import { NetworkId } from "@/utils/constants";
 import { useAccount, useReadContract } from "wagmi";
 
 const useGetGlobalQuote = (options: any, todoFlag: number, secondFlag = 0) => {
@@ -14,13 +15,14 @@ const useGetGlobalQuote = (options: any, todoFlag: number, secondFlag = 0) => {
     abi: globalAbi,
     address: globalAddress[chainId as keyof typeof globalAddress],
     functionName: "quote",
-    query: { enabled: !!address },
+    query: { enabled: !!address || chainId === NetworkId.Ethereum },
     args: [todoFlag, secondFlag, options, false],
+
   });
 
   return {
     isUsdValuePending: isUsdValuePending as boolean,
-    quoteValue: quoteValue as { nativeFee: bigint },
+    quoteValue: (quoteValue || { nativeFee: undefined }) as { nativeFee: bigint },
     quoteError: quoteError as Error | undefined,
   };
 };
