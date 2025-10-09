@@ -1,4 +1,4 @@
-export const cdsAbi = [
+export const cdsAbiEthereum = [
   {
     "inputs": [
       {
@@ -398,31 +398,6 @@ export const cdsAbi = [
       }
     ],
     "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "liquidatingToken",
-        "type": "address[]"
-      }
-    ],
-    "name": "Liquidated",
     "type": "event"
   },
   {
@@ -1445,6 +1420,11 @@ export const cdsAbi = [
         "type": "address[]"
       },
       {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
+      },
+      {
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
@@ -2045,6 +2025,11 @@ export const cdsAbi = [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
+      },
+      {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
       },
       {
         "internalType": "uint256",

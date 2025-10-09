@@ -1,19 +1,20 @@
 "use client";
-import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
-import { Typography } from "@/design-systems/atoms/Typography";
-import Terms_Privacy from "@/design-systems/organisms/navbar/Terms_Privacy";
-import { useEffect, useState } from "react";
-import WalletConnectButton from "../../WalletConnectButton";
-import Image from "next/image";
 import opImage from "@/app/assets/op.svg";
-import modeImage from "@/app/assets/mode.svg";
 import { Button } from "@/design-systems/atoms/button";
-import { useAccount, useSwitchChain } from "wagmi";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/design-systems/atoms/dialog";
 import Spinner from "@/design-systems/atoms/Spinner";
-import { useParams, usePathname } from "next/navigation";
-import { NetworkId } from "@/utils/constants";
 import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
+import { Typography } from "@/design-systems/atoms/Typography";
+import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useAccount, useSwitchChain } from "wagmi";
 interface SwitchChainPopupProps { }
 
 /**
@@ -43,11 +44,10 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
     // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true
     if (
       (chainId &&
-        !["/bridge", "/"].includes(pathname) &&
-        ![NetworkId.Optimism, NetworkId.BaseSepolia].includes(chainId || 0) &&
-        isConnected)
-      //   ||
-      // !isConnected
+        !["/bridge"].includes(pathname) &&
+        ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
+        isConnected) ||
+      !isConnected
     ) {
       setIsPopUpOpen(true);
     } else {
@@ -62,8 +62,8 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
         className="rounded-[10px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0 connect-wallet "
       >
         {chainId &&
-          !["/bridge", "/"].includes(pathname) &&
-          ![NetworkId.Optimism, NetworkId.BaseSepolia].includes(chainId || 0) &&
+          !["/bridge"].includes(pathname) &&
+          ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">

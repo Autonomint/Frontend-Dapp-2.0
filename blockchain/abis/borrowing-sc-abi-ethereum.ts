@@ -1013,6 +1013,11 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
+        "internalType": "uint128",
+        "name": "tokenAmountFromOdos",
+        "type": "uint128"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -1475,6 +1480,11 @@ export const borrowingContractAbi = [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
+      },
+      {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
       },
       {
         "internalType": "uint256",

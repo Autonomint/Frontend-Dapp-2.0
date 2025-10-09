@@ -390,7 +390,7 @@ function BridgeTemplate() {
       label: "Ethereum",
       onClick: () => {
         setSendAmount(0);
-        switchChain({ chainId: NetworkId.EthereumSepolia });
+        switchChain({ chainId: NetworkId.Ethereum });
         setSendNetwork("Sepolia");
       },
     },

@@ -396,49 +396,57 @@ function DCDSTemplate() {
       }
       const cdsDepositSignedData = await refetchcdsDepositSignedData();
 
-      if (nativeFee?.nativeFee) {
-        handleDcdsDeposit?.(
-          [
-            {
-              user: address as `0x${string}`,
-              // token addresses
-              tokenAddresses: tokenList.map((token) => {
-                const tokenDetail = selectedTokens.find((selectedToken) => {
-                  return selectedToken.tokenAddress === token.tokenAddress;
-                });
-                return (tokenDetail?.tokenAddress ??
-                  zeroAddress) as `0x${string}`;
-              }),
-              // token amount in wei
-              tokenAmounts: tokenList.map((token) => {
-                const tokenDetail = selectedTokens.find((selectedToken) => {
-                  return selectedToken.tokenAddress === token.tokenAddress;
-                });
-                return formik.values[
-                  `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                ]
-                  ? parseUnits(
-                    formik.values[
-                      `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                    ].toString(),
-                    Number(tokenDetail?.tokenDecimals)
-                  )
-                  : 0n;
-              }),
-              // liquidation gains
-              liquidate: liquidationGains,
-              liquidationAmount: liquidationGains
-                ? BigInt(liqAmnt.toString())
-                : 0n,
-              lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
-              expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
-            },
-            BigInt(cdsDepositSignedData.deadline),
-            cdsDepositSignedData.signature as `0x${string}`,
-          ],
-          nativeFee.nativeFee
-        );
+      if (!(nativeFee?.nativeFee) && NetworkId.Ethereum !== chainId) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        return;
       }
+      handleDcdsDeposit?.(
+        [
+          {
+            user: address as `0x${string}`,
+            // token addresses
+            tokenAddresses: tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return (tokenDetail?.tokenAddress ??
+                zeroAddress) as `0x${string}`;
+            }),
+            // token amount in wei
+            tokenAmounts: tokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return formik.values[
+                `${tokenDetail?.tokenName.toLowerCase()}Amount`
+              ]
+                ? parseUnits(
+                  formik.values[
+                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                  ].toString(),
+                  Number(tokenDetail?.tokenDecimals)
+                )
+                : 0n;
+            }),
+            // liquidation gains
+            liquidate: liquidationGains,
+            liquidationAmount: liquidationGains
+              ? BigInt(liqAmnt.toString())
+              : 0n,
+            lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+            expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+          },
+          BigInt(cdsDepositSignedData.deadline),
+          cdsDepositSignedData.signature as `0x${string}`,
+        ],
+        chainId === NetworkId.Ethereum ? undefined : nativeFee.nativeFee
+      );
+
     } catch (error) {
       console.log(error);
     }
@@ -834,6 +842,7 @@ function DCDSTemplate() {
       return [];
     }
 
+
     return tokenDetailsList.map((token, index) => {
       const balance = tokenBalances[index] as bigint | undefined;
       const price = tokenPrices[index] as bigint | undefined;
@@ -877,7 +886,7 @@ function DCDSTemplate() {
                 ? "USDA"
                 : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
-                  : token.symbol?.toString()
+                  : token.symbol === "mUSD" ? "wmUSD" : token.symbol?.toString()
             ]?.assetBooster ?? 0
           )
           : 0) + luckBoaster;
@@ -901,7 +910,7 @@ function DCDSTemplate() {
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
                     ? "NATIVE"
-                    : token.symbol?.toString()
+                    : token.symbol === "mUSD" ? "wmUSD" : token.symbol?.toString()
               ]?.assetBoosterValidity ?? 0
             )
             : 0
@@ -936,7 +945,7 @@ function DCDSTemplate() {
                 ? "USDA"
                 : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
-                  : token.symbol?.toString()
+                  : token.symbol === "mUSD" ? "wmUSD" : token.symbol?.toString()
             ]?.minAmount ?? 0
           )
           : 0,
@@ -948,7 +957,7 @@ function DCDSTemplate() {
                 ? "USDA"
                 : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
-                  : token.symbol?.toString()
+                  : token.symbol === "mUSD" ? "wmUSD" : token.symbol?.toString()
             ]?.pointsToBeGiven ?? 0
           )
           : 0,
