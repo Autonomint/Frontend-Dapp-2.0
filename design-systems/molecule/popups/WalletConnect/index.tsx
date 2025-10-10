@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/design-systems/atoms/dialog";
 import Spinner from "@/design-systems/atoms/Spinner";
-import { BaseIcon } from "@/design-systems/atoms/SvgIcons";
+import { BaseIcon, EthereumIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { NetworkId } from "@/utils/constants";
 import { useAppKit } from "@reown/appkit/react";
@@ -15,7 +15,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
-interface SwitchChainPopupProps { }
+interface SwitchChainPopupProps {}
 
 /**
  * SwitchChainPopup is a component that allows the user to switch the chain.
@@ -24,7 +24,7 @@ interface SwitchChainPopupProps { }
  *
  *
  */
-const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
+const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
   const { chainId, isConnected, address } = useAccount();
@@ -45,7 +45,11 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
     if (
       (chainId &&
         !["/bridge"].includes(pathname) &&
-        ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
+        ![
+          NetworkId.BaseSepolia,
+          NetworkId.Optimism,
+          NetworkId.Ethereum,
+        ].includes(chainId || 0) &&
         isConnected) ||
       !isConnected
     ) {
@@ -63,7 +67,11 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
       >
         {chainId &&
           !["/bridge"].includes(pathname) &&
-          ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
+          ![
+            NetworkId.BaseSepolia,
+            NetworkId.Optimism,
+            NetworkId.Ethereum,
+          ].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">
@@ -124,6 +132,32 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
                       </div>
                     ) : (
                       <div className="text-[16px]">Base</div>
+                    )}
+                  </Button>
+                  <Button
+                    disabled={isPending}
+                    onClick={() => {
+                      switchChain({
+                        chainId: NetworkId.Ethereum,
+                      });
+
+                      setSwitchingChain(NetworkId.Ethereum);
+                    }}
+                    variant={"shadowOutline"}
+                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-black dark:text-white "
+                  >
+                    <div>
+                      <EthereumIcon
+                        className=" stroke-black dark:stroke-white  "
+                        style={{ width: "50px", height: "50px" }}
+                      />
+                    </div>
+                    {isPending && switchingChain === NetworkId.Ethereum ? (
+                      <div className="h-[20px] mx-auto">
+                        <Spinner />
+                      </div>
+                    ) : (
+                      <div className="text-[16px]">Ethereum</div>
                     )}
                   </Button>
                 </div>
