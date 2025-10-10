@@ -310,8 +310,7 @@ const RedeemContainer = () => {
     ) {
       // checking if the collateral amount is greater than the abond balance
       if (
-        (formik.values.collateralAmount || 0) >
-        Number(abondbalance?.formatted.slice(0, 8))
+        (formik.values.collateralAmount || 0) > Number(abondbalance?.formatted)
       ) {
         formik.setErrors({
           collateralAmount: "Insufficient Balance",
@@ -337,8 +336,7 @@ const RedeemContainer = () => {
     ) {
       // checking if the collateral amount is greater than the usda balance
       if (
-        (formik.values.collateralAmount || 0) >
-        Number(usdabalance?.formatted.slice(0, 9))
+        (formik.values.collateralAmount || 0) > Number(usdabalance?.formatted)
       ) {
         formik.setErrors({ collateralAmount: "Insufficient Balance" });
       } else {
@@ -447,7 +445,9 @@ const RedeemContainer = () => {
   async function handleSubmit(values: typeof initialValues) {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
-      const redeemAmountUSDa = BigInt((parseUnits(String(values.collateralAmount || '0'), 6)));
+      const redeemAmountUSDa = BigInt(
+        parseUnits(String(values.collateralAmount) || "0", 6)
+      );
       // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
         setUsdaApproveLocal(true);
@@ -468,7 +468,7 @@ const RedeemContainer = () => {
       setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
-        parseUnits(String(values.collateralAmount || '0'), 18)
+        parseUnits(String(values.collateralAmount) || "0", 18)
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
@@ -504,7 +504,7 @@ const RedeemContainer = () => {
         chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "redeemYields",
-      args: [parseUnits(String(formik.values.collateralAmount || '0'), 18)],
+      args: [parseUnits(String(formik.values.collateralAmount) || "0", 18)],
     });
   };
 
@@ -519,7 +519,7 @@ const RedeemContainer = () => {
       address: cdsAddress[chainId as keyof typeof cdsAddress],
       functionName: "redeemAssets",
       args: [
-        BigInt(parseUnits(String(formik.values.collateralAmount || '0'), 6)),
+        BigInt(parseUnits(String(formik.values.collateralAmount) || "0", 6)),
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
@@ -601,8 +601,6 @@ const RedeemContainer = () => {
       placeholderData: 0,
     },
   }) as { data: number; isPending: boolean };
-
-
 
   // fetching the yield percentage
   const yieldPercentage = useMemo(() => {
@@ -688,7 +686,7 @@ const RedeemContainer = () => {
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
-
+  console.log(abondbalance, "abondbalance");
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar
@@ -796,7 +794,9 @@ const RedeemContainer = () => {
                     <span className="dark:text-white text-black">
                       {formik.values.inputCollateral == "amint"
                         ? `${usdabalance?.formatted || 0} USDA+`
-                        : `${abondbalance?.formatted || 0}  ABond`}
+                        : `${formatUnits(BigInt(abondbalance?.value || 0), 18) ||
+                        0
+                        }  ABond`}
                     </span>
                   </div>
                 </div>
@@ -831,49 +831,85 @@ const RedeemContainer = () => {
                 ) : formik.values.inputCollateral === "abond" ? (
                   <div className="text-sm  justify-center lg:justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
                     <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-2 mr-1 ">
-                      <div className="flex items-center p-1 text-xl  text-bold">
-                        {outputData
-                          ? Number(formatEther(outputData?.[4] || 0n)).toFixed(5)
-                          : 0}{" "}
-                        ETH
-                      </div>
-                      <div className="text-xl">+</div>
+                      {chainId === NetworkId.Ethereum ? (
+                        <>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[2] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            ETH
+                          </div>
+                          <div className="text-xl">+</div>
 
-                      <div className="flex items-center p-1 text-xl  text-bold">
-                        {outputData
-                          ? Number(formatEther(outputData?.[1] || 0n)).toFixed(5)
-                          : 0}{" "}
-                        weETH
-                      </div>
-                      {chainId !== NetworkId.Ethereum && <>
-                        <div className="text-xl">+</div>
-                        <div className="flex items-center p-1 text-xl  text-bold">
-                          {outputData
-                            ? Number(formatEther(outputData?.[2] || 0n)).toFixed(5)
-                            : 0}{" "}
-                          wrsETH
-                        </div>
-                      </>
-                      }
-
-                      {chainId !== NetworkId.Ethereum && <>
-                        <div className="text-xl">+</div>
-                        <div className="flex items-center p-1 text-xl  text-bold">
-                          {outputData
-                            ? Number(formatEther(outputData?.[3] || 0n)).toFixed(5)
-                            : 0}{" "}
-                          wsuperOETHb
-                        </div>
-                      </>
-                      }
-
-                      <div className="text-xl">+</div>
-                      <div className="flex items-center p-1 text-xl  text-bold">
-                        {outputData
-                          ? Number(formatUnits(outputData?.[5] || 0n, 6)).toFixed(2)
-                          : 0}{" "}
-                        USDA+
-                      </div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[1] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            weETH
+                          </div>
+                          <div className="text-xl">+</div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatUnits(outputData?.[3] || 0n, 6)
+                              ).toFixed(2)
+                              : 0}{" "}
+                            USDA+
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          {" "}
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[4] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            ETH
+                          </div>
+                          <div className="text-xl">+</div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[1] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            weETH
+                          </div>
+                          <div className="text-xl">+</div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[2] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            wrsETH
+                          </div>
+                          <div className="text-xl">+</div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatEther(outputData?.[3] || 0n)
+                              ).toFixed(5)
+                              : 0}{" "}
+                            wsuperOETHb
+                          </div>
+                          <div className="text-xl">+</div>
+                          <div className="flex items-center p-1 text-xl  text-bold">
+                            {outputData
+                              ? Number(
+                                formatUnits(outputData?.[5] || 0n, 6)
+                              ).toFixed(2)
+                              : 0}{" "}
+                            USDA+
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* <div>

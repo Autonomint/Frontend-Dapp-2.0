@@ -323,15 +323,15 @@ export function DcdsWithdrawModal({
       tooltipText: "",
       comment: "",
     },
-    {
-      // Token Price at Deposit
-      headline: `USDC Token Price at Deposit`,
-      value: Number(position?.usdcPriceAtDeposit)
-        ? Number(position?.usdcPriceAtDeposit).toFixed(4)
-        : null,
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   // Token Price at Deposit
+    //   headline: `USDC Token Price at Deposit`,
+    //   value: Number(position?.usdcPriceAtDeposit)
+    //     ? Number(position?.usdcPriceAtDeposit).toFixed(4)
+    //     : null,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     {
       // Token deposited
       headline: `wmUSD Tokens deposited`,
