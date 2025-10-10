@@ -339,15 +339,15 @@ export function DcdsWithdrawModal({
       tooltipText: "",
       comment: "",
     },
-    {
-      // Token Price at Deposit
-      headline: `USDC Token Price at Deposit`,
-      value: Number(position?.usdcPriceAtDeposit)
-        ? Number(position?.usdcPriceAtDeposit).toFixed(4)
-        : null,
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   // Token Price at Deposit
+    //   headline: `USDC Token Price at Deposit`,
+    //   value: Number(position?.usdcPriceAtDeposit)
+    //     ? Number(position?.usdcPriceAtDeposit).toFixed(4)
+    //     : null,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     {
       // Token deposited
       headline: `wmUSD Tokens deposited`,
@@ -962,7 +962,7 @@ export function DcdsWithdrawModal({
                               : apy[1] || 0
                         ).toFixed(4)}
                       </Label>
-                      {!(position.status == "WITHDREW") && <Button
+                      {!(position.status == "WITHDREW") && chainId !== NetworkId.Ethereum && <Button
                         onClick={() => handleWithdrawFund(true)}
                         disabled={
                           (position.status === "WITHDREW_GAINS"
