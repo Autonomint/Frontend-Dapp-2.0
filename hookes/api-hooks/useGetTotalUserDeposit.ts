@@ -57,11 +57,11 @@ const useGetTotalUserDeposit = () => {
 
   // sum both base and eth sepolia data
   const totalUserDeposit =
-    Number(ethSepoliaCDSData?.totalDepositedAmount || 0) +
-    Number(baseSepoliaCDSData?.totalDepositedAmount || 0);
-
+    Number(Boolean(ethSepoliaCDSData?.totalDepositedAmount) ? ethSepoliaCDSData?.totalDepositedAmount : 0) +
+    Number(Boolean(baseSepoliaCDSData?.totalDepositedAmount) ? baseSepoliaCDSData?.totalDepositedAmount : 0);
+  console.log(totalUserDeposit, 'totalUserDeposit', ethSepoliaCDSData?.totalDepositedAmount, baseSepoliaCDSData?.totalDepositedAmount)
   return {
-    totalUserDeposit,
+    totalUserDeposit: isNaN(totalUserDeposit) ? 0 : totalUserDeposit,
     ethSepoliaCDSData,
     baseSepoliaCDSData,
   };

@@ -54,6 +54,7 @@ import Image from "next/image";
 import opIconNew from "@/app/assets/op.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import { padHex } from "viem";
 
 export function DcdsWithdrawModal({
   position,
@@ -839,6 +840,34 @@ export function DcdsWithdrawModal({
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
+  const variableYields = toPositiveDecimalString(
+    Number(
+      apy == undefined
+        ? 0
+        : position.status !== "DEPOSITED"
+        ? (Number(
+            isNaN(position?.apys?.priceChangePL)
+              ? 0
+              : position?.apys?.priceChangePL
+          ) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount
+            )) *
+          100
+        : (Number(isNaN(apy[2]) ? 0 : apy[2]) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount
+            )) *
+          100
+    ).toFixed(2)
+  );
+  const variableYieldsCheck = isNaN(Number(variableYields))
+    ? 0.0
+    : variableYields;
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
@@ -1100,20 +1129,7 @@ export function DcdsWithdrawModal({
                       Variable yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {toPositiveDecimalString(
-                        Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                            ? (Number(position?.apys?.priceChangePL || 0) /
-                                Number(position?.totalDepositedAmount || 0)) *
-                              100
-                            : (Number(apy[2] || 0) /
-                                Number(position?.totalDepositedAmount || 0)) *
-                              100
-                        ).toFixed(2)
-                      )}
-                      %
+                      {variableYieldsCheck}%
                     </Label>
                   </div>
                 </div>
