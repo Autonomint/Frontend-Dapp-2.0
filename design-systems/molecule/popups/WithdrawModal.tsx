@@ -42,7 +42,6 @@ import axios from "axios";
 import { CornerDownRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { padHex } from "viem";
 import {
   useAccount,
   useReadContract,
