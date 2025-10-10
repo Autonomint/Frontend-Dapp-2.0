@@ -126,7 +126,7 @@ const RedeemContainer = () => {
       address || zeroAddress,
 
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ] as `0x${string}`,
     ],
   }) as { data: number | undefined };
@@ -170,7 +170,7 @@ const RedeemContainer = () => {
       },
 
       // Handle success and show a custom toast notification
-      onSuccess: (data) => { },
+      onSuccess: (data) => {},
     },
   });
 
@@ -207,7 +207,7 @@ const RedeemContainer = () => {
         handleFail();
         // Show a custom toast notification for the error
       },
-      onSuccess: (data) => { },
+      onSuccess: (data) => {},
     },
   });
 
@@ -246,8 +246,9 @@ const RedeemContainer = () => {
   // function to handle the success case
   const handleSuccess = () => {
     toast.custom((t) => {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${redeemdataEth?.transactionHash
-        } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+        redeemdataEth?.transactionHash
+      } `;
       return (
         <ToastNotification
           title="Redeem Successful"
@@ -289,15 +290,17 @@ const RedeemContainer = () => {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAbondYields",
     args: [
       accountAddress as `0x${string}`,
       parseUnits((formik.values.collateralAmount || 0).toString(), 18),
     ],
-  }) as { data: [bigint, bigint, bigint, bigint, bigint, bigint] | undefined; error: Error | null };
-
+  }) as {
+    data: [bigint, bigint, bigint, bigint, bigint, bigint] | undefined;
+    error: Error | null;
+  };
 
   useEffect(() => {
     // checking if the input collateral is abond and the collateral amount is greater than 0
@@ -476,7 +479,7 @@ const RedeemContainer = () => {
           functionName: "approve",
           args: [
             borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
+              chainId as keyof typeof borrowingContractAddress
             ] as `0x${string}`,
             redeemAmountABond,
           ],
@@ -498,7 +501,7 @@ const RedeemContainer = () => {
       abi: borrowingContractAbi,
       address:
         borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+          chainId as keyof typeof borrowingContractAddress
         ],
       functionName: "redeemYields",
       args: [parseUnits(String(formik.values.collateralAmount) || "0", 18)],
@@ -520,10 +523,10 @@ const RedeemContainer = () => {
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
-            ? usdcAddress[chainId as keyof typeof usdcAddress]
-            : formik.values.redeemTokenName === "sUSD"
-              ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-              : zeroAddress,
+          ? usdcAddress[chainId as keyof typeof usdcAddress]
+          : formik.values.redeemTokenName === "sUSD"
+          ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+          : zeroAddress,
       ],
       // value: nativeFee1.nativeFee,
     });
@@ -623,7 +626,7 @@ const RedeemContainer = () => {
     const x =
       (Number(formatEther(outputData?.[4] || 0n)) -
         Number(formatEther(outputData?.[0] || 0n))) *
-      Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
+        Number(formatUnits(BigInt(ethPrice || 0n), 2)) +
       redeemableUsdaDollarValue;
 
     const y =
@@ -642,7 +645,7 @@ const RedeemContainer = () => {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "getAbondYields",
     args: [accountAddress as `0x${string}`, BigInt(abondbalance?.value || 0)],
@@ -735,7 +738,7 @@ const RedeemContainer = () => {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                  formik.touched.collateralAmount
+                formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>
@@ -748,10 +751,11 @@ const RedeemContainer = () => {
                 <GenericDropdownMenu
                   buttonText={
                     formik.values.inputCollateral
-                      ? `${formik.values.inputCollateral === "amint"
-                        ? "USDA+"
-                        : "ABond"
-                      }`
+                      ? `${
+                          formik.values.inputCollateral === "amint"
+                            ? "USDA+"
+                            : "ABond"
+                        }`
                       : "Select"
                   }
                   items={dropdownItems}
@@ -766,7 +770,7 @@ const RedeemContainer = () => {
                     className="text-red-500"
                   >
                     {formik.errors.inputCollateral &&
-                      formik.touched.inputCollateral
+                    formik.touched.inputCollateral
                       ? formik.errors.inputCollateral
                       : ""}
                   </Typography>
@@ -791,9 +795,10 @@ const RedeemContainer = () => {
                     <span className="dark:text-white text-black">
                       {formik.values.inputCollateral == "amint"
                         ? `${usdabalance?.formatted || 0} USDA+`
-                        : `${formatUnits(BigInt(abondbalance?.value || 0), 18) ||
-                        0
-                        }  ABond`}
+                        : `${
+                            formatUnits(BigInt(abondbalance?.value || 0), 18) ||
+                            0
+                          }  ABond`}
                     </span>
                   </div>
                 </div>
@@ -828,80 +833,75 @@ const RedeemContainer = () => {
                 ) : formik.values.inputCollateral === "abond" ? (
                   <div className="text-sm  justify-center lg:justify-between text-black mt-2 font-medium dark:text-[#FFFF] flex ">
                     <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-2 mr-1 ">
-                      {chainId === NetworkId.Ethereum ? (
+                      {Boolean(outputData?.[4]) && (
                         <>
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                formatEther(outputData?.[2] || 0n)
-                              ).toFixed(5)
+                                  formatEther(outputData?.[4] || 0n)
+                                ).toFixed(5)
                               : 0}{" "}
                             ETH
                           </div>
-                          <div className="text-xl">+</div>
-
-                          <div className="flex items-center p-1 text-xl  text-bold">
-                            {outputData
-                              ? Number(
-                                formatEther(outputData?.[1] || 0n)
-                              ).toFixed(5)
-                              : 0}{" "}
-                            weETH
-                          </div>
-                          <div className="text-xl">+</div>
-                          <div className="flex items-center p-1 text-xl  text-bold">
-                            {outputData
-                              ? Number(
-                                formatUnits(outputData?.[3] || 0n, 6)
-                              ).toFixed(2)
-                              : 0}{" "}
-                            USDA+
-                          </div>
+                          {Boolean(outputData?.[1]) && (
+                            <div className="text-xl">+</div>
+                          )}
                         </>
-                      ) : (
+                      )}
+
+                      {Boolean(outputData?.[1]) && (
                         <>
-                          {" "}
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                formatEther(outputData?.[4] || 0n)
-                              ).toFixed(5)
-                              : 0}{" "}
-                            ETH
-                          </div>
-                          <div className="text-xl">+</div>
-                          <div className="flex items-center p-1 text-xl  text-bold">
-                            {outputData
-                              ? Number(
-                                formatEther(outputData?.[1] || 0n)
-                              ).toFixed(5)
+                                  formatEther(outputData?.[1] || 0n)
+                                ).toFixed(5)
                               : 0}{" "}
                             weETH
                           </div>
-                          <div className="text-xl">+</div>
+                          {Boolean(outputData?.[2]) && (
+                            <div className="text-xl">+</div>
+                          )}
+                        </>
+                      )}
+
+                      {Boolean(outputData?.[2]) && (
+                        <>
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                formatEther(outputData?.[2] || 0n)
-                              ).toFixed(5)
+                                  formatEther(outputData?.[2] || 0n)
+                                ).toFixed(5)
                               : 0}{" "}
                             wrsETH
                           </div>
-                          <div className="text-xl">+</div>
+                          {Boolean(outputData?.[3]) && (
+                            <div className="text-xl">+</div>
+                          )}
+                        </>
+                      )}
+                      {Boolean(outputData?.[3]) && (
+                        <>
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                formatEther(outputData?.[3] || 0n)
-                              ).toFixed(5)
+                                  formatEther(outputData?.[3] || 0n)
+                                ).toFixed(5)
                               : 0}{" "}
                             wsuperOETHb
                           </div>
-                          <div className="text-xl">+</div>
+                          {Boolean(outputData?.[5]) && (
+                            <div className="text-xl">+</div>
+                          )}
+                        </>
+                      )}
+                      {Boolean(outputData?.[5]) && (
+                        <>
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                formatUnits(outputData?.[5] || 0n, 6)
-                              ).toFixed(2)
+                                  formatUnits(outputData?.[5] || 0n, 6)
+                                ).toFixed(2)
                               : 0}{" "}
                             USDA+
                           </div>
@@ -975,14 +975,14 @@ const RedeemContainer = () => {
                   formik.values.inputCollateral === "abond") ||
                   (isFunctionPausedCDS_Redeem &&
                     formik.values.inputCollateral)) && (
-                    <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                      <p>
-                        {formik.values.inputCollateral === "abond"
-                          ? "ABond redeem is pause now"
-                          : "USDa redeem is paused now"}
-                      </p>
-                    </TooltipContent>
-                  )}
+                  <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                    <p>
+                      {formik.values.inputCollateral === "abond"
+                        ? "ABond redeem is pause now"
+                        : "USDa redeem is paused now"}
+                    </p>
+                  </TooltipContent>
+                )}
               </Tooltip>
             )}
             <LoadingBox
