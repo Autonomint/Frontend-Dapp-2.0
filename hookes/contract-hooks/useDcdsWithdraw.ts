@@ -16,7 +16,7 @@ const useDcdsWithdraw = (mutation: any) => {
     mutation,
   });
   const { chainId } = useAccount();
-
+  console.log(dcdsFundWithdrawErrorDetails, 'dcdsFundWithdrawErrorDetails')
   const handleDcdsFundWithdraw = (args: any, value: any) => {
     dcdsFundWithdraw({
       abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : cdsAbi,

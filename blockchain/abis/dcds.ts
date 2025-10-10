@@ -243,6 +243,22 @@ export const cdsAbi = [
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint128",
+        "name": "withdrawAmount",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint256",
+        "name": "actualDeposited",
+        "type": "uint256"
+      }
+    ],
+    "name": "CDS_WithdrawAmountExceedsActual",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "CDS_WithdrawTimeNotYetReached",
     "type": "error"
@@ -270,7 +286,7 @@ export const cdsAbi = [
   },
   {
     "inputs": [],
-    "name": "FailedCall",
+    "name": "FailedInnerCall",
     "type": "error"
   },
   {
@@ -513,6 +529,31 @@ export const cdsAbi = [
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "optionsFees",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawFixedYields",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
       }
     ],
     "name": "WithdrewGains",
@@ -670,6 +711,19 @@ export const cdsAbi = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "contractNonce",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "components": [
@@ -726,7 +780,7 @@ export const cdsAbi = [
     ],
     "name": "deposit",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -940,6 +994,11 @@ export const cdsAbi = [
               {
                 "internalType": "uint128",
                 "name": "weETH",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "wrsETH",
                 "type": "uint128"
               },
               {
@@ -1226,11 +1285,6 @@ export const cdsAbi = [
             "internalType": "struct IBorrowLiquidation.LiquidationCumulativeValues",
             "name": "liquidationCumulativeValues",
             "type": "tuple"
-          },
-          {
-            "internalType": "uint256",
-            "name": "cdsProfitsCV",
-            "type": "uint256"
           }
         ],
         "internalType": "struct IGlobalVariables.OmniChainData",
@@ -1793,6 +1847,11 @@ export const cdsAbi = [
               },
               {
                 "internalType": "uint128",
+                "name": "wrsETH",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
                 "name": "protocolUSD",
                 "type": "uint128"
               }
@@ -1984,19 +2043,36 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint256",
-        "name": "excessProfitCumulativeValue",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expiredETHAmount",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint256",
+            "name": "excessProfitCumulativeValue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum CDSInterface.WithdrawType",
+            "name": "withdrawType",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct CDSInterface.WithdrawUserParams",
+        "name": "params",
+        "type": "tuple"
       },
       {
         "internalType": "uint256",
@@ -2011,7 +2087,7 @@ export const cdsAbi = [
     ],
     "name": "withdraw",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -2020,6 +2096,11 @@ export const cdsAbi = [
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
+      },
+      {
+        "internalType": "enum CDSInterface.WithdrawType",
+        "name": "withdrawType",
+        "type": "uint8"
       },
       {
         "internalType": "bytes",
@@ -2047,4 +2128,4 @@ export const cdsAbi = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-]
+];
