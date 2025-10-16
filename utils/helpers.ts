@@ -451,3 +451,15 @@ export function truncateDecimals(
 
   return truncated.toString();
 }
+
+// calculate percentage
+export function calculatePercentage(
+  value: number,
+  total: number
+): string {
+  const percentage = ((value * total) / 100).toFixed(2);
+  return percentage;
+}
+
+
+console.log(calculatePercentage(100, 10), 'calculatePercentage');
