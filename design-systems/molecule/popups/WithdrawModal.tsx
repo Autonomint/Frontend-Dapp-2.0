@@ -1076,8 +1076,11 @@ export function DcdsWithdrawModal({
                           apy == undefined
                             ? 0
                             : position.status !== "DEPOSITED"
-                            ? position?.apys?.amountAccured || 0
-                            : apy[1] || 0
+                            ? calculatePercentage(
+                                position?.apys?.amountAccured || 0,
+                                90
+                              )
+                            : calculatePercentage(apy[1] || 0, 90)
                         ).toFixed(4)}
                       </Label>
                       {!(position.status == "WITHDREW") && (
@@ -1172,8 +1175,15 @@ export function DcdsWithdrawModal({
                           apy == undefined
                             ? 0
                             : position.status !== "DEPOSITED"
-                            ? position?.apys?.priceChangePL || 0
-                            : apy[2] || 0
+                            ? Number(position?.apys?.priceChangePL) < 0
+                              ? position?.apys?.priceChangePL
+                              : calculatePercentage(
+                                  position?.apys?.priceChangePL || 0,
+                                  80
+                                ) || 0
+                            : apy[2] < 0
+                            ? apy[2]
+                            : calculatePercentage(apy[2], 80) || 0
                         ).toFixed(4)
                       )}
                     </Label>
