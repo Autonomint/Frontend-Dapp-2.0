@@ -476,6 +476,7 @@ export function getStrikePercent(strikePrice: number): number {
       return 5;
   }
 }
+
 // calculate percentage
 export function calculatePercentage(
   value: number,
@@ -484,3 +485,4 @@ export function calculatePercentage(
   const percentage = ((value * total) / 100).toFixed(2);
   return percentage;
 }
+
