@@ -30,6 +30,7 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
 import { eId, NetworkId } from "@/utils/constants";
 import {
+  calculatePercentage,
   calculateTimeDifference,
   hasDaysPassed,
   toPositiveDecimalString,
@@ -774,6 +775,39 @@ export function DcdsWithdrawModal({
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
 
+  const variableYields = toPositiveDecimalString(
+    Number(
+      apy == undefined
+        ? 0
+        : position.status !== "DEPOSITED"
+        ? (Number(
+            isNaN(position?.apys?.priceChangePL)
+              ? 0
+              : position?.apys?.priceChangePL
+          ) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount
+            )) *
+          100
+        : (Number(isNaN(apy[2]) ? 0 : apy[2]) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount
+            )) *
+          100
+    ).toFixed(2)
+  );
+
+  // Variable Yields Check is used to calculate the variableYields based on the condition
+  const variableYieldsCheck = isNaN(Number(variableYields))
+    ? 0.0
+    : Number(variableYields) < 0
+    ? Number(variableYields)
+    : calculatePercentage(Number(variableYields), 80);
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
@@ -985,8 +1019,11 @@ export function DcdsWithdrawModal({
                         apy == undefined
                           ? 0
                           : position.status !== "DEPOSITED"
-                            ? position?.apys?.currentTimeAPYTillNow || 0
-                            : apy[5] || 0
+                          ? calculatePercentage(
+                              position?.apys?.currentTimeAPYTillNow,
+                              90
+                            ) || 0
+                          : calculatePercentage(apy[5], 90) || 0
                       ).toFixed(2)}%`}
                     </Label>
                   </div>
