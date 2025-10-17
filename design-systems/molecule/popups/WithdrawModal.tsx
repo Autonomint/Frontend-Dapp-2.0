@@ -161,7 +161,7 @@ export function DcdsWithdrawModal({
       valueColor: "!text-green-600 dark:!text-green-500",
       tooltip: true,
       tooltipText:
-        "As you have opted into liquidations, you will receive a portion of the Liquidation gains from liquidated users, and your will get their ETH at a discount. You will be able to get this ETH on closing this dCDS position.",
+        "If you’ve opted into liquidations, you’ll receive a share of the liquidation gains from users who get liquidated and you will get their ETH at a discounted price. You can claim this ETH once you close your dCDS position.",
     },
   ];
 
