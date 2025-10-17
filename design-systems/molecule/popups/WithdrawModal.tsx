@@ -156,16 +156,19 @@ export function DcdsWithdrawModal({
         "These yields are highly fluctuating based on annualized estimates derived from irregular option fees returns",
     },
     {
-      headline: "Opted for liquidations",
+      headline: "Opted for liquidation gains",
       value: "Yes",
       tooltip: false,
       tooltipText: "",
     },
     {
-      headline: "Liquidated Collateral Value",
+      headline: "Liquidation gains",
       value: "Yes",
-      tooltip: false,
-      tooltipText: "",
+      titleColor: "!text-green-600 dark:!text-green-500",
+      valueColor: "!text-green-600 dark:!text-green-500",
+      tooltip: true,
+      tooltipText:
+        "As you have opted into liquidations, you will receive a portion of the Liquidation gains from liquidated users, and your will get their ETH at a discount. You will be able to get this ETH on closing this dCDS position.",
     },
   ];
 
@@ -976,7 +979,7 @@ export function DcdsWithdrawModal({
                               <TooltipTrigger asChild>
                                 <Info width={18} height={18} className="ml-2" />
                               </TooltipTrigger>
-                              <TooltipContent className="bg-white dark:bg-black">
+                              <TooltipContent className="bg-white w-[350px] dark:bg-black !text-grayLight">
                                 <p>{dcdsWidthDrawMetricsObj.tooltipText}</p>
                               </TooltipContent>
                             </Tooltip>
@@ -1037,7 +1040,7 @@ export function DcdsWithdrawModal({
 
                     <div className="flex gap-1">
                       <Label className="text-[14px] font-normal text-[#777777]">
-                        Option Fee + Liquidation Gains
+                        Option Fee
                       </Label>
                       <Tooltip delayDuration={100}>
                         <TooltipTrigger asChild>
@@ -1049,10 +1052,7 @@ export function DcdsWithdrawModal({
                             for acting as a risk underwriter and essentially
                             providing price hedge to borrowers. These are
                             upfront yields which are immediately received after
-                            deductions from their USDA+ borrowed amount. If you
-                            opt into liquidations, you also receive a portion of
-                            the Liquidation gains from liquidated users, and
-                            your will get their ETH at a discount
+                            deductions from their USDA+ borrowed amount.
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -1140,7 +1140,7 @@ export function DcdsWithdrawModal({
                   <div className="flex w-full relative  items-center justify-between">
                     <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
                     <Label className="text-[14px] font-normal text-[#777777] ml-8">
-                      Variable yields
+                      Variable Yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
                       {variableYieldsCheck}%
