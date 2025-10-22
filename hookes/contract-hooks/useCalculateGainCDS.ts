@@ -9,7 +9,7 @@ import { useAccount } from "wagmi";
  * @param {number} noOfDays - The number of days to calculate the gains for (defaults to 30).
  * @returns {Object} Object containing the data, error, and isLoading states.
  */
-export const useCalculateGainCDS = (noOfDays = 30) => {
+export const useCalculateGainCDS = (noOfDays = 27) => {
   const { chainId } = useAccount();
   const { data, error, isLoading } = useQuery({
     // The key for the query, which is used to cache the data.
