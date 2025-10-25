@@ -276,18 +276,27 @@ export function calculateEthAmount(
   return ethAmount;
 }
 
+/**
+ * Calculates the number of days remaining until a given timestamp (in seconds).
+ * 
+ * @param timestamp - Future timestamp in seconds (e.g., from a smart contract or API)
+ * @returns Number of remaining days (rounded up). Returns 0 if the date has already passed.
+ */
 export function calculateRemainingDays(timestamp: number): number {
   // Get the current timestamp in seconds
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
-  // Calculate the difference in seconds
+  // Calculate how many seconds are left until the given timestamp
   const timeDifferenceInSeconds = timestamp - currentTimestamp;
 
-  // Convert the difference to days
-  const remainingDays = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+  // Convert seconds to days (1 day = 24 * 60 * 60 seconds)
+  // Using Math.ceil() ensures partial days count as a full day
+  const remainingDays = Math.ceil(timeDifferenceInSeconds / (24 * 60 * 60));
 
-  return remainingDays > 0 ? remainingDays : 0; // Return 0 if the date has already passed
+  // Return the remaining days, or 0 if the timestamp is in the past
+  return remainingDays > 0 ? remainingDays : 0;
 }
+
 
 export function isRenewActiveDaysCompleted(
   timestamp: number,
