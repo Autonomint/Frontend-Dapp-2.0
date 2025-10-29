@@ -5,8 +5,8 @@ export const BACKEND_API_URL = "https://43.204.73.16";
 export const STRATEGY_LINK = "/strategies";
 
 export const rpcUrls = {
-  [NetworkId.BaseSepolia]: "https://base-mainnet.g.alchemy.com/v2",
-  [NetworkId.Optimism]: "https://opt-mainnet.g.alchemy.com/v2",
+  [NetworkId.BaseSepolia]: "https://base-mainnet.infura.io/v3",
+  [NetworkId.Optimism]: "https://optimism-mainnet.infura.io/v3",
 };
 
 export const LayerZeroUrl = "https://scan.layerzero-api.com/v1";
