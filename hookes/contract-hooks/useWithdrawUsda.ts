@@ -1,5 +1,5 @@
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
 const useWithdrawUsda = (mutation: any) => {
@@ -16,21 +16,21 @@ const useWithdrawUsda = (mutation: any) => {
 
   const withdrawUsda = async (
     index: number,
-    nativeFee: bigint,
+    nativeFee: bigint | undefined,
     odosAssembledData: any,
     usdtFromOdos: any,
     nonce: bigint,
     deadline: bigint,
     signature: `0x${string}`,
     expiredETHAmount: bigint,
+    token: string,
   ) => {
+    const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+
     try {
       borrowWithdrawAsync({
         abi: borrowingContractAbi,
-        address:
-          borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ],
+        address: contract as `0x${string}`,
         functionName: "withDraw",
         args: [
           address as `0x${string}`,

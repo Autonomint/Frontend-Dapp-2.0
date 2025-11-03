@@ -42,6 +42,7 @@ import {
 } from "@/utils/constants";
 import {
   borrowAssetsAddress,
+  borrowDepositCoreAddress,
   borrowingContractAddress,
   borrowingDepositContractAddress,
   optionContractAddress,
@@ -69,7 +70,6 @@ import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import Spinner from "@/design-systems/atoms/Spinner";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
 
@@ -140,8 +140,8 @@ function InputForm({ currency }: { currency: string }) {
     token:
       currency.toLocaleLowerCase() !== "eth"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-        chainId
-        ]
+            chainId
+          ]
         : undefined,
   });
 
@@ -151,7 +151,7 @@ function InputForm({ currency }: { currency: string }) {
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     args: [BorrowData.debtCeilingMintLimit],
     functionName: "getBorrowData",
@@ -163,20 +163,20 @@ function InputForm({ currency }: { currency: string }) {
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
 
+  const contract =
+    currency === "cbBTC"
+      ? borrowDepositCoreAddress
+      : borrowingDepositContractAddress;
+
   // fetching allowance
   const { data: allowance } = useReadContract({
     abi: wrsETHABI,
     address:
       borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-      chainId || NetworkId.BaseSepolia
+        chainId || NetworkId.BaseSepolia
       ],
     functionName: "allowance",
-    args: [
-      address,
-      borrowingDepositContractAddress[
-      chainId as keyof typeof borrowingDepositContractAddress
-      ],
-    ],
+    args: [address, contract[chainId as keyof typeof contract]],
   }) as { data: number | undefined };
 
   // handle mint btn click
@@ -216,16 +216,17 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETHb"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC"].includes(currency) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
       setApproveLoading(true);
+
       await approveWrapETHDynamic(
-        borrowingDepositContractAddress[
-        chainId as keyof typeof borrowingDepositContractAddress
-        ],
-        parseEther(formik.values.collateralAmount.toString())
+        contract[chainId as keyof typeof contract] as `0x${string}`,
+        currency === "cbBTC"
+          ? parseUnits(formik.values.collateralAmount.toString(), 8)
+          : parseEther(formik.values.collateralAmount.toString())
       );
       // else mining directly
     } else {
@@ -265,8 +266,11 @@ function InputForm({ currency }: { currency: string }) {
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
   // Custom hook to fetch the tvl for the contract
-  const { isTvlPending, tvlValue: ltv } = useGetTvl();
+  const { isTvlPending, tvlValue: ltv } = useGetTvl(
+    BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]
+  );
 
+  console.log(ltv, "ltv");
   // Custom hook to fetch the deposit data hash for the contract
   const { depositDatahash, isDepositsLoading, mintUSDa, reset, depositError } =
     useDepositTokens({
@@ -322,8 +326,9 @@ function InputForm({ currency }: { currency: string }) {
       setIsScroll(true);
 
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${Depositdata.transactionHash
-          } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+          Depositdata.transactionHash
+        } `;
 
         return (
           <ToastNotification
@@ -375,11 +380,21 @@ function InputForm({ currency }: { currency: string }) {
 
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    Number(formatUnits(BigInt(Number(formik.values.collateralAmount || 0) * Number(exchangeRate || 0)), 18)),
+    Number(
+      formatUnits(
+        BigInt(
+          Number(formik.values.collateralAmount || 0) *
+            Number(exchangeRate || 0)
+        ),
+        18
+      )
+    ),
     (ethPrice || 0) as number,
-    formik.values.strikePricePercent
+    formik.values.strikePricePercent,
+    currency === "cbBTC" ? "BTC" : "ETH"
   );
 
+  // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
       abi: optionABI,
@@ -391,6 +406,9 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
+  console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
+
+  // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(
       "strikePricePercent",
@@ -456,7 +474,8 @@ function InputForm({ currency }: { currency: string }) {
     const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
-    const borrowSignedData = await refetchBorrowSignedData();
+    const token = currency === "cbBTC" ? "cbBTC" : "ETH";
+    const borrowSignedData = await refetchBorrowSignedData(currency);
 
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
@@ -468,16 +487,23 @@ function InputForm({ currency }: { currency: string }) {
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
         volatility: BigInt(borrowSignedData?.volatility || 0),
-        depositingAmount: parseEther(formik.values.collateralAmount.toString()),
+        depositingAmount:
+          currency === "cbBTC"
+            ? parseUnits(formik.values.collateralAmount.toString(), 8)
+            : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         deadline: BigInt(borrowSignedData?.deadline || 0),
         nonce: BigInt(borrowSignedData?.nonce || 0),
         signature: borrowSignedData?.signature || ("" as `0x${string}`),
         expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
         value:
-          chainId === NetworkId.Ethereum ? parseEther(formik.values.collateralAmount.toString()) : currency.toLocaleLowerCase() == "eth"
+          currency === "cbBTC"
+            ? undefined
+            : chainId === NetworkId.Ethereum
+            ? parseEther(formik.values.collateralAmount.toString())
+            : currency.toLocaleLowerCase() == "eth"
             ? parseEther(formik.values.collateralAmount.toString()) +
-            nativeFee.nativeFee
+              nativeFee.nativeFee
             : nativeFee.nativeFee,
       });
     }
@@ -494,7 +520,7 @@ function InputForm({ currency }: { currency: string }) {
       const usdaToMint =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          Number(ltv || 0)) /
+          Number(ltv?.LTV || 0)) /
         10000;
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
@@ -505,7 +531,7 @@ function InputForm({ currency }: { currency: string }) {
       const downsideProtection =
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
-          (100 - (ltv ? Number(ltv) : 0))) /
+          (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
         10000;
 
       // display the downside protection amount with 2 decimal places
@@ -636,16 +662,16 @@ function InputForm({ currency }: { currency: string }) {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-        .minutes > 0
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-        .minutes > 0
-        ? 5
-        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-          ? 10
-          : 0;
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
 
   // total boaster for token
   const totalBooster =
@@ -657,11 +683,11 @@ function InputForm({ currency }: { currency: string }) {
   const totalTimeStamp = Math.max(
     farmLuckDetails?.deadLine5xTimestamp
       ? // convert date to timestamp
-      new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+        new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
       : 0,
     farmLuckDetails?.deadLine10xTimestamp
       ? // convert date to timestamp
-      new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+        new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
     Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
@@ -670,11 +696,11 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the point based on depositing amount
   const depositTokenPoint =
     (tokenRewardDetailBorrow?.minAmount || 0) <=
-      Number(formik.values.collateralAmount || 0)
+    Number(formik.values.collateralAmount || 0)
       ? Number(
-        formik.values.collateralAmount /
-        (tokenRewardDetailBorrow?.minAmount || 0) || 0
-      ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
+          formik.values.collateralAmount /
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+        ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
   // calculate the total point
@@ -703,10 +729,10 @@ function InputForm({ currency }: { currency: string }) {
     () =>
       positionList
         ? positionList.filter(
-          (position) =>
-            Number(position.depositedTime) >=
-            (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
-        )
+            (position) =>
+              Number(position.depositedTime) >=
+              (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
+          )
         : [],
     [positionList]
   );
@@ -738,7 +764,7 @@ function InputForm({ currency }: { currency: string }) {
           (Number(last24HourPositionList[0].depositedTime) +
             24 * 60 * 60 -
             new Date().getTime() / 1000) /
-          (60 * 60)
+            (60 * 60)
         );
         formik.setFieldError(
           "collateralAmount",
@@ -759,11 +785,10 @@ function InputForm({ currency }: { currency: string }) {
     }
   };
 
+  //  Liquidation price
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
-
-
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -814,7 +839,7 @@ function InputForm({ currency }: { currency: string }) {
               </div>
               <Typography size="sm" variant="regular" className="text-red-500">
                 {formik.errors.collateralAmount &&
-                  formik.touched.collateralAmount
+                formik.touched.collateralAmount
                   ? formik.errors.collateralAmount
                   : ""}
               </Typography>

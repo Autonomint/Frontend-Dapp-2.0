@@ -188,9 +188,6 @@ function PortfolioTemplate() {
     };
   }, []);
 
-  // get omni chain data
-  const { omniChainData } = useGetOmniChainData();
-
   // fetching user chain data
   const {
     userGains,

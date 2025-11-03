@@ -1,6 +1,7 @@
 import {
   borrowingContractAddress,
   cdsAddress,
+  cdsCoreAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
@@ -97,6 +98,21 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       },
     },
   });
+  // fetching the tvl of the tokens on the current chain
+  const { isPending: isTVLPendingCoreData, data: tvlValueCoreData } = useReadContracts({
+    contracts: tokenAddressArr.map((address) => ({
+      abi: cdsAbi as Abi,
+      address: cdsCoreAddress[chainId as keyof typeof borrowingContractAddress],
+      functionName: "getTokenDepositedTillNow",
+      args: [address],
+    })),
+    query: {
+      select: (data: any) => {
+        return data.map((item: any) => item.result);
+      },
+    },
+  });
+
 
   // Provider for fetching other chain data
   const provider = new ethers.JsonRpcProvider(

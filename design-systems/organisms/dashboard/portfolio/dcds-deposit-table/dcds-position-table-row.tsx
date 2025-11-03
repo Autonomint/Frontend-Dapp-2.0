@@ -39,37 +39,50 @@ const DcdsPositionTableRow = ({
   };
   const { chainId } = useAccount();
   const { theme } = useTheme();
-  
+
   // Calculate the total deposited amount in USD by summing up the value of all tokens
   const totalDepositedAmount = useMemo(() => {
     // USDA is already in USD, no need for price conversion
     const usdaAmount = Number(position.depositedAmounts.usda || 0);
-    
+
     // USDT amount - if priceAtDeposit is available, multiply by it, otherwise use as is
-    const usdtAmount = position.usdtPriceAtDeposit 
-      ? Number(position.depositedAmounts.usdt || 0) * Number(position.usdtPriceAtDeposit || 0)
+    const usdtAmount = position.usdtPriceAtDeposit
+      ? Number(position.depositedAmounts.usdt || 0) *
+        Number(position.usdtPriceAtDeposit || 0)
       : Number(position.depositedAmounts.usdt || 0);
-      
+
     // Calculate value of BOLD tokens in USD
-    const boldAmount = Number(position.depositedAmounts.boldToken || 0) * Number(position.boldPriceAtDeposit || 0);
-    
+    const boldAmount =
+      Number(position.depositedAmounts.boldToken || 0) *
+      Number(position.boldPriceAtDeposit || 0);
+
     // Calculate value of native tokens (like ETH) in USD
-    const nativeAmount = Number(position.depositedAmounts.nativeToken || 0) * Number(position.nativeTokenPriceAtDeposit || 0);
-    
+    const nativeAmount =
+      Number(position.depositedAmounts.nativeToken || 0) *
+      Number(position.nativeTokenPriceAtDeposit || 0);
+
     // Calculate value of USDC in USD (1:1 unless priceAtDeposit is different)
-    const usdcAmount = Number(position.depositedAmounts.usdc || 0) * Number(position.usdcPriceAtDeposit || 1);
-    
+    const usdcAmount =
+      Number(position.depositedAmounts.usdc || 0) *
+      Number(position.usdcPriceAtDeposit || 1);
+
     // Return sum of all token values, formatted to 2 decimal places
-    return (usdaAmount + usdtAmount + boldAmount + nativeAmount + usdcAmount).toFixed(2);
+    return (
+      usdaAmount +
+      usdtAmount +
+      boldAmount +
+      nativeAmount +
+      usdcAmount
+    ).toFixed(2);
   }, [position]);
-  
+
   const depositedTokenNames = useMemo(() => {
     const tokenNames: string[] = [];
     for (const token in position.depositedAmounts) {
       if (
         Number(
           position.depositedAmounts[
-          token as keyof typeof position.depositedAmounts
+            token as keyof typeof position.depositedAmounts
           ]
         ) > 0
       ) {
@@ -87,10 +100,11 @@ const DcdsPositionTableRow = ({
 
   return (
     <tr
-      className={`border ${highlight
-        ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-        : ""
-        } border-solid border-grayLight `}
+      className={`border ${
+        highlight
+          ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+          : ""
+      } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
       <td className="px-5 py-4 2xl:py-6 text-center sm:text-left">
@@ -113,6 +127,9 @@ const DcdsPositionTableRow = ({
             })}
           </div>
         </div>
+      </td>
+      <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">
+        {position.collateralType ? position.collateralType : "ETH"}
       </td>
       <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">
         {formatTimestamp(Number(position.depositedTime))}
