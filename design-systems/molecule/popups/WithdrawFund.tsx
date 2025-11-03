@@ -233,25 +233,25 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
   }) as { data: number[]; isLoading: boolean };
 
-  // getting renew time limit in days
-  const { data: currentOptionFeeTimeLimit } = useReadContract({
-    abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-      ],
-    functionName: "optionsFeesTimeLimits",
+  // // getting renew time limit in days
+  // const { data: currentOptionFeeTimeLimit } = useReadContract({
+  //   abi: borrowingContractAbi,
+  //   address:
+  //     borrowingContractAddress[
+  //       chainId as keyof typeof borrowingContractAddress
+  //     ],
+  //   functionName: "optionsFeesTimeLimits",
 
-    query: {
-      placeholderData: [0n, 0n],
-      select: (data: any) => {
-        return {
-          minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
-          maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
-        };
-      },
-    },
-  });
+  //   query: {
+  //     placeholderData: [0n, 0n],
+  //     select: (data: any) => {
+  //       return {
+  //         minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+  //         maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+  //       };
+  //     },
+  //   },
+  // });
 
   // const { tvlValue: assetDetails } = useGetLtv(
   //   position.collateralType === "cbBTC" ? AssetName.cbBTC : undefined
@@ -1032,6 +1032,35 @@ export function WithdrawFund({
           (calculateRemainingDays(position.validTill) + 1 || 0))
     ) > 0
   );
+
+  // // getting renew time limit in days
+  // const { data: currentOptionFeeTimeLimit } = useReadContract({
+  //   abi: borrowingContractAbi,
+  //   address:
+  //     borrowingContractAddress[
+  //       chainId as keyof typeof borrowingContractAddress
+  //     ],
+  //   functionName: "optionsFeesTimeLimits",
+
+  //   query: {
+  //     placeholderData: [0n, 0n],
+  //     select: (data: any) => {
+  //       return {
+  //         minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+  //         maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+  //       };
+  //     },
+  //   },
+  // });
+
+  const currentOptionFeeTimeLimit = {
+    minTimeLimit:
+      Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
+      (24 * 60 * 60),
+    maxTimeLimit:
+      Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0 || 0) /
+      (24 * 60 * 60),
+  };
 
   return (
     <>

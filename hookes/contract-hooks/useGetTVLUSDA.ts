@@ -100,19 +100,19 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
     },
   });
   // fetching the tvl of the tokens on the current chain
-  const { isPending: isTVLPendingCoreData, data: tvlValueCoreData } = useReadContracts({
-    contracts: tokenAddressArr.map((address) => ({
-      abi: cdsAbi as Abi,
-      address: cdsCoreAddress[chainId as keyof typeof cdsCoreAddress] as `0x${string}`,
-      functionName: "getTokenDepositedTillNow",
-      args: [address],
-    })),
-    query: {
-      select: (data: any) => {
-        return data.map((item: any) => item.result);
-      },
-    },
-  });
+  // const { isPending: isTVLPendingCoreData, data: tvlValueCoreData } = useReadContracts({
+  //   contracts: tokenAddressArr.map((address) => ({
+  //     abi: cdsAbi as Abi,
+  //     address: cdsCoreAddress[chainId as keyof typeof borrowingContractAddress],
+  //     functionName: "getTokenDepositedTillNow",
+  //     args: [address],
+  //   })),
+  //   query: {
+  //     select: (data: any) => {
+  //       return data.map((item: any) => item.result);
+  //     },
+  //   },
+  // });
 
 
   // Provider for fetching other chain data
