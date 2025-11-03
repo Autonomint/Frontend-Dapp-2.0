@@ -455,7 +455,10 @@ export function DcdsWithdrawModal({
    */
 
   // getting apy of index
-  const { apy, isLoadingAPY } = useGetAPY(position.index);
+  const { apy, isLoadingAPY } = useGetAPY(
+    position.index,
+    position?.collateralType
+  );
   // Post api function for calculate withdraw amount
   const { calculateBackendWithdraw, withdrawdata } =
     useCalculateWithdrawAmount();
