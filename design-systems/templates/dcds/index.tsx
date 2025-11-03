@@ -435,12 +435,19 @@ function DCDSTemplate() {
         ));
         return;
       }
+      // filtering the token list based on the hedge asset
+      // Removing bold token from the token list if cbBTC is selected
+      const filteredTokenList = tokenList.filter(
+        (token) =>
+          formik.values.hedgeAsset === "BOLD" && token.tokenName === "BOLD"
+      );
+
       handleDcdsDeposit?.(
         [
           {
             user: address as `0x${string}`,
             // token addresses
-            tokenAddresses: tokenList.map((token) => {
+            tokenAddresses: filteredTokenList.map((token) => {
               const tokenDetail = selectedTokens.find((selectedToken) => {
                 return selectedToken.tokenAddress === token.tokenAddress;
               });
@@ -448,7 +455,7 @@ function DCDSTemplate() {
                 zeroAddress) as `0x${string}`;
             }),
             // token amount in wei
-            tokenAmounts: tokenList.map((token) => {
+            tokenAmounts: filteredTokenList.map((token) => {
               const tokenDetail = selectedTokens.find((selectedToken) => {
                 return selectedToken.tokenAddress === token.tokenAddress;
               });
@@ -1319,6 +1326,8 @@ function DCDSTemplate() {
     return list;
   }, [tokenList]);
   console.log("formik.values", formik);
+  console.log(tokenList, "tokenList");
+
   return (
     <div>
       <AppNavbar activeBack={showBack} />
