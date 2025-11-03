@@ -23,7 +23,8 @@ export interface SignedDataReturn {
 async function signedDataForDcdsWithDrawDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
-  index: number
+  index: number,
+  token: string,
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSWithdraw`, {
     method: "POST",
@@ -34,13 +35,15 @@ async function signedDataForDcdsWithDrawDeposit(
       address: address,
       chainId: chainId,
       index: index,
+      collateralType: token,
     }),
   }).then((response) => response.json());
 }
 async function signedDataForDcdsDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
-  index: number
+  index: number,
+  token: string,
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSDeposit`, {
     method: "POST",
@@ -51,6 +54,7 @@ async function signedDataForDcdsDeposit(
       address: address,
       chainId: chainId,
       index: index,
+      collateralType: token,
     }),
   }).then((response) => response.json());
 }
@@ -63,7 +67,8 @@ async function signedDataForDcdsDeposit(
 async function signedDataForDcdsWithGainsDrawDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
-  index: number
+  index: number,
+  token: string,
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/cds/signedDataForCDSWithdrawGains`, {
     method: "POST",
@@ -74,6 +79,7 @@ async function signedDataForDcdsWithGainsDrawDeposit(
       address: address,
       chainId: chainId,
       index: index,
+      collateralType: token,
     }),
   }).then((response) => response.json());
 }
@@ -92,11 +98,12 @@ const useGetDcdsWithdrawSignedData = (index?: number) => {
     isPending: isPendingBorrowWithDrawSignedData,
     mutateAsync: refetchBorrowWithDrawSignedData,
   } = useMutation({
-    mutationFn: () =>
+    mutationFn: (token: string) =>
       signedDataForDcdsWithDrawDeposit(
         address ? address : undefined,
         chainId as number,
-        index || 0
+        index || 0,
+        token
       ),
   });
 
@@ -105,11 +112,12 @@ const useGetDcdsWithdrawSignedData = (index?: number) => {
     isPending: isPendingBorrowWithDrawGainsSignedData,
     mutateAsync: refetchBorrowWithDrawGainsSignedData,
   } = useMutation({
-    mutationFn: () =>
+    mutationFn: (token: string) =>
       signedDataForDcdsWithGainsDrawDeposit(
         address ? address : undefined,
         chainId as number,
-        index || 0
+        index || 0,
+        token
       ),
   });
   const {
@@ -117,11 +125,12 @@ const useGetDcdsWithdrawSignedData = (index?: number) => {
     isPending: isPendingcdsDepositSignedData,
     mutateAsync: refetchcdsDepositSignedData,
   } = useMutation({
-    mutationFn: () =>
+    mutationFn: (token: string) =>
       signedDataForDcdsDeposit(
         address ? address : undefined,
         chainId as number,
-        index || 0
+        index || 0,
+        token
       ),
   });
 

@@ -3,6 +3,7 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
+import { AssetName } from "@/utils/constants";
 
 interface HowItWorks {
   //   twitter: string; // Path to the twitter icon image
@@ -20,7 +21,7 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
     setIsDialogOpen(false);
   };
 
-  const { isTvlPending, tvlValue: ltv } = useGetTvl();
+  const { isTvlPending, tvlValue: ltv } = useGetTvl(AssetName.ETH);
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;

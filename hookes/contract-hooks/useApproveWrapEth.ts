@@ -10,7 +10,7 @@ import { useAccount, useWriteContract } from "wagmi";
 
 const useApproveWrapEth = (
   mutation: any,
-  tokenName: "wrsETH" | "weETH" | "wsuperOETH" | string
+  tokenName: "wrsETH" | "weETH" | "wsuperOETH" | "cbBTC" | string
 ) => {
   const {
     isPending: wrapETHApproveLoading,
@@ -27,7 +27,7 @@ const useApproveWrapEth = (
   const abi = chainId === NetworkId.BaseSepolia ? modeABI : modeABI;
   const tokenContractAddress =
     borrowAssetsAddress[tokenName as keyof typeof borrowAssetsAddress][
-      chainId || NetworkId.BaseSepolia
+    chainId || NetworkId.BaseSepolia
     ];
 
   const approveWrapETHDynamic = async (

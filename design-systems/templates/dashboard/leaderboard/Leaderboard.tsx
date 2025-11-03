@@ -9,7 +9,7 @@ import { formatEther, formatUnits } from "viem";
 
 function Leaderboard() {
   // Fetch the total volume of borrowers amount in USD
-  const { omniChainData } = useGetOmniChainData();
+  const { omniChainDataEth, omniChainDataCbbtc } = useGetOmniChainData();
 
   // getting leaderboard data
   const {
@@ -50,11 +50,39 @@ function Leaderboard() {
           <PortfolioMetrics
             subHeading="Total Value Locked (TVL)"
             value={`$${formatNumber(
-              omniChainData
-                ? Number(formatUnits(BigInt(omniChainData?.totalCdsDepositedAmount ?? 0n), 6)) +
-                Number(
-                  formatUnits(BigInt(omniChainData?.totalVolumeOfBorrowersAmountinUSD ?? 0n), 20)
-                )
+              omniChainDataEth
+                ? Number(
+                    formatUnits(
+                      BigInt(omniChainDataEth?.totalCdsDepositedAmount ?? 0n),
+                      6
+                    )
+                  ) +
+                    Number(
+                      formatUnits(
+                        BigInt(
+                          omniChainDataEth?.totalVolumeOfBorrowersAmountinUSD ??
+                            0n
+                        ),
+                        20
+                      )
+                    ) +
+                    Number(
+                      formatUnits(
+                        BigInt(
+                          omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n
+                        ),
+                        6
+                      )
+                    ) +
+                    Number(
+                      formatUnits(
+                        BigInt(
+                          omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD ??
+                            0n
+                        ),
+                        20
+                      )
+                    )
                 : 0
             )}`}
           />

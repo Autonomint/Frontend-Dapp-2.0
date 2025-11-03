@@ -1,4 +1,4 @@
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
 enum StrikePrice {
@@ -24,13 +24,11 @@ const useBorrowRenew = (mutation: any) => {
     },
   });
 
-  const renewBorrow = async (index: bigint, nativeFee: bigint) => {
+  const renewBorrow = async (index: bigint, nativeFee: bigint | undefined, token: string) => {
+    const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : [chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
       abi: borrowingContractAbi,
-      address:
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ],
+      address: contract as `0x${string}`,
       functionName: "renewOptions",
       args: [index],
       value: nativeFee,

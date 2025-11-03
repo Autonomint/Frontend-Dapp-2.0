@@ -1,4 +1,4 @@
-export const cdsAbi = [
+export const cdsCoreABI = [
   {
     "inputs": [
       {
@@ -404,12 +404,6 @@ export const cdsAbi = [
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "EIP712DomainChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
     "inputs": [
       {
         "indexed": false,
@@ -419,31 +413,6 @@ export const cdsAbi = [
       }
     ],
     "name": "Initialized",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      },
-      {
-        "indexed": false,
-        "internalType": "address[]",
-        "name": "liquidatingToken",
-        "type": "address[]"
-      }
-    ],
-    "name": "Liquidated",
     "type": "event"
   },
   {
@@ -605,6 +574,11 @@ export const cdsAbi = [
   {
     "inputs": [
       {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
         "internalType": "uint128",
         "name": "fees",
         "type": "uint128"
@@ -671,19 +645,6 @@ export const cdsAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "contractNonce",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "components": [
@@ -721,9 +682,14 @@ export const cdsAbi = [
             "internalType": "uint256",
             "name": "expiredETHAmount",
             "type": "uint256"
+          },
+          {
+            "internalType": "enum IBorrowing.AssetName",
+            "name": "assetName",
+            "type": "uint8"
           }
         ],
-        "internalType": "struct CDSInterface.DepositUserParams",
+        "internalType": "struct CDSCoreInterface.DepositUserParams",
         "name": "params",
         "type": "tuple"
       },
@@ -740,50 +706,7 @@ export const cdsAbi = [
     ],
     "name": "deposit",
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "eip712Domain",
-    "outputs": [
-      {
-        "internalType": "bytes1",
-        "name": "fields",
-        "type": "bytes1"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "version",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "chainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "verifyingContract",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "salt",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "extensions",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -812,7 +735,7 @@ export const cdsAbi = [
       {
         "components": [
           {
-            "internalType": "enum CDSInterface.AssetStatus",
+            "internalType": "enum CDSCoreInterface.AssetStatus",
             "name": "status",
             "type": "uint8"
           },
@@ -832,7 +755,7 @@ export const cdsAbi = [
             "type": "uint64"
           }
         ],
-        "internalType": "struct CDSInterface.AssetDetails",
+        "internalType": "struct CDSCoreInterface.AssetDetails",
         "name": "",
         "type": "tuple"
       }
@@ -967,7 +890,7 @@ export const cdsAbi = [
                 "type": "uint128"
               }
             ],
-            "internalType": "struct CDSInterface.WithdrawAmountRemaining",
+            "internalType": "struct CDSCoreInterface.WithdrawAmountRemaining",
             "name": "withdrawAmountRemaining",
             "type": "tuple"
           },
@@ -1002,7 +925,7 @@ export const cdsAbi = [
             "type": "address[]"
           }
         ],
-        "internalType": "struct CDSInterface.CdsDepositDetails",
+        "internalType": "struct CDSCoreInterface.CdsDepositDetails",
         "name": "",
         "type": "tuple"
       },
@@ -1029,7 +952,7 @@ export const cdsAbi = [
             "type": "uint128"
           }
         ],
-        "internalType": "struct CDSInterface.DepositedTokenDetails[]",
+        "internalType": "struct CDSCoreInterface.DepositedTokenDetails[]",
         "name": "",
         "type": "tuple[]"
       },
@@ -1045,7 +968,12 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "enum CDSInterface.CdsData",
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum CDSCoreInterface.CdsData",
         "name": "dataName",
         "type": "uint8"
       }
@@ -1088,198 +1016,11 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "normalizedAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "vaultValue",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "cdsPoolValue",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "collateralRemainingInWithdraw",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "collateralValueRemainingInWithdraw",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "noOfLiquidations",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint64",
-            "name": "nonce",
-            "type": "uint64"
-          },
-          {
-            "internalType": "uint64",
-            "name": "cdsCount",
-            "type": "uint64"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalCdsDepositedAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalCdsDepositedAmountWithOptionFees",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalAvailableLiquidationAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalAvailableLiquidationAmountForPropCalc",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "usdtAmountDepositedTillNow",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "lastCumulativeRate",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalVolumeOfBorrowersAmountinWei",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalVolumeOfBorrowersAmountinUSD",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "noOfBorrowers",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint256",
-            "name": "collateralProfitsOfLiquidators",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalNoOfDepositIndices",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalVolumeOfBorrowersAmountLiquidatedInWei",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "cumulativeValue",
-            "type": "uint128"
-          },
-          {
-            "internalType": "bool",
-            "name": "cumulativeValueSign",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "downsideProtected",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "nativeTokenDepositedTillNow",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "lastRealisedUpsideCr",
-            "type": "uint128"
-          },
-          {
-            "internalType": "bool",
-            "name": "firstBorrowDeposited",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint256",
-            "name": "totalCdsDepositedAmountForOpFeesCrCalc",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint128",
-            "name": "lastETHPrice",
-            "type": "uint128"
-          },
-          {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "liqAmountUsedCV",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "liqCollateralCV",
-                "type": "uint256"
-              }
-            ],
-            "internalType": "struct IBorrowLiquidation.LiquidationCumulativeValues",
-            "name": "liquidationCumulativeValues",
-            "type": "tuple"
-          }
-        ],
-        "internalType": "struct IGlobalVariables.OmniChainData",
-        "name": "omniChainData",
-        "type": "tuple"
-      },
-      {
-        "internalType": "uint128",
-        "name": "value",
-        "type": "uint128"
-      },
-      {
-        "internalType": "bool",
-        "name": "gains",
-        "type": "bool"
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
       }
     ],
-    "name": "getCumulativeValue",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      },
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "getLatestData",
     "outputs": [
       {
@@ -1293,6 +1034,11 @@ export const cdsAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "internalType": "address[]",
         "name": "tokenAddresses",
@@ -1345,30 +1091,6 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      }
-    ],
-    "name": "getUsedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address[]",
         "name": "_supportedTokenAddresses",
         "type": "address[]"
@@ -1376,7 +1098,7 @@ export const cdsAbi = [
       {
         "components": [
           {
-            "internalType": "enum CDSInterface.AssetStatus",
+            "internalType": "enum CDSCoreInterface.AssetStatus",
             "name": "status",
             "type": "uint8"
           },
@@ -1396,7 +1118,7 @@ export const cdsAbi = [
             "type": "uint64"
           }
         ],
-        "internalType": "struct CDSInterface.AssetDetails[]",
+        "internalType": "struct CDSCoreInterface.AssetDetails[]",
         "name": "_assetDetails",
         "type": "tuple[]"
       },
@@ -1432,6 +1154,11 @@ export const cdsAbi = [
         "internalType": "address[]",
         "name": "liquidatingToken",
         "type": "address[]"
+      },
+      {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
       },
       {
         "internalType": "bytes",
@@ -1482,6 +1209,11 @@ export const cdsAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "internalType": "uint128",
         "name": "usdaAmount",
@@ -1539,19 +1271,6 @@ export const cdsAbi = [
         "type": "address"
       }
     ],
-    "name": "setBorrowLiquidation",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
-      }
-    ],
     "name": "setBorrowingContract",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -1562,17 +1281,17 @@ export const cdsAbi = [
       {
         "components": [
           {
-            "internalType": "contract ICdsDeposit",
+            "internalType": "contract ICdsDepositCore",
             "name": "cdsDeposit",
             "type": "address"
           },
           {
-            "internalType": "contract ICdsWithdraw",
+            "internalType": "contract ICdsWithdrawCore",
             "name": "cdsWithdraw",
             "type": "address"
           }
         ],
-        "internalType": "struct CDSInterface.ChildContracts",
+        "internalType": "struct CDSCoreInterface.ChildContracts",
         "name": "_childContracts",
         "type": "tuple"
       }
@@ -1584,6 +1303,11 @@ export const cdsAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "internalType": "address",
         "name": "_address",
@@ -1657,7 +1381,7 @@ export const cdsAbi = [
       {
         "components": [
           {
-            "internalType": "enum CDSInterface.AssetStatus",
+            "internalType": "enum CDSCoreInterface.AssetStatus",
             "name": "status",
             "type": "uint8"
           },
@@ -1677,7 +1401,7 @@ export const cdsAbi = [
             "type": "uint64"
           }
         ],
-        "internalType": "struct CDSInterface.AssetDetails",
+        "internalType": "struct CDSCoreInterface.AssetDetails",
         "name": "assetDetail",
         "type": "tuple"
       }
@@ -1811,7 +1535,7 @@ export const cdsAbi = [
                 "type": "uint128"
               }
             ],
-            "internalType": "struct CDSInterface.WithdrawAmountRemaining",
+            "internalType": "struct CDSCoreInterface.WithdrawAmountRemaining",
             "name": "withdrawAmountRemaining",
             "type": "tuple"
           },
@@ -1846,7 +1570,7 @@ export const cdsAbi = [
             "type": "address[]"
           }
         ],
-        "internalType": "struct CDSInterface.CdsDepositDetails",
+        "internalType": "struct CDSCoreInterface.CdsDepositDetails",
         "name": "cdsDepositDetails",
         "type": "tuple"
       }
@@ -1859,7 +1583,12 @@ export const cdsAbi = [
   {
     "inputs": [
       {
-        "internalType": "enum CDSInterface.CdsData",
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum CDSCoreInterface.CdsData",
         "name": "dataName",
         "type": "uint8"
       },
@@ -1903,7 +1632,13 @@ export const cdsAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
     "name": "updateCurrentTotalCdsDepositedAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -1949,7 +1684,7 @@ export const cdsAbi = [
             "type": "uint128"
           }
         ],
-        "internalType": "struct CDSInterface.DepositedTokenDetails",
+        "internalType": "struct CDSCoreInterface.DepositedTokenDetails",
         "name": "depositedTokenDetails",
         "type": "tuple"
       }
@@ -2020,12 +1755,12 @@ export const cdsAbi = [
             "type": "uint256"
           },
           {
-            "internalType": "enum CDSInterface.WithdrawType",
+            "internalType": "enum CDSCoreInterface.WithdrawType",
             "name": "withdrawType",
             "type": "uint8"
           }
         ],
-        "internalType": "struct CDSInterface.WithdrawUserParams",
+        "internalType": "struct CDSCoreInterface.WithdrawUserParams",
         "name": "params",
         "type": "tuple"
       },
@@ -2042,7 +1777,7 @@ export const cdsAbi = [
     ],
     "name": "withdraw",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -2053,7 +1788,7 @@ export const cdsAbi = [
         "type": "uint64"
       },
       {
-        "internalType": "enum CDSInterface.WithdrawType",
+        "internalType": "enum CDSCoreInterface.WithdrawType",
         "name": "withdrawType",
         "type": "uint8"
       },
@@ -2061,6 +1796,11 @@ export const cdsAbi = [
         "internalType": "bytes",
         "name": "odosAssembledData",
         "type": "bytes"
+      },
+      {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
       },
       {
         "internalType": "uint256",

@@ -60,7 +60,7 @@ const useGetDcdsDepositList = () => {
 
       setPagedDcdsPositionList(
         [...dcdsPositionList]
-          .sort((a, b) => a.index - b.index)
+          .sort((a, b) => Number(a.depositedTime) - Number(b.depositedTime))
           .slice(startIndex, endIndex)
       );
 

@@ -1,4 +1,4 @@
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowDepositCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
 import { AssetName } from "@/utils/constants";
@@ -42,12 +42,10 @@ const useDepositTokens = (mutation: any) => {
     expiredETHAmount,
     nonce,
   }: BorrowInputs) => {
+    const contractAddress = assetName === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
       abi: borrowingContractAbi,
-      address:
-        borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-        ],
+      address: contractAddress as `0x${string}`,
       functionName: "depositTokens",
       args: [
         {

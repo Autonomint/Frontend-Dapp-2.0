@@ -32,7 +32,7 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // getting omni chain data from blockchain
-  const { omniChainData: GlobalContractData } =
+  const { omniChainDataEth: GlobalContractData } =
     useGetUsdtAmountDepositedTillNow();
 
   // box option list for navigation
@@ -46,8 +46,8 @@ export default function HomeTemplate() {
     },
     {
       title: "Earn With dCDS",
-      subtitle: `TVL - $${(
-        Number(formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6))
+      subtitle: `TVL - $${Number(
+        formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
       ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },
@@ -75,7 +75,8 @@ export default function HomeTemplate() {
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
     1,
     (ethPrice || 0) as number,
-    currentStrikePricePercentLimit as number
+    currentStrikePricePercentLimit as number,
+    "ETH"
   );
 
   // fee list for showing in borrow hover box
@@ -84,7 +85,9 @@ export default function HomeTemplate() {
       orgName: "Autonomint",
       amount: (
         <div className="flex gap-2 items-baseline">
-          <span className="hidden sm:block">{Number(oneEthOptionFees).toFixed(2)}</span>
+          <span className="hidden sm:block">
+            {Number(oneEthOptionFees).toFixed(2)}
+          </span>
           <span className="text-[14px] hidden sm:block">per month</span>
           <span className="text-[14px] sm:hidden">
             {Number(oneEthOptionFees).toFixed(2)}/m
@@ -259,28 +262,30 @@ export default function HomeTemplate() {
         alt="light-mode-image"
       />
       <div
-        className={`block  w-full h-[137px] sm:h-[200px] full lg:hidden ${theme == "light"
-          ? "home-banner-container"
-          : "home-banner-dark-container"
-          }`}
+        className={`block  w-full h-[137px] sm:h-[200px] full lg:hidden ${
+          theme == "light"
+            ? "home-banner-container"
+            : "home-banner-dark-container"
+        }`}
       ></div>
 
       <div className="border-[1px] overflow-hidden  border-t-grayLight">
         {/* 1st row */}
         <div className={`flex-col lg:flex lg:flex-row closeAnimateTop    `}>
           <div
-            className={`relative  closeAnimateMint cursor-pointer  ${hoveredIndex === 0
-              ? "w-full lg:w-[80%] h-[380px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
-              : // height and width style based on hoveredIndex
-              hoveredIndex === 1
+            className={`relative  closeAnimateMint cursor-pointer  ${
+              hoveredIndex === 0
+                ? "w-full lg:w-[80%] h-[380px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
+                : // height and width style based on hoveredIndex
+                hoveredIndex === 1
                 ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
-              } h-[300px] lg:h-[400px] ${
+            } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null || hoveredIndex === 2
                 ? " border-x border-y lg:border-x lg:border-y-0 border-[1px]  border-grayLight"
                 : " border-x border-y lg:border-b-0 lg:border-r-0 border-[1px]  border-grayLight lg:border-y-0"
-              }`}
+            }`}
             onMouseEnter={() => {
               setHoveredIndex(0);
             }}
@@ -309,21 +314,22 @@ export default function HomeTemplate() {
             </div>
           </div>
           <div
-            className={`relative closeAnimateDCDS cursor-pointer  ${hoveredIndex === 1
-              ? // height and width style based on hoveredIndex
-              "w-full lg:w-[60%] h-[360px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
-              : hoveredIndex === 0
+            className={`relative closeAnimateDCDS cursor-pointer  ${
+              hoveredIndex === 1
                 ? // height and width style based on hoveredIndex
-                " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  "w-full lg:w-[60%] h-[360px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
+                : hoveredIndex === 0
+                ? // height and width style based on hoveredIndex
+                  " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : "w-full lg:w-[50%]"
-              } h-[300px]  lg:h-[400px] ${
+            } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y lg:border-x lg:border-y-0  border-[1px]  border-grayLight"
                 : hoveredIndex === 3
-                  ? " border-x border-y lg:border-y-0 border-[1px]  border-grayLight"
-                  : ""
-              }`}
+                ? " border-x border-y lg:border-y-0 border-[1px]  border-grayLight"
+                : ""
+            }`}
             onMouseEnter={() => {
               setHoveredIndex(1);
             }}
@@ -362,13 +368,14 @@ export default function HomeTemplate() {
             className={`relative cursor-pointer ${
               // height and width style based on hoveredIndex
               hoveredIndex === 3 ? "w-full lg:w-[40%]" : "w-full lg:w-[80%]"
-              } ${
+            } ${
               // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y border-[1px] border-grayLight"
                 : " border-x border-y lg:border-b-[1px] lg:border-l border-[1px] border-grayLight"
-              } h-[300px] lg:h-[400px]  ${hoveredIndex === 2 || hoveredIndex === 3 ? "  lg:!h-[450px]" : ""
-              }`}
+            } h-[300px] lg:h-[400px]  ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "  lg:!h-[450px]" : ""
+            }`}
             onMouseEnter={() => {
               setHoveredIndex(2);
             }}
@@ -401,13 +408,14 @@ export default function HomeTemplate() {
             className={`relative cursor-pointer ${
               // height and width style based on hoveredIndex
               hoveredIndex === 3 ? "w-full lg:w-[60%]" : "w-full lg:w-[40%]"
-              } ${
+            } ${
               // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y border-[1px] border-grayLight"
                 : "border-x border-y border-[1px] border-grayLight lg:border-0 "
-              } h-[300px] lg:h-[400px] ${hoveredIndex === 2 || hoveredIndex === 3 ? "lg:!h-[450px] " : ""
-              }`}
+            } h-[300px] lg:h-[400px] ${
+              hoveredIndex === 2 || hoveredIndex === 3 ? "lg:!h-[450px] " : ""
+            }`}
             onMouseEnter={() => {
               setHoveredIndex(3);
             }}

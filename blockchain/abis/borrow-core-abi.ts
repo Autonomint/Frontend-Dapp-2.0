@@ -1,4 +1,4 @@
-export const borrowingContractAbi = [
+export const borowCoreABI = [
   {
     "inputs": [
       {
@@ -256,17 +256,6 @@ export const borrowingContractAbi = [
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "optionType",
-        "type": "uint16"
-      }
-    ],
-    "name": "InvalidOptionType",
-    "type": "error"
-  },
-  {
     "inputs": [],
     "name": "NotInitializing",
     "type": "error"
@@ -296,22 +285,6 @@ export const borrowingContractAbi = [
   {
     "inputs": [],
     "name": "ReentrancyGuardReentrantCall",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "bits",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      }
-    ],
-    "name": "SafeCastOverflowedUintDowncast",
     "type": "error"
   },
   {
@@ -419,12 +392,6 @@ export const borrowingContractAbi = [
       }
     ],
     "name": "Deposit",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [],
-    "name": "EIP712DomainChanged",
     "type": "event"
   },
   {
@@ -598,19 +565,6 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [],
-    "name": "abondLiqGainsCr",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "admin",
     "outputs": [
       {
@@ -644,18 +598,11 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "usdaAmount",
-        "type": "uint128"
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
       }
     ],
-    "name": "calculateCrForAbondLiqGains",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "calculateCumulativeRate",
     "outputs": [
       {
@@ -669,6 +616,11 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "internalType": "uint256",
         "name": "amount",
@@ -694,32 +646,6 @@ export const borrowingContractAbi = [
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "collateralValueRemainingInWithdraw",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "contractNonce",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -757,7 +683,7 @@ export const borrowingContractAbi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct IBorrowing.BorrowDepositParams",
+        "internalType": "struct IBorrowingCore.BorrowDepositParams",
         "name": "depositParam",
         "type": "tuple"
       },
@@ -779,106 +705,14 @@ export const borrowingContractAbi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IBorrowing.EIP712VerifyParams",
+        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
         "name": "verifyParams",
         "type": "tuple"
       }
     ],
     "name": "depositTokens",
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "eip712Domain",
-    "outputs": [
-      {
-        "internalType": "bytes1",
-        "name": "fields",
-        "type": "bytes1"
-      },
-      {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "version",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "chainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "verifyingContract",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "salt",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "extensions",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint128",
-        "name": "aBondAmount",
-        "type": "uint128"
-      }
-    ],
-    "name": "getAbondYields",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -894,7 +728,7 @@ export const borrowingContractAbi = [
       {
         "components": [
           {
-            "internalType": "enum IBorrowing.AssetStatus",
+            "internalType": "enum IBorrowingCore.AssetStatus",
             "name": "status",
             "type": "uint8"
           },
@@ -961,7 +795,7 @@ export const borrowingContractAbi = [
                 "type": "uint128"
               }
             ],
-            "internalType": "struct IBorrowing.OptionsFeesTimeLimits",
+            "internalType": "struct IBorrowingCore.OptionsFeesTimeLimits",
             "name": "optionsFeesTimeLimits",
             "type": "tuple"
           },
@@ -976,7 +810,7 @@ export const borrowingContractAbi = [
             "type": "uint16"
           }
         ],
-        "internalType": "struct IBorrowing.AssetDetails",
+        "internalType": "struct IBorrowingCore.AssetDetails",
         "name": "",
         "type": "tuple"
       }
@@ -987,17 +821,54 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "enum IBorrowing.BorrowData",
-        "name": "dataName",
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
         "type": "uint8"
       }
     ],
     "name": "getBorrowData",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "dataValue",
-        "type": "uint256"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalNormalizedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralRemainingInWithdraw",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralValueRemainingInWithdraw",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "depositedInBorrow",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lastEventTime",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "lastCumulativeRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "pendingUSDaToBurn",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.AssetData",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -1026,7 +897,7 @@ export const borrowingContractAbi = [
             "type": "uint128"
           }
         ],
-        "internalType": "struct IBorrowing.DebtCeilingData",
+        "internalType": "struct IBorrowingCore.DebtCeilingData",
         "name": "",
         "type": "tuple"
       }
@@ -1051,7 +922,7 @@ export const borrowingContractAbi = [
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "optionFees",
         "type": "uint256"
       }
     ],
@@ -1096,11 +967,6 @@ export const borrowingContractAbi = [
       },
       {
         "internalType": "address",
-        "name": "abondTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "multiSignAddress",
         "type": "address"
       },
@@ -1110,24 +976,9 @@ export const borrowingContractAbi = [
         "type": "address"
       },
       {
-        "internalType": "address[]",
-        "name": "collateralAddresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "tokenAddresses",
-        "type": "address[]"
-      },
-      {
         "internalType": "address",
         "name": "globalVariablesAddress",
         "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "_minInterval",
-        "type": "uint64"
       }
     ],
     "name": "initialize",
@@ -1137,6 +988,11 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "uint128",
+        "name": "tokenAmountFromOdos",
+        "type": "uint128"
+      },
       {
         "components": [
           {
@@ -1182,37 +1038,19 @@ export const borrowingContractAbi = [
                 "type": "bytes"
               }
             ],
-            "internalType": "struct IBorrowing.EIP712VerifyParams",
+            "internalType": "struct IBorrowingCore.EIP712VerifyParams",
             "name": "verifyParams",
             "type": "tuple"
           }
         ],
-        "internalType": "struct IBorrowing.LiquidationParams",
+        "internalType": "struct IBorrowingCore.LiquidationParams",
         "name": "params",
         "type": "tuple"
       }
     ],
     "name": "liquidate",
     "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "optionsFeesTimeLimits",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "minimumLimit",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "maximumLimit",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1244,19 +1082,6 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "aBondAmount",
-        "type": "uint128"
-      }
-    ],
-    "name": "redeemYields",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
@@ -1264,7 +1089,7 @@ export const borrowingContractAbi = [
     ],
     "name": "renewOptions",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1297,17 +1122,17 @@ export const borrowingContractAbi = [
       {
         "components": [
           {
-            "internalType": "contract IBorrowDeposit",
+            "internalType": "contract IBorrowDepositCore",
             "name": "borrowDeposit",
             "type": "address"
           },
           {
-            "internalType": "contract IBorrowWithdraw",
+            "internalType": "contract IBorrowWithdrawCore",
             "name": "borrowWithdraw",
             "type": "address"
           }
         ],
-        "internalType": "struct IBorrowing.ChildContracts",
+        "internalType": "struct IBorrowingCore.ChildContracts",
         "name": "_childContracts",
         "type": "tuple"
       }
@@ -1376,7 +1201,7 @@ export const borrowingContractAbi = [
       {
         "components": [
           {
-            "internalType": "enum IBorrowing.AssetStatus",
+            "internalType": "enum IBorrowingCore.AssetStatus",
             "name": "status",
             "type": "uint8"
           },
@@ -1443,7 +1268,7 @@ export const borrowingContractAbi = [
                 "type": "uint128"
               }
             ],
-            "internalType": "struct IBorrowing.OptionsFeesTimeLimits",
+            "internalType": "struct IBorrowingCore.OptionsFeesTimeLimits",
             "name": "optionsFeesTimeLimits",
             "type": "tuple"
           },
@@ -1458,7 +1283,7 @@ export const borrowingContractAbi = [
             "type": "uint16"
           }
         ],
-        "internalType": "struct IBorrowing.AssetDetails[]",
+        "internalType": "struct IBorrowingCore.AssetDetails[]",
         "name": "assetDetails_",
         "type": "tuple[]"
       },
@@ -1476,19 +1301,51 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "enum IBorrowing.BorrowData",
-        "name": "dataName",
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
         "type": "uint8"
       },
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "operation",
-        "type": "bool"
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "totalNormalizedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralRemainingInWithdraw",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "collateralValueRemainingInWithdraw",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "depositedInBorrow",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint64",
+            "name": "lastEventTime",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "lastCumulativeRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "pendingUSDaToBurn",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.AssetData",
+        "name": "data",
+        "type": "tuple"
       }
     ],
     "name": "updateBorrowData",
@@ -1516,7 +1373,7 @@ export const borrowingContractAbi = [
             "type": "uint128"
           }
         ],
-        "internalType": "struct IBorrowing.DebtCeilingData",
+        "internalType": "struct IBorrowingCore.DebtCeilingData",
         "name": "_data",
         "type": "tuple"
       }
@@ -1529,9 +1386,9 @@ export const borrowingContractAbi = [
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "_newStatus",
-        "type": "bool"
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
       }
     ],
     "name": "updateDepositedInBorrow",
@@ -1541,6 +1398,11 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "components": [
           {
@@ -1554,7 +1416,7 @@ export const borrowingContractAbi = [
             "type": "uint128"
           }
         ],
-        "internalType": "struct IBorrowing.OptionsFeesTimeLimits",
+        "internalType": "struct IBorrowingCore.OptionsFeesTimeLimits",
         "name": "_optionsFeesTimeLimits",
         "type": "tuple"
       }
@@ -1583,7 +1445,13 @@ export const borrowingContractAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
     "name": "viewCurrentCr",
     "outputs": [
       {
@@ -1597,6 +1465,11 @@ export const borrowingContractAbi = [
   },
   {
     "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
       {
         "internalType": "uint256",
         "name": "amount",
@@ -1632,6 +1505,11 @@ export const borrowingContractAbi = [
         "type": "bytes"
       },
       {
+        "internalType": "uint128",
+        "name": "usdtFromOdos",
+        "type": "uint128"
+      },
+      {
         "internalType": "uint256",
         "name": "expiredETHAmount",
         "type": "uint256"
@@ -1654,14 +1532,14 @@ export const borrowingContractAbi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IBorrowing.EIP712VerifyParams",
+        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
         "name": "verifyParams",
         "type": "tuple"
       }
     ],
     "name": "withDraw",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ];

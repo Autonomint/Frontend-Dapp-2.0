@@ -28,7 +28,7 @@ export const optionABI = [
   },
   {
     "inputs": [],
-    "name": "FailedInnerCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {
@@ -199,6 +199,11 @@ export const optionABI = [
   {
     "inputs": [
       {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "_assetName",
+        "type": "uint8"
+      },
+      {
         "internalType": "uint128",
         "name": "_ethPrice",
         "type": "uint128"
@@ -344,6 +349,11 @@ export const optionABI = [
             "internalType": "uint64",
             "name": "strikePriceConstant",
             "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "premiumReductionConstant",
+            "type": "uint64"
           }
         ],
         "internalType": "struct IOptions.OptionsFeesConstants[]",
@@ -389,6 +399,50 @@ export const optionABI = [
       {
         "internalType": "uint64",
         "name": "strikePriceConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "premiumReductionConstant",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
+    "name": "optionsFeesConstantsAssets",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "borrowerPutOptionConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "borrowerCallOptionConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "dCDSConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "strikePriceConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "premiumReductionConstant",
         "type": "uint64"
       }
     ],
@@ -483,9 +537,9 @@ export const optionABI = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "strikePricePercent",
-        "type": "uint128"
+        "internalType": "enum IBorrowing.AssetName[]",
+        "name": "assetNames",
+        "type": "uint8[]"
       },
       {
         "components": [
@@ -508,11 +562,16 @@ export const optionABI = [
             "internalType": "uint64",
             "name": "strikePriceConstant",
             "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "premiumReductionConstant",
+            "type": "uint64"
           }
         ],
-        "internalType": "struct IOptions.OptionsFeesConstants",
-        "name": "optionsFeesConstant",
-        "type": "tuple"
+        "internalType": "struct IOptions.OptionsFeesConstants[]",
+        "name": "optionsFeesConstants_",
+        "type": "tuple[]"
       }
     ],
     "name": "updateConstants",

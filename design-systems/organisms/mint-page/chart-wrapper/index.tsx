@@ -1,6 +1,7 @@
 import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
+import cbBTC from "@/app/assets/cbbtc.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
@@ -27,11 +28,13 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:WEETHUSD|1D"];
       case "wsuperOETHb":
         return ["CRYPTO:WSUPEROETHUSD|1D"];
+      case "cbBTC":
+        return ["CRYPTO:CBBTCCUSD|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
   };
-
+  console.log(getTokenSymbol(), "getTokenSymbol");
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
@@ -152,6 +155,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return WeETH;
       case "wsuperOETHb":
         return WsuperOETHIcon;
+      case "cbBTC":
+        return cbBTC;
 
       default:
         return cryptoEth;
@@ -163,8 +168,6 @@ function ChartComponent({ currency }: { currency: string }) {
 
   // Token config for adding token to wallet based on the selected token
   const tokenConfig = useTokenConfig(currency);
-
-
 
   // Function to add token to wallet
   const handleAddToken = async () => {

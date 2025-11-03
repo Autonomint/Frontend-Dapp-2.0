@@ -2,7 +2,9 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
+  borrowCoreAddress,
   borrowingContractAddress,
+  borrowWithdrawCoreAddress,
   testusdtAbiAddress,
   usDaAddress
 } from "@/blockchain/contracts";
@@ -28,6 +30,7 @@ import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import {
+  AssetName,
   BorrowAssetsEnum,
   BorrowData,
   BorrowStatus,
@@ -37,7 +40,8 @@ import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
   hasFiveMinutesPassed,
-  truncateDecimals
+  isRenewActiveDaysCompleted,
+  truncateDecimals,
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
@@ -57,7 +61,8 @@ import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetLtv from "@/hookes/contract-hooks/useGetLtv";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -174,7 +179,7 @@ export function WithdrawFund({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate() as {
+    useLastCumulativeRate(position.collateralType) as {
       isLastCumulativeRatePending: boolean;
       lastCumulativeRate: number | undefined;
     };
@@ -185,7 +190,9 @@ export function WithdrawFund({
   );
 
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
-    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress[
+      position.collateralType as keyof typeof borrowAssetsAddress
+    ]
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -220,7 +227,7 @@ export function WithdrawFund({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
   }) as { data: number[]; isLoading: boolean };
@@ -230,7 +237,7 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     functionName: "optionsFeesTimeLimits",
 
@@ -245,21 +252,29 @@ export function WithdrawFund({
     },
   });
 
+  // const { tvlValue: assetDetails } = useGetLtv(
+  //   position.collateralType === "cbBTC" ? AssetName.cbBTC : undefined
+  // );
+
+  const contract =
+    position.collateralType === "cbBTC"
+      ? borrowCoreAddress
+      : borrowingContractAddress;
   // getting token details
   const { data: assetDetails, refetch: refetchCurrentData } = useReadContract({
     abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
+    address: contract[
       chainId as keyof typeof borrowingContractAddress
-      ],
+    ] as `0x${string}`,
     args: [
       BorrowAssetsEnum[
-      position?.collateralType as keyof typeof BorrowAssetsEnum
+        position?.collateralType as keyof typeof BorrowAssetsEnum
       ],
     ],
     functionName: "getAssetDetails",
   }) as { data: AssetDetailsInterface; refetch: () => void };
 
+  console.log(assetDetails, "assetDetails");
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
   const currentEthPrice =
@@ -270,40 +285,48 @@ export function WithdrawFund({
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     position.status == BorrowStatus.LIQUIDATED ||
-      calculateRemainingDays(Number(position.validTill)) <= 0
+    calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
-        ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
-        Number(position?.depositedAmountInETH) -
+      ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+          Number(position?.depositedAmountInETH) -
         Number(formatUnits(BigInt(currentEthPrice), 2)) *
-        Number(position?.depositedAmountInETH)
-        : 0;
+          Number(position?.depositedAmountInETH)
+      : 0;
 
   // fetching allowance of usda for repay
-  const { data: allowance, isLoading: isAllowancePending, refetch: refetchAllowance } = useReadContract({
+  const {
+    data: allowance,
+    isLoading: isAllowancePending,
+    refetch: refetchAllowance,
+  } = useReadContract({
     abi: usDaAbi,
     address: usDaAddress[chainId as keyof typeof usDaAddress],
     functionName: "allowance",
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
+  }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
 
   // fetching allowance of usda for repay
-  const { data: allowanceUSDT, isLoading: isAllowancePendingUSDT, refetch: refetchAllowanceUSDT } = useReadContract({
+  const {
+    data: allowanceUSDT,
+    isLoading: isAllowancePendingUSDT,
+    refetch: refetchAllowanceUSDT,
+  } = useReadContract({
     abi: testusdtAbiAbi,
     address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
     functionName: "allowance",
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     ],
-  }) as { data: number | undefined; isLoading: boolean, refetch: () => void };
+  }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
   // usda amount multiply by cumulative rate
   // const totalUsdaAmntWithCumulativeRate =
   //   lastCumulativeRate === undefined
@@ -339,7 +362,7 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     args: [BorrowData.APR],
     functionName: "getBorrowData",
@@ -353,8 +376,9 @@ export function WithdrawFund({
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
       // set deposited amount
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${position.collateralType
-        }`;
+      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
+        position.collateralType
+      }`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
       // set eth price at deposit
       const ethPriceAtDep =
@@ -394,8 +418,8 @@ export function WithdrawFund({
         // else set 0
         Number(ethPriceAtDep) < Number(currentPrice) / 100
           ? Number(position.depositedAmountInETH) *
-          (Number(currentPrice) / 100) -
-          Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
+              (Number(currentPrice) / 100) -
+            Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
       // if upside is more than 5% so showing 5% max upside or else showing calculated amount that
@@ -444,6 +468,12 @@ export function WithdrawFund({
   // repay amount details for showing in popup
   const repayAmountDetails = [
     {
+      headline: "Hedge Asset",
+      value: `${position.collateralType}`,
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
       headline: "USDA+ Amount Minted",
       value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDA+`,
       tooltip: false,
@@ -451,20 +481,21 @@ export function WithdrawFund({
     },
     {
       headline: "Total Interest",
-      value: `$${Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) <
-        Number(position.noOfUSDaMinted) ||
+      value: `$${
+        Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) <
+          Number(position.noOfUSDaMinted) ||
         position.status === BorrowStatus.LIQUIDATED
-        ? 0
-        : position.status === BorrowStatus.DEPOSITED
+          ? 0
+          : position.status === BorrowStatus.DEPOSITED
           ? // if position withdrawn using totalDebtAmount else total usda with cumulative
-          (
-            Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-            Number(position.noOfUSDaMinted)
-          ).toFixed(4)
+            (
+              Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
+              Number(position.noOfUSDaMinted)
+            ).toFixed(4)
           : (
-            Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
-          ).toFixed(4)
-        }`,
+              Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
+            ).toFixed(4)
+      }`,
       tooltip: false,
       tooltipText: "",
     },
@@ -487,15 +518,15 @@ export function WithdrawFund({
       // )}`,
       value: position?.downsideProtectionStatus
         ? (
-          Number(position?.ethPrice || 0) *
-          Number(position?.exchangeRateAtDeposit || 0) *
-          (Number(assetDetails?.LTV || 0) / 1e4)
-        ).toFixed(2)
+            Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            (Number(assetDetails?.LTV || 0) / 1e4)
+          ).toFixed(2)
         : (
-          Number(position?.ethPrice || 0) *
-          Number(position?.exchangeRateAtDeposit || 0) *
-          (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
-        ).toFixed(2),
+            Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
+          ).toFixed(2),
 
       tooltip: false,
       tooltipText: "",
@@ -682,8 +713,9 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${withdrawReceipt.transactionHash
-          } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+          withdrawReceipt.transactionHash
+        } `;
         return (
           <ToastNotification
             title="Repay Successful"
@@ -732,38 +764,20 @@ export function WithdrawFund({
     // cumulativeReset?.();
     approveReset?.();
     borrowReset?.();
-    const approveRepayAmount = BigInt(Math.round(Number(parseUnits((repayAmountFormated).toString(), 6))));
+    const approveRepayAmount = BigInt(
+      Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
+    );
     if (
       position.status === "DEPOSITED"
       // BigInt(allowance || 0) < approveRepayAmount
     ) {
       setIsApproveLoadingLocal(true);
-      approveUsda(approveRepayAmount);
+      approveUsda(approveRepayAmount, position.collateralType);
     }
     // else {
     //   callRepayInContract();
     // }
   };
-
-  const callRepayInContract = async () => {
-    setIsApproveLoadingLocal(false);
-    setTimeout(() => {
-      setWithdrawLoadingLocal(true);
-    }, 800);
-
-    const borrowSignedData = await refetchBorrowWithDrawSignedData();
-
-    withdrawUsda(
-      position.index,
-      nativeFee?.nativeFee || BigInt(0n),
-      borrowSignedData?.odosAssembledData,
-      BigInt(borrowSignedData?.nonce || 0),
-      BigInt(borrowSignedData?.deadline || 0),
-      (borrowSignedData?.signature || "") as `0x${string}`,
-      BigInt(borrowSignedData?.expiredETHAmount || 0)
-    );
-  };
-
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
   const [renewApproveLoading, setRenewApproveLoading] =
@@ -781,7 +795,7 @@ export function WithdrawFund({
     renewError: renewErrorSm,
   } = useBorrowRenew({
     onError: () => {
-      refetchAllowanceUSDT()
+      refetchAllowanceUSDT();
       setTimeout(() => {
         setRenewLoading(false);
       }, 800);
@@ -808,17 +822,21 @@ export function WithdrawFund({
           setTimeout(() => {
             setWithdrawLoadingLocal(true);
           }, 800);
-
-          const borrowSignedData = await refetchBorrowWithDrawSignedData();
+          debugger;
+          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
 
           withdrawUsda(
             position.index,
-            nativeFee?.nativeFee || BigInt(0n),
+            position.collateralType === "cbBTC"
+              ? undefined
+              : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`,
-            BigInt(borrowSignedData?.expiredETHAmount || 0)
+            BigInt(borrowSignedData?.expiredETHAmount || 0),
+            position.collateralType
           );
         }
         if (toggleView == "renew") {
@@ -829,7 +847,10 @@ export function WithdrawFund({
 
           renewBorrow(
             BigInt(position.index),
-            nativeFee?.nativeFee || BigInt(0n)
+            position.collateralType === "cbBTC"
+              ? undefined
+              : nativeFee?.nativeFee || BigInt(0n),
+            position.collateralType
           );
         }
       } else if (usdaHashError || usdtHashError) {
@@ -856,8 +877,9 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${renewReceipt.transactionHash
-        } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+        renewReceipt.transactionHash
+      } `;
 
       toast.custom((t) => (
         <ToastNotification
@@ -894,7 +916,7 @@ export function WithdrawFund({
           onClose={() => toast.dismiss(t)}
         />
       ));
-      refetchAllowanceUSDT()
+      refetchAllowanceUSDT();
     }
   }, [renewReceipt, renewReceiptError, isSuccessRenewReceipt]);
 
@@ -908,7 +930,12 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  const { payableOptionFees, refetchPayableOptionFees } = usePayableOptionFees(position.index);
+  const { payableOptionFees } = usePayableOptionFees(
+    position.index,
+    position.collateralType
+  ) as {
+    payableOptionFees: bigint | undefined;
+  };
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
@@ -936,10 +963,12 @@ export function WithdrawFund({
     }
     // calculate renew amount
     const renewAmount = BigInt(
-      Math.round(Number(
-        Number(payableOptionFees || 0) /
-        Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0
-      )) + 1e6
+      Math.round(
+        Number(
+          Number(payableOptionFees || 0) /
+            Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0
+        )
+      ) + 1e6
     );
 
     // check if renew amount is greater than 0
@@ -961,13 +990,14 @@ export function WithdrawFund({
     // check if allowance is less than renew amount
     if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
-      handleUsdtApprove([
-        borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-        ] as `0x${string}`,
-        renewAmount,
-      ]);
-      refetchAllowanceUSDT();
+      const contract =
+        position.collateralType === "cbBTC"
+          ? borrowCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress]
+          : borrowingContractAddress[
+              chainId as keyof typeof borrowingContractAddress
+            ];
+      handleUsdtApprove([contract as `0x${string}`, renewAmount]);
+      refetchAllowance();
     } else {
       callRenewInContract();
     }
@@ -979,7 +1009,11 @@ export function WithdrawFund({
       setRenewLoadingSM(true);
     }, 800);
 
-    renewBorrow(BigInt(position.index), nativeFee?.nativeFee || BigInt(0n));
+    renewBorrow(
+      BigInt(position.index),
+      nativeFee?.nativeFee || BigInt(0n),
+      position.collateralType
+    );
   };
 
   const isPopupLoading =
@@ -995,11 +1029,14 @@ export function WithdrawFund({
 
   const isRenewActive = !(
     Number(
-      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-      (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-        (calculateRemainingDays(position.validTill) + 1 || 0))
+      Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
+        (24 * 60 * 60) -
+        (Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0) /
+          (24 * 60 * 60) -
+          (calculateRemainingDays(position.validTill) + 1 || 0))
     ) > 0
   );
+
 
   return (
     <>
@@ -1119,8 +1156,9 @@ export function WithdrawFund({
                             style={{
                               width: `${percentage}%`,
                             }}
-                            className={` ${index == 1 && "mr-1"
-                              } relative h-full flex flex-col justify-end truncate`}
+                            className={` ${
+                              index == 1 && "mr-1"
+                            } relative h-full flex flex-col justify-end truncate`}
                           >
                             {index == 1 && (
                               <div
@@ -1228,17 +1266,17 @@ export function WithdrawFund({
                     }
                   </Tooltip>
                 </div>
-                {/* <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                  Hedge end at {new Date(
-                    (Number(position.validTill * 1000))
-                  ).toLocaleString()}
-                </div> */}
+                <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                  Hedge end at{" "}
+                  {new Date(Number(position.validTill * 1000)).toLocaleString()}
+                </div>
               </div>
               <div
-                className={` space-y-3 mt-2  ${position.status == BorrowStatus.WITHDREW
-                  ? "h-[265px]"
-                  : "h-[350px]"
-                  } overflow-auto no-scrollbar`}
+                className={` space-y-3 mt-2  ${
+                  position.status == BorrowStatus.WITHDREW
+                    ? "h-[265px]"
+                    : "h-[350px]"
+                } overflow-auto no-scrollbar`}
               >
                 {depositData.map((item) => (
                   <div
@@ -1288,10 +1326,11 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={`  ${position.status == BorrowStatus.WITHDREW
-                  ? "h-[150px]"
-                  : "md:h-[70px] sm:h-[50px] h-[80px]"
-                  } mt-4 md:mt-4`}
+                className={`  ${
+                  position.status == BorrowStatus.WITHDREW
+                    ? "h-[150px]"
+                    : "md:h-[70px] sm:h-[50px] h-[80px]"
+                } mt-4 md:mt-4`}
               >
                 {position.status == BorrowStatus.WITHDREW && (
                   <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
@@ -1304,8 +1343,9 @@ export function WithdrawFund({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className={` ${position.status == BorrowStatus.WITHDREW ? "mt-4" : ""
-                          }`}
+                        className={` ${
+                          position.status == BorrowStatus.WITHDREW ? "mt-4" : ""
+                        }`}
                       >
                         <Button
                           disabled={
@@ -1315,10 +1355,11 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED || !readyForNewTx
                           }
                           onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${position.status == BorrowStatus.WITHDREW
-                            ? "md:p-4"
-                            : "md:p-4"
-                            }`}
+                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${
+                            position.status == BorrowStatus.WITHDREW
+                              ? "md:p-4"
+                              : "md:p-4"
+                          }`}
                         >
                           <div>
                             {repayLoading
@@ -1344,8 +1385,9 @@ export function WithdrawFund({
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
-                              {`(Repay will active in ${5 - getMinutesPassed(position?.depositedTime)
-                                } min)`}{" "}
+                              {`(Repay will active in ${
+                                5 - getMinutesPassed(position?.depositedTime)
+                              } min)`}{" "}
                             </div>
                           )}
                           <span className="text-base">

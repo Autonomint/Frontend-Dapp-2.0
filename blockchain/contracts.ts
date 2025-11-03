@@ -136,6 +136,13 @@ export const wsuperOETHAddress: ChainAddresses = {
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
 } as const;
 
+// Addresses for the cbBTC contract
+export const cbBTCAddress: ChainAddresses = {
+  84532: "0xF0Cc5e691679693221560182F6046F1D6f6cAF98",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
+} as const;
+
 // Addresses for the borrow assets
 export const borrowAssetsAddress = {
   ETH: ethAddress,
@@ -143,6 +150,7 @@ export const borrowAssetsAddress = {
   weETH: weETHAddress,
   rsETH: rsETHAddress,
   wsuperOETHb: wsuperOETHAddress,
+  cbBTC: cbBTCAddress,
 } as const;
 
 // Addresses for the global contract
@@ -188,4 +196,53 @@ export const borrowLibAddress = {
   84532: "0x8A08258Bf7448604a354094182137A47296A5BB5",
   11155420: "0x84ef34218255C3A0EcD4100820cd3ab3D23DFDed",
   [NetworkId.Ethereum]: "0x1B20faae1BbD00476afF3097501BEc379FBB1B96",
+} as const;
+
+// CDS Core Address
+export const cdsCoreAddress = {
+  84532: "0xa0b94aA25F41EFaC55167E72BF6934207f85fB21",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// CDS Deposit Core Address
+export const cdsDepositCoreAddress = {
+  84532: "0xE100085e918A00519F25F40d2C8F1E5Aab6aad8A",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// CDS Withdraw Core Address
+export const cdsWithdrawCoreAddress = {
+  84532: "0xa0761ba01A407E7700C81a40deEEF037F7C24122",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// Borrow Core Address
+export const borrowCoreAddress = {
+  84532: "0x436ad5c4C7AF3873b1C68043F4A7822A70952a61",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// Borrow Deposit Core Address
+export const borrowDepositCoreAddress = {
+  84532: "0xD2D9858057574326a12D708f223c336CaE9A77AD",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// Borrow Withdraw Core Address
+export const borrowWithdrawCoreAddress = {
+  84532: "0x1268929C5ce52B427Fcac41aB82a65347313e630",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
+} as const;
+
+// Borrow Liquidation Core Address
+export const borrowLiquidationCoreAddress = {
+  84532: "0x764f85fda1EA4935993380D256C1f853791aAc14",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress,
 } as const;

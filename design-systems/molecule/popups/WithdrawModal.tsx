@@ -129,8 +129,14 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "Days passed since Deposit",
+      headline: "Days Passed Since Deposit",
       value: "0 days",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Hedge Asset",
+      value: "ETH",
       tooltip: false,
       tooltipText: "",
     },
@@ -400,7 +406,7 @@ export function DcdsWithdrawModal({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate();
+    useLastCumulativeRate(position.collateralType);
 
   // getting interest gained
   const { interestGained } = useInterestGain(position.index);
@@ -467,8 +473,14 @@ export function DcdsWithdrawModal({
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
       );
+
+      //
+      updatedData[7].value = position.collateralType
+        ? position.collateralType
+        : "ETH";
+
       // Update all time APY value
-      updatedData[7].value = `${Number(
+      updatedData[8].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -476,7 +488,7 @@ export function DcdsWithdrawModal({
           : apy[5]
       ).toFixed(2)}%`;
       // Update yearly APY value
-      updatedData[8].value = `${Number(
+      updatedData[9].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -484,15 +496,17 @@ export function DcdsWithdrawModal({
           : apy[0]
       ).toFixed(2)}%`;
       // Update optedForLiquidation value
-      updatedData[9].value = position.optedForLiquidation ? "Yes" : "No";
+      updatedData[10].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[10].value = `${Number(
+      updatedData[11].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
           ? position?.apys?.liquidatedCollateralInETH
           : apy[3]
-      ).toFixed(2)} ETH (${Number(
+      ).toFixed(2)} ${
+        position.collateralType ? position.collateralType : "ETH"
+      } (${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -718,7 +732,8 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const res = await refetchBorrowWithDrawGainsSignedData();
+          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const res = await refetchBorrowWithDrawGainsSignedData(token);
           let params = [
             BigInt(position.index),
             res?.odosAssembledData,
@@ -735,7 +750,7 @@ export function DcdsWithdrawModal({
             ];
           }
           // If close position is success then call withdraw gain function
-          handleDcdsWithdrawGain?.(params);
+          handleDcdsWithdrawGain?.(params, position.collateralType);
         }, 3000);
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
@@ -762,12 +777,12 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
-    setDcdsFundWithdrawLoadingLocal(true);
-    // if position status is deposited then call withdraw function
-    if (position.status == "DEPOSITED") {
-      if (nativeFeeAll) {
-        setWithdrawMethodLoading(true);
-        const res = await refetchBorrowWithDrawSignedData();
+    try {
+      setDcdsFundWithdrawLoadingLocal(true);
+      // if position status is deposited then call withdraw function
+      if (position.status == "DEPOSITED") {
+        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
           [
             address,
@@ -791,41 +806,36 @@ export function DcdsWithdrawModal({
 
         if (nativeFeeAll) {
           setWithdrawMethodLoading(true);
-          handleDcdsFundWithdraw?.(params, nativeFeeAll);
+          handleDcdsFundWithdraw?.(
+            params,
+            position.collateralType === "cbBTC" ? undefined : nativeFeeAll
+          );
         }
-
-        handleDcdsFundWithdraw?.(
-          [
-            BigInt(position.index),
-            res?.excessProfitCumulativeValue,
-            res?.expiredETHAmount,
-            res?.deadline,
-            res?.signature,
-          ],
-          nativeFeeAll
-        );
-      }
-    } else if (position.status == "WITHDREW") {
-      // if position status is withdrawn then call withdraw gain function
-      setWithdrawGainLoading(true);
-      const res = await refetchBorrowWithDrawGainsSignedData();
-      let params = [
-        BigInt(position.index),
-        res?.odosAssembledData,
-        res?.usdtFromOdos,
-        res?.deadline,
-        res?.signature,
-      ];
-      if (chainId === NetworkId.Ethereum) {
-        params = [
+      } else if (position.status == "WITHDREW") {
+        // if position status is withdrawn then call withdraw gain function
+        setWithdrawGainLoading(true);
+        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const res = await refetchBorrowWithDrawGainsSignedData(token);
+        let params = [
           BigInt(position.index),
           res?.odosAssembledData,
           res?.usdtFromOdos,
           res?.deadline,
           res?.signature,
         ];
+        if (chainId === NetworkId.Ethereum) {
+          params = [
+            BigInt(position.index),
+            res?.odosAssembledData,
+            res?.usdtFromOdos,
+            res?.deadline,
+            res?.signature,
+          ];
+        }
+        handleDcdsWithdrawGain?.(params, position.collateralType);
       }
-      handleDcdsWithdrawGain?.(params);
+    } catch (error) {
+      console.log(error);
     }
   };
   const handleCloseDialog = () => {

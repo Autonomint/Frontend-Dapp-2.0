@@ -14,17 +14,6 @@ export const globalAbi = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "AddressInsufficientBalance",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "implementation",
         "type": "address"
       }
@@ -39,7 +28,7 @@ export const globalAbi = [
   },
   {
     "inputs": [],
-    "name": "FailedInnerCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {
@@ -392,7 +381,13 @@ export const globalAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
     "name": "getLastETHPrice",
     "outputs": [
       {
@@ -451,7 +446,13 @@ export const globalAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
     "name": "getOmniChainData",
     "outputs": [
       {
@@ -623,7 +624,13 @@ export const globalAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
     "name": "getOmniChainData2",
     "outputs": [
       {
@@ -631,6 +638,11 @@ export const globalAbi = [
           {
             "internalType": "uint256",
             "name": "cdsProfitsCV",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCdsDepositedAmountForCvCalc",
             "type": "uint256"
           }
         ],
@@ -678,6 +690,25 @@ export const globalAbi = [
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      }
+    ],
+    "name": "isOmniChainAsset",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isOmniChainAsset",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1124,6 +1155,24 @@ export const globalAbi = [
   {
     "inputs": [
       {
+        "internalType": "enum IBorrowing.AssetName[]",
+        "name": "assetNames",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "setOmniChainAsset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -1296,10 +1345,20 @@ export const globalAbi = [
   {
     "inputs": [
       {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
         "components": [
           {
             "internalType": "uint256",
             "name": "cdsProfitsCV",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCdsDepositedAmountForCvCalc",
             "type": "uint256"
           }
         ],

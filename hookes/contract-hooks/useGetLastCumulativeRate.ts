@@ -1,5 +1,7 @@
+import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
+import { AssetName } from "@/utils/constants";
 import { useAccount, useReadContract } from "wagmi";
 
 /**
@@ -7,17 +9,20 @@ import { useAccount, useReadContract } from "wagmi";
  *
  * @returns Object containing the last cumulative rate and loading/error state.
  */
-const useLastCumulativeRate = () => {
+const useLastCumulativeRate = (token: string) => {
   const { address, chainId } = useAccount();
-
+  const tokenEnum = token === "cbBTC" ? AssetName.cbBTC : undefined;
+  const abi = token === "cbBTC" ? borowCoreABI : borrowingContractAbi;
+  const contract = token === "cbBTC" ? borrowCoreAddress : borrowingContractAddress;
   const { data: lastCumulativeRate, isPending: isLastCumulativeRatePending } =
     useReadContract({
-      abi: borrowingContractAbi,
+      abi: abi,
       address:
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ],
+        contract[
+        chainId as keyof typeof borrowingContractAddress
+        ] as `0x${string}`,
       functionName: "viewCurrentCr",
+      args: [tokenEnum],
       query: {
         enabled: !!address,
         staleTime: 10 * 1000,
