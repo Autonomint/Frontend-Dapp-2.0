@@ -823,7 +823,6 @@ export function DcdsWithdrawModal({
         handleDcdsWithdrawGain?.(params, position.collateralType);
       }
     } catch (error) {
-      debugger;
       console.log(error);
     }
   };

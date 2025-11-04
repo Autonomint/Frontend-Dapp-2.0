@@ -113,7 +113,6 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
     value: bigint | undefined,
     hedgeAsset: string
   ) => {
-    debugger
     const constract = hedgeAsset === "cbBTC" ? cdsCoreAddress : cdsAddress;
 
     const abi = hedgeAsset === "cbBTC" ? cdsCoreABI : cdsAbi;

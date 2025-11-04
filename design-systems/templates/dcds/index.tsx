@@ -195,19 +195,19 @@ function DCDSTemplate() {
     },
   });
 
-  useEffect(() => {
-    if (chainId === NetworkId.Optimism || chainId === NetworkId.Ethereum) {
-      formik.setFieldValue("hedgeAsset", "ETH");
-    }
-  }, [chainId]);
-
   // useEffect to reset the selected tokens and form values when chain id changes
   useEffect(() => {
     if (chainId) {
       setSelectedTokens([]);
       formik.resetForm();
+      if (chainId === NetworkId.Optimism || chainId === NetworkId.Ethereum) {
+        formik.setFieldValue("hedgeAsset", "ETH");
+        formik.setErrors({
+          hedgeAsset: "",
+        });
+      }
     }
-  }, [chainId]);
+  }, [chainId, NetworkId]);
 
   // lock in period dropdown items
   const dropdownItems = [
@@ -393,7 +393,6 @@ function DCDSTemplate() {
 
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
-    debugger;
     try {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
@@ -534,7 +533,6 @@ function DCDSTemplate() {
         formik.values.hedgeAsset
       );
     } catch (error) {
-      debugger;
       console.log(error, "error");
     }
   };
