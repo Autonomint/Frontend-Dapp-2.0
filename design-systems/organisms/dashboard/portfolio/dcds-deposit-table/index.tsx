@@ -107,6 +107,10 @@ function DcdsDepositTable({
         return sortAsc
           ? Number(b.depositedTime) - Number(a.depositedTime)
           : Number(a.depositedTime) - Number(b.depositedTime);
+      } else if (sortBy === "hedge") {
+        return sortAsc
+          ? Number(b.collateralType) - Number(a.collateralType)
+          : Number(a.collateralType) - Number(b.collateralType);
       }
 
       return 0;
@@ -164,19 +168,19 @@ function DcdsDepositTable({
                 </div>
               </th>
               <th
-                // onClick={() => {
-                //   setSortBy("deposit");
-                //   setSortAsc(!sortAsc);
-                // }}
+                onClick={() => {
+                  setSortBy("hedge");
+                  setSortAsc(!sortAsc);
+                }}
                 className="pl-5 cursor-pointer whitespace-nowrap font-normal "
               >
                 <div className="flex gap-2 items-center">
                   <span> Hedge Asset </span>
-                  {/* <span>
-                    {sortAsc && sortBy === "deposit" ? (
+                  <span>
+                    {sortAsc && sortBy === "hedge" ? (
                       <ChevronDown
                         className={
-                          sortBy === "deposit"
+                          sortBy === "hedge"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -184,13 +188,13 @@ function DcdsDepositTable({
                     ) : (
                       <ChevronUp
                         className={
-                          sortBy === "deposit"
+                          sortBy === "hedge"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
                       />
                     )}
-                  </span> */}
+                  </span>
                 </div>
               </th>
               <th
