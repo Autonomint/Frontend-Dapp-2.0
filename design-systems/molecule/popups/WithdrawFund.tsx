@@ -1013,7 +1013,9 @@ export function WithdrawFund({
 
     renewBorrow(
       BigInt(position.index),
-      nativeFee?.nativeFee || BigInt(0n),
+      position.collateralType === "cbBTC"
+        ? undefined
+        : nativeFee?.nativeFee || BigInt(0n),
       position.collateralType
     );
   };
@@ -1081,6 +1083,7 @@ export function WithdrawFund({
       (24 * 60 * 60),
     "assetDetails"
   );
+  console.log(renewReceiptError, renewErrorSm, "renewReceiptError");
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -1773,7 +1776,7 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
+              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 overflow-hidden ">
                 {!renewLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
