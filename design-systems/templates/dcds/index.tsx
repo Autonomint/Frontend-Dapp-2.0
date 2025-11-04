@@ -13,6 +13,7 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import { mpoABI } from "@/blockchain/abis/mpo";
 import {
   cdsAddress,
+  cdsCoreAddress,
   cdsDepositAddress,
   cdsDepositCoreAddress,
   mpoAddress,
@@ -186,7 +187,7 @@ function DCDSTemplate() {
     initialValues: {
       lockInPeriod: null,
       liquidationGains: false,
-      hedgeAsset: "ETH",
+      hedgeAsset: null,
     },
     validationSchema: createFormSchema(selectedTokens),
     onSubmit: (values) => {
@@ -437,10 +438,52 @@ function DCDSTemplate() {
       }
       // filtering the token list based on the hedge asset
       // Removing bold token from the token list if cbBTC is selected
-      const filteredTokenList = tokenList.filter(
-        (token) =>
-          formik.values.hedgeAsset === "BOLD" && token.tokenName === "BOLD"
-      );
+      let filteredTokenList = tokenList;
+      if (formik.values.hedgeAsset === "cbBTC") {
+        filteredTokenList = tokenList.filter(
+          (token) => token.tokenName !== "BOLD"
+        );
+      }
+
+      const params = [
+        {
+          user: address as `0x${string}`,
+          // token addresses
+          tokenAddresses: filteredTokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
+          }),
+          // token amount in wei
+          tokenAmounts: filteredTokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return formik.values[
+              `${tokenDetail?.tokenName.toLowerCase()}Amount`
+            ]
+              ? parseUnits(
+                  formik.values[
+                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                  ].toString(),
+                  Number(tokenDetail?.tokenDecimals)
+                )
+              : 0n;
+          }),
+          // liquidation gains
+          liquidate: liquidationGains,
+          liquidationAmount: liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
+          lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+          expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+          assetName:
+            formik.values.hedgeAsset === "cbBTC" ? AssetName.cbBTC : undefined,
+        },
+        BigInt(cdsDepositSignedData.deadline),
+        cdsDepositSignedData.signature as `0x${string}`,
+      ];
+
+      console.log(params, "params");
 
       handleDcdsDeposit?.(
         [
@@ -811,6 +854,11 @@ function DCDSTemplate() {
       },
     });
 
+  const allowanceContract =
+    formik.values.hedgeAsset == "cbBTC"
+      ? cdsDepositCoreAddress
+      : cdsDepositAddress;
+
   const {
     data: tokenAllowanceByUser,
     refetch: refetchAllowanceDynamic,
@@ -822,8 +870,8 @@ function DCDSTemplate() {
       functionName: "allowance",
       args: [
         address,
-        cdsDepositAddress[
-          chainId as keyof typeof cdsDepositAddress
+        allowanceContract[
+          chainId as keyof typeof allowanceContract
         ] as `0x${string}`,
       ],
     })),

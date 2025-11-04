@@ -58,11 +58,12 @@ const useGetDcdsDepositList = () => {
       const startIndex = (currentPage - 1) * pageSize;
       const endIndex = startIndex + pageSize;
 
-      setPagedDcdsPositionList(
-        [...dcdsPositionList]
-          .sort((a, b) => Number(a.depositedTime) - Number(b.depositedTime))
-          .slice(startIndex, endIndex)
-      );
+      setPagedDcdsPositionList(() => {
+        const sortedData = [...dcdsPositionList].sort((a, b) => Number(a.depositedTime) - Number(b.depositedTime))
+        const data = [...sortedData.filter((item) => item.collateralType === "ETH"), ...sortedData.filter((item) => item.collateralType === "cbBTC")]
+          .slice(startIndex, endIndex);
+        return data;
+      });
 
       // Calculate total pages based on pageSize and positionList length
       setTotalPages(Math.ceil(dcdsPositionList.length / pageSize));
