@@ -116,9 +116,9 @@ function PortfolioTemplate() {
   }, [portfolioTab]);
 
   // refresh borrowed table data for backend data refetch from blockchain
-  const RefreshTableData = async () => {
+  const RefreshTableCBBTCData = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/refresh/${chainId}/${address}/cbBTC`,
       {
         method: "POST",
       }
@@ -127,9 +127,9 @@ function PortfolioTemplate() {
   };
 
   // refresh cds table data for backend data refetch from blockchain
-  const RefreshTableDataCds = async () => {
+  const RefreshTableETHData = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}/ETH`,
       {
         method: "POST",
       }
@@ -142,13 +142,18 @@ function PortfolioTemplate() {
     try {
       if (!address || !chainId || !isConnected) return;
       setRefreshLoading(true);
+      // Calling api base on select tab so that we can update select tab first
       if (tabPosition == "Borrowed") {
-        await RefreshTableData();
+        await RefreshTableCBBTCData();
+        await RefreshTableETHData();
         await positionListRefetch();
+        await dcdsPositionListRefetch();
       }
       if (tabPosition == "Deposited") {
-        await RefreshTableDataCds();
+        await RefreshTableETHData();
+        await RefreshTableCBBTCData();
         await dcdsPositionListRefetch();
+        await positionListRefetch();
       }
     } catch (error) {
     } finally {
