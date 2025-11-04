@@ -18,6 +18,7 @@ const useBorrowRenew = (mutation: any) => {
     writeContract, // Function to initiate a write operation
     reset: resetBorrowRenew, // Function to reset the state of the hook
     isError: renewError, // Error state
+    error
   } = useWriteContract({
     mutation: {
       ...mutation,
@@ -25,7 +26,7 @@ const useBorrowRenew = (mutation: any) => {
   });
 
   const renewBorrow = async (index: bigint, nativeFee: bigint | undefined, token: string) => {
-    const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : [chainId as keyof typeof borrowingContractAddress]
+    const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
       abi: borrowingContractAbi,
       address: contract as `0x${string}`,

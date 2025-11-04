@@ -124,12 +124,16 @@ function PortfolioTemplate() {
       }
     );
 
-    await fetch(
-      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}/cbBTC`,
-      {
-        method: "POST",
-      }
-    );
+    setTimeout(async () => {
+      await fetch(
+        `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}/cbBTC`,
+        {
+          method: "POST",
+        }
+      );
+      await positionListRefetch();
+    }, 3000);
+
     return res;
   };
 
@@ -142,9 +146,15 @@ function PortfolioTemplate() {
       }
     );
 
-    await fetch(`${BACKEND_API_URL}/cds/refresh/${chainId}/${address}/cbBTC`, {
-      method: "POST",
-    });
+    setTimeout(async () => {
+      await fetch(
+        `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}/cbBTC`,
+        {
+          method: "POST",
+        }
+      );
+      await dcdsPositionListRefetch();
+    }, 3000);
     return res;
   };
 
