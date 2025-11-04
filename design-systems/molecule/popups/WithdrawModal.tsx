@@ -111,7 +111,9 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "ETH Price at Deposit",
+      headline: `${
+        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+      } Price at Deposit`,
       value: "0",
       tooltip: false,
       tooltipText: "",
@@ -480,7 +482,10 @@ export function DcdsWithdrawModal({
         position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
           ? 0
           : position.depositedAmounts.usdt;
-      // Update deposited ETH value
+      // Update deposited ETH
+      updatedData[2].headline = `${
+        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+      } Price at Deposit`;
       updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
