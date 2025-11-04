@@ -1677,13 +1677,17 @@ export function WithdrawFund({
                 <div className="space-y-2 mt-4">
                   {[
                     {
-                      heading: "ETH price at deposit",
+                      heading: `${
+                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                      } price at deposit`,
                       value: `$${Number(
                         formatUnits(BigInt(position?.ethPrice || 0), 2)
                       )}`,
                     },
                     {
-                      heading: "Current ETH price",
+                      heading: `Current ${
+                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                      } price`,
                       value: `$${formatUnits(BigInt(ethPrice), 2)}`,
                     },
                     {
