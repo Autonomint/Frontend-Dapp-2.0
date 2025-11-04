@@ -25,7 +25,7 @@ async function getAPY(
       address: address,
       chainId: chainId,
       index: index,
-      token: token,
+      collateralType: token,
     }),
   }).then((response) => response.json());
 }
