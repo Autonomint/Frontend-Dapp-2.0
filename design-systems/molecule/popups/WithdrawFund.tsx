@@ -819,7 +819,6 @@ export function WithdrawFund({
           setTimeout(() => {
             setWithdrawLoadingLocal(true);
           }, 800);
-          debugger;
           const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
 
@@ -1352,17 +1351,21 @@ export function WithdrawFund({
               <div
                 className={`  ${
                   position.status == BorrowStatus.WITHDREW
-                    ? "h-[150px]"
+                    ? position.status == BorrowStatus.WITHDREW &&
+                      position.collateralType === "cbBTC"
+                      ? "h-[130px]"
+                      : "h-[150px]"
                     : "md:h-[70px] sm:h-[50px] h-[80px]"
                 } mt-4 md:mt-4`}
               >
-                {position.status == BorrowStatus.WITHDREW && (
-                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
-                    You can use your ABOND tokens to redeem your remaining 1/2
-                    collateral. They are earning AAVE lending yields and
-                    internal liquidation gains since your USDA+ mint.
-                  </div>
-                )}
+                {position.status == BorrowStatus.WITHDREW &&
+                  position.collateralType !== "cbBTC" && (
+                    <div className="sm:text-sm text-[10px] text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
+                      You can use your ABOND tokens to redeem your remaining 1/2
+                      collateral. They are earning AAVE lending yields and
+                      internal liquidation gains since your USDA+ mint.
+                    </div>
+                  )}
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -1403,9 +1406,16 @@ export function WithdrawFund({
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
-                              (Final ETH amount may be lower due to option fees,
-                              5% price upside share, and conversion based on
-                              current ETH/USD value){" "}
+                              (Final{" "}
+                              {position.collateralType === "cbBTC"
+                                ? "cbBTC"
+                                : "ETH"}{" "}
+                              amount may be lower due to option fees, 5% price
+                              upside share, and conversion based on current{" "}
+                              {position.collateralType === "cbBTC"
+                                ? "cbBTC"
+                                : "ETH"}
+                              /USD value){" "}
                             </div>
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
