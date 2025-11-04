@@ -1405,12 +1405,15 @@ export function WithdrawFund({
                                 )} ${position.collateralType}`
                               : `Withdrawn ${parseFloat(
                                   (
-                                    Number(position.depositedAmount) / 2
+                                    Number(position.depositedAmount) /
+                                    (position.collateralType === "cbBTC"
+                                      ? 1
+                                      : 2)
                                   ).toFixed(6)
                                 )} ${position.collateralType}`}{" "}
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
-                            <div className="text-sm text-wrap">
+                            <div className="sm:text-sm text-[10px] text-wrap">
                               (Final{" "}
                               {position.collateralType === "cbBTC"
                                 ? "cbBTC"

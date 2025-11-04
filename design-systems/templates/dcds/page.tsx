@@ -203,7 +203,7 @@ function DCDSTemplate() {
       if (chainId === NetworkId.Optimism || chainId === NetworkId.Ethereum) {
         formik.setFieldValue("hedgeAsset", "ETH");
         formik.setErrors({
-          hedgeAsset: "ETH",
+          hedgeAsset: "",
         });
       }
     }
