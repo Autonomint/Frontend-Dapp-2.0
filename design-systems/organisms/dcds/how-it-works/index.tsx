@@ -28,7 +28,7 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
   const { isTvlPending, tvlValue: ltv } = useGetTvl(AssetName.ETH);
 
   // Calculate the downside protection amount
-  const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
+  const downsideProtection = ltv?.LTV ? 100 - Number(ltv?.LTV || 0) : 0;
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className=" w-[98%] overflow-y-scroll h-[500px] lg:h-auto rounded-lg no-scrollbar lg:w-[750px] max-w-none  bg-white dark:bg-[#0D0D0D] md:p-8 gap-0">
@@ -50,10 +50,10 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
             </div>
             <div className=" text-textBlack text-center  text-[16px] md:text-[20px] font-normal mt-4 dark:text-white">
               Deposit into dCDS to earn option premiums while offering downside
-              protection of up to {downsideProtection}% on ETH. Profits and
-              losses from ETH price changes are allocated across dCDS
-              participants based on the ratio of total borrower collateral to
-              dCDS pool funds.
+              protection of up to {downsideProtection}% on ETH or cbBTC. Profits
+              and losses from ETH or cbBTC price changes are allocated across
+              dCDS participants based on the ratio of total borrower collateral
+              to dCDS pool funds.
             </div>
             <ol className="list-decimal list-outside pl-4 mt-8 text-grayLight">
               <li className="mb-3 text-[14px] md:text-lg">

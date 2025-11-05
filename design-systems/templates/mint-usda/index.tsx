@@ -47,8 +47,8 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
               <li className="mb-2 text-lg">
-                Deposit ETH/LRTs as collateral and mint USDA+ (up to 80% of
-                collateral value).
+                Deposit {currency === "cbBTC" ? "cbBTC" : "ETH"}/LRTs as
+                collateral and mint USDA+ (up to 80% of collateral value).
               </li>
               <li className="mb-2 text-lg">
                 Get 20% downside price fall protection on collateral with 1
@@ -60,7 +60,7 @@ function MintUSDa({ currency }: { currency: string }) {
               </li>
               <li className="mb-2 text-lg">
                 Track and manage positions under ‘Borrowed Position’ in
-                Portfolio.
+                Portfolio. 
               </li>
               <li className=" text-lg">
                 Earn yield-bearing ABOND tokens when closing your position.
