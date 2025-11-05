@@ -53,7 +53,9 @@ function SingleListItem({ item }: { item: any }) {
             )}
           <div className="flex items-baseline justify-center  text-nowrap flex-row gap-1">
             <p>{item.pointsToBeGiven}</p>
-            <div className="text-base">{`per ${item.minAmount} ETH`}</div>
+            <div className="text-base">{`per ${item.minAmount} ${
+              item.token === "cbBTC" ? "cbBTC" : "ETH"
+            }`}</div>
           </div>
         </div>
       ),

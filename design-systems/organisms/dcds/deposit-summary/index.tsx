@@ -45,9 +45,9 @@ export default function DepositSummary({
             <TooltipContent className=" dark:text-white bg-white text-black dark:bg-black w-[400px]">
               <p>
                 These are rolling 1-month yields earned from option fees paid by
-                USDA+ minters. Option fees accrue as users hedge their ETH, so
-                they may fluctuate and grow as new borrowers enter or existing
-                ones renew their hedges.
+                USDA+ minters. Option fees accrue as users hedge their ETH or
+                cbBTC, so they may fluctuate and grow as new borrowers enter or
+                existing ones renew their hedges.
               </p>
             </TooltipContent>
           </Tooltip>
@@ -69,9 +69,9 @@ export default function DepositSummary({
             <TooltipContent className=" dark:text-white bg-white text-black dark:bg-black w-[400px]">
               <p>
                 By participating in dCDS, you are taking a long exposure to ETH
-                so your returns are dependent on ETH price movement. If ETH
+                so your returns are dependent on ETH price movement. If ETH or cbBTC
                 rises after your entry, you&apos;ll earn a share of a 3% cut
-                from each borrower&apos;s ETH gains. If ETH falls, your deposit
+                from each borrower&apos;s ETH or cbBTC gains. If ETH or cbBTC falls, your deposit
                 reflects that loss. Larger dCDS pools help reduce these
                 fluctuations.
               </p>
