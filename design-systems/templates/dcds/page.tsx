@@ -1700,8 +1700,8 @@ function DCDSTemplate() {
                   </TooltipTrigger>
                   <TooltipContent className="dark:text-white bg-white text-black dark:bg-black w-[400px] ">
                     <p>
-                      Get discounted ETH or cbBTC and earn USDA+ by backing liquidations
-                      when USDA+ borrowers default
+                      Get discounted ETH or cbBTC and earn USDA+ by backing
+                      liquidations when USDA+ borrowers default
                     </p>
                   </TooltipContent>
                 </Tooltip>
