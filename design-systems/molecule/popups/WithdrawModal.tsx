@@ -747,13 +747,18 @@ export function DcdsWithdrawModal({
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
     if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
-          onClose={() => toast.dismiss(t)}
-          width="!w-[500px]"
-        />
-      ));
+      toast.custom(
+        (t) => (
+          <ToastNotificationError
+            title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
+            onClose={() => toast.dismiss(t)}
+            // width="!w-[500px]"
+          />
+        ),
+        {
+          duration: 8000,
+        }
+      );
       return;
     }
     setDcdsFundWithdrawLoadingLocal(true);
