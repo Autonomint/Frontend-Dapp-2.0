@@ -39,51 +39,16 @@ export default function HomeTemplate() {
   const items = [
     {
       title: "Mint USDA+",
-      subtitle: (
-        <div className="">
-          <span>TVL - </span>
-          <div>
-            $
-            {(
-              Number(
-                GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0
-              ) / 1e20
-            ).toFixed(2)}{" "}
-            ETH
-          </div>
-          <div>
-            $
-            {(
-              Number(
-                omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0
-              ) / 1e20
-            ).toFixed(2)}{" "}
-            cbBTC
-          </div>
-        </div>
-      ),
+      subtitle: `TVL - $${(
+        Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
+        1e20
+      ).toFixed(2)}`,
     },
     {
       title: "Earn With dCDS",
-      subtitle: (
-        <div>
-          <span>TVL - </span>
-          <div>
-            $
-            {(
-              Number(GlobalContractData?.totalCdsDepositedAmount || 0) / 1e6
-            ).toFixed(2)}{" "}
-            ETH
-          </div>
-          <div>
-            $
-            {(
-              Number(omniChainDataCbbtc?.totalCdsDepositedAmount || 0) / 1e6
-            ).toFixed(2)}{" "}
-            cbBTC
-          </div>
-        </div>
-      ),
+      subtitle: `TVL - $${Number(
+        formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
+      ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },
     { title: "Farm Your Luck", subtitle: "Win Option Fee And Rewards" },
