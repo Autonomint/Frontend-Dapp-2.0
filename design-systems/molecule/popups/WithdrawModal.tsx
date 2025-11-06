@@ -43,7 +43,7 @@ import axios from "axios";
 import { CornerDownRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { padHex } from "viem";
+import { formatUnits, padHex } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -56,6 +56,7 @@ import Image from "next/image";
 import opIconNew from "@/app/assets/op.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 
 export function DcdsWithdrawModal({
   position,
@@ -75,6 +76,8 @@ export function DcdsWithdrawModal({
   const [view, setView] = useState<"withdraw" | "rebalance">("withdraw");
 
   const [showAPYTooltip, setShowAPYTooltip] = useState(false);
+
+  const { ratioValue } = useBorrowRatio(BigInt(0));
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
     queryKey: ["getPointEarned", address, chainId, position.index],
@@ -743,6 +746,16 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
+    if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
+          onClose={() => toast.dismiss(t)}
+          width="!w-[500px]"
+        />
+      ));
+      return;
+    }
     setDcdsFundWithdrawLoadingLocal(true);
     // if position status is deposited then call withdraw function
     if (position.status == "DEPOSITED") {

@@ -1,8 +1,8 @@
-import { borrowLibAbi } from "@/blockchain/abis/borrow-lib-abi";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import {
-  borrowingContractAddress,
-  borrowLibAddress,
+  borrowingContractAddress
 } from "@/blockchain/contracts";
+import { formatUnits } from "ethers";
 import { useAccount, useReadContract } from "wagmi";
 
 /**
@@ -11,50 +11,24 @@ import { useAccount, useReadContract } from "wagmi";
  *   - isRatioPending: boolean indicating if the ratio is being fetched
  *   - ratioValue: number representing the ratio value
  */
-const useBorrowRatio = (
-  amount: bigint,
-  currentEthPrice: bigint,
-  lastEthprice: bigint,
-  firstBorrowDeposited: boolean,
-  totalCollateralInETH: bigint,
-  previousData: any
-) => {
+const useBorrowRatio = (amount: bigint) => {
   const { address, chainId } = useAccount();
   const {
     isPending: isRatioPending,
     data: ratioValue,
     error: ratioError,
   } = useReadContract({
-    abi: borrowLibAbi,
-    address: borrowLibAddress[chainId as keyof typeof borrowLibAddress],
-    functionName: "calculateRatio",
-    args: [
-      amount,
-      currentEthPrice,
-      lastEthprice,
-      firstBorrowDeposited,
-      totalCollateralInETH,
-      previousData,
-    ],
+    abi: borrowingContractAbi,
+    address: borrowingContractAddress[chainId as keyof typeof borrowingContractAddress],
+    functionName: "viewCurrentRatio",
+    args: [amount],
     query: { enabled: !!address },
   });
-  console.log(
-    {
-      amount,
-      currentEthPrice,
-      lastEthprice,
-      firstBorrowDeposited,
-      totalCollateralInETH,
-      previousData,
-    },
-    "calculateRatio",
-    ratioValue,
-    ratioError
-  );
+
 
   return {
     isRatioPending,
-    ratioValue,
+    ratioValue: ratioValue as number,
     ratioError,
   };
 };

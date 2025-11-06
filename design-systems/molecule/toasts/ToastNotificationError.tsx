@@ -5,6 +5,7 @@ const ToastNotificationError = ({
   linkUrl,
   className,
   onClose,
+  width,
 }: {
   title: string;
   message?: string;
@@ -12,12 +13,13 @@ const ToastNotificationError = ({
   linkUrl?: string;
   className?: string;
   onClose: () => void;
+  width?: string;
 }) => {
   return (
     <div
       className={
         "bg-[#AA0001] dark:bg-[#FB3748] text-white p-4 pr-6 shadow-lg flex items-start justify-between relative w-[320px] max-h-content " +
-        ` ${className}`
+        ` ${className} ${width}`
       }
     >
       <div className="text-left">
