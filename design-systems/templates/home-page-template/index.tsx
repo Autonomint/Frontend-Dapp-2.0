@@ -32,23 +32,58 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // getting omni chain data from blockchain
-  const { omniChainDataEth: GlobalContractData } =
+  const { omniChainDataEth: GlobalContractData, omniChainDataCbbtc } =
     useGetUsdtAmountDepositedTillNow();
 
   // box option list for navigation
   const items = [
     {
       title: "Mint USDA+",
-      subtitle: `TVL - $${(
-        Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
-        1e20
-      ).toFixed(2)}`,
+      subtitle: (
+        <div className="">
+          <span>TVL - </span>
+          <div>
+            $
+            {(
+              Number(
+                GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0
+              ) / 1e20
+            ).toFixed(2)}{" "}
+            ETH
+          </div>
+          <div>
+            $
+            {(
+              Number(
+                omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0
+              ) / 1e20
+            ).toFixed(2)}{" "}
+            cbBTC
+          </div>
+        </div>
+      ),
     },
     {
       title: "Earn With dCDS",
-      subtitle: `TVL - $${Number(
-        formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
-      ).toFixed(2)}`,
+      subtitle: (
+        <div>
+          <span>TVL - </span>
+          <div>
+            $
+            {(
+              Number(GlobalContractData?.totalCdsDepositedAmount || 0) / 1e6
+            ).toFixed(2)}{" "}
+            ETH
+          </div>
+          <div>
+            $
+            {(
+              Number(omniChainDataCbbtc?.totalCdsDepositedAmount || 0) / 1e6
+            ).toFixed(2)}{" "}
+            cbBTC
+          </div>
+        </div>
+      ),
     },
     { title: "Bridge", subtitle: "" },
     { title: "Farm Your Luck", subtitle: "Win Option Fee And Rewards" },
