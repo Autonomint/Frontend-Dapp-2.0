@@ -13,7 +13,8 @@ import { useAccount } from "wagmi";
 async function getAPY(
   address: `0x${string}` | undefined,
   chainId: number,
-  index: number
+  index: number,
+  token: string
 ): Promise<any> {
   return fetch(`${BACKEND_API_URL}/cds/getAPY`, {
     method: "POST",
@@ -24,6 +25,7 @@ async function getAPY(
       address: address,
       chainId: chainId,
       index: index,
+      collateralType: token,
     }),
   }).then((response) => response.json());
 }
@@ -36,12 +38,12 @@ async function getAPY(
  */
 
 // get total index from CDS contract and store it in totalCDSIndex
-const useGetAPY = (index: number) => {
+const useGetAPY = (index: number, token: string) => {
   const { address, chainId } = useAccount();
-  const { data: apy, isLoading : isLoadingAPY } = useQuery({
+  const { data: apy, isLoading: isLoadingAPY } = useQuery({
     queryKey: ["APY", index],
     queryFn: () =>
-      getAPY(address ? address : undefined, chainId as number, index),
+      getAPY(address ? address : undefined, chainId as number, index, token),
     enabled: !!address && !!chainId && !!index,
   });
   return {

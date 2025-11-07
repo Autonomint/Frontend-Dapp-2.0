@@ -2,7 +2,9 @@ import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowAssetsAddress,
+  borrowCoreAddress,
   borrowingContractAddress,
+  borrowWithdrawCoreAddress,
   testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
@@ -28,6 +30,7 @@ import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
 import {
+  AssetName,
   BorrowAssetsEnum,
   BorrowData,
   BorrowStatus,
@@ -37,6 +40,7 @@ import displayNumberWithPrecision, {
   calculateRemainingDays,
   getMinutesPassed,
   hasFiveMinutesPassed,
+  isRenewActiveDaysCompleted,
   truncateDecimals,
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
@@ -57,6 +61,8 @@ import LoadingBox from "../LoadingBox";
 import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
+import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
+import useGetLtv from "@/hookes/contract-hooks/useGetLtv";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 export function WithdrawFund({
   position,
@@ -174,7 +180,7 @@ export function WithdrawFund({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate() as {
+    useLastCumulativeRate(position.collateralType) as {
       isLastCumulativeRatePending: boolean;
       lastCumulativeRate: number | undefined;
     };
@@ -185,7 +191,9 @@ export function WithdrawFund({
   );
 
   const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
-    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress[
+      position.collateralType as keyof typeof borrowAssetsAddress
+    ]
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -225,41 +233,47 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
   }) as { data: number[]; isLoading: boolean };
 
-  // getting renew time limit in days
-  const { data: currentOptionFeeTimeLimit } = useReadContract({
-    abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-      ],
-    functionName: "optionsFeesTimeLimits",
+  // // getting renew time limit in days
+  // const { data: currentOptionFeeTimeLimit } = useReadContract({
+  //   abi: borrowingContractAbi,
+  //   address:
+  //     borrowingContractAddress[
+  //       chainId as keyof typeof borrowingContractAddress
+  //     ],
+  //   functionName: "optionsFeesTimeLimits",
 
-    query: {
-      placeholderData: [0n, 0n],
-      select: (data: any) => {
-        return {
-          minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
-          maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
-        };
-      },
-    },
-  });
+  //   query: {
+  //     placeholderData: [0n, 0n],
+  //     select: (data: any) => {
+  //       return {
+  //         minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+  //         maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+  //       };
+  //     },
+  //   },
+  // });
 
+  // const { tvlValue: assetDetails } = useGetLtv(
+  //   position.collateralType === "cbBTC" ? AssetName.cbBTC : undefined
+  // );
+
+  const contract =
+    position.collateralType === "cbBTC"
+      ? borrowCoreAddress
+      : borrowingContractAddress;
   // getting token details
   const { data: assetDetails, refetch: refetchCurrentData } = useReadContract({
     abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
-      ],
+    address: contract[chainId as keyof typeof contract] as `0x${string}`,
     args: [
       BorrowAssetsEnum[
         position?.collateralType as keyof typeof BorrowAssetsEnum
       ],
     ],
     functionName: "getAssetDetails",
-  }) as { data: AssetDetailsInterface; refetch: () => void };
+  }) as { data: any; refetch: () => void };
 
+  console.log(assetDetails, "assetDetails");
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
   const currentEthPrice =
@@ -450,6 +464,12 @@ export function WithdrawFund({
 
   // repay amount details for showing in popup
   const repayAmountDetails = [
+    {
+      headline: "Hedge Asset",
+      value: `${position.collateralType}`,
+      tooltip: false,
+      tooltipText: "",
+    },
     {
       headline: "USDA+ Amount Minted",
       value: `${Number(position.noOfUSDaMinted).toFixed(2)} USDA+`,
@@ -749,30 +769,11 @@ export function WithdrawFund({
       // BigInt(allowance || 0) < approveRepayAmount
     ) {
       setIsApproveLoadingLocal(true);
-      approveUsda(approveRepayAmount);
+      approveUsda(approveRepayAmount, position.collateralType);
     }
     // else {
     //   callRepayInContract();
     // }
-  };
-
-  const callRepayInContract = async () => {
-    setIsApproveLoadingLocal(false);
-    setTimeout(() => {
-      setWithdrawLoadingLocal(true);
-    }, 800);
-
-    const borrowSignedData = await refetchBorrowWithDrawSignedData();
-
-    withdrawUsda(
-      position.index,
-      nativeFee?.nativeFee || BigInt(0n),
-      borrowSignedData?.odosAssembledData,
-      BigInt(borrowSignedData?.nonce || 0),
-      BigInt(borrowSignedData?.deadline || 0),
-      (borrowSignedData?.signature || "") as `0x${string}`,
-      BigInt(borrowSignedData?.expiredETHAmount || 0)
-    );
   };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
@@ -818,17 +819,20 @@ export function WithdrawFund({
           setTimeout(() => {
             setWithdrawLoadingLocal(true);
           }, 800);
-
-          const borrowSignedData = await refetchBorrowWithDrawSignedData();
+          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
 
           withdrawUsda(
             position.index,
-            nativeFee?.nativeFee || BigInt(0n),
+            position.collateralType === "cbBTC"
+              ? undefined
+              : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
             BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`,
-            BigInt(borrowSignedData?.expiredETHAmount || 0)
+            BigInt(borrowSignedData?.expiredETHAmount || 0),
+            position.collateralType
           );
         }
         if (toggleView == "renew") {
@@ -839,7 +843,10 @@ export function WithdrawFund({
 
           renewBorrow(
             BigInt(position.index),
-            nativeFee?.nativeFee || BigInt(0n)
+            position.collateralType === "cbBTC"
+              ? undefined
+              : nativeFee?.nativeFee || BigInt(0n),
+            position.collateralType
           );
         }
       } else if (usdaHashError || usdtHashError) {
@@ -892,13 +899,11 @@ export function WithdrawFund({
         positionListRefetech();
       }, 3000);
       refetchAllowanceUSDT();
-      refetchPayableOptionFees();
     } else if (renewReceiptError) {
       setRenewLoading(false);
       setRenewApproveLoading(false);
       setRenewLoadingSM(false);
       refetchAllowance();
-      refetchPayableOptionFees();
       toast.custom((t) => (
         <ToastNotificationError
           title="Transaction failed, Please try again"
@@ -919,9 +924,12 @@ export function WithdrawFund({
     setIsDialogOpen(value);
   };
 
-  const { payableOptionFees, refetchPayableOptionFees } = usePayableOptionFees(
-    position.index
-  );
+  const { payableOptionFees } = usePayableOptionFees(
+    position.index,
+    position.collateralType
+  ) as {
+    payableOptionFees: bigint | undefined;
+  };
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
@@ -976,13 +984,14 @@ export function WithdrawFund({
     // check if allowance is less than renew amount
     if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
-      handleUsdtApprove([
-        borrowingContractAddress[
-          chainId as keyof typeof borrowingContractAddress
-        ] as `0x${string}`,
-        renewAmount,
-      ]);
-      refetchAllowanceUSDT();
+      const contract =
+        position.collateralType === "cbBTC"
+          ? borrowCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress]
+          : borrowingContractAddress[
+              chainId as keyof typeof borrowingContractAddress
+            ];
+      handleUsdtApprove([contract as `0x${string}`, renewAmount]);
+      refetchAllowance();
     } else {
       callRenewInContract();
     }
@@ -994,7 +1003,13 @@ export function WithdrawFund({
       setRenewLoadingSM(true);
     }, 800);
 
-    renewBorrow(BigInt(position.index), nativeFee?.nativeFee || BigInt(0n));
+    renewBorrow(
+      BigInt(position.index),
+      position.collateralType === "cbBTC"
+        ? undefined
+        : nativeFee?.nativeFee || BigInt(0n),
+      position.collateralType
+    );
   };
 
   const isPopupLoading =
@@ -1010,11 +1025,42 @@ export function WithdrawFund({
 
   const isRenewActive = !(
     Number(
-      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+      Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
+        (24 * 60 * 60) -
+        (Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0) /
+          (24 * 60 * 60) -
           (calculateRemainingDays(position.validTill) + 1 || 0))
     ) > 0
   );
+
+  // // getting renew time limit in days
+  // const { data: currentOptionFeeTimeLimit } = useReadContract({
+  //   abi: borrowingContractAbi,
+  //   address:
+  //     borrowingContractAddress[
+  //       chainId as keyof typeof borrowingContractAddress
+  //     ],
+  //   functionName: "optionsFeesTimeLimits",
+
+  //   query: {
+  //     placeholderData: [0n, 0n],
+  //     select: (data: any) => {
+  //       return {
+  //         minTimeLimit: Number(data[0] || 0) / (24 * 60 * 60),
+  //         maxTimeLimit: Number(data[1] || 0) / (24 * 60 * 60),
+  //       };
+  //     },
+  //   },
+  // });
+
+  const currentOptionFeeTimeLimit = {
+    minTimeLimit:
+      Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
+      (24 * 60 * 60),
+    maxTimeLimit:
+      Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0 || 0) /
+      (24 * 60 * 60),
+  };
 
   return (
     <>
@@ -1306,17 +1352,21 @@ export function WithdrawFund({
               <div
                 className={`  ${
                   position.status == BorrowStatus.WITHDREW
-                    ? "h-[150px]"
+                    ? position.status == BorrowStatus.WITHDREW &&
+                      position.collateralType === "cbBTC"
+                      ? "h-[130px]"
+                      : "h-[150px]"
                     : "md:h-[70px] sm:h-[50px] h-[80px]"
                 } mt-4 md:mt-4`}
               >
-                {position.status == BorrowStatus.WITHDREW && (
-                  <div className="text-sm text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
-                    You can use your ABOND tokens to redeem your remaining 1/2
-                    collateral. They are earning AAVE lending yields and
-                    internal liquidation gains since your USDA+ mint.
-                  </div>
-                )}
+                {position.status == BorrowStatus.WITHDREW &&
+                  position.collateralType !== "cbBTC" && (
+                    <div className="sm:text-sm text-[10px] text-wrap text-center  dark:!text-[#ABFFDE] !text-[#30ad62] font-bold">
+                      You can use your ABOND tokens to redeem your remaining 1/2
+                      collateral. They are earning AAVE lending yields and
+                      internal liquidation gains since your USDA+ mint.
+                    </div>
+                  )}
                 {!repayLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -1357,9 +1407,16 @@ export function WithdrawFund({
                           </div>
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="text-sm text-wrap">
-                              (Final ETH amount may be lower due to option fees,
-                              5% price upside share, and conversion based on
-                              current ETH/USD value){" "}
+                              (Final{" "}
+                              {position.collateralType === "cbBTC"
+                                ? "cbBTC"
+                                : "ETH"}{" "}
+                              amount may be lower due to option fees, 5% price
+                              upside share, and conversion based on current{" "}
+                              {position.collateralType === "cbBTC"
+                                ? "cbBTC"
+                                : "ETH"}
+                              /USD value){" "}
                             </div>
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
@@ -1605,13 +1662,17 @@ export function WithdrawFund({
                 <div className="space-y-2 mt-4">
                   {[
                     {
-                      heading: "ETH price at deposit",
+                      heading: `${
+                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                      } price at deposit`,
                       value: `$${Number(
                         formatUnits(BigInt(position?.ethPrice || 0), 2)
                       )}`,
                     },
                     {
-                      heading: "Current ETH price",
+                      heading: `Current ${
+                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                      } price`,
                       value: `$${formatUnits(BigInt(ethPrice), 2)}`,
                     },
                     {
@@ -1686,7 +1747,7 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 ">
+              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 overflow-hidden ">
                 {!renewLoading && (
                   <Tooltip>
                     <TooltipTrigger asChild>

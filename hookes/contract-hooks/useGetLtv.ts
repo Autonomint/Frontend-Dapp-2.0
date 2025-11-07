@@ -1,4 +1,4 @@
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useReadContract } from "wagmi";
 import { AssetName, BorrowData } from "@/utils/constants";
@@ -9,15 +9,31 @@ import { AssetName, BorrowData } from "@/utils/constants";
  *   - isTvlPending: boolean indicating if the TVL is being fetched
  *   - tvlValue: number representing the TVL value
  */
-const useGetLtv = () => {
+const useGetLtv = (tokenEnum: number) => {
   const { address, chainId } = useAccount();
+  const contract = (tokenEnum) === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
   const { isPending: isTvlPending, data: tvlValue } = useReadContract({
     abi: borrowingContractAbi,
-    address:
-      borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
-      ],
-    args: [AssetName.ETH],
+    address: contract as `0x${string}`,
+    args: [tokenEnum],
+    functionName: "getAssetDetails",
+    query: { enabled: !!address },
+  });
+
+  return {
+    isTvlPending,
+    tvlValue: tvlValue as { LTV: number, APR: number },
+  };
+};
+
+const useGetLtvALL = (tokenEnum: number) => {
+  const { address, chainId } = useAccount();
+  const contract = (tokenEnum) === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+
+  const { isPending: isTvlPending, data: tvlValue } = useReadContract({
+    abi: borrowingContractAbi,
+    address: contract as `0x${string}`,
+    args: [tokenEnum],
     functionName: "getAssetDetails",
     query: { enabled: !!address },
   }) as any;
@@ -30,3 +46,4 @@ const useGetLtv = () => {
 };
 
 export default useGetLtv;
+

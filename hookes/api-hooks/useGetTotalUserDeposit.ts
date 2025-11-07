@@ -29,7 +29,7 @@ const useGetTotalUserDeposit = () => {
     queryKey: ["dCDSdepositorsData", address],
     queryFn: () =>
       getCDSDepositorData(
-        NetworkId.Optimism.toString(),
+        NetworkId.Ethereum.toString(),
         address ? address : undefined
       ),
     retry: 1,
@@ -53,15 +53,32 @@ const useGetTotalUserDeposit = () => {
     retry: 1,
     enabled: !!address,
   });
+  const {
+    data: opSepoliaCDSData,
+    error: opSepoliaCDSDataError,
+    isSuccess: opSepoliaCDSDataFetched,
+    refetch: refetchOpSepoliaCDSDepositorData,
+  } = useQuery({
+    queryKey: ["dCDSdepositorsUserDataOP", address],
+    queryFn: () =>
+      getCDSDepositorData(
+        NetworkId.Optimism.toString(),
+        address ? address : undefined
+      ),
+    staleTime: 5000,
+    retry: 1,
+    enabled: !!address,
+  });
 
 
   // sum both base and eth sepolia data
   const totalUserDeposit =
-    Number(ethSepoliaCDSData?.totalDepositedAmount || 0) +
-    Number(baseSepoliaCDSData?.totalDepositedAmount || 0);
+    (!isNaN(Number(ethSepoliaCDSData?.totalDepositedAmount)) ? Number(ethSepoliaCDSData?.totalDepositedAmount) : 0) +
+    (!isNaN(Number(opSepoliaCDSData?.totalDepositedAmount)) ? Number(opSepoliaCDSData?.totalDepositedAmount) : 0) +
+    (!isNaN(Number(baseSepoliaCDSData?.totalDepositedAmount)) ? Number(baseSepoliaCDSData?.totalDepositedAmount) : 0);
 
   return {
-    totalUserDeposit,
+    totalUserDeposit: isNaN(totalUserDeposit) ? 0 : totalUserDeposit,
     ethSepoliaCDSData,
     baseSepoliaCDSData,
   };

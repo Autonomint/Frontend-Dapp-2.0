@@ -9,6 +9,7 @@ export interface OptionFeesRequest {
   collateralAmount: number;
   ethPrice: number;
   strikePercent: number;
+  token: string;
 }
 
 export interface ReferralResponse {

@@ -118,22 +118,43 @@ function PortfolioTemplate() {
   // refresh borrowed table data for backend data refetch from blockchain
   const RefreshTableData = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}/ETH`,
       {
         method: "POST",
       }
     );
+
+    setTimeout(async () => {
+      await fetch(
+        `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}/cbBTC`,
+        {
+          method: "POST",
+        }
+      );
+      await positionListRefetch();
+    }, 3000);
+
     return res;
   };
 
   // refresh cds table data for backend data refetch from blockchain
   const RefreshTableDataCds = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}/ETH`,
       {
         method: "POST",
       }
     );
+
+    setTimeout(async () => {
+      await fetch(
+        `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}/cbBTC`,
+        {
+          method: "POST",
+        }
+      );
+      await dcdsPositionListRefetch();
+    }, 3000);
     return res;
   };
 
@@ -188,9 +209,6 @@ function PortfolioTemplate() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  // get omni chain data
-  const { omniChainData } = useGetOmniChainData();
 
   // fetching user chain data
   const {

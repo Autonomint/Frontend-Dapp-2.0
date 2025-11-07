@@ -1,5 +1,7 @@
 import { cdsAbi } from "@/blockchain/abis/dcds";
-import { cdsAddress } from "@/blockchain/contracts";
+import { cdsAbiEthereum } from "@/blockchain/abis/dcds-ethereum";
+import { cdsAddress, cdsCoreAddress, cdsWithdrawCoreAddress } from "@/blockchain/contracts";
+import { NetworkId } from "@/utils/constants";
 import { useAccount, useWriteContract } from "wagmi";
 
 const useDcdsWithdraw = (mutation: any) => {
@@ -14,10 +16,11 @@ const useDcdsWithdraw = (mutation: any) => {
   });
   const { chainId } = useAccount();
 
-  const handleDcdsFundWithdraw = (args: any, value: any) => {
+  const handleDcdsFundWithdraw = (args: any, value: any, token: string) => {
+    const contract = token === "cbBTC" ? cdsCoreAddress : cdsAddress;
     dcdsFundWithdraw({
-      abi: cdsAbi,
-      address: cdsAddress[chainId as keyof typeof cdsAddress],
+      abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : cdsAbi,
+      address: contract[chainId as keyof typeof contract] as `0x${string}`,
       functionName: "withdraw",
       args,
       value,

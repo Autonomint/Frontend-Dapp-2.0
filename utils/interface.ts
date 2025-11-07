@@ -27,12 +27,14 @@ export interface dcdsDepositDetails {
   fees: string | null;
   status: string;
   usdcPriceAtDeposit: string;
+  wmUSDPriceAtDeposit: string;
   depositedAmounts: {
     usda: string;
     usdt: string;
     nativeToken: string;
     boldToken: string;
     usdc: string;
+    wmUSD: string;
   };
   nativeTokenPriceAtDeposit: number;
   usdtPriceAtDeposit: number;

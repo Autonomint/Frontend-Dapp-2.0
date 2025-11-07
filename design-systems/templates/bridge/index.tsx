@@ -76,7 +76,7 @@ function BridgeTemplate() {
     if (chainId2 === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
     }
-    if (chainId2 === NetworkId.EthereumSepolia) {
+    if (chainId2 === NetworkId.Ethereum) {
       setSendNetwork("Sepolia");
     }
     if (chainId2 === NetworkId.Mode) {
@@ -110,7 +110,7 @@ function BridgeTemplate() {
 
   // setting the send network based on the chain id
   useEffect(() => {
-    if (chainId === NetworkId.EthereumSepolia) {
+    if (chainId === NetworkId.Ethereum) {
       setSendNetwork("Sepolia");
     } else if (chainId === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
@@ -124,7 +124,9 @@ function BridgeTemplate() {
       setCollateralAmountString("0");
       letamount = "0";
     } else {
-      setCollateralAmountString((Number(parseUnits(sendAmount.toString(), 6))).toString());
+      setCollateralAmountString(
+        Number(parseUnits(sendAmount.toString(), 6)).toString()
+      );
     }
     let amount = 0n;
     if (sendToken === "USDa" && nativeFee1) {
@@ -181,7 +183,7 @@ function BridgeTemplate() {
         handleTransferFail();
       },
       // Handle success and show a custom toast notification
-      onSuccess: (data) => { },
+      onSuccess: (data) => {},
     },
   });
 
@@ -217,7 +219,7 @@ function BridgeTemplate() {
       onError(error: any) {
         handleTransferFail();
       },
-      onSuccess: (data) => { },
+      onSuccess: (data) => {},
     },
   });
 
@@ -240,8 +242,9 @@ function BridgeTemplate() {
         setTransferLoadingLocal(false);
       }, 1000);
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${usdaTransactionConfirmed.transactionHash
-          } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
+          usdaTransactionConfirmed.transactionHash
+        } `;
         setSendAmount(0);
         refetchUsdaBalance();
         resetUsdaApprove();
@@ -390,7 +393,7 @@ function BridgeTemplate() {
       label: "Ethereum",
       onClick: () => {
         setSendAmount(0);
-        switchChain({ chainId: NetworkId.EthereumSepolia });
+        switchChain({ chainId: NetworkId.Ethereum });
         setSendNetwork("Sepolia");
       },
     },

@@ -337,6 +337,7 @@ function DepositTable({
                 <DepositTableRow
                   key={key}
                   idx={key + 1 + (currentPage - 1) * pageSize}
+                  // idx={position.index}
                   position={position}
                   tabPosition={tabPosition}
                   setSelectedPosition={setSelectedPosition}

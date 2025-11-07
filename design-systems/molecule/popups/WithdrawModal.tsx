@@ -43,7 +43,6 @@ import axios from "axios";
 import { CornerDownRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { formatUnits, padHex } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -56,6 +55,7 @@ import Image from "next/image";
 import opIconNew from "@/app/assets/op.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import { formatUnits, padHex } from "viem";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 
 export function DcdsWithdrawModal({
@@ -107,7 +107,9 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "ETH Price at Deposit",
+      headline: `${
+        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+      } Price at Deposit`,
       value: "0",
       tooltip: false,
       tooltipText: "",
@@ -133,8 +135,14 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: "Days passed since Deposit",
+      headline: "Days Passed Since Deposit",
       value: "0 days",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "Hedge Asset",
+      value: "ETH",
       tooltip: false,
       tooltipText: "",
     },
@@ -330,14 +338,27 @@ export function DcdsWithdrawModal({
       tooltipText: "",
       comment: "",
     },
+    // {
+    //   // Token Price at Deposit
+    //   headline: `USDC Token Price at Deposit`,
+    //   value: Number(position?.usdcPriceAtDeposit)
+    //     ? Number(position?.usdcPriceAtDeposit).toFixed(4)
+    //     : null,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     {
-      // Token Price at Deposit
-      headline: `USDC Token Price at Deposit`,
-      value: Number(position?.usdcPriceAtDeposit)
-        ? Number(position?.usdcPriceAtDeposit).toFixed(4)
+      // Token deposited
+      headline: `wmUSD Tokens deposited`,
+      value: Number(position?.depositedAmounts?.wmUSD || 0)
+        ? `${Number(position?.depositedAmounts?.wmUSD || 0).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.wmUSD || 0) *
+            Number(position?.wmUSDPriceAtDeposit)
+          ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
+      comment: "",
     },
     // {
     //   headline: `${
@@ -394,7 +415,7 @@ export function DcdsWithdrawModal({
   const [depositData, setDepositData] = useState(depositDetails);
 
   const { isLastCumulativeRatePending, lastCumulativeRate } =
-    useLastCumulativeRate();
+    useLastCumulativeRate(position.collateralType);
 
   // getting interest gained
   const { interestGained } = useInterestGain(position.index);
@@ -421,7 +442,10 @@ export function DcdsWithdrawModal({
    */
 
   // getting apy of index
-  const { apy, isLoadingAPY } = useGetAPY(position.index);
+  const { apy, isLoadingAPY } = useGetAPY(
+    position.index,
+    position?.collateralType
+  );
   // Post api function for calculate withdraw amount
   const { calculateBackendWithdraw, withdrawdata } =
     useCalculateWithdrawAmount();
@@ -443,7 +467,10 @@ export function DcdsWithdrawModal({
         position.depositedUsdt == "undefined" || position.depositedUsdt == "NaN"
           ? 0
           : position.depositedAmounts.usdt;
-      // Update deposited ETH value
+      // Update deposited ETH
+      updatedData[2].headline = `${
+        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+      } Price at Deposit`;
       updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
@@ -461,8 +488,14 @@ export function DcdsWithdrawModal({
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000"
       );
+
+      //
+      updatedData[7].value = position.collateralType
+        ? position.collateralType
+        : "ETH";
+
       // Update all time APY value
-      updatedData[7].value = `${Number(
+      updatedData[8].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -470,7 +503,7 @@ export function DcdsWithdrawModal({
           : apy[5]
       ).toFixed(2)}%`;
       // Update yearly APY value
-      updatedData[8].value = `${Number(
+      updatedData[9].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -478,15 +511,17 @@ export function DcdsWithdrawModal({
           : apy[0]
       ).toFixed(2)}%`;
       // Update optedForLiquidation value
-      updatedData[9].value = position.optedForLiquidation ? "Yes" : "No";
+      updatedData[10].value = position.optedForLiquidation ? "Yes" : "No";
       // Update optedForLiquidation value
-      updatedData[10].value = `${Number(
+      updatedData[11].value = `${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
           ? position?.apys?.liquidatedCollateralInETH
           : apy[3]
-      ).toFixed(2)} ETH (${Number(
+      ).toFixed(2)} ${
+        position.collateralType ? position.collateralType : "ETH"
+      } (${Number(
         apy == undefined
           ? 0
           : position.status !== "DEPOSITED"
@@ -712,14 +747,25 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const res = await refetchBorrowWithDrawGainsSignedData();
-          // If close position is success then call withdraw gain function
-          handleDcdsWithdrawGain?.([
+          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const res = await refetchBorrowWithDrawGainsSignedData(token);
+          let params = [
             BigInt(position.index),
             res?.odosAssembledData,
             res?.deadline,
             res?.signature,
-          ]);
+          ];
+          if (chainId === NetworkId.Ethereum) {
+            params = [
+              BigInt(position.index),
+              res?.odosAssembledData,
+              res?.usdtFromOdos,
+              res?.deadline,
+              res?.signature,
+            ];
+          }
+          // If close position is success then call withdraw gain function
+          handleDcdsWithdrawGain?.(params, position.collateralType);
         }, 3000);
       } else if (isCdserrorReceipt) {
         // If close position is error then set loading to false and show toast notification
@@ -746,48 +792,81 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async () => {
-    if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
-      toast.custom(
-        (t) => (
-          <ToastNotificationError
-            title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
-            onClose={() => toast.dismiss(t)}
-            // width="!w-[500px]"
-          />
-        ),
-        {
-          duration: 8000,
-        }
-      );
-      return;
-    }
-    setDcdsFundWithdrawLoadingLocal(true);
-    // if position status is deposited then call withdraw function
-    if (position.status == "DEPOSITED") {
-      if (nativeFeeAll) {
-        setWithdrawMethodLoading(true);
-        const res = await refetchBorrowWithDrawSignedData();
-        handleDcdsFundWithdraw?.(
+    try {
+      setDcdsFundWithdrawLoadingLocal(true);
+      if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
+        toast.custom(
+          (t) => (
+            <ToastNotificationError
+              title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
+              onClose={() => toast.dismiss(t)}
+              // width="!w-[500px]"
+            />
+          ),
+          {
+            duration: 8000,
+          }
+        );
+        return;
+      }
+      // if position status is deposited then call withdraw function
+      if (position.status == "DEPOSITED") {
+        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const res = await refetchBorrowWithDrawSignedData(token);
+        let params: any = [
           [
+            address,
+            BigInt(position.index),
+            res?.excessProfitCumulativeValue,
+            res?.expiredETHAmount,
+          ],
+          res?.deadline,
+          res?.signature,
+        ];
+
+        if (chainId === NetworkId?.Ethereum) {
+          params = [
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
             res?.expiredETHAmount,
             res?.deadline,
             res?.signature,
-          ],
-          nativeFeeAll
-        );
+          ];
+        }
+
+        if (nativeFeeAll) {
+          setWithdrawMethodLoading(true);
+          handleDcdsFundWithdraw?.(
+            params,
+            position.collateralType === "cbBTC" ? undefined : nativeFeeAll,
+            position.collateralType
+          );
+        }
+      } else if (position.status == "WITHDREW") {
+        // if position status is withdrawn then call withdraw gain function
+        setWithdrawGainLoading(true);
+        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const res = await refetchBorrowWithDrawGainsSignedData(token);
+        let params = [
+          BigInt(position.index),
+          res?.odosAssembledData,
+          res?.usdtFromOdos,
+          res?.deadline,
+          res?.signature,
+        ];
+        if (chainId === NetworkId.Ethereum) {
+          params = [
+            BigInt(position.index),
+            res?.odosAssembledData,
+            res?.usdtFromOdos,
+            res?.deadline,
+            res?.signature,
+          ];
+        }
+        handleDcdsWithdrawGain?.(params, position.collateralType);
       }
-    } else if (position.status == "WITHDREW") {
-      // if position status is withdrawn then call withdraw gain function
-      setWithdrawGainLoading(true);
-      const res = await refetchBorrowWithDrawGainsSignedData();
-      handleDcdsWithdrawGain?.([
-        BigInt(position.index),
-        res?.odosAssembledData,
-        res?.deadline,
-        res?.signature,
-      ]);
+    } catch (error) {
+      console.log(error);
     }
   };
   const handleCloseDialog = () => {
@@ -827,14 +906,9 @@ export function DcdsWithdrawModal({
           100
     ).toFixed(2)
   );
-
-  // Variable Yields Check is used to calculate the variableYields based on the condition
   const variableYieldsCheck = isNaN(Number(variableYields))
     ? 0.0
-    : Number(variableYields) < 0
-    ? Number(variableYields)
-    : calculatePercentage(Number(variableYields), 80);
-
+    : variableYields;
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight  dark:bg-[#0D0D0D] ">
@@ -987,21 +1061,16 @@ export function DcdsWithdrawModal({
               <div className="flex w-full mt-4  border-solid  border-[1px]  justify-between border-gray-200 rounded-[12px] bg-gray-100 dark:border-[rgb(51,51,51)] dark:bg-[#121212] flex-col sm:flex-row">
                 <div className="flex-1 relative flex flex-col justify-start items-start  gap- border-r-0    py-2 px-4">
                   <div className="flex flex-col w-full  items-start justify-between">
-                    <div className="flex items-center justify-between gap-3">
-                      <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                        $
-                        {Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                            ? calculatePercentage(
-                                position?.apys?.amountAccured || 0,
-                                90
-                              )
-                            : calculatePercentage(apy[1] || 0, 90)
-                        ).toFixed(4)}
-                      </Label>
-                    </div>
+                    <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                      $
+                      {Number(
+                        apy == undefined
+                          ? 0
+                          : position.status !== "DEPOSITED"
+                          ? position?.apys?.amountAccured || 0
+                          : apy[1] || 0
+                      ).toFixed(4)}
+                    </Label>
 
                     <div className="flex gap-1">
                       <Label className="text-[14px] font-normal text-[#777777]">
@@ -1050,11 +1119,8 @@ export function DcdsWithdrawModal({
                         apy == undefined
                           ? 0
                           : position.status !== "DEPOSITED"
-                          ? calculatePercentage(
-                              position?.apys?.currentTimeAPYTillNow,
-                              90
-                            ) || 0
-                          : calculatePercentage(apy[5], 90) || 0
+                          ? position?.apys?.currentTimeAPYTillNow || 0
+                          : apy[5] || 0
                       ).toFixed(2)}%`}
                     </Label>
                   </div>
@@ -1068,15 +1134,8 @@ export function DcdsWithdrawModal({
                           apy == undefined
                             ? 0
                             : position.status !== "DEPOSITED"
-                            ? Number(position?.apys?.priceChangePL) < 0
-                              ? position?.apys?.priceChangePL
-                              : calculatePercentage(
-                                  position?.apys?.priceChangePL || 0,
-                                  80
-                                ) || 0
-                            : apy[2] < 0
-                            ? apy[2]
-                            : calculatePercentage(apy[2], 80) || 0
+                            ? position?.apys?.priceChangePL || 0
+                            : apy[2] || 0
                         ).toFixed(4)
                       )}
                     </Label>
@@ -1108,20 +1167,7 @@ export function DcdsWithdrawModal({
                       Variable Yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {toPositiveDecimalString(
-                        Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                            ? (Number(position?.apys?.priceChangePL || 0) /
-                                Number(position?.totalDepositedAmount || 0)) *
-                              100
-                            : (Number(apy[2] || 0) /
-                                Number(position?.totalDepositedAmount || 0)) *
-                              100
-                        ).toFixed(2)
-                      )}
-                      %
+                      {variableYieldsCheck}%
                     </Label>
                   </div>
                 </div>

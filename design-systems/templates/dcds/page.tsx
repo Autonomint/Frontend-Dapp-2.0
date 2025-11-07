@@ -13,7 +13,9 @@ import { cdsAbi } from "@/blockchain/abis/dcds";
 import { mpoABI } from "@/blockchain/abis/mpo";
 import {
   cdsAddress,
+  cdsCoreAddress,
   cdsDepositAddress,
+  cdsDepositCoreAddress,
   mpoAddress,
 } from "@/blockchain/contracts";
 import { config } from "@/blockchain/WalletConfigs/iindex";
@@ -52,7 +54,7 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetStatus, CdsData, NetworkId } from "@/utils/constants";
+import { AssetName, AssetStatus, CdsData, NetworkId } from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -87,6 +89,14 @@ import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawS
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
   const schema: Record<string, any> = {};
+
+  schema.hedgeAsset = Yup.mixed().test(
+    "is-required",
+    "Hedge Asset is required",
+    function (value) {
+      return value !== null && value !== undefined && value !== 0;
+    }
+  );
 
   // Add flag for each token
   tokenList.forEach((token) => {
@@ -147,6 +157,9 @@ function DCDSTemplate() {
   const { isConnected: isWalletConnected, openWalletPopup } =
     useCheckWalletConnection();
 
+  // hook for selected hedge asset
+  const [selectedHedgeAsset, setSelectedHedgeAsset] = useState("Eth");
+
   // select token state
   const [selectedTokens, setSelectedTokens] = useState<TokenDetails[]>([]);
 
@@ -174,6 +187,7 @@ function DCDSTemplate() {
     initialValues: {
       lockInPeriod: null,
       liquidationGains: false,
+      hedgeAsset: "ETH",
     },
     validationSchema: createFormSchema(selectedTokens),
     onSubmit: (values) => {
@@ -186,8 +200,14 @@ function DCDSTemplate() {
     if (chainId) {
       setSelectedTokens([]);
       formik.resetForm();
+      if (chainId === NetworkId.Optimism || chainId === NetworkId.Ethereum) {
+        formik.setFieldValue("hedgeAsset", "ETH");
+        formik.setErrors({
+          hedgeAsset: "ETH",
+        });
+      }
     }
-  }, [chainId]);
+  }, [chainId, NetworkId]);
 
   // lock in period dropdown items
   const dropdownItems = [
@@ -211,6 +231,17 @@ function DCDSTemplate() {
   ];
 
   const { cdsLockinRewardDetailList } = useGetCdsLockinPoint();
+
+  const hedgeAssetsOption = [
+    {
+      label: "Eth",
+      onClick: () => formik.setFieldValue("hedgeAsset", "Eth"),
+    },
+    // {
+    //   label: "cbBTC",
+    //   // onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
+    // },
+  ];
 
   const lockInPeriodOption = useMemo(() => {
     const list = cdsLockinRewardDetailList || {};
@@ -254,7 +285,7 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
-  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
+  const { omniChainDataEth: GlobalContractDataEth, isOmniChainDataPendingEth } =
     useGetUsdtAmountDepositedTillNow();
 
   //checking is Cds Deposit pause or not
@@ -335,6 +366,7 @@ function DCDSTemplate() {
     },
   });
 
+  console.log(dcdsDepositeError, "dcdsDepositeError");
   // get the confirmed txn receipt for the cds deposit
   const {
     isLoading: isCdsConfirmationLoadingReceipt,
@@ -371,6 +403,8 @@ function DCDSTemplate() {
       // checking is bold token is selected or not for getting Signed data
       const pricesData = await refetchPrices();
       const getPrices = pricesData?.data;
+      const token = formik.values.hedgeAsset === "cbBTC" ? "cbBTC" : "ETH";
+      const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
         liqAmnt = getTotalDepositingAmount(
@@ -394,53 +428,115 @@ function DCDSTemplate() {
           selectedTokens.map((token) => token.tokenDetails)
         );
       }
-      const cdsDepositSignedData = await refetchcdsDepositSignedData();
 
-      if (nativeFee?.nativeFee) {
-        handleDcdsDeposit?.(
-          [
-            {
-              user: address as `0x${string}`,
-              // token addresses
-              tokenAddresses: tokenList.map((token) => {
-                const tokenDetail = selectedTokens.find((selectedToken) => {
-                  return selectedToken.tokenAddress === token.tokenAddress;
-                });
-                return (tokenDetail?.tokenAddress ??
-                  zeroAddress) as `0x${string}`;
-              }),
-              // token amount in wei
-              tokenAmounts: tokenList.map((token) => {
-                const tokenDetail = selectedTokens.find((selectedToken) => {
-                  return selectedToken.tokenAddress === token.tokenAddress;
-                });
-                return formik.values[
-                  `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                ]
-                  ? parseUnits(
-                      formik.values[
-                        `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                      ].toString(),
-                      Number(tokenDetail?.tokenDecimals)
-                    )
-                  : 0n;
-              }),
-              // liquidation gains
-              liquidate: liquidationGains,
-              liquidationAmount: liquidationGains
-                ? BigInt(liqAmnt.toString())
-                : 0n,
-              lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
-              expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
-            },
-            BigInt(cdsDepositSignedData.deadline),
-            cdsDepositSignedData.signature as `0x${string}`,
-          ],
-          nativeFee.nativeFee
+      if (!nativeFee?.nativeFee && NetworkId.Ethereum !== chainId) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        return;
+      }
+      // filtering the token list based on the hedge asset
+      // Removing bold token from the token list if cbBTC is selected
+      let filteredTokenList = tokenList;
+      if (formik.values.hedgeAsset === "cbBTC") {
+        filteredTokenList = tokenList.filter(
+          (token) => token.tokenName !== "BOLD"
         );
       }
+
+      const params = [
+        {
+          user: address as `0x${string}`,
+          // token addresses
+          tokenAddresses: filteredTokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
+          }),
+          // token amount in wei
+          tokenAmounts: filteredTokenList.map((token) => {
+            const tokenDetail = selectedTokens.find((selectedToken) => {
+              return selectedToken.tokenAddress === token.tokenAddress;
+            });
+            return formik.values[
+              `${tokenDetail?.tokenName.toLowerCase()}Amount`
+            ]
+              ? parseUnits(
+                  formik.values[
+                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                  ].toString(),
+                  Number(tokenDetail?.tokenDecimals)
+                )
+              : 0n;
+          }),
+          // liquidation gains
+          liquidate: liquidationGains,
+          liquidationAmount: liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
+          lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+          expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+          assetName:
+            formik.values.hedgeAsset === "cbBTC" ? AssetName.cbBTC : undefined,
+        },
+        BigInt(cdsDepositSignedData.deadline),
+        cdsDepositSignedData.signature as `0x${string}`,
+      ];
+
+      console.log(params, "params");
+
+      handleDcdsDeposit?.(
+        [
+          {
+            user: address as `0x${string}`,
+            // token addresses
+            tokenAddresses: filteredTokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return (tokenDetail?.tokenAddress ??
+                zeroAddress) as `0x${string}`;
+            }),
+            // token amount in wei
+            tokenAmounts: filteredTokenList.map((token) => {
+              const tokenDetail = selectedTokens.find((selectedToken) => {
+                return selectedToken.tokenAddress === token.tokenAddress;
+              });
+              return formik.values[
+                `${tokenDetail?.tokenName.toLowerCase()}Amount`
+              ]
+                ? parseUnits(
+                    formik.values[
+                      `${tokenDetail?.tokenName.toLowerCase()}Amount`
+                    ].toString(),
+                    Number(tokenDetail?.tokenDecimals)
+                  )
+                : 0n;
+            }),
+            // liquidation gains
+            liquidate: liquidationGains,
+            liquidationAmount: liquidationGains
+              ? BigInt(liqAmnt.toString())
+              : 0n,
+            lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
+            expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+            assetName:
+              formik.values.hedgeAsset === "cbBTC"
+                ? AssetName.cbBTC
+                : undefined,
+          },
+          BigInt(cdsDepositSignedData.deadline),
+          cdsDepositSignedData.signature as `0x${string}`,
+        ],
+        chainId === NetworkId.Ethereum || formik.values.hedgeAsset === "cbBTC"
+          ? undefined
+          : nativeFee.nativeFee,
+        formik.values.hedgeAsset
+      );
     } catch (error) {
-      console.log(error);
+      console.log(error, "error");
     }
   };
 
@@ -504,17 +600,19 @@ function DCDSTemplate() {
             true
           );
         }, 1000);
+
+        const contract =
+          formik.values.hedgeAsset === "cbBTC"
+            ? cdsDepositCoreAddress[
+                chainId as keyof typeof cdsDepositCoreAddress
+              ]
+            : cdsDepositAddress[chainId as keyof typeof cdsDepositAddress];
         // setting the approve loading state to true
         const tx = await approveTokenDynamicAsync({
           abi: erc20Abi,
           address: token?.tokenAddress as `0x${string}`,
           functionName: "approve",
-          args: [
-            cdsDepositAddress[
-              chainId as keyof typeof cdsDepositAddress
-            ] as `0x${string}`,
-            allowanceAmount,
-          ],
+          args: [contract as `0x${string}`, allowanceAmount],
         });
         // waiting for the transaction receipt
         const transactionReceipt = await waitForTransactionReceipt(config, {
@@ -757,6 +855,11 @@ function DCDSTemplate() {
       },
     });
 
+  const allowanceContract =
+    formik.values.hedgeAsset == "cbBTC"
+      ? cdsDepositCoreAddress
+      : cdsDepositAddress;
+
   const {
     data: tokenAllowanceByUser,
     refetch: refetchAllowanceDynamic,
@@ -768,8 +871,8 @@ function DCDSTemplate() {
       functionName: "allowance",
       args: [
         address,
-        cdsDepositAddress[
-          chainId as keyof typeof cdsDepositAddress
+        allowanceContract[
+          chainId as keyof typeof allowanceContract
         ] as `0x${string}`,
       ],
     })),
@@ -878,6 +981,8 @@ function DCDSTemplate() {
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
+                  : token.symbol === "mUSD"
+                  ? "wmUSD"
                   : token.symbol?.toString()
               ]?.assetBooster ?? 0
             )
@@ -902,6 +1007,8 @@ function DCDSTemplate() {
                     ? "USDA"
                     : token.symbol === "OP" || token.symbol === "AERO"
                     ? "NATIVE"
+                    : token.symbol === "mUSD"
+                    ? "wmUSD"
                     : token.symbol?.toString()
                 ]?.assetBoosterValidity ?? 0
               )
@@ -937,6 +1044,8 @@ function DCDSTemplate() {
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
+                  : token.symbol === "mUSD"
+                  ? "wmUSD"
                   : token.symbol?.toString()
               ]?.minAmount ?? 0
             )
@@ -949,6 +1058,8 @@ function DCDSTemplate() {
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
+                  : token.symbol === "mUSD"
+                  ? "wmUSD"
                   : token.symbol?.toString()
               ]?.pointsToBeGiven ?? 0
             )
@@ -1262,6 +1373,8 @@ function DCDSTemplate() {
     if (tokenList[4]) list.push(tokenList[4]);
     return list;
   }, [tokenList]);
+  console.log("formik.values", formik);
+  console.log(tokenList, "tokenList");
 
   return (
     <div>
@@ -1555,7 +1668,32 @@ function DCDSTemplate() {
                 classNames="top-[-26px] "
               />
             )}
-            <div className=" px-5 md:px-16 md:py-5  lg:px-5 md:pb-0 ">
+            <div className=" px-5 md:px-16 md:py-5 gap-5 lg:px-5 md:pb-0 ">
+              {/* {chainId === NetworkId.BaseSepolia && (
+                <GenericDropdownMenu
+                  buttonText={
+                    formik.values.hedgeAsset
+                      ? `${formik.values.hedgeAsset}`
+                      : "Hedge Asset"
+                  }
+                  items={hedgeAssetsOption}
+                  className="w-full  text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
+                  iconWrapBg="bg-white dark:bg-black"
+                />
+              )} */}
+              <span className="text-[12px] sm:text-[18px] font-medium text-grayLight">
+                <Typography
+                  size="sm"
+                  variant="regular"
+                  className="text-red-500"
+                >
+                  {(() => {
+                    const error =
+                      formik.errors?.["hedgeAsset" as keyof FormValues];
+                    return error ? "Please select hedge asset" : "";
+                  })()}
+                </Typography>
+              </span>
               <GenericDropdownMenu
                 buttonText={
                   formik.values.lockInPeriod
@@ -1563,7 +1701,7 @@ function DCDSTemplate() {
                     : "Lock-in Period"
                 }
                 items={lockInPeriodOption}
-                className="w-full text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
+                className="w-full text-[20px] mt-4 2xl:text-[20px] border border-grayLight h-[44px]"
                 iconWrapBg="bg-white dark:bg-black"
               />
               <Typography size="sm" variant="regular" className="text-red-500">
@@ -1584,8 +1722,8 @@ function DCDSTemplate() {
                   </TooltipTrigger>
                   <TooltipContent className="dark:text-white bg-white text-black dark:bg-black w-[400px] ">
                     <p>
-                      Get discounted ETH and earn USDA+ by backing liquidations
-                      when USDA+ borrowers default
+                      Get discounted ETH or cbBTC and earn USDA+ by backing
+                      liquidations when USDA+ borrowers default
                     </p>
                   </TooltipContent>
                 </Tooltip>

@@ -1,6 +1,7 @@
 import {
   borrowingContractAddress,
   cdsAddress,
+  cdsCoreAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
@@ -66,8 +67,6 @@ const useGetTVLUSDA = (tokenAddress: `0x${string}`) => {
     setOtherChainUSDa(usdaTvl2);
   };
 
-
-
   return {
     isTVLPending,
     tvlValue: Number(tvlValue) + Number(otherChainUDSa),
@@ -96,6 +95,22 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
       select: (data: any) => {
         return data.map((item: any) => item.result);
       },
+    },
+  });
+
+  // fetching the tvl of the tokens on the current chain
+  const { isPending: isTVLPendingCBBTC, data: tvlValueCBBTC } = useReadContracts({
+    contracts: tokenAddressArr.map((address) => ({
+      abi: cdsAbi as Abi,
+      address: cdsAddress[chainId as keyof typeof borrowingContractAddress],
+      functionName: "getTokenDepositedTillNow",
+      args: [address],
+    })),
+    query: {
+      select: (data: any) => {
+        return data.map((item: any) => item.result);
+      },
+      enabled: chainId === NetworkId.BaseSepolia
     },
   });
 
@@ -146,9 +161,11 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
   const totalTVLList = useMemo(() => {
     return tvlValue?.map(
       (item: any, index: number) =>
-        Number(item) + (index === 2 ? 0 : Number(otherChainTvl[index] || 0))
+        // if the token is OP then add 0 else add the tvl of the token on the other chain
+        // if the chain id is ethereum then add 0 else add the tvl of the token on the other chain
+        Number(item) + (index === 2 || chainId === NetworkId.Ethereum ? 0 : Number(otherChainTvl[index] || 0) + Number(tvlValueCBBTC[index] || 0))
     );
-  }, [tvlValue, otherChainTvl]);
+  }, [tvlValue, otherChainTvl, chainId, tvlValueCBBTC]);
 
   return {
     isTVLPending: isTVLPending || otherChainDataLoading,

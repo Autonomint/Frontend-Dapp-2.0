@@ -1,10 +1,11 @@
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
 import { useAccount, useReadContract } from "wagmi";
 
-const usePayableOptionFees = (index: any) => {
+const usePayableOptionFees = (index: any, token: string) => {
   const { chainId, address } = useAccount();
   // Get the native fee for the transaction
+  const contract = token === "cbBTC" ? borrowCoreAddress : borrowingContractAddress;
   const {
     data: payableOptionFees,
     error: payableOptionFeesError,
@@ -12,9 +13,9 @@ const usePayableOptionFees = (index: any) => {
   } = useReadContract({
     abi: borrowingContractAbi,
     address:
-      borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
-      ],
+      contract[
+      chainId as keyof typeof contract
+      ] as `0x${string}`,
     functionName: "getOptionFeesToPay",
     args: [address as `0x${string}`, index],
   });

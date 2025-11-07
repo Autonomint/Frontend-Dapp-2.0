@@ -84,7 +84,7 @@ export const borrowLibAbi = [
   },
   {
     "inputs": [],
-    "name": "FailedInnerCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {

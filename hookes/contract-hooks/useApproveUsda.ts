@@ -2,6 +2,7 @@ import { usDaAbi } from "@/blockchain/abis/usda";
 import {
   borrowingContractAddress,
   borrowingWithdrawContractAddress,
+  borrowWithdrawCoreAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
@@ -19,16 +20,15 @@ const useApproveUsda = (mutation: any) => {
   });
   const { chainId } = useAccount();
 
-  const approveUsda = async (repayAmount: bigint) => {
+  const approveUsda = async (repayAmount: bigint, token: string) => {
+
+    const contract = token === "cbBTC" ? borrowWithdrawCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress] : borrowingWithdrawContractAddress[chainId as keyof typeof borrowingWithdrawContractAddress]
+
     usdaApproveAsync({
       abi: usDaAbi,
       address: usDaAddress[chainId as keyof typeof usDaAddress],
       functionName: "approve",
-      args: [
-        borrowingWithdrawContractAddress[
-          chainId as keyof typeof borrowingWithdrawContractAddress
-        ] as `0x${string}`, // address of borrowing contract based on chainId
-
+      args: [contract as `0x${string}`, // address of borrowing contract based on chainId
         repayAmount, // Total usda amount
       ],
     });
