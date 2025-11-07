@@ -35,13 +35,13 @@ const farmTextVariants = {
 function MintEthListTemplate() {
   const { chainId, address } = useAccount();
   // Custom hook to fetch the LTV value
-  const { tvlValue: ltv } = useGetTvl();
+  const { tvlValue: ltv, APR } = useGetTvl();
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
   console.log(ltv, "ltv");
   // getting current APR value
-  const { data: currentAPR } = useReadContract({
+  const { data: borrowData } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
@@ -83,7 +83,7 @@ function MintEthListTemplate() {
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      BorrowRate: `${Number(APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -117,7 +117,7 @@ function MintEthListTemplate() {
     {
       token: "wrsETH",
       tokenImage: WrsETH,
-      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      BorrowRate: `${Number(APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -152,7 +152,7 @@ function MintEthListTemplate() {
     {
       token: "weETH",
       tokenImage: WeETH,
-      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      BorrowRate: `${Number(APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -190,7 +190,7 @@ function MintEthListTemplate() {
     list.push({
       token: "wsuperOETHb",
       tokenImage: WsuperOETH,
-      BorrowRate: `${Number(currentAPR || 0) / 10}%`,
+      BorrowRate: `${Number(APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtection}%`,
       ltv: `${ltv || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
