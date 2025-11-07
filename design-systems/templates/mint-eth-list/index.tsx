@@ -39,13 +39,13 @@ function MintEthListTemplate() {
 
   // Calculate the downside protection amount
   const downsideProtection = ltv ? 100 - Number(ltv || 0) : 0;
-
+  console.log(ltv, "ltv");
   // getting current APR value
   const { data: currentAPR } = useReadContract({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-      chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof borrowingContractAddress
       ],
     args: [BorrowData.APR],
     functionName: "getBorrowData",
@@ -67,16 +67,16 @@ function MintEthListTemplate() {
   const luckBoaster =
     calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
       .minutes > 0 &&
-      calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-        .minutes > 0
+    calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+      .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-        .minutes > 0
-        ? 5
-        : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
           .minutes > 0
-          ? 10
-          : 0;
+      ? 5
+      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
+          .minutes > 0
+      ? 10
+      : 0;
 
   // List of tokens with their respective data
   const list = [
@@ -106,11 +106,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -141,11 +141,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -176,11 +176,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["weETH"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     },
@@ -214,11 +214,11 @@ function MintEthListTemplate() {
           tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
             : 0,
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
-            new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0
         ),
     });
