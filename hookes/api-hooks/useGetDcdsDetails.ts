@@ -60,8 +60,7 @@ const useGetDcdsDepositList = () => {
 
       setPagedDcdsPositionList(() => {
         const sortedData = [...dcdsPositionList].sort((a, b) => Number(a.depositedTime) - Number(b.depositedTime))
-        const data = [...sortedData.filter((item) => item.collateralType === "ETH"), ...sortedData.filter((item) => item.collateralType === "cbBTC")]
-          .slice(startIndex, endIndex);
+        const data = sortedData.slice(startIndex, endIndex);
         return data;
       });
 
