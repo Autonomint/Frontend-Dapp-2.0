@@ -808,7 +808,8 @@ export function DcdsWithdrawModal({
           setWithdrawMethodLoading(true);
           handleDcdsFundWithdraw?.(
             params,
-            position.collateralType === "cbBTC" ? undefined : nativeFeeAll
+            position.collateralType === "cbBTC" ? undefined : nativeFeeAll,
+            position.collateralType
           );
         }
       } else if (position.status == "WITHDREW") {

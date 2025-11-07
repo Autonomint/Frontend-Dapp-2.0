@@ -19,7 +19,7 @@ const useLastCumulativeRate = (token: string) => {
       abi: abi,
       address:
         contract[
-        chainId as keyof typeof borrowingContractAddress
+        chainId as keyof typeof contract
         ] as `0x${string}`,
       functionName: "viewCurrentCr",
       args: [tokenEnum],

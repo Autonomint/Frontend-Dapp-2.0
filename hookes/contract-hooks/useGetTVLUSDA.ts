@@ -103,7 +103,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
   const { isPending: isTVLPendingCoreData, data: tvlValueCoreData } = useReadContracts({
     contracts: tokenAddressArr.map((address) => ({
       abi: cdsAbi as Abi,
-      address: cdsCoreAddress[chainId as keyof typeof borrowingContractAddress],
+      address: cdsCoreAddress[chainId as keyof typeof cdsCoreAddress] as `0x${string}`,
       functionName: "getTokenDepositedTillNow",
       args: [address],
     })),

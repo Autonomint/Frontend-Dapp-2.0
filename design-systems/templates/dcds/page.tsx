@@ -284,7 +284,7 @@ function DCDSTemplate() {
 
   const { quoteValue: nativeFee, quoteError } = useGetGlobalQuote(options, 1);
 
-  const { omniChainData: GlobalContractData, isOmniChainDataPending } =
+  const { omniChainDataEth: GlobalContractDataEth, isOmniChainDataPendingEth } =
     useGetUsdtAmountDepositedTillNow();
 
   //checking is Cds Deposit pause or not

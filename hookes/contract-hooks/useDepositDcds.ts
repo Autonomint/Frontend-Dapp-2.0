@@ -45,7 +45,7 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
 
     writeDcdsDeposit({
       abi: abi,
-      address: constract[chainId as keyof typeof cdsAddress] as `0x${string}`,
+      address: constract[chainId as keyof typeof constract] as `0x${string}`,
       functionName: "deposit",
       args,
       value,

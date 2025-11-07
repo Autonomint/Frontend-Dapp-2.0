@@ -14,7 +14,7 @@ const usePayableOptionFees = (index: any, token: string) => {
     abi: borrowingContractAbi,
     address:
       contract[
-      chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof contract
       ] as `0x${string}`,
     functionName: "getOptionFeesToPay",
     args: [address as `0x${string}`, index],
