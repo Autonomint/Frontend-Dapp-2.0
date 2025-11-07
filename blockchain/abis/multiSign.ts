@@ -28,7 +28,7 @@ export const multiSignABI = [
   },
   {
     "inputs": [],
-    "name": "FailedInnerCall",
+    "name": "FailedCall",
     "type": "error"
   },
   {
