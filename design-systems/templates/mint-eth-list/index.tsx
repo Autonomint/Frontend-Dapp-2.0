@@ -59,7 +59,6 @@ function MintEthListTemplate() {
   const downsideProtectionWsuperOETH = ltvWsuperOETH?.LTV
     ? 100 - Number(ltvETH?.LTV || 0)
     : 0;
-  console.log(ltvWsuperOETH, "downsideProtectionWsuperOETH");
   // getting current APR value
   const { data: currentAPR } = useReadContract({
     abi: borrowingContractAbi,

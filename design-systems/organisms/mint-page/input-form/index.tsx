@@ -12,7 +12,7 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
   handleWheel,
-  toLocalISOString
+  toLocalISOString,
 } from "@/utils/helpers";
 import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
@@ -30,7 +30,7 @@ import {
   borrowAssetsAddress,
   borrowDepositCoreAddress,
   borrowingDepositContractAddress,
-  optionContractAddress
+  optionContractAddress,
 } from "@/blockchain/contracts";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
 import Spinner from "@/design-systems/atoms/Spinner";
@@ -135,7 +135,6 @@ function InputForm({ currency }: { currency: string }) {
           ]
         : undefined,
   });
-
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
@@ -369,8 +368,9 @@ function InputForm({ currency }: { currency: string }) {
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
       abi: optionABI,
-      address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress] as `0x${string}`,
+      address: optionContractAddress[
+        chainId as keyof typeof optionContractAddress
+      ] as `0x${string}`,
       functionName: "currentStrikePricePercentLimit",
       query: {
         select: (data) => Number(data || 0),
@@ -518,7 +518,7 @@ function InputForm({ currency }: { currency: string }) {
         10000;
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   /**
