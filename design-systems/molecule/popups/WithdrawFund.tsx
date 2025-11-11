@@ -373,9 +373,11 @@ export function WithdrawFund({
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
       // set deposited amount
-      updatedData[0].value = `${Number(position.depositedAmount).toFixed(4)} ${
-        position.collateralType
-      }`;
+      updatedData[0].value = `${
+        position.collateralType === "cbBTC"
+          ? Number(position.depositedAmount).toFixed(5)
+          : Number(position.depositedAmount).toFixed(4)
+      } ${position.collateralType}`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
       // set eth price at deposit
       const ethPriceAtDep =
