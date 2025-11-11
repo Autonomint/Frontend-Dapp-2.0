@@ -302,7 +302,10 @@ function DCDSTemplate() {
     },
   });
 
-  const { data: calculateGainCDS } = useCalculateGainCDS();
+  const { data: calculateGainCDS } = useCalculateGainCDS(
+    30,
+    formik.values.hedgeAsset
+  );
 
   // assigning the formik values to the local variables because getting old values from formik directly
   const liquidationGains = formik.values.liquidationGains;
