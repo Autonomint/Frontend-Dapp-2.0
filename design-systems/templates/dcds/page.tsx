@@ -303,8 +303,12 @@ function DCDSTemplate() {
   });
 
   const { data: calculateGainCDS } = useCalculateGainCDS(
-    30,
-    formik.values.hedgeAsset
+    27,
+    formik.values.hedgeAsset === "Eth"
+      ? "ETH"
+      : formik.values.hedgeAsset === null
+      ? "ETH"
+      : "cbBTC"
   );
 
   // assigning the formik values to the local variables because getting old values from formik directly
@@ -1444,8 +1448,8 @@ function DCDSTemplate() {
                           theme === "dark" && token.tokenName === "USDA+"
                             ? USDaIconGreen
                             : theme === "light" && token.tokenName === "USDA+"
-                              ? USDaIcon
-                              : token?.tokenImage
+                            ? USDaIcon
+                            : token?.tokenImage
                         }
                         alt={token?.tokenName}
                         width={
@@ -1744,7 +1748,9 @@ function DCDSTemplate() {
                       <div className="h-full">
                         <Button
                           disabled={
-                            isFunctionPausedCDS_Deposit || allowanceLoading || !readyForNewTx
+                            isFunctionPausedCDS_Deposit ||
+                            allowanceLoading ||
+                            !readyForNewTx
                           }
                           type="submit"
                           onClick={() => formik.handleSubmit()}
