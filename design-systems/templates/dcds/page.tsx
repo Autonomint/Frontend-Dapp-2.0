@@ -237,10 +237,10 @@ function DCDSTemplate() {
       label: "Eth",
       onClick: () => formik.setFieldValue("hedgeAsset", "Eth"),
     },
-    // {
-    //   label: "cbBTC",
-    //   // onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
-    // },
+    {
+      label: "cbBTC",
+      onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
+    },
   ];
 
   const lockInPeriodOption = useMemo(() => {
@@ -1676,7 +1676,7 @@ function DCDSTemplate() {
               />
             )}
             <div className=" px-5 md:px-16 md:py-5 gap-5 lg:px-5 md:pb-0 ">
-              {/* {chainId === NetworkId.BaseSepolia && (
+              {chainId === NetworkId.BaseSepolia && (
                 <GenericDropdownMenu
                   buttonText={
                     formik.values.hedgeAsset
@@ -1687,7 +1687,7 @@ function DCDSTemplate() {
                   className="w-full  text-[20px] 2xl:text-[20px] border border-grayLight h-[44px]"
                   iconWrapBg="bg-white dark:bg-black"
                 />
-              )} */}
+              )}
               <span className="text-[12px] sm:text-[18px] font-medium text-grayLight">
                 <Typography
                   size="sm"

@@ -210,41 +210,41 @@ function MintEthListTemplate() {
   }
 
   if (chainId == NetworkId.BaseSepolia) {
-    // list.push({
-    //   token: "cbBTC",
-    //   tokenImage: cbBTC,
-    //   BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
-    //   DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
-    //   ltv: `${ltvCbBTC?.LTV || 0}%`,
-    //   isActive: !isFunctionPausedBorrow_Deposit,
-    //   InActiveHeading: "cbBTC borrow is paused now",
-    //   pointsToBeGiven:
-    //     (tokenRewardDetailList &&
-    //       tokenRewardDetailList?.["cbBTC"]?.pointsToBeGiven) ||
-    //     0,
-    //   minAmount:
-    //     (tokenRewardDetailList &&
-    //       tokenRewardDetailList?.["cbBTC"]?.minAmount) ||
-    //     0,
-    //   link: STRATEGY_LINK,
-    //   boaster:
-    //     (tokenRewardDetailList &&
-    //       tokenRewardDetailList?.["cbBTC"]?.assetBooster + luckBoaster) ||
-    //     0,
-    //   boasterTime:
-    //     tokenRewardDetailList &&
-    //     Math.max(
-    //       tokenRewardDetailList?.["cbBTC"]?.assetBoosterValidity || 0,
-    //       farmLuckDetails?.deadLine5xTimestamp
-    // ? // convert date to timestamp
-    // new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-    // : 0,
-    // farmLuckDetails?.deadLine10xTimestamp
-    // ? // convert date to timestamp
-    //           new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-    //         : 0
-    //     ),
-    // });
+    list.push({
+      token: "cbBTC",
+      tokenImage: cbBTC,
+      BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
+      ltv: `${ltvCbBTC?.LTV || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "cbBTC borrow is paused now",
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["cbBTC"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["cbBTC"]?.minAmount) ||
+        0,
+      link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["cbBTC"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["cbBTC"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
+    });
     list.push({
       token: "wsuperOETHb",
       tokenImage: WsuperOETH,
