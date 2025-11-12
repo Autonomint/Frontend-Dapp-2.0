@@ -161,5 +161,10 @@ export enum CdsData {
 // Token format decimal
 export const tokenFormatDecimal = {
   Eth: 4,
+  ETH: 4,
+  WeETH: 4,
+  WrsETH: 4,
+  rsETH: 4,
+  wsuperOETHb: 4,
   cbBTC: 6,
 }
