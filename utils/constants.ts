@@ -157,3 +157,9 @@ export enum CdsData {
   usdaLimit,
   usdtLimit
 }
+
+// Token format decimal
+export const tokenFormatDecimal = {
+  Eth: 4,
+  cbBTC: 6,
+}

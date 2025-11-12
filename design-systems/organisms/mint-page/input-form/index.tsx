@@ -48,7 +48,11 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import { BorrowAssetsEnum, NetworkId } from "@/utils/constants";
+import {
+  BorrowAssetsEnum,
+  NetworkId,
+  tokenFormatDecimal,
+} from "@/utils/constants";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -137,7 +141,9 @@ function InputForm({ currency }: { currency: string }) {
   });
 
   // Formatted balance of the selected asset
-  const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
+  const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(
+    tokenFormatDecimal[currency as keyof typeof tokenFormatDecimal]
+  );
 
   const contract =
     currency === "cbBTC"
