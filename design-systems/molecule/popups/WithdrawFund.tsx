@@ -753,6 +753,7 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async () => {
+    debugger;
     const repayAmountFormated = Number(truncateDecimals(repayAmount || 0, 6));
     if (balance < repayAmountFormated) {
       toast.error("You don't have enough USDA+ to repay");
@@ -764,7 +765,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     const approveRepayAmount = BigInt(
-      Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
+      Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6)))
     );
     if (
       position.status === "DEPOSITED"
