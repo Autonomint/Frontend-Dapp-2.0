@@ -759,7 +759,6 @@ export function DcdsWithdrawModal({
             params = [
               BigInt(position.index),
               res?.odosAssembledData,
-              res?.usdtFromOdos,
               res?.deadline,
               res?.signature,
             ];
@@ -809,6 +808,7 @@ export function DcdsWithdrawModal({
         );
         return;
       }
+      debugger;
       // if position status is deposited then call withdraw function
       if (position.status == "DEPOSITED") {
         const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
@@ -850,7 +850,6 @@ export function DcdsWithdrawModal({
         let params = [
           BigInt(position.index),
           res?.odosAssembledData,
-          res?.usdtFromOdos,
           res?.deadline,
           res?.signature,
         ];
@@ -858,7 +857,6 @@ export function DcdsWithdrawModal({
           params = [
             BigInt(position.index),
             res?.odosAssembledData,
-            res?.usdtFromOdos,
             res?.deadline,
             res?.signature,
           ];
