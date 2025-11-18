@@ -36,7 +36,7 @@ import { eId, NetworkId } from "@/utils/constants";
 import { scanUrls } from "@/utils/urls";
 
 function BridgeTemplate() {
-  const [sendToken, setSendToken] = useState<"USDa" | "TUSDT">("USDa");
+  const [sendToken, setSendToken] = useState<"USDA" | "TUSDT">("USDA");
   const [sendNetwork, setSendNetwork] = useState<
     "Sepolia" | "Base" | "Mode" | "OP"
   >("Sepolia");
@@ -127,7 +127,7 @@ function BridgeTemplate() {
       setCollateralAmountString((Number(parseUnits(sendAmount.toString(), 6))).toString());
     }
     let amount = 0n;
-    if (sendToken === "USDa" && nativeFee1) {
+    if (sendToken === "USDA" && nativeFee1) {
       amount = parseUnits(letamount, 18) - nativeFee1?.nativeFee;
     }
 
@@ -145,7 +145,7 @@ function BridgeTemplate() {
 
   // Get the maximum amount of collateral set to the input field
   const getmax = () => {
-    if (sendToken === "USDa") {
+    if (sendToken === "USDA") {
       setSendAmount(Number(usdaBal?.formatted.slice(0, 8)));
     }
   };
@@ -325,7 +325,7 @@ function BridgeTemplate() {
     }
     if (accountAddress) {
       setTransferLoadingLocal(true);
-      if (sendToken === "USDa") {
+      if (sendToken === "USDA") {
         setSendLoading(true);
         // calling the usda approve function
         usdaApproveWrite({
@@ -510,7 +510,7 @@ function BridgeTemplate() {
           )}
 
           <LoadingBox
-            isLoading={sendLoading && sendToken === "USDa"}
+            isLoading={sendLoading && sendToken === "USDA"}
             isFailure={usdaErrorApproveFn || usdaIsError}
             isSuccess={Boolean(usdaIsSuccess)}
             setSuccessLoading={() => console.log()}
