@@ -389,14 +389,14 @@ function BridgeTemplate() {
 
   // from network dropdown options
   const fromNetworkOption = [
-    {
-      label: "Ethereum",
-      onClick: () => {
-        setSendAmount(0);
-        switchChain({ chainId: NetworkId.Ethereum });
-        setSendNetwork("Sepolia");
-      },
-    },
+    // {
+    //   label: "Ethereum",
+    //   onClick: () => {
+    //     setSendAmount(0);
+    //     switchChain({ chainId: NetworkId.Ethereum });
+    //     setSendNetwork("Sepolia");
+    //   },
+    // },
     {
       label: "Base",
       onClick: () => {
@@ -405,14 +405,14 @@ function BridgeTemplate() {
         setSendNetwork("Base");
       },
     },
-    {
-      label: "Mode",
-      onClick: () => {
-        setSendAmount(0);
-        switchChain({ chainId: NetworkId.Mode });
-        setSendNetwork("Mode");
-      },
-    },
+    // {
+    //   label: "Mode",
+    //   onClick: () => {
+    //     setSendAmount(0);
+    //     switchChain({ chainId: NetworkId.Mode });
+    //     setSendNetwork("Mode");
+    //   },
+    // },
     {
       label: "OP",
       onClick: () => {
@@ -427,14 +427,14 @@ function BridgeTemplate() {
   const toNetworkOption = useMemo(() => {
     const option = [];
 
-    if (sendNetwork !== "Sepolia") {
-      option.push({
-        label: "Sepolia",
-        onClick: () => {
-          setReceiveNetwork("Sepolia");
-        },
-      });
-    }
+    // if (sendNetwork !== "Sepolia") {
+    //   option.push({
+    //     label: "Sepolia",
+    //     onClick: () => {
+    //       setReceiveNetwork("Sepolia");
+    //     },
+    //   });
+    // }
     if (sendNetwork !== "Base") {
       option.push({
         label: "Base",
@@ -443,14 +443,14 @@ function BridgeTemplate() {
         },
       });
     }
-    if (sendNetwork !== "Mode") {
-      option.push({
-        label: "Mode",
-        onClick: () => {
-          setReceiveNetwork("Mode");
-        },
-      });
-    }
+    // if (sendNetwork !== "Mode") {
+    //   option.push({
+    //     label: "Mode",
+    //     onClick: () => {
+    //       setReceiveNetwork("Mode");
+    //     },
+    //   });
+    // }
     if (sendNetwork !== "OP") {
       option.push({
         label: "OP",
