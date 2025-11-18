@@ -20,7 +20,7 @@ export default function BridgeComponentLeft({
 }: {
   balance: number;
   amountError: string;
-  setSendToken: Dispatch<SetStateAction<"USDa" | "TUSDT">>;
+  setSendToken: Dispatch<SetStateAction<"USDA" | "TUSDT">>;
   setSendAmount: Dispatch<SetStateAction<number | string | undefined>>;
   sendAmount: number | string | undefined;
   setSendNetwork: Dispatch<
@@ -73,7 +73,7 @@ export default function BridgeComponentLeft({
               items={[
                 {
                   label: "USDA+",
-                  onClick: () => setSendToken("USDa"),
+                  onClick: () => setSendToken("USDA"),
                 },
               ]}
               className="w-full text-[20px] lg:text-[24px] border border-grayLight h-[60px] lg:h-[65px]"
