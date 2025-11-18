@@ -16,6 +16,7 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
@@ -53,7 +54,7 @@ export default function HomeTemplate() {
     { title: "Bridge", subtitle: "" },
     { title: "Farm Your Luck", subtitle: "Win Option Fee And Rewards" },
     { title: "Redeem", subtitle: "" },
-    { title: "Buy", subtitle: "" },
+    { title: "Buy USDA+", subtitle: "" },
   ];
 
   // getting eth price from blockchain
@@ -63,8 +64,9 @@ export default function HomeTemplate() {
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
       abi: optionABI,
-      address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress] as `0x${string}`,
+      address: optionContractAddress[
+        chainId as keyof typeof optionContractAddress
+      ] as `0x${string}`,
       functionName: "currentStrikePricePercentLimit",
       query: {
         select: (data) => Number(data || 0),
@@ -483,7 +485,9 @@ export default function HomeTemplate() {
                 </div>
               </div>
             </div>{" "}
-            <div
+            <Link
+              href="https://www.curve.finance/dex/base/pools/factory-stable-ng-325/deposit"
+              target="_blank"
               className={`relative cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]  h-[80px] lg:h-[118px] w-full lg:w-[50%] 
                  border-t border-l-0 border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top
                 `}
@@ -503,7 +507,7 @@ export default function HomeTemplate() {
                   <LeftArrowIcon width={42} height={42} />
                 </div>
               </div>
-            </div>{" "}
+            </Link>{" "}
           </div>
           <div
             className={`relative  cursor-pointer group hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]   h-[80px] lg:h-[118px] w-full  border-t border-x border-y border-[1px]  border-grayLight dark:hover:bg-custom-gradient-to-top`}
