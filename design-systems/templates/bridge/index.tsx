@@ -346,43 +346,43 @@ function BridgeTemplate() {
     }
   }
 
-  // const result = useEstimateGas({
-  //   account: accountAddress,
-  //   to: usDaAddress[chainId as keyof typeof usDaAddress],
-  //   value: parseEther("0.01"),
-  // });
+  const result = useEstimateGas({
+    account: accountAddress,
+    to: usDaAddress[chainId as keyof typeof usDaAddress],
+    value: parseEther("0.01"),
+  });
 
-  // const publicClient = usePublicClient();
+  const publicClient = usePublicClient();
 
-  // async function estimateTransactionTime() {
-  //   try {
-  //     // 1. Fetch the current gas price
-  //     const gasPrice = await publicClient?.getGasPrice();
+  async function estimateTransactionTime() {
+    try {
+      // 1. Fetch the current gas price
+      const gasPrice = await publicClient?.getGasPrice();
 
-  //     // 2. Fetch the number of pending transactions
-  //     const pendingTransactions = 3;
+      // 2. Fetch the number of pending transactions
+      const pendingTransactions = 3;
 
-  //     // 3. Fetch the latest block to get the average block time
-  //     const latestBlock = await publicClient?.getBlock();
-  //     const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
+      // 3. Fetch the latest block to get the average block time
+      const latestBlock = await publicClient?.getBlock();
+      const averageBlockTime = 12; // Average block time for Ethereum is ~12 seconds
 
-  //     // 4. Estimate the time for your transaction to be included in a block
-  //     const transactionsPerBlock = 200; // Approximate number of transactions per block
-  //     const estimatedBlocksToWait = Math.ceil(
-  //       pendingTransactions / transactionsPerBlock
-  //     );
-  //     const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
-  //     setEstimateTime(estimatedTimeInSeconds);
-  //     return estimatedTimeInSeconds;
-  //   } catch (error) {
-  //     console.error("Error estimating transaction time:", error);
-  //     throw error;
-  //   }
-  // }
+      // 4. Estimate the time for your transaction to be included in a block
+      const transactionsPerBlock = 200; // Approximate number of transactions per block
+      const estimatedBlocksToWait = Math.ceil(
+        pendingTransactions / transactionsPerBlock
+      );
+      const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
+      setEstimateTime(estimatedTimeInSeconds);
+      return estimatedTimeInSeconds;
+    } catch (error) {
+      console.error("Error estimating transaction time:", error);
+      throw error;
+    }
+  }
 
-  // useEffect(() => {
-  //   estimateTransactionTime();
-  // }, []);
+  useEffect(() => {
+    estimateTransactionTime();
+  }, []);
 
   const deviceType = useDeviceType();
   const showBack = deviceType === "mobile" || deviceType === "tablet";
@@ -492,7 +492,7 @@ function BridgeTemplate() {
           receiveNetwork={receiveNetwork}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
-          <BridgeMetricFields label={"Gas"} value={"-"} />
+          {/* <BridgeMetricFields label={"Gas"} value={"-"} /> */}
           <BridgeMetricFields
             label={"Time"}
             value={secondsToMinutes(estimateTime * 2)}

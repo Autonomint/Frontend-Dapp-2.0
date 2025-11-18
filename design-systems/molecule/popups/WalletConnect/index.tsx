@@ -134,7 +134,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                       <div className="text-[16px]">Base</div>
                     )}
                   </Button>
-                  <Button
+                  {/* <Button
                     disabled={isPending}
                     onClick={() => {
                       switchChain({
@@ -159,7 +159,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                     ) : (
                       <div className="text-[16px]">Ethereum</div>
                     )}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
