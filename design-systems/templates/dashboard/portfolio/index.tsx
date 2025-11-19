@@ -21,6 +21,7 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
+import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
 
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
@@ -54,6 +55,7 @@ function PortfolioTemplate() {
   const { totalUserDeposit } = useGetTotalUserDeposit();
   // get user point
   const { points, referralPoints, hasLiquidityLandPoints } = useGetUserPoint();
+  // const { data: stakingPoints } = useGetStakingPoints(address);
 
   // get borrowed position list
   const {
