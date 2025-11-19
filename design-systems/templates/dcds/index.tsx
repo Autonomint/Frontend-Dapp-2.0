@@ -234,8 +234,8 @@ function DCDSTemplate() {
 
   const hedgeAssetsOption = [
     {
-      label: "Eth",
-      onClick: () => formik.setFieldValue("hedgeAsset", "Eth"),
+      label: "ETH",
+      onClick: () => formik.setFieldValue("hedgeAsset", "ETH"),
     },
     {
       label: "cbBTC",
@@ -300,8 +300,12 @@ function DCDSTemplate() {
   });
 
   const { data: calculateGainCDS } = useCalculateGainCDS(
-    30,
-    formik.values.hedgeAsset
+    27,
+    formik.values.hedgeAsset === "ETH"
+      ? "ETH"
+      : formik.values.hedgeAsset === null
+      ? "ETH"
+      : "cbBTC"
   );
 
   // assigning the formik values to the local variables because getting old values from formik directly
