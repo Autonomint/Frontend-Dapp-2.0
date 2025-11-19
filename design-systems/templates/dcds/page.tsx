@@ -234,8 +234,8 @@ function DCDSTemplate() {
 
   const hedgeAssetsOption = [
     {
-      label: "Eth",
-      onClick: () => formik.setFieldValue("hedgeAsset", "Eth"),
+      label: "ETH",
+      onClick: () => formik.setFieldValue("hedgeAsset", "ETH"),
     },
     {
       label: "cbBTC",
@@ -304,7 +304,7 @@ function DCDSTemplate() {
 
   const { data: calculateGainCDS } = useCalculateGainCDS(
     27,
-    formik.values.hedgeAsset === "Eth"
+    formik.values.hedgeAsset === "ETH"
       ? "ETH"
       : formik.values.hedgeAsset === null
       ? "ETH"
