@@ -22,6 +22,7 @@ const useWithdrawUsda = (mutation: any) => {
     deadline: bigint,
     signature: `0x${string}`,
     expiredETHAmount: bigint,
+    plFromExpired: bigint,
     token: string,
   ) => {
     const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
@@ -36,8 +37,8 @@ const useWithdrawUsda = (mutation: any) => {
           BigInt(index),
           odosAssembledData,
           expiredETHAmount,
+          plFromExpired,
           {
-            nonce,
             deadline,
             signature,
           },

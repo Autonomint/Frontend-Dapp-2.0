@@ -486,6 +486,7 @@ function InputForm({ currency }: { currency: string }) {
         nonce: BigInt(borrowSignedData?.nonce || 0),
         signature: borrowSignedData?.signature || ("" as `0x${string}`),
         expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
+        plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
         value:
           currency === "cbBTC"
             ? undefined

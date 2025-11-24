@@ -10,6 +10,7 @@ export interface SignedDataReturn {
   nonce: number;
   deadline: number;
   expiredETHAmount: bigint;
+  plFromExpired: bigint;
 }
 
 /**

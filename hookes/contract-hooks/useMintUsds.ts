@@ -11,6 +11,7 @@ interface BorrowInputs {
   value: bigint | undefined; // uint256 can be represented by bigint
   assetName: AssetName;
   expiredETHAmount: bigint;
+  plFromExpired: bigint;
   deadline: bigint;
   signature: `0x${string}`;
   nonce: bigint;
@@ -40,6 +41,7 @@ const useDepositTokens = (mutation: any) => {
     deadline,
     signature,
     expiredETHAmount,
+    plFromExpired,
     nonce,
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
@@ -55,6 +57,7 @@ const useDepositTokens = (mutation: any) => {
           assetName,
           depositingAmount,
           expiredETHAmount,
+          plFromExpired,
         },
         {
           nonce,

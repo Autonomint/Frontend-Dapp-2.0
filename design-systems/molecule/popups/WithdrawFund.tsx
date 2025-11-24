@@ -835,6 +835,7 @@ export function WithdrawFund({
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`,
             BigInt(borrowSignedData?.expiredETHAmount || 0),
+            BigInt(borrowSignedData?.plFromExpired || 0),
             position.collateralType
           );
         }

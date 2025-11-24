@@ -10,6 +10,7 @@ export interface SignedDataReturn {
   odosAssembledData: string;
   usdtFromOdos: string;
   expiredETHAmount: number;
+  plFromExpired: number;
 }
 /**
  *

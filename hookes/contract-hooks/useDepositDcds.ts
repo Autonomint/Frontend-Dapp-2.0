@@ -30,6 +30,7 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
         liquidationAmount: bigint;
         lockingPeriod: bigint;
         expiredETHAmount: bigint;
+        plFromExpired: bigint;
         assetName: AssetName | undefined | string;
       },
       bigint,
@@ -38,13 +39,13 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
     value: bigint | undefined,
     hedgeAsset: string
   ) => {
-    const constract = hedgeAsset === "cbBTC" ? cdsCoreAddress : cdsAddress;
+    const contract = hedgeAsset === "cbBTC" ? cdsCoreAddress : cdsAddress;
 
     const abi = hedgeAsset === "cbBTC" ? cdsCoreABI : cdsAbi;
 
     writeDcdsDeposit({
       abi: abi,
-      address: constract[chainId as keyof typeof constract] as `0x${string}`,
+      address: contract[chainId as keyof typeof cdsAddress] as `0x${string}`,
       functionName: "deposit",
       args,
       value,

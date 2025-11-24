@@ -397,8 +397,6 @@ function DCDSTemplate() {
     }
   }, [DepositdataReceipt, cdsDepositSuccessReceipt, cdsDepositErrorReceipt]);
 
-  const expiredETHAmount = 0;
-
   const { refetchcdsDepositSignedData } = useGetDcdsWithdrawSignedData();
 
   // function to call the deposit function in the contract
@@ -485,14 +483,13 @@ function DCDSTemplate() {
           liquidationAmount: liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
           lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
           expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+          plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),
           assetName:
             formik.values.hedgeAsset === "cbBTC" ? AssetName.cbBTC : undefined,
         },
         BigInt(cdsDepositSignedData.deadline),
         cdsDepositSignedData.signature as `0x${string}`,
       ];
-
-      console.log(params, "params");
 
       handleDcdsDeposit?.(
         [
@@ -529,6 +526,7 @@ function DCDSTemplate() {
               : 0n,
             lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
             expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
+            plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),
             assetName:
               formik.values.hedgeAsset === "cbBTC"
                 ? AssetName.cbBTC
