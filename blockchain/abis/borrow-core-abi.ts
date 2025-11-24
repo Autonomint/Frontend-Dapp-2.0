@@ -490,6 +490,12 @@ export const borowCoreABI = [
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "UpdatedCv",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": true,
@@ -681,6 +687,11 @@ export const borowCoreABI = [
             "internalType": "uint256",
             "name": "expiredETHAmount",
             "type": "uint256"
+          },
+          {
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
           }
         ],
         "internalType": "struct IBorrowingCore.BorrowDepositParams",
@@ -989,11 +1000,6 @@ export const borowCoreABI = [
   {
     "inputs": [
       {
-        "internalType": "uint128",
-        "name": "tokenAmountFromOdos",
-        "type": "uint128"
-      },
-      {
         "components": [
           {
             "internalType": "address",
@@ -1021,30 +1027,35 @@ export const borowCoreABI = [
             "type": "uint256"
           },
           {
-            "components": [
-              {
-                "internalType": "uint256",
-                "name": "nonce",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "deadline",
-                "type": "uint256"
-              },
-              {
-                "internalType": "bytes",
-                "name": "signature",
-                "type": "bytes"
-              }
-            ],
-            "internalType": "struct IBorrowingCore.EIP712VerifyParams",
-            "name": "verifyParams",
-            "type": "tuple"
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
           }
         ],
-        "internalType": "struct IBorrowingCore.LiquidationParams",
+        "internalType": "struct IBorrowing.LiquidationParams",
         "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+        "name": "verifyParams",
         "type": "tuple"
       }
     ],
@@ -1505,14 +1516,14 @@ export const borowCoreABI = [
         "type": "bytes"
       },
       {
-        "internalType": "uint128",
-        "name": "usdtFromOdos",
-        "type": "uint128"
-      },
-      {
         "internalType": "uint256",
         "name": "expiredETHAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "int128",
+        "name": "plFromExpired",
+        "type": "int128"
       },
       {
         "components": [
@@ -1542,4 +1553,4 @@ export const borowCoreABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-];
+]

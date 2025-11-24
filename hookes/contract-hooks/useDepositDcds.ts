@@ -1,4 +1,4 @@
-import { cdsCoreABI } from "@/blockchain/abis/cdsCoreDeposit";
+import { cdsCoreABI } from "@/blockchain/abis/cdsCore";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsAddress, cdsCoreAddress, cdsDepositCoreAddress } from "@/blockchain/contracts";
 import { AssetName } from "@/utils/constants";
