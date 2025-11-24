@@ -9,6 +9,7 @@ const useWithdrawUsda = (mutation: any) => {
     reset: borrowReset, // Function for resetting borrowing
     data: borrowWithdrawData, // Data for borrowing withdrawal
     isError: borrowWithdrawError, // Error state for borrowing withdrawal
+    error: borrowWithdrawErrorData,
   } = useWriteContract({
     mutation,
   });
@@ -18,7 +19,7 @@ const useWithdrawUsda = (mutation: any) => {
     index: number,
     nativeFee: bigint | undefined,
     odosAssembledData: any,
-    nonce: bigint,
+    // nonce: bigint,
     deadline: bigint,
     signature: `0x${string}`,
     expiredETHAmount: bigint,
@@ -39,6 +40,7 @@ const useWithdrawUsda = (mutation: any) => {
           expiredETHAmount,
           plFromExpired,
           {
+            nonce: BigInt(0n),
             deadline,
             signature,
           },

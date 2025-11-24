@@ -831,7 +831,7 @@ export function WithdrawFund({
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
-            BigInt(borrowSignedData?.nonce || 0),
+            // BigInt(borrowSignedData?.nonce || 0),
             BigInt(borrowSignedData?.deadline || 0),
             (borrowSignedData?.signature || "") as `0x${string}`,
             BigInt(borrowSignedData?.expiredETHAmount || 0),
