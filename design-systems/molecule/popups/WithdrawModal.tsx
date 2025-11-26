@@ -747,22 +747,7 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
-          const res = await refetchBorrowWithDrawGainsSignedData(token);
-          let params = [
-            BigInt(position.index),
-            res?.odosAssembledData,
-            res?.deadline,
-            res?.signature,
-          ];
-          if (chainId === NetworkId.Ethereum) {
-            params = [
-              BigInt(position.index),
-              res?.odosAssembledData,
-              res?.deadline,
-              res?.signature,
-            ];
-          }
+          const params = [BigInt(position.index)];
           // If close position is success then call withdraw gain function
           handleDcdsWithdrawGain?.(params, position.collateralType);
         }, 3000);
@@ -818,8 +803,9 @@ export function DcdsWithdrawModal({
             address,
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
+            res?.odosAssembledData,
             res?.expiredETHAmount,
-            res?.plFromExpired,   
+            res?.plFromExpired,
           ],
           res?.deadline,
           res?.signature,
@@ -829,6 +815,7 @@ export function DcdsWithdrawModal({
           params = [
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
+            res?.odosAssembledData,
             res?.expiredETHAmount,
             res?.plFromExpired,
             res?.deadline,
@@ -847,22 +834,7 @@ export function DcdsWithdrawModal({
       } else if (position.status == "WITHDREW") {
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
-        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
-        const res = await refetchBorrowWithDrawGainsSignedData(token);
-        let params = [
-          BigInt(position.index),
-          res?.odosAssembledData,
-          res?.deadline,
-          res?.signature,
-        ];
-        if (chainId === NetworkId.Ethereum) {
-          params = [
-            BigInt(position.index),
-            res?.odosAssembledData,
-            res?.deadline,
-            res?.signature,
-          ];
-        }
+        const params = [BigInt(position.index)];
         handleDcdsWithdrawGain?.(params, position.collateralType);
       }
     } catch (error) {

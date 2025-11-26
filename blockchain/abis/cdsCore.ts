@@ -1099,6 +1099,57 @@ export const cdsCoreABI = [
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint256",
+            "name": "excessProfitCumulativeValue",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
+          }
+        ],
+        "internalType": "struct CDSCoreInterface.WithdrawUserParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "getSwapAmount",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_tokenAddress",
         "type": "address"
@@ -1110,30 +1161,6 @@ export const cdsCoreABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      }
-    ],
-    "name": "getUsedAmount",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -1796,6 +1823,11 @@ export const cdsCoreABI = [
             "type": "uint256"
           },
           {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
+          },
+          {
             "internalType": "uint256",
             "name": "expiredETHAmount",
             "type": "uint256"
@@ -1832,21 +1864,6 @@ export const cdsCoreABI = [
         "internalType": "uint64",
         "name": "index",
         "type": "uint64"
-      },
-      {
-        "internalType": "bytes",
-        "name": "odosAssembledData",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
       }
     ],
     "name": "withdrawGains",
