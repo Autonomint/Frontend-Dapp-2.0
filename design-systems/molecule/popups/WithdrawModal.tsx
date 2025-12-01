@@ -1077,7 +1077,10 @@ export function DcdsWithdrawModal({
                       </Label>
                       {!(position.status == "WITHDREW") && (
                         <Button
-                          onClick={() => handleWithdrawFund(true)}
+                          onClick={() => {
+                            handleWithdrawFund(true);
+                            setHalfWithdraw(true);
+                          }}
                           disabled={
                             (position.status === "WITHDREW_GAINS"
                               ? true
@@ -1212,7 +1215,10 @@ export function DcdsWithdrawModal({
                     <TooltipTrigger asChild>
                       <div className="h-full">
                         <Button
-                          onClick={() => handleWithdrawFund(false)}
+                          onClick={() => {
+                            handleWithdrawFund(false);
+                            setHalfWithdraw(false);
+                          }}
                           disabled={
                             (position.status === "WITHDREW_GAINS"
                               ? true
