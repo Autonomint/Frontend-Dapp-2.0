@@ -824,7 +824,7 @@ export function DcdsWithdrawModal({
           [
             address,
             BigInt(position.index),
-            halfWithdraw
+            isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
             res?.excessProfitCumulativeValue,
@@ -861,7 +861,7 @@ export function DcdsWithdrawModal({
         setWithdrawGainLoading(true);
         const params = [
           BigInt(position.index),
-          halfWithdraw
+          isHalfWithdraw
             ? WithdrawType.WITHDRAW_YIELDS
             : WithdrawType.FULL_WITHDRAW,
         ];
