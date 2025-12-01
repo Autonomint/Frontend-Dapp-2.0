@@ -757,6 +757,7 @@ export function DcdsWithdrawModal({
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
     try {
+      debugger;
       setHalfWithdraw(isHalfWithdraw || false);
       setDcdsFundWithdrawLoadingLocal(true);
       // if position status is deposited then call withdraw function
