@@ -741,7 +741,7 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessWithdrawReceipt) {
-      setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
+      // setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
         const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
           withdrawReceipt.transactionHash
@@ -760,6 +760,7 @@ export function WithdrawFund({
           />
         );
       });
+      formik.resetForm();
       setTimeout(() => {
         positionListRefetech();
       }, 3000);
@@ -777,6 +778,8 @@ export function WithdrawFund({
       setIsLoadingCumulativeLocal(false);
       setIsApproveLoadingLocal(false);
       setWithdrawLoadingLocal(false);
+      approveReset?.();
+      borrowReset?.();
       setTimeout(() => {
         setRepayLoading(false);
       }, 1000);
@@ -784,11 +787,11 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async (withdrawAmount: string) => {
-    const repayAmountFormated = Number(
-      truncateDecimals(Number(withdrawAmount || 0) + 0.001, 6)
-    );
+    debugger;
     // check if repay amount is greater than or equal to repay amount
-    if (repayAmountFormated > repayAmount) {
+    if (
+      Number(truncateDecimals(Number(withdrawAmount || 0), 6)) > repayAmount
+    ) {
       toast.custom((t) => (
         <ToastNotificationError
           title="Value should be less than or equal to repay amount"
@@ -797,6 +800,19 @@ export function WithdrawFund({
       ));
       return;
     }
+
+    const percentageValue =
+      Number(withdrawAmount) / Number(position.noOfUSDaMinted);
+
+    const interest =
+      Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
+      Number(position.noOfUSDaMinted);
+
+    const extraAmount = Number(percentageValue) * interest;
+
+    const repayAmountFormated = Number(
+      truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6)
+    );
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
@@ -872,11 +888,19 @@ export function WithdrawFund({
           setTimeout(() => {
             setWithdrawLoadingLocal(true);
           }, 800);
+
+          const repayAmountFormated = Number(
+            truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
+          );
+          const repayAmount = BigInt(
+            Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
+          );
           const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
 
           withdrawUsda(
             position.index,
+            repayAmount,
             position.collateralType === "cbBTC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
@@ -1412,8 +1436,8 @@ export function WithdrawFund({
                       position.collateralType === "cbBTC"
                       ? "h-[130px]"
                       : "h-[150px]"
-                    : "md:h-[70px] sm:h-[50px] h-[80px]"
-                } mt-4 md:mt-4`}
+                    : "md:h-[80px] sm:h-[50px] h-[80px]"
+                } mt-4 md:mt-4 overflow-hidden`}
               >
                 {position.status == BorrowStatus.WITHDREW &&
                   position.collateralType !== "cbBTC" && (
@@ -1435,7 +1459,7 @@ export function WithdrawFund({
                       >
                         {position.status !== BorrowStatus.WITHDREW && (
                           <div className="w-[70%] relative">
-                            <div className="h-[50px]">
+                            <div className="h-[50px] flex items-center justify-start">
                               <input
                                 id="withdrawAmount"
                                 name="withdrawAmount"
@@ -1453,10 +1477,29 @@ export function WithdrawFund({
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                               />
+                              <div className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center border-l-0 border border-grayLight h-full">
+                                {(
+                                  (Number(formik.values.withdrawAmount) /
+                                    Number(position.noOfUSDaMinted)) *
+                                  100
+                                ).toFixed(0)}
+                                %
+                              </div>
+                              <div
+                                onClick={() => {
+                                  formik.setFieldValue(
+                                    "withdrawAmount",
+                                    truncateDecimals(position.noOfUSDaMinted, 6)
+                                  );
+                                }}
+                                className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
+                              >
+                                MAX
+                              </div>
                             </div>
                             {formik.touched.withdrawAmount &&
                             formik.errors.withdrawAmount ? (
-                              <div className="absolute left-0 text-red-500 text-xs mt-1">
+                              <div className="absolute left-0 text-red-500 text-xs mt-">
                                 {formik.errors.withdrawAmount}
                               </div>
                             ) : null}
