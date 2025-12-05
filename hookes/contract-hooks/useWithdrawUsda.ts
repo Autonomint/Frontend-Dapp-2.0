@@ -16,6 +16,7 @@ const useWithdrawUsda = (mutation: any) => {
 
   const withdrawUsda = async (
     index: number,
+    amount: bigint,
     nativeFee: bigint | undefined,
     odosAssembledData: any,
     usdtFromOdos: any,
@@ -35,6 +36,7 @@ const useWithdrawUsda = (mutation: any) => {
         args: [
           address as `0x${string}`,
           BigInt(index),
+          amount,
           odosAssembledData,
           usdtFromOdos,
           expiredETHAmount,
