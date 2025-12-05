@@ -29,6 +29,7 @@ import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useMasterPriceOracle from "@/hookes/contract-hooks/useMasterPriceOracle";
 import { usePayableOptionFees } from "@/hookes/contract-hooks/usePayableOptionFees";
 import { useWithdrawUsda } from "@/hookes/contract-hooks/useWithdrawUsda";
+import { useFormik } from "formik";
 import {
   AssetName,
   BorrowAssetsEnum,
@@ -64,6 +65,7 @@ import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
 import useGetLtv from "@/hookes/contract-hooks/useGetLtv";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import Spinner from "@/design-systems/atoms/Spinner";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -197,6 +199,35 @@ export function WithdrawFund({
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
+  const formik = useFormik({
+    initialValues: {
+      withdrawAmount: "",
+    },
+    validate: (values) => {
+      const errors: { withdrawAmount?: string } = {};
+      if (!values.withdrawAmount) {
+        errors.withdrawAmount = "Amount is required";
+      } else if (
+        isNaN(Number(values.withdrawAmount)) ||
+        Number(values.withdrawAmount) <= 0
+      ) {
+        errors.withdrawAmount = "Please enter a valid positive number";
+      } else if (
+        position &&
+        Number(values.withdrawAmount) > Number(position?.amountYetToWithdraw)
+      ) {
+        errors.withdrawAmount = `Amount exceeds available balance (Max: ${position.amountYetToWithdraw})`;
+      } else if (Number(values.withdrawAmount) < 0) {
+        errors.withdrawAmount = "Negative numbers are not allowed";
+      }
+      return errors;
+    },
+    onSubmit: (values) => {
+      // Handle form submission if needed
+      handleRepay(values.withdrawAmount);
+    },
+  });
+
   const [amountView, setAmountView] = useState(false);
   const [openConfirmNotice, setOpenConfirmNotice] = useState(false);
   const [repayLoading, setRepayLoading] = useState<boolean>(false);
@@ -752,13 +783,32 @@ export function WithdrawFund({
     }
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
-  const handleRepay = async () => {
-    debugger;
-    const repayAmountFormated = Number(truncateDecimals(repayAmount || 0, 6));
-    if (balance < repayAmountFormated) {
-      toast.error("You don't have enough USDA+ to repay");
+  const handleRepay = async (withdrawAmount: string) => {
+    const repayAmountFormated = Number(
+      truncateDecimals(Number(withdrawAmount || 0) + 0.001, 6)
+    );
+    // check if repay amount is greater than or equal to repay amount
+    if (repayAmountFormated > repayAmount) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Value should be less than or equal to repay amount"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
       return;
     }
+
+    // check if balance is greater than or equal to repay amount
+    if (balance < repayAmountFormated) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="You don't have enough USDA+ to repay"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
     setRepayLoading(true);
     setOpenConfirmNotice(false);
     // cumulativeReset?.();
@@ -926,6 +976,7 @@ export function WithdrawFund({
     setIsApproveLoadingLocal(false);
     setWithdrawLoadingLocal(false);
     setIsDialogOpen(value);
+    formik.resetForm();
   };
 
   const { payableOptionFees } = usePayableOptionFees(
@@ -1074,6 +1125,7 @@ export function WithdrawFund({
             <div className="text-2xl font-semibold ">Borrow Details</div>
             <div className="text-grayLight">Balance: {balance} USDA+</div>
           </div>
+
           <div className="flex">
             <div
               onClick={() => setToggleView("repay")}
@@ -1375,10 +1427,41 @@ export function WithdrawFund({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className={` ${
-                          position.status == BorrowStatus.WITHDREW ? "mt-4" : ""
+                        className={`flex items-center justify-center  gap-2 w-full  ${
+                          position.status == BorrowStatus.WITHDREW
+                            ? "mt-4"
+                            : "h-full"
                         }`}
                       >
+                        {position.status !== BorrowStatus.WITHDREW && (
+                          <div className="w-[70%] relative">
+                            <div className="h-[50px]">
+                              <input
+                                id="withdrawAmount"
+                                name="withdrawAmount"
+                                type="number"
+                                min="0"
+                                step="any"
+                                className={`flex h-full w-full rounded-md border ${
+                                  formik.touched.withdrawAmount &&
+                                  formik.errors.withdrawAmount
+                                    ? "border-red-500"
+                                    : "border-grayLight"
+                                } bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-grayLight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm`}
+                                placeholder="Enter amount"
+                                value={formik.values.withdrawAmount}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                              />
+                            </div>
+                            {formik.touched.withdrawAmount &&
+                            formik.errors.withdrawAmount ? (
+                              <div className="absolute left-0 text-red-500 text-xs mt-1">
+                                {formik.errors.withdrawAmount}
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -1387,31 +1470,32 @@ export function WithdrawFund({
                             position.status == BorrowStatus.LIQUIDATED ||
                             !readyForNewTx
                           }
-                          onClick={handleRepay}
-                          className={`w-full  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px] h-auto ${
+                          onClick={() => formik.handleSubmit()}
+                          className={`  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px]  ${
                             position.status == BorrowStatus.WITHDREW
-                              ? "md:p-4"
-                              : "md:p-4"
+                              ? "md:p-4 h-auto w-full"
+                              : "md:p-4 h-[50px] w-[30%]"
                           }`}
                         >
-                          <div>
-                            {repayLoading
-                              ? "Loading..."
-                              : position.status == BorrowStatus.DEPOSITED
-                              ? `Repay amount ${repayAmount.toFixed(2)} USDA+`
-                              : position.status == BorrowStatus.LIQUIDATED
-                              ? `Liquidated ${parseFloat(
-                                  Number(position.depositedAmount).toFixed(6)
-                                )} ${position.collateralType}`
-                              : `Withdrawn ${parseFloat(
-                                  (
-                                    Number(position.depositedAmount) /
-                                    (position.collateralType === "cbBTC"
-                                      ? 1
-                                      : 2)
-                                  ).toFixed(6)
-                                )} ${position.collateralType}`}{" "}
-                          </div>
+                          {repayLoading? (
+                            <div className="flex flex-col items-center gap-2">
+                              <Spinner color="#fff" />
+                              
+                            </div>
+                          ) : position.status == BorrowStatus.DEPOSITED ? (
+                            `Repay`
+                          ) : position.status == BorrowStatus.LIQUIDATED ? (
+                            `Liquidated ${parseFloat(
+                              Number(position.depositedAmount).toFixed(6)
+                            )} ${position.collateralType}`
+                          ) : (
+                            `Withdrawn ${parseFloat(
+                              (
+                                Number(position.depositedAmount) /
+                                (position.collateralType === "cbBTC" ? 1 : 2)
+                              ).toFixed(6)
+                            )} ${position.collateralType}`
+                          )}
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="sm:text-sm text-[10px] text-wrap">
                               (Final{" "}
@@ -1423,14 +1507,14 @@ export function WithdrawFund({
                               {position.collateralType === "cbBTC"
                                 ? "cbBTC"
                                 : "ETH"}
-                              /USD value){" "}
+                              /USD value)
                             </div>
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
                               {`(Repay will active in ${
                                 5 - getMinutesPassed(position?.depositedTime)
-                              } min)`}{" "}
+                              } min)`}
                             </div>
                           )}
                           <span className="text-base">
