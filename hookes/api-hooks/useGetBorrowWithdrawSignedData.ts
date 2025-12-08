@@ -26,7 +26,8 @@ async function signedDataForBorrowWithDrawDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
   index: number,
-  token: string
+  token: string,
+  repayPercent: number | undefined = undefined
 ): Promise<SignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/borrows/signedDataForBorrowWithdraw`, {
     method: "POST",
@@ -38,6 +39,7 @@ async function signedDataForBorrowWithDrawDeposit(
       chainId: chainId,
       index: index,
       collateralType: token,
+      repayPercent
     }),
   }).then((response) => response.json());
 }
@@ -56,12 +58,13 @@ const useGetBorrowWithdrawSignedData = (index: number) => {
     isPending: isPendingBorrowWithDrawSignedData,
     mutateAsync: refetchBorrowWithDrawSignedData,
   } = useMutation({
-    mutationFn: (token: string) =>
+    mutationFn: (data: any) =>
       signedDataForBorrowWithDrawDeposit(
         address ? address : undefined,
         chainId as number,
         index || 0,
-        token
+        data.token,
+        data.repayPercent
       ),
   });
   return {

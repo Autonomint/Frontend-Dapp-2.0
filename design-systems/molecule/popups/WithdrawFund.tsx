@@ -895,8 +895,16 @@ export function WithdrawFund({
           const repayAmount = BigInt(
             Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
           );
+
+          const percentageValue =
+            Number(formik.values.withdrawAmount) /
+            Number(position.noOfUSDaMinted);
+
           const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
-          const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
+          const borrowSignedData = await refetchBorrowWithDrawSignedData({
+            token,
+            percentageValue,
+          });
 
           withdrawUsda(
             position.index,
