@@ -1474,54 +1474,58 @@ export function WithdrawFund({
                             : "h-full"
                         }`}
                       >
-                        {position.status !== BorrowStatus.WITHDREW && (
-                          <div className="w-[70%] relative">
-                            <div className="h-[50px] flex items-center justify-start">
-                              <input
-                                id="withdrawAmount"
-                                name="withdrawAmount"
-                                type="number"
-                                min="0"
-                                step="any"
-                                className={`flex h-full w-full rounded-md border ${
-                                  formik.touched.withdrawAmount &&
-                                  formik.errors.withdrawAmount
-                                    ? "border-red-500"
-                                    : "border-grayLight"
-                                } bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-grayLight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm`}
-                                placeholder="Enter amount"
-                                value={formik.values.withdrawAmount}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                              />
-                              <div className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center border-l-0 border border-grayLight h-full">
-                                {(
-                                  (Number(formik.values.withdrawAmount) /
-                                    Number(position.noOfUSDaMinted)) *
-                                  100
-                                ).toFixed(0)}
-                                %
+                        {position.status !== BorrowStatus.WITHDREW &&
+                          position.status !== BorrowStatus.LIQUIDATED && (
+                            <div className="w-[70%] relative">
+                              <div className="h-[50px] flex items-center justify-start">
+                                <input
+                                  id="withdrawAmount"
+                                  name="withdrawAmount"
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  className={`flex h-full w-full rounded-md border ${
+                                    formik.touched.withdrawAmount &&
+                                    formik.errors.withdrawAmount
+                                      ? "border-red-500"
+                                      : "border-grayLight"
+                                  } bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-grayLight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm`}
+                                  placeholder="Enter amount"
+                                  value={formik.values.withdrawAmount}
+                                  onChange={formik.handleChange}
+                                  onBlur={formik.handleBlur}
+                                />
+                                <div className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center border-l-0 border border-grayLight h-full">
+                                  {(
+                                    (Number(formik.values.withdrawAmount) /
+                                      Number(position.noOfUSDaMinted)) *
+                                    100
+                                  ).toFixed(0)}
+                                  %
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    formik.setFieldValue(
+                                      "withdrawAmount",
+                                      truncateDecimals(
+                                        position.noOfUSDaMinted,
+                                        6
+                                      )
+                                    );
+                                  }}
+                                  className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
+                                >
+                                  MAX
+                                </div>
                               </div>
-                              <div
-                                onClick={() => {
-                                  formik.setFieldValue(
-                                    "withdrawAmount",
-                                    truncateDecimals(position.noOfUSDaMinted, 6)
-                                  );
-                                }}
-                                className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
-                              >
-                                MAX
-                              </div>
+                              {formik.touched.withdrawAmount &&
+                              formik.errors.withdrawAmount ? (
+                                <div className="absolute left-0 text-red-500 text-xs mt-">
+                                  {formik.errors.withdrawAmount}
+                                </div>
+                              ) : null}
                             </div>
-                            {formik.touched.withdrawAmount &&
-                            formik.errors.withdrawAmount ? (
-                              <div className="absolute left-0 text-red-500 text-xs mt-">
-                                {formik.errors.withdrawAmount}
-                              </div>
-                            ) : null}
-                          </div>
-                        )}
+                          )}
                         <Button
                           disabled={
                             position.status == BorrowStatus.WITHDREW ||
@@ -1533,6 +1537,8 @@ export function WithdrawFund({
                           onClick={() => formik.handleSubmit()}
                           className={`  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px]  ${
                             position.status == BorrowStatus.WITHDREW
+                              ? "md:p-4 h-auto w-full"
+                              : position.status == BorrowStatus.LIQUIDATED
                               ? "md:p-4 h-auto w-full"
                               : "md:p-4 h-[50px] w-[30%]"
                           }`}
