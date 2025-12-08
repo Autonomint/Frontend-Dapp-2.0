@@ -787,7 +787,6 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async (withdrawAmount: string) => {
-    debugger;
     // check if repay amount is greater than or equal to repay amount
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) > repayAmount
@@ -903,7 +902,7 @@ export function WithdrawFund({
           const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
-            percentageValue,
+            repayPercent: percentageValue,
           });
 
           withdrawUsda(
@@ -945,6 +944,8 @@ export function WithdrawFund({
       }
     })();
   }, [usdaHashData, usdtHashData, usdaHashError, usdtHashError]);
+
+  const check = () => {};
 
   const {
     isLoading: isLoadingRenewReceipt,
