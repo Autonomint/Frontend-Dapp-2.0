@@ -1498,7 +1498,7 @@ export function WithdrawFund({
                                 <div className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center border-l-0 border border-grayLight h-full">
                                   {(
                                     (Number(formik.values.withdrawAmount) /
-                                      Number(position.noOfUSDaMinted)) *
+                                      Number(repayAmount)) *
                                     100
                                   ).toFixed(0)}
                                   %
@@ -1507,10 +1507,7 @@ export function WithdrawFund({
                                   onClick={() => {
                                     formik.setFieldValue(
                                       "withdrawAmount",
-                                      truncateDecimals(
-                                        position.noOfUSDaMinted,
-                                        6
-                                      )
+                                      truncateDecimals(repayAmount, 6)
                                     );
                                   }}
                                   className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
