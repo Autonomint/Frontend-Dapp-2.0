@@ -2,6 +2,14 @@ import { BACKEND_API_URL } from "@/utils/urls";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 
+// Convert value to number if it's a BigInt
+const toNumber = (value: unknown): number => {
+  if (typeof value === 'bigint') {
+    return Number(value);
+  }
+  return Number(value);
+};
+
 export interface SignedDataReturn {
   volatility: number;
   odosAssembledData: string;
@@ -39,7 +47,7 @@ async function signedDataForBorrowWithDrawDeposit(
       chainId: chainId,
       index: index,
       collateralType: token,
-      repayPercent
+      repayPercent: repayPercent !== undefined ? toNumber(repayPercent) : undefined
     }),
   }).then((response) => response.json());
 }

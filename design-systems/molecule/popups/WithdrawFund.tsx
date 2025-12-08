@@ -891,18 +891,16 @@ export function WithdrawFund({
           const repayAmountFormated = Number(
             truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
           );
-          const repayAmount = BigInt(
-            Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
-          );
+          const repayAmount = parseUnits(repayAmountFormated.toString(), 6);
 
-          const percentageValue =
-            Number(formik.values.withdrawAmount) /
-            Number(position.noOfUSDaMinted);
+          // const percentageValue =
+          //   Number(formik.values.withdrawAmount) /
+          //   Number(position.noOfUSDaMinted);
 
           const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
-            repayPercent: percentageValue,
+            repayPercent: repayAmount,
           });
 
           withdrawUsda(
