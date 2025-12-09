@@ -789,14 +789,14 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async (withdrawAmount: string) => {
-    debugger;
     // check if repay amount is greater than or equal to repay amount
     if (
-      Number(truncateDecimals(Number(withdrawAmount || 0), 6)) > repayAmount
+      Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
+      Number(position.noOfUSDaMinted)
     ) {
       toast.custom((t) => (
         <ToastNotificationError
-          title="Value should be less than or equal to repay amount"
+          title="Value should be less than or equal to repay amount, Use max button to withdraw full amount"
           onClose={() => toast.dismiss(t)}
         />
       ));
@@ -1498,7 +1498,7 @@ export function WithdrawFund({
                                 <div className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center border-l-0 border border-grayLight h-full">
                                   {(
                                     (Number(formik.values.withdrawAmount) /
-                                      Number(repayAmount)) *
+                                      Number(position.noOfUSDaMinted)) *
                                     100
                                   ).toFixed(0)}
                                   %
@@ -1507,7 +1507,10 @@ export function WithdrawFund({
                                   onClick={() => {
                                     formik.setFieldValue(
                                       "withdrawAmount",
-                                      truncateDecimals(repayAmount, 6)
+                                      truncateDecimals(
+                                        Number(position.noOfUSDaMinted),
+                                        6
+                                      )
                                     );
                                   }}
                                   className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
