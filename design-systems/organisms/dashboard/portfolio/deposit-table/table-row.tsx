@@ -1,3 +1,4 @@
+import { borrowAssetsAddress } from "@/blockchain/contracts";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision from "@/utils/helpers";
@@ -87,7 +88,11 @@ const DepositTableRow = ({
   ];
   const [depositData, setDepositData] = useState(depositDetails);
   const [amountProtected, setAmountProtected] = useState(0);
-  const { usdValue: ethPrice } = useGetUsdValue();
+  const { usdValue: ethPrice } = useGetUsdValue(
+    borrowAssetsAddress[
+      position.collateralType as keyof typeof borrowAssetsAddress
+    ]
+  );
   const [openChart, setOpenChart] = useState(false);
 
   // calculating protect amount
