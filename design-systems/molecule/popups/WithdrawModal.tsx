@@ -1093,10 +1093,6 @@ export function DcdsWithdrawModal({
                             (position.status === "WITHDREW_GAINS"
                               ? true
                               : false) ||
-                            !hasDaysPassed(
-                              Number(position?.depositedTime || 0),
-                              Number(position?.lockingPeriod || 0)
-                            ) ||
                             isWithdrawPause ||
                             !readyForNewTx ||
                             dcdsFundWithdrawLoadingLocal
