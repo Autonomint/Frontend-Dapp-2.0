@@ -1,7 +1,9 @@
 import { borrowAssetsAddress } from "@/blockchain/contracts";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { BorrowStatus } from "@/utils/constants";
-import displayNumberWithPrecision from "@/utils/helpers";
+import displayNumberWithPrecision, {
+  calculateRemainingDays,
+} from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import { useEffect, useState } from "react";
 
@@ -145,7 +147,11 @@ const DepositTableRow = ({
         ${Number(position.noOfUSDaMinted).toFixed(2)}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
-        {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
+        {calculateRemainingDays(Number(position.validTill)) <= 0
+          ? "-"
+          : position.status == "DEPOSITED"
+          ? `$${amountProtected}`
+          : "-"}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {" "}
