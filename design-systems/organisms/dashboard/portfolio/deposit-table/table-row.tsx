@@ -144,7 +144,11 @@ const DepositTableRow = ({
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         <div className="flex flex-col">
-          {position.status == "DEPOSITED" ? `$${amountProtected}` : "-"}
+          {calculateRemainingDays(Number(position.validTill)) <= 0
+            ? "-"
+            : position.status == "DEPOSITED"
+            ? `$${amountProtected}`
+            : "-"}
           {Number(calculateRemainingDays(position.validTill) || 0) < 15 &&
             Number(calculateRemainingDays(position.validTill) || 0) > 0 &&
             position.status !== BorrowStatus.WITHDREW &&
