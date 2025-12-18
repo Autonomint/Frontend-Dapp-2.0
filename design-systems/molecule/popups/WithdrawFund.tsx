@@ -1055,6 +1055,7 @@ export function WithdrawFund({
     setWithdrawLoadingLocal(false);
     setIsDialogOpen(value);
     formik.resetForm();
+    renewFormik.resetForm();
   };
 
   const { payableOptionFees, payableOptionFeesError } = usePayableOptionFees(
@@ -1240,7 +1241,7 @@ export function WithdrawFund({
           value: "1",
           onClick: () => renewFormik.setFieldValue("hedgeDuration", "1"),
         },
-        ...(Number(updatedHedgeValidity) >= 7
+        ...(Number(updatedHedgeValidity) == 7
           ? [
               {
                 label: "1 Week",
@@ -1249,7 +1250,7 @@ export function WithdrawFund({
               },
             ]
           : []),
-        ...(Number(updatedHedgeValidity) >= 30
+        ...(Number(updatedHedgeValidity) == 30
           ? [
               {
                 label: "1 Month",
