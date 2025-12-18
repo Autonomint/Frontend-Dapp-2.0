@@ -481,7 +481,6 @@ function InputForm({ currency }: { currency: string }) {
       setTimeout(() => {
         setMintLoading(true);
       }, 1000);
-      debugger;
       // calling the mint usda function in the contract
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),

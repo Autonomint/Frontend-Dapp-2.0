@@ -51,7 +51,6 @@ const useDepositTokens = (mutation: any) => {
     hedgeDuration
 
   }: BorrowInputs) => {
-    debugger
     const contractAddress = assetName === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
       abi: borrowingContractAbi,
