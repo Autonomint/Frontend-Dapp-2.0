@@ -2036,7 +2036,7 @@ export function WithdrawFund({
                                 !isRenewActive ||
                                 !readyForNewTx
                               }
-                              onClick={() => formik.handleSubmit()}
+                              onClick={() => renewFormik.handleSubmit()}
                               className="w-full   p-8 bg-black text-white text-[32px]"
                             >
                               {position.status !== BorrowStatus.WITHDREW &&
