@@ -11,6 +11,7 @@ const useUsdtApprove = (mutation: any) => {
     isSuccess: isSuccessUsdtApprove,
     reset: resetUsdtApprove,
     isError: usdtApproveError,
+    error: usdtApproveErrorData,
   } = useWriteContract({ mutation });
 
   const handleUsdtApprove = (args: [`0x${string}`, bigint]) => {
