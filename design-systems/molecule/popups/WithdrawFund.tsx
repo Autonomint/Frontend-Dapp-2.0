@@ -246,7 +246,7 @@ export function WithdrawFund({
   // Form for renew functionality
   const renewFormik = useFormik({
     initialValues: {
-      hedgeDuration: updatedHedgeValidity?.toString() || "1",
+      hedgeDuration: null,
     },
     validate: (values) => {
       const errors: { hedgeDuration?: string } = {};
