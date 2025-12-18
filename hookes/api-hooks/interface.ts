@@ -10,6 +10,7 @@ export interface OptionFeesRequest {
   ethPrice: number;
   strikePercent: number;
   token: string;
+  hedgeDuration: number;
 }
 
 export interface ReferralResponse {

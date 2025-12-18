@@ -72,14 +72,21 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
+import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 
 /**
  * Yup validation schema for the input form
  */
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
-  collateralAmount: Yup.number()
-    .max(Yup.ref("balance"), `Amount must be less than or equal to balance`)
+  collateralAmount: Yup.number().max(
+    Yup.ref("balance"),
+    `Amount must be less than or equal to balance`
+  ),
+  hedgeDuration: Yup.number()
+    .required("Hedge duration is required")
+    .positive("Hedge duration must be greater than 0")
+    .typeError("Hedge duration must be a number")
     .required("Collateral amount is required"),
   strikePricePercent: Yup.number().required("Strike price is required"),
   balance: Yup.number(),
@@ -201,12 +208,12 @@ function InputForm({ currency }: { currency: string }) {
       ));
       return;
     }
-    // checking mint ratio
-    const checkMintRatioResult = checkMintRatio();
-    // if mint ratio is not valid then return
-    if (!checkMintRatioResult) {
-      return;
-    }
+    // // checking mint ratio
+    // const checkMintRatioResult = checkMintRatio();
+    // // if mint ratio is not valid then return
+    // if (!checkMintRatioResult) {
+    //   return;
+    // }
     // set the loading state to true
     setMintBtnLoading(true);
 
@@ -241,10 +248,13 @@ function InputForm({ currency }: { currency: string }) {
       collateralAmount: 0, // collateral amount
       strikePricePercent: 0, // strike price percent
       balance: 0, // balance
+      hedgeDuration: null, // hedge duration
     },
     validationSchema: formSchema,
     onSubmit: handleSubmit,
   });
+
+  console.log(formik.values, "formik");
 
   useEffect(() => {
     // set the balance of the selected asset to formik values
@@ -287,6 +297,7 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
+  console.log(depositError, "depositError");
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
     data: Depositdata,
@@ -391,7 +402,8 @@ function InputForm({ currency }: { currency: string }) {
     ),
     (ethPrice || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : "ETH"
+    currency === "cbBTC" ? "BTC" : "ETH",
+    Number(formik.values.hedgeDuration)
   );
 
   // Custom hook to fetch the current strike price percent limit
@@ -474,7 +486,6 @@ function InputForm({ currency }: { currency: string }) {
     const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
-    const token = currency === "cbBTC" ? "cbBTC" : "ETH";
     const borrowSignedData = await refetchBorrowSignedData(currency);
 
     const data = optionFees;
@@ -483,6 +494,7 @@ function InputForm({ currency }: { currency: string }) {
       setTimeout(() => {
         setMintLoading(true);
       }, 1000);
+      debugger;
       // calling the mint usda function in the contract
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
@@ -505,6 +517,7 @@ function InputForm({ currency }: { currency: string }) {
             ? parseEther(formik.values.collateralAmount.toString()) +
               nativeFee.nativeFee
             : nativeFee.nativeFee,
+        hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
       });
     }
   }
@@ -790,6 +803,21 @@ function InputForm({ currency }: { currency: string }) {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
 
+  const hedgeDurationOption = [
+    {
+      label: "1 Day",
+      onClick: () => formik.setFieldValue("hedgeDuration", "1"),
+    },
+    {
+      label: "1 Week",
+      onClick: () => formik.setFieldValue("hedgeDuration", "7"),
+    },
+    {
+      label: "1 Month",
+      onClick: () => formik.setFieldValue("hedgeDuration", "30"),
+    },
+  ];
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -957,6 +985,29 @@ function InputForm({ currency }: { currency: string }) {
                   <EqualApproximately className="stroke-black dark:stroke-white w-[18px] h-[18px]" />{" "}
                   {Math.round(totalPoint)}
                 </span>
+              </div>
+
+              <div>
+                <GenericDropdownMenu
+                  buttonText={
+                    formik.values.hedgeDuration
+                      ? `${formik.values.hedgeDuration} days`
+                      : "Hedge Duration"
+                  }
+                  items={hedgeDurationOption}
+                  className={`w-full mt-3 text-[20px] 2xl:text-[20px] border ${
+                    formik.touched.hedgeDuration && formik.errors.hedgeDuration
+                      ? "border-red-500"
+                      : "border-grayLight"
+                  } h-[44px]`}
+                  iconWrapBg="bg-white dark:bg-black"
+                />
+                {formik.touched.hedgeDuration &&
+                  formik.errors.hedgeDuration && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.hedgeDuration}
+                    </div>
+                  )}
               </div>
             </div>
           </div>

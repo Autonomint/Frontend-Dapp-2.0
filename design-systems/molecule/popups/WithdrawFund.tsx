@@ -55,8 +55,7 @@ import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { InfoIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseUnits, zeroAddress } from "viem";
 import {
@@ -70,6 +69,9 @@ import ToastNotificationError from "../toasts/ToastNotificationError";
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
 import useGetTVL from "@/hookes/contract-hooks/useGetTVL";
 import useGetLtv from "@/hookes/contract-hooks/useGetLtv";
+import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
+import useGetBorrowRenewSignedData from "@/hookes/api-hooks/useGetBorrowRenewSignedData";
+import { InfoIcon } from "lucide-react";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -94,6 +96,8 @@ export function WithdrawFund({
   const [spinner, setSpinner] = useState(false);
 
   const { address, chainId } = useAccount();
+
+  const [updatedHedgeValidity, setUpdatedHedgeValidity] = useState<number>(30);
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
     queryKey: ["getPointEarned", address, chainId, position.index],
@@ -200,12 +204,21 @@ export function WithdrawFund({
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
+
+  useEffect(() => {
+    setUpdatedHedgeValidity(position.hedgeValidity || 30);
+  }, [position]);
+
+  // Main form for withdraw amount
+  // Form for withdraw amount
   const formik = useFormik({
     initialValues: {
       withdrawAmount: "",
     },
     validate: (values) => {
       const errors: { withdrawAmount?: string } = {};
+
+      // Validate withdrawAmount
       if (!values.withdrawAmount) {
         errors.withdrawAmount = "Amount is required";
       } else if (
@@ -221,11 +234,35 @@ export function WithdrawFund({
       } else if (Number(values.withdrawAmount) < 0) {
         errors.withdrawAmount = "Negative numbers are not allowed";
       }
+
       return errors;
     },
     onSubmit: (values) => {
       // Handle form submission if needed
       handleRepay(values.withdrawAmount);
+    },
+  });
+
+  // Form for renew functionality
+  const renewFormik = useFormik({
+    initialValues: {
+      hedgeDuration: updatedHedgeValidity?.toString() || "1",
+    },
+    validate: (values) => {
+      const errors: { hedgeDuration?: string } = {};
+      if (!values.hedgeDuration) {
+        errors.hedgeDuration = "Hedge duration is required";
+      } else if (
+        isNaN(Number(values.hedgeDuration)) ||
+        Number(values.hedgeDuration) <= 0
+      ) {
+        errors.hedgeDuration = "Hedge duration must be a positive number";
+      }
+      return errors;
+    },
+    onSubmit: () => {
+      // Handle form submission if needed
+      handleRenew();
     },
   });
 
@@ -921,8 +958,15 @@ export function WithdrawFund({
             setRenewLoadingSM(true);
           }, 800);
 
+          // fetching signed data
+          const signedData = await fetchBorrowRenewSignedData(
+            position.collateralType
+          );
           renewBorrow(
             BigInt(position.index),
+            BigInt(renewFormik.values.hedgeDuration || 0),
+            BigInt(signedData.volatility),
+            signedData,
             position.collateralType === "cbBTC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
@@ -1007,7 +1051,8 @@ export function WithdrawFund({
 
   const { payableOptionFees } = usePayableOptionFees(
     position.index,
-    position.collateralType
+    position.collateralType,
+    Number(renewFormik.values.hedgeDuration)
   ) as {
     payableOptionFees: bigint | undefined;
   };
@@ -1078,14 +1123,33 @@ export function WithdrawFund({
     }
   };
 
-  const callRenewInContract = () => {
+  const { fetchBorrowRenewSignedData } = useGetBorrowRenewSignedData(
+    position.index
+  );
+
+  const callRenewInContract = async () => {
     setRenewApproveLoading(false);
     setTimeout(() => {
       setRenewLoadingSM(true);
     }, 800);
 
+    // Validate the renew form before proceeding
+    await renewFormik.validateForm();
+    if (renewFormik.errors.hedgeDuration) {
+      renewFormik.setTouched({ hedgeDuration: true });
+      return;
+    }
+
+    // fetching signed data
+    const signedData = await fetchBorrowRenewSignedData(
+      position.collateralType
+    );
+
     renewBorrow(
       BigInt(position.index),
+      BigInt(renewFormik.values.hedgeDuration || "1"),
+      BigInt(signedData.volatility),
+      signedData,
       position.collateralType === "cbBTC"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
@@ -1155,6 +1219,36 @@ export function WithdrawFund({
     Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0) /
       (24 * 60 * 60),
     "assetDetails"
+  );
+
+  const hedgeDurationOption = useMemo(
+    () =>
+      [
+        {
+          label: "1 Day",
+          value: "1",
+          onClick: () => renewFormik.setFieldValue("hedgeDuration", "1"),
+        },
+        ...(Number(updatedHedgeValidity) >= 7
+          ? [
+              {
+                label: "1 Week",
+                value: "7",
+                onClick: () => renewFormik.setFieldValue("hedgeDuration", "7"),
+              },
+            ]
+          : []),
+        ...(Number(updatedHedgeValidity) >= 30
+          ? [
+              {
+                label: "1 Month",
+                value: "30",
+                onClick: () => renewFormik.setFieldValue("hedgeDuration", "30"),
+              },
+            ]
+          : []),
+      ].filter(Boolean),
+    [updatedHedgeValidity, renewFormik]
   );
   console.log(renewReceiptError, renewErrorSm, "renewReceiptError");
   return (
@@ -1257,7 +1351,7 @@ export function WithdrawFund({
                         {
                           label: "",
                           value:
-                            (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                            (updatedHedgeValidity || 0) -
                             Number(
                               calculateRemainingDays(position.validTill) || 0
                             ),
@@ -1341,7 +1435,7 @@ export function WithdrawFund({
                   {
                     label: "maturity",
                     value:
-                      (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                      (updatedHedgeValidity || 0) -
                       calculateRemainingDays(Number(position.validTill)),
                     color: "gray",
                   },
@@ -1639,7 +1733,7 @@ export function WithdrawFund({
                               ? calculateRemainingDays(
                                   Number(position.validTill)
                                 )
-                              : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                              : (updatedHedgeValidity || 0) -
                                   (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                           ),
                           days: Number(
@@ -1657,9 +1751,7 @@ export function WithdrawFund({
                             Number(
                               currentOptionFeeTimeLimit?.minTimeLimit || 0
                             ) -
-                              (Number(
-                                currentOptionFeeTimeLimit?.maxTimeLimit || 0
-                              ) -
+                              (Number(updatedHedgeValidity || 0) -
                                 (calculateRemainingDays(position.validTill) +
                                   1 || 0))
                           ),
@@ -1674,9 +1766,7 @@ export function WithdrawFund({
                         {
                           label: "",
                           value:
-                            Number(
-                              currentOptionFeeTimeLimit?.maxTimeLimit || 0
-                            ) -
+                            Number(updatedHedgeValidity || 0) -
                             Number(
                               calculateRemainingDays(position.validTill) || 0
                             ),
@@ -1755,7 +1845,7 @@ export function WithdrawFund({
                     value: Number(
                       isRenewActive
                         ? calculateRemainingDays(Number(position.validTill))
-                        : (currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                        : (Number(updatedHedgeValidity) || 0) -
                             (currentOptionFeeTimeLimit?.minTimeLimit || 0)
                     ),
 
@@ -1765,7 +1855,7 @@ export function WithdrawFund({
                     label: "repay",
                     value: Number(
                       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                        (Number(updatedHedgeValidity || 0) -
                           (calculateRemainingDays(position.validTill) + 1 || 0))
                     ),
                     color: isRenewActive ? "#2563eb" : "#05a552",
@@ -1773,8 +1863,8 @@ export function WithdrawFund({
                   {
                     label: "maturity",
                     value:
-                      Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
-                      calculateRemainingDays(Number(position.validTill)), // 28 ,
+                      Number(updatedHedgeValidity || 0) -
+                      calculateRemainingDays(Number(position.validTill)),
                     color: "gray",
                   },
                 ].map((metric, index, arr) => {
@@ -1801,14 +1891,14 @@ export function WithdrawFund({
                 </div>
                 {Number(
                   Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                    (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                    (Number(updatedHedgeValidity || 0) -
                       (calculateRemainingDays(position.validTill) + 1 || 0))
                 ) > 0 && (
                   <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                     <span className="block w-3 h-3 bg-blue-600"></span>
                     {Number(
                       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                        (Number(currentOptionFeeTimeLimit?.maxTimeLimit || 0) -
+                        (Number(updatedHedgeValidity || 0) -
                           (calculateRemainingDays(position.validTill) + 1 || 0))
                     )}{" "}
                     Days remaining to activate renew
@@ -1863,9 +1953,7 @@ export function WithdrawFund({
                   {[
                     {
                       label: "Time Period",
-                      value: `${
-                        currentOptionFeeTimeLimit?.maxTimeLimit || 0
-                      } Days`,
+                      value: `${updatedHedgeValidity || 0} Days`,
                     },
                     {
                       label: "Option Fees",
@@ -1904,52 +1992,82 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              <div className=" h-[50px] md:h-[70px] mt-4 md:mt-6 overflow-hidden ">
-                {!renewLoading && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="h-full">
-                        <Button
-                          disabled={
-                            position.status == BorrowStatus.WITHDREW ||
-                            position.status == BorrowStatus.LIQUIDATED ||
-                            isFunctionPausedBorrow_Renew ||
-                            calculateRemainingDays(
-                              Number(position.validTill)
-                            ) <= 0 ||
-                            !isRenewActive ||
-                            !readyForNewTx
-                          }
-                          onClick={handleRenew}
-                          className="w-full   p-8 bg-black text-white text-[32px]"
-                        >
-                          {position.status !== BorrowStatus.WITHDREW &&
-                          position.status !== BorrowStatus.LIQUIDATED &&
-                          !readyForNewTx ? (
-                            <div className="flex flex-col items-center gap-2">
-                              <Spinner color="#fff" />
-                              {readyForNewTx && (
-                                <p className="text-[14px]">
-                                  Updating data on other chain
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            "Renew"
-                          )}{" "}
-                          <span className="text-base mt-1">
-                            {isFunctionPausedBorrow_Renew && "(Paused)"}
-                          </span>
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    {isFunctionPausedBorrow_Renew && (
-                      <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                        <p>{"Renew is paused now"}</p>
-                      </TooltipContent>
+              <div className="mt-4 md:mt-6">
+                <div className="flex gap-2">
+                  <div className="w-[50%]">
+                    <GenericDropdownMenu
+                      buttonText={
+                        renewFormik.values.hedgeDuration
+                          ? `${renewFormik.values.hedgeDuration} days`
+                          : "Hedge Duration"
+                      }
+                      items={hedgeDurationOption}
+                      className={`w-full h-[44px] md:h-[64px] text-[20px] 2xl:text-[20px] border ${
+                        renewFormik.touched.hedgeDuration &&
+                        renewFormik.errors.hedgeDuration
+                          ? "border-red-500"
+                          : "border-grayLight"
+                      }`}
+                      iconWrapBg="bg-white dark:bg-black"
+                      onBlur={() =>
+                        renewFormik.setFieldTouched("hedgeDuration", true)
+                      }
+                    />
+                    {renewFormik.touched.hedgeDuration &&
+                      renewFormik.errors.hedgeDuration && (
+                        <div className="text-red-500 text-sm mt-1">
+                          {renewFormik.errors.hedgeDuration}
+                        </div>
+                      )}
+                  </div>
+                  <div className="w-[50%]">
+                    {!renewLoading && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="h-full">
+                            <Button
+                              disabled={
+                                position.status == BorrowStatus.WITHDREW ||
+                                position.status == BorrowStatus.LIQUIDATED ||
+                                isFunctionPausedBorrow_Renew ||
+                                calculateRemainingDays(
+                                  Number(position.validTill)
+                                ) <= 0 ||
+                                !isRenewActive ||
+                                !readyForNewTx
+                              }
+                              onClick={() => formik.handleSubmit()}
+                              className="w-full   p-8 bg-black text-white text-[32px]"
+                            >
+                              {position.status !== BorrowStatus.WITHDREW &&
+                              position.status !== BorrowStatus.LIQUIDATED &&
+                              !readyForNewTx ? (
+                                <div className="flex flex-col items-center gap-2">
+                                  <Spinner color="#fff" />
+                                  {readyForNewTx && (
+                                    <p className="text-[14px]">
+                                      Updating data on other chain
+                                    </p>
+                                  )}
+                                </div>
+                              ) : (
+                                "Renew"
+                              )}{" "}
+                              <span className="text-base mt-1">
+                                {isFunctionPausedBorrow_Renew && "(Paused)"}
+                              </span>
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        {isFunctionPausedBorrow_Renew && (
+                          <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
+                            <p>{"Renew is paused now"}</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
                     )}
-                  </Tooltip>
-                )}
+                  </div>
+                </div>
 
                 <LoadingBox
                   isLoading={renewApproveLoading}

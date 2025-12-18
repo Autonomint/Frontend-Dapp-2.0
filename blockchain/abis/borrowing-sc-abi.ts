@@ -119,6 +119,17 @@ export const borrowingContractAbi = [
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "validity",
+          "type": "uint128"
+        }
+      ],
+      "name": "Borrow_Invalid_Validity",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "Borrow_LTVIsZero",
       "type": "error"
@@ -527,6 +538,12 @@ export const borrowingContractAbi = [
           "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
         }
       ],
       "name": "Renewed",
@@ -772,6 +789,11 @@ export const borrowingContractAbi = [
               "internalType": "uint256",
               "name": "expiredETHAmount",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint128",
+              "name": "hedgeValidity",
+              "type": "uint128"
             }
           ],
           "internalType": "struct IBorrowing.BorrowDepositParams",
@@ -1062,6 +1084,16 @@ export const borrowingContractAbi = [
           "internalType": "uint64",
           "name": "index",
           "type": "uint64"
+        },
+        {
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "volatility",
+          "type": "uint256"
         }
       ],
       "name": "getOptionFeesToPay",
@@ -1282,6 +1314,38 @@ export const borrowingContractAbi = [
           "internalType": "uint64",
           "name": "index",
           "type": "uint64"
+        },
+        {
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "volatility",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IBorrowing.EIP712VerifyParams",
+          "name": "verifyParams",
+          "type": "tuple"
         }
       ],
       "name": "renewOptions",

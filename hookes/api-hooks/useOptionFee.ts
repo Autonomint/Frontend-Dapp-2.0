@@ -22,13 +22,14 @@ const fetchOptionFees = async ({
   ethPrice,
   strikePercent,
   token,
+  hedgeDuration
 }: OptionFeesRequest): Promise<OptionFeesResponse> => {
   // Construct the URL using the backend base URL and query parameters
   const response = await fetch(
     `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${token}/${parseUnits(
       collateralAmount.toString(),
       18 // Convert collateral amount to 18 decimal units (wei)
-    )}/${ethPrice}/${strikePercent}`
+    )}/${ethPrice}/${strikePercent}/${hedgeDuration}`
   );
 
   // Throw an error if the response is not OK
@@ -53,7 +54,8 @@ const useFetchOptionFees = (
   collateralAmount: number,
   ethPrice: number,
   strikePercent: number,
-  token: string
+  token: string,
+  hedgeDuration: number
 ) => {
   const { chainId, isConnected } = useAccount(); // Get user's connected chain and status
 
@@ -70,6 +72,7 @@ const useFetchOptionFees = (
       collateralAmount,
       ethPrice,
       strikePercent,
+      hedgeDuration
     ], // Unique key for caching/refetching
     queryFn: () =>
       fetchOptionFees({
@@ -78,6 +81,7 @@ const useFetchOptionFees = (
         ethPrice,
         strikePercent,
         token,
+        hedgeDuration
       }), // Function to fetch option fees
     enabled:
       !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0, // Enable query only if connected and inputs are valid
