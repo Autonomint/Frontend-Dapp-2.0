@@ -84,7 +84,7 @@ const useFetchOptionFees = (
         hedgeDuration
       }), // Function to fetch option fees
     enabled:
-      !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0, // Enable query only if connected and inputs are valid
+      !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0 && hedgeDuration > 0, // Enable query only if connected and inputs are valid
     refetchOnWindowFocus: true, // Refetch when the window regains focus
     retry: 0, // Retry once on failure
   });

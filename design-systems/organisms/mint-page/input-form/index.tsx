@@ -394,8 +394,10 @@ function InputForm({ currency }: { currency: string }) {
     Number(
       formatUnits(
         BigInt(
-          Number(formik.values.collateralAmount || 0) *
-            Number(exchangeRate || 0)
+          Math.floor(
+            Number(formik.values.collateralAmount || 0) *
+              Number(exchangeRate || 0)
+          )
         ),
         18
       )
@@ -730,7 +732,7 @@ function InputForm({ currency }: { currency: string }) {
 
   // Getting ratio value for mint amount
   const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
-    BigInt(ethAmountForRatio)
+    BigInt(Math.floor(ethAmountForRatio))
   );
 
   // get borrowed position list
