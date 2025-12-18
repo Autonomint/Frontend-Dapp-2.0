@@ -24,7 +24,6 @@ import { formatUnits, parseEther, parseUnits } from "viem";
 
 import * as Yup from "yup";
 
-import { optionABI } from "@/blockchain/abis/option";
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import {
   borrowAssetsAddress,
@@ -33,7 +32,6 @@ import {
   optionContractAddress,
 } from "@/blockchain/contracts";
 import { HoverCard } from "@/design-systems/atoms/hover-card";
-import Spinner from "@/design-systems/atoms/Spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -47,12 +45,8 @@ import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
 import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
-import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
-import {
-  BorrowAssetsEnum,
-  NetworkId,
-  tokenFormatDecimal,
-} from "@/utils/constants";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import { BorrowAssetsEnum, NetworkId, tokenFormatDecimal } from "@/utils/constants";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -65,16 +59,26 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import InputMetics from "../Input-metrics";
-
+import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
+import Spinner from "@/design-systems/atoms/Spinner";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
+import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
+import { optionABI } from "@/blockchain/abis/option";
+import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 
 /**
  * Yup validation schema for the input form
  */
 const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
-  collateralAmount: Yup.number()
-    .max(Yup.ref("balance"), `Amount must be less than or equal to balance`)
+  collateralAmount: Yup.number().max(
+    Yup.ref("balance"),
+    `Amount must be less than or equal to balance`
+  ),
+  hedgeDuration: Yup.number()
+    .required("Hedge duration is required")
+    .positive("Hedge duration must be greater than 0")
+    .typeError("Hedge duration must be a number")
     .required("Collateral amount is required"),
   strikePricePercent: Yup.number().required("Strike price is required"),
   balance: Yup.number(),
@@ -230,10 +234,13 @@ function InputForm({ currency }: { currency: string }) {
       collateralAmount: 0, // collateral amount
       strikePricePercent: 0, // strike price percent
       balance: 0, // balance
+      hedgeDuration: null, // hedge duration
     },
     validationSchema: formSchema,
     onSubmit: handleSubmit,
   });
+
+  console.log(formik.values, "formik");
 
   useEffect(() => {
     // set the balance of the selected asset to formik values
@@ -276,6 +283,7 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
+  console.log(depositError, "depositError");
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
     data: Depositdata,
@@ -380,7 +388,8 @@ function InputForm({ currency }: { currency: string }) {
     ),
     (ethPrice || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : "ETH"
+    currency === "cbBTC" ? "BTC" : "ETH",
+    Number(formik.values.hedgeDuration)
   );
 
   // Custom hook to fetch the current strike price percent limit
@@ -464,7 +473,6 @@ function InputForm({ currency }: { currency: string }) {
     const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
-    const token = currency === "cbBTC" ? "cbBTC" : "ETH";
     const borrowSignedData = await refetchBorrowSignedData(currency);
 
     const data = optionFees;
@@ -473,6 +481,7 @@ function InputForm({ currency }: { currency: string }) {
       setTimeout(() => {
         setMintLoading(true);
       }, 1000);
+      debugger;
       // calling the mint usda function in the contract
       mintUSDa?.({
         strikePercent: BigInt(strikePercent),
@@ -496,6 +505,7 @@ function InputForm({ currency }: { currency: string }) {
             ? parseEther(formik.values.collateralAmount.toString()) +
               nativeFee.nativeFee
             : nativeFee.nativeFee,
+        hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
       });
     }
   }
@@ -703,8 +713,20 @@ function InputForm({ currency }: { currency: string }) {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
   }, [selectedAssetPrice]);
 
-  // fetching layer zero transaction data to add loading state to user to initiate transaction
-  const { readyForNewTx } = useLayerZeroMessages();
+  const hedgeDurationOption = [
+    {
+      label: "1 Day",
+      onClick: () => formik.setFieldValue("hedgeDuration", "1"),
+    },
+    {
+      label: "1 Week",
+      onClick: () => formik.setFieldValue("hedgeDuration", "7"),
+    },
+    {
+      label: "1 Month",
+      onClick: () => formik.setFieldValue("hedgeDuration", "30"),
+    },
+  ];
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -874,6 +896,29 @@ function InputForm({ currency }: { currency: string }) {
                   {Math.round(totalPoint)}
                 </span>
               </div>
+
+              <div>
+                <GenericDropdownMenu
+                  buttonText={
+                    formik.values.hedgeDuration
+                      ? `${formik.values.hedgeDuration} days`
+                      : "Hedge Duration"
+                  }
+                  items={hedgeDurationOption}
+                  className={`w-full mt-3 text-[20px] 2xl:text-[20px] border ${
+                    formik.touched.hedgeDuration && formik.errors.hedgeDuration
+                      ? "border-red-500"
+                      : "border-grayLight"
+                  } h-[44px]`}
+                  iconWrapBg="bg-white dark:bg-black"
+                />
+                {formik.touched.hedgeDuration &&
+                  formik.errors.hedgeDuration && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.hedgeDuration}
+                    </div>
+                  )}
+              </div>
             </div>
           </div>
         </div>
@@ -896,7 +941,7 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
+                    disabled={isFunctionPausedBorrow_Deposit}
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6

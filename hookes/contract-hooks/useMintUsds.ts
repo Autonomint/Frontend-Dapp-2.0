@@ -15,6 +15,8 @@ interface BorrowInputs {
   deadline: bigint;
   signature: `0x${string}`;
   nonce: bigint;
+  hedgeDuration: bigint
+
 }
 
 const useDepositTokens = (mutation: any) => {
@@ -26,11 +28,14 @@ const useDepositTokens = (mutation: any) => {
     writeContract, // Function to initiate a write operation
     reset, // Function to reset the state of the hook
     isError: depositError, // Error state
+    error: depositErrorData
   } = useWriteContract({
     mutation: {
       ...mutation,
     },
   });
+
+  console.log(depositErrorData, 'depositErrorData')
 
   const mintUSDa = async ({
     strikePercent,
@@ -43,7 +48,10 @@ const useDepositTokens = (mutation: any) => {
     expiredETHAmount,
     plFromExpired,
     nonce,
+    hedgeDuration
+
   }: BorrowInputs) => {
+    debugger
     const contractAddress = assetName === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
       abi: borrowingContractAbi,
@@ -58,6 +66,7 @@ const useDepositTokens = (mutation: any) => {
           depositingAmount,
           expiredETHAmount,
           plFromExpired,
+          hedgeValidity: hedgeDuration
         },
         {
           nonce,

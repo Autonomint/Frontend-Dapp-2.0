@@ -35,7 +35,9 @@ export interface dcdsDepositDetails {
     boldToken: string;
     usdc: string;
     wmUSD: string;
+    wBLT: string;
   };
+  wBLTPriceAtDeposit: number;
   nativeTokenPriceAtDeposit: number;
   usdtPriceAtDeposit: number;
   boldPriceAtDeposit: number;
@@ -99,6 +101,7 @@ export interface PositionData {
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
   totalDebtAmount: string;
   liquidationEthPrice: number;
+  hedgeValidity: number;
 }
 
 export interface LeaderboardDetails {

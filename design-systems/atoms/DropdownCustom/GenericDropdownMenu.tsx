@@ -28,6 +28,7 @@ type DropdownMenuProps = {
   iconWrapBg?: string;
   isLoading?: boolean;
   contentWrapClass?: string;
+  onBlur?: () => void;
 };
 
 export function GenericDropdownMenu({
@@ -38,6 +39,7 @@ export function GenericDropdownMenu({
   iconWrapBg,
   isLoading = false,
   contentWrapClass,
+  onBlur,
 }: DropdownMenuProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [dropdownWidth, setDropdownWidth] = useState<string | undefined>();
@@ -54,6 +56,7 @@ export function GenericDropdownMenu({
         <Button
           ref={buttonRef}
           variant="outline"
+          onBlur={onBlur}
           className={`flex items-center justify-between relative h-[50px] ${className}`}
         >
           <span className="flex-1 flex gap-2 items-center justify-start  text-left overflow-hidden">
