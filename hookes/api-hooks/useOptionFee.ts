@@ -55,7 +55,7 @@ const useFetchOptionFees = (
   ethPrice: number,
   strikePercent: number,
   token: string,
-  hedgeDuration: number
+  hedgeDuration: number = 30
 ) => {
   const { chainId, isConnected } = useAccount(); // Get user's connected chain and status
 
