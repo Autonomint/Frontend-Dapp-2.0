@@ -916,6 +916,8 @@ export function WithdrawFund({
     },
   });
 
+  console.log(renewErrorSm, "renewErrorSm");
+
   useEffect(() => {
     (async () => {
       if (
@@ -1153,7 +1155,6 @@ export function WithdrawFund({
     const signedData = await fetchBorrowRenewSignedData(
       position.collateralType
     );
-
     renewBorrow(
       BigInt(position.index),
       BigInt(renewFormik.values.hedgeDuration || "1"),
@@ -2001,34 +2002,36 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              <div className="mt-4 md:mt-6">
+              <div className="mt-4 md:mt-6  h-[44px] md:h-[64px]">
                 <div className="flex gap-2">
-                  <div className="w-[50%]">
-                    <GenericDropdownMenu
-                      buttonText={
-                        renewFormik.values.hedgeDuration
-                          ? `${renewFormik.values.hedgeDuration} days`
-                          : "Hedge Duration"
-                      }
-                      items={hedgeDurationOption}
-                      className={`w-full h-[44px] md:h-[64px] text-[20px] 2xl:text-[20px] border ${
-                        renewFormik.touched.hedgeDuration &&
-                        renewFormik.errors.hedgeDuration
-                          ? "border-red-500"
-                          : "border-grayLight"
-                      }`}
-                      iconWrapBg="bg-white dark:bg-black"
-                      onBlur={() =>
-                        renewFormik.setFieldTouched("hedgeDuration", true)
-                      }
-                    />
-                    {renewFormik.touched.hedgeDuration &&
-                      renewFormik.errors.hedgeDuration && (
-                        <div className="text-red-500 text-sm mt-1">
-                          {renewFormik.errors.hedgeDuration}
-                        </div>
-                      )}
-                  </div>
+                  {!renewLoading && (
+                    <div className="w-[50%]">
+                      <GenericDropdownMenu
+                        buttonText={
+                          renewFormik.values.hedgeDuration
+                            ? `${renewFormik.values.hedgeDuration} days`
+                            : "Hedge Duration"
+                        }
+                        items={hedgeDurationOption}
+                        className={`w-full h-[44px] md:h-[64px] text-[20px] 2xl:text-[20px] border ${
+                          renewFormik.touched.hedgeDuration &&
+                          renewFormik.errors.hedgeDuration
+                            ? "border-red-500"
+                            : "border-grayLight"
+                        }`}
+                        iconWrapBg="bg-white dark:bg-black"
+                        onBlur={() =>
+                          renewFormik.setFieldTouched("hedgeDuration", true)
+                        }
+                      />
+                      {renewFormik.touched.hedgeDuration &&
+                        renewFormik.errors.hedgeDuration && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {renewFormik.errors.hedgeDuration}
+                          </div>
+                        )}
+                    </div>
+                  )}
                   <div className="w-[50%]">
                     {!renewLoading && (
                       <Tooltip>
