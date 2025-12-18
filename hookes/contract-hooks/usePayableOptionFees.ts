@@ -11,7 +11,9 @@ const usePayableOptionFees = (index: any, token: string, hedgeDuration: number,)
     index
   );
   useEffect(() => {
-    fetchBorrowRenewSignedData(token)
+    if (index && index > 0) {
+      fetchBorrowRenewSignedData(token)
+    }
   }, [token, fetchBorrowRenewSignedData])
 
   // Get the native fee for the transaction

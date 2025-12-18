@@ -1939,7 +1939,7 @@ export function WithdrawFund({
                     },
                     {
                       heading: "Option Fees paid",
-                      value: `$${Number(position?.optionFees).toFixed(2)}`,
+                      value: `$${Number(position?.totalOptionFees).toFixed(2)}`,
                     },
                   ].map((item) => (
                     <div

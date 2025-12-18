@@ -71,6 +71,7 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
+  totalOptionFees: number;
   ethPriceAtWithdraw: number;
   depositedAmountInETH?: string;
   exchangeRateAtDeposit?: string | number;

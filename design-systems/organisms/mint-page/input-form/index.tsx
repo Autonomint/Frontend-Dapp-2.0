@@ -380,8 +380,10 @@ function InputForm({ currency }: { currency: string }) {
     Number(
       formatUnits(
         BigInt(
-          Number(formik.values.collateralAmount || 0) *
-            Number(exchangeRate || 0)
+          Math.floor(
+            Number(formik.values.collateralAmount || 0) *
+              Number(exchangeRate || 0)
+          )
         ),
         18
       )
