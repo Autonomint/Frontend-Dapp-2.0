@@ -1055,13 +1055,22 @@ export function WithdrawFund({
     formik.resetForm();
   };
 
-  const { payableOptionFees } = usePayableOptionFees(
+  const { payableOptionFees, payableOptionFeesError } = usePayableOptionFees(
     position.index,
     position.collateralType,
     Number(renewFormik.values.hedgeDuration)
   ) as {
     payableOptionFees: bigint | undefined;
+    payableOptionFeesError: any;
   };
+
+  console.log(
+    formatUnits(BigInt(payableOptionFees || 0), 6),
+    payableOptionFees,
+    Number(renewFormik.values.hedgeDuration),
+    payableOptionFeesError,
+    "chekc"
+  );
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
@@ -1362,7 +1371,7 @@ export function WithdrawFund({
                           borderLeftPx: "0px",
                         },
                       ].map((metric, index, arr) => {
-                        const total = 30;
+                        const total = Number(updatedHedgeValidity || 0);
                         const percentage = (metric.value / total) * 100 || 0;
 
                         return (
@@ -1776,7 +1785,7 @@ export function WithdrawFund({
                           borderLeftPx: "0px",
                         },
                       ].map((metric, index, arr) => {
-                        const total = 30;
+                        const total = Number(updatedHedgeValidity || 0);
                         const percentage = (metric.value / total) * 100 || 0;
 
                         return (
