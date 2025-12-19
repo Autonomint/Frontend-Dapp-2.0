@@ -380,10 +380,10 @@ export function DcdsWithdrawModal({
     {
       // Token deposited
       headline: `wBLT Tokens deposited`,
-      value: Number(position?.depositedAmounts?.wBLT || 0)
-        ? `${Number(position?.depositedAmounts?.wBLT || 0).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.wBLT || 0) *
-            Number(position?.wBLTPriceAtDeposit)
+      value: Number(position?.depositedAmounts?.wblt || 0)
+        ? `${Number(position?.depositedAmounts?.wblt || 0).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.wblt || 0) *
+            Number(position?.wbltPriceAtDeposit)
           ).toFixed(2)})`
         : null,
       tooltip: false,

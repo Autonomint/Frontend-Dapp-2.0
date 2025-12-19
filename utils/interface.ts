@@ -35,9 +35,9 @@ export interface dcdsDepositDetails {
     boldToken: string;
     usdc: string;
     wmUSD: string;
-    wBLT: string;
+    wblt: string;
   };
-  wBLTPriceAtDeposit: number;
+  wbltPriceAtDeposit: number;
   nativeTokenPriceAtDeposit: number;
   usdtPriceAtDeposit: number;
   boldPriceAtDeposit: number;
