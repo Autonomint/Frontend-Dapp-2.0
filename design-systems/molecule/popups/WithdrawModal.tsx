@@ -375,6 +375,19 @@ export function DcdsWithdrawModal({
       tooltipText: "",
       comment: "",
     },
+    {
+      // Token deposited
+      headline: `wBLT Tokens deposited`,
+      value: Number(position?.depositedAmounts?.wBLT || 0)
+        ? `${Number(position?.depositedAmounts?.wBLT || 0).toFixed(2)} ($${(
+            Number(position?.depositedAmounts?.wBLT || 0) *
+            Number(position?.wBLTPriceAtDeposit)
+          ).toFixed(2)})`
+        : null,
+      tooltip: false,
+      tooltipText: "",
+      comment: "",
+    },
     // {
     //   headline: `${
     //     Number(NetworkId.Mode) == chainId ? "Mode" : "OP"
@@ -836,7 +849,7 @@ export function DcdsWithdrawModal({
   };
 
   // loading state for withdraw modal
-  const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
+  const isPopupLoading = false;
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();

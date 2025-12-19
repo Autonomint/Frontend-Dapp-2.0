@@ -1376,6 +1376,7 @@ function DCDSTemplate() {
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
     if (tokenList[4]) list.push(tokenList[4]);
+    if (tokenList[5]) list.push(tokenList[5]);
     return list;
   }, [tokenList]);
   console.log("formik.values", formik);

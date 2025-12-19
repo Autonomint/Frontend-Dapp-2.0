@@ -66,13 +66,19 @@ const DcdsPositionTableRow = ({
       Number(position.depositedAmounts.usdc || 0) *
       Number(position.usdcPriceAtDeposit || 1);
 
+    // Calculate value of wBLT in USD (1:1 unless priceAtDeposit is different)
+    const wbltAmount =
+      Number(position.depositedAmounts.wBLT || 0) *
+      Number(position.wBLTPriceAtDeposit || 1);
+
     // Return sum of all token values, formatted to 2 decimal places
     return (
       usdaAmount +
       usdtAmount +
       boldAmount +
       nativeAmount +
-      usdcAmount
+      usdcAmount +
+      wbltAmount
     ).toFixed(2);
   }, [position]);
 
