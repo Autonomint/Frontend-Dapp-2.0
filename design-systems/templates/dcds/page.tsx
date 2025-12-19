@@ -986,6 +986,8 @@ function DCDSTemplate() {
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
                   ? "NATIVE"
+                  : token.symbol === "wBLT"
+                  ? "WBLT"
                   : token.symbol === "mUSD"
                   ? "wmUSD"
                   : token.symbol?.toString()
@@ -1014,6 +1016,8 @@ function DCDSTemplate() {
                     ? "NATIVE"
                     : token.symbol === "mUSD"
                     ? "wmUSD"
+                    : token.symbol === "wBLT"
+                    ? "WBLT"
                     : token.symbol?.toString()
                 ]?.assetBoosterValidity ?? 0
               )
@@ -1051,6 +1055,8 @@ function DCDSTemplate() {
                   ? "NATIVE"
                   : token.symbol === "mUSD"
                   ? "wmUSD"
+                  : token.symbol === "wBLT"
+                  ? "WBLT"
                   : token.symbol?.toString()
               ]?.minAmount ?? 0
             )
@@ -1065,6 +1071,8 @@ function DCDSTemplate() {
                   ? "NATIVE"
                   : token.symbol === "mUSD"
                   ? "wmUSD"
+                  : token.symbol === "wBLT"
+                  ? "WBLT"
                   : token.symbol?.toString()
               ]?.pointsToBeGiven ?? 0
             )

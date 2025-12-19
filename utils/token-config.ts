@@ -175,6 +175,7 @@ export const getIconMapping = (theme: string, token: string) => {
     wmUSD: undefined,
     cbBTC: cbBTC,
     wBLT: wBLT,
+    WBLT: wBLT,
     wblt: wBLT,
   };
   return mapping[token as keyof typeof mapping];
