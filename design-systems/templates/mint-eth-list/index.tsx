@@ -9,6 +9,7 @@ import Link from "next/link";
 import cryptoEth from "@/app/assets/eth.png";
 import cbBTC from "@/app/assets/cbbtc.webp";
 import WeETH from "@/app/assets/weETH-icoon.webp";
+import KRWQ from "@/app/assets/krwq-logo.svg";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
@@ -280,6 +281,21 @@ function MintEthListTemplate() {
             : 0
         ),
     });
+
+    list.push({
+      token: "KRWQ",
+      tokenImage: KRWQ,
+      BorrowRate: `0%`,
+      DownsideProtectionGiven: `${0}%`,
+      ltv: `${0}%`,
+      isActive: true,
+      InActiveHeading: "Coming Soon",
+      pointsToBeGiven: 0,
+      minAmount: 0,
+      link: STRATEGY_LINK,
+      boaster: 0,
+      boasterTime: 0,
+    });
   }
 
   const formattedaBorrowAssetList = useMemo(() => {
@@ -287,6 +303,7 @@ function MintEthListTemplate() {
     const formattedList = [];
     if (list[0]) formattedList.push(list[0]);
     if (list[3]) formattedList.push(list[3]);
+    if (list[5]) formattedList.push(list[5]);
     if (list[1]) formattedList.push(list[1]);
     if (list[2]) formattedList.push(list[2]);
     if (list[4]) formattedList.push(list[4]);
