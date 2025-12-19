@@ -1188,8 +1188,7 @@ export function WithdrawFund({
     Number(
       Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
         (24 * 60 * 60) -
-        (Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0) /
-          (24 * 60 * 60) -
+        (Number(position.hedgeValidity || 0) -
           (calculateRemainingDays(position.validTill) + 1 || 0))
     ) > 0
   );
@@ -1218,19 +1217,8 @@ export function WithdrawFund({
     minTimeLimit:
       Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
       (24 * 60 * 60),
-    maxTimeLimit:
-      Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0 || 0) /
-      (24 * 60 * 60),
+    maxTimeLimit: Number(position.hedgeValidity || 0 || 0),
   };
-
-  console.log(
-    assetDetails,
-    Number(assetDetails?.optionsFeesTimeLimits?.minimumLimit || 0) /
-      (24 * 60 * 60),
-    Number(assetDetails?.optionsFeesTimeLimits?.maximumLimit || 0) /
-      (24 * 60 * 60),
-    "assetDetails"
-  );
 
   const hedgeDurationOption = useMemo(
     () =>
@@ -1261,7 +1249,15 @@ export function WithdrawFund({
       ].filter(Boolean),
     [updatedHedgeValidity, renewFormik]
   );
-  console.log(renewReceiptError, renewErrorSm, "renewReceiptError");
+  console.log(
+    position.status == BorrowStatus.WITHDREW,
+    position.status == BorrowStatus.LIQUIDATED,
+    isFunctionPausedBorrow_Renew,
+    calculateRemainingDays(Number(position.validTill)) <= 0,
+    !isRenewActive,
+    !readyForNewTx,
+    "renewReceiptError"
+  );
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -1940,7 +1936,9 @@ export function WithdrawFund({
                     },
                     {
                       heading: "Option Fees paid",
-                      value: `$${Number(position?.totalOptionFees).toFixed(2)}`,
+                      value: `$${Number(
+                        position?.totalOptionFees || position?.optionFees
+                      ).toFixed(2)}`,
                     },
                   ].map((item) => (
                     <div
