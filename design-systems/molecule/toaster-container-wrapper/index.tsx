@@ -18,7 +18,7 @@ const ToasterContainerWrapper = () => {
         richColors
         position="top-right"
         className="dark:bg-custom-gradient-to-top"
-      />
+           />
     </div>
   );
 };

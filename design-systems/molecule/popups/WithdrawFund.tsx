@@ -688,6 +688,7 @@ export function WithdrawFund({
           onClose={() => toast.dismiss(t)}
         />
       ));
+      resetRenewState();
     },
   });
 
@@ -1029,6 +1030,7 @@ export function WithdrawFund({
       }, 800);
       setTimeout(() => {
         positionListRefetech();
+        resetRenewState();
       }, 3000);
       refetchAllowanceUSDT();
     } else if (renewReceiptError) {
@@ -1043,6 +1045,7 @@ export function WithdrawFund({
         />
       ));
       refetchAllowanceUSDT();
+      resetRenewState();
     }
   }, [renewReceipt, renewReceiptError, isSuccessRenewReceipt]);
 
@@ -1174,6 +1177,12 @@ export function WithdrawFund({
     );
   };
 
+  const resetRenewState = () => {
+    resetUsdtApprove?.();
+    resetBorrowRenew?.();
+    renewFormik.resetForm();
+  };
+
   const isPopupLoading =
     isLastCumulativeRatePending ||
     isInterestGainedPending ||
@@ -1221,35 +1230,40 @@ export function WithdrawFund({
     maxTimeLimit: Number(position.hedgeValidity || 0 || 0),
   };
 
-  const hedgeDurationOption = useMemo(
-    () =>
-      [
-        {
-          label: "1 Day",
-          value: "1",
-          onClick: () => renewFormik.setFieldValue("hedgeDuration", "1"),
-        },
-        ...(Number(updatedHedgeValidity) == 7
-          ? [
-              {
-                label: "1 Week",
-                value: "7",
-                onClick: () => renewFormik.setFieldValue("hedgeDuration", "7"),
-              },
-            ]
-          : []),
-        ...(Number(updatedHedgeValidity) == 30
-          ? [
-              {
-                label: "1 Month",
-                value: "30",
-                onClick: () => renewFormik.setFieldValue("hedgeDuration", "30"),
-              },
-            ]
-          : []),
-      ].filter(Boolean),
-    [updatedHedgeValidity, renewFormik]
-  );
+  const hedgeDurationOption = useMemo(() => {
+    const currentValidity = position.lastOptedValidity || updatedHedgeValidity;
+    console.log(
+      position.lastOptedValidity,
+      updatedHedgeValidity,
+      "updatedHedgeValidity"
+    );
+    return [
+      {
+        label: "1 Day",
+        value: "1",
+        onClick: () => renewFormik.setFieldValue("hedgeDuration", "1"),
+      },
+      ...(Number(currentValidity) == 7
+        ? [
+            {
+              label: "1 Week",
+              value: "7",
+              onClick: () => renewFormik.setFieldValue("hedgeDuration", "7"),
+            },
+          ]
+        : []),
+      ...(Number(currentValidity) == 30
+        ? [
+            {
+              label: "1 Month",
+              value: "30",
+              onClick: () => renewFormik.setFieldValue("hedgeDuration", "30"),
+            },
+          ]
+        : []),
+    ].filter(Boolean);
+  }, [updatedHedgeValidity, renewFormik, position]);
+
   console.log(
     position.status == BorrowStatus.WITHDREW,
     position.status == BorrowStatus.LIQUIDATED,
@@ -2000,7 +2014,7 @@ export function WithdrawFund({
                   ))}
                 </div>
               </div>
-              <div className="mt-4 md:mt-6  h-[44px] md:h-[64px]">
+              <div className="mt-4 md:mt-6  overflow-hidden h-[44px] md:h-[64px]">
                 <div className="flex gap-2">
                   {!renewLoading && (
                     <div className="w-[50%]">
