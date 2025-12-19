@@ -6,6 +6,7 @@ import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
 import boldIcon from "@/app/assets/bold-logo.svg";
 import UsdcIcon from "@/app/assets/usdc.svg";
 import cbBTC from "@/app/assets/cbbtc.webp";
+import wBLT from "@/app/assets/wBLT.svg";
 
 import {
   boldTokenAddress,
@@ -173,6 +174,7 @@ export const getIconMapping = (theme: string, token: string) => {
     usdc: UsdcIcon,
     wmUSD: undefined,
     cbBTC: cbBTC,
+    wBLT: wBLT,
   };
   return mapping[token as keyof typeof mapping];
 };
