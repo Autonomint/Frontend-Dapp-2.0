@@ -25,9 +25,10 @@ const useWithdrawUsda = (mutation: any) => {
     signature: `0x${string}`,
     expiredETHAmount: bigint,
     plFromExpired: bigint,
+    ethPrice: bigint,
     token: string,
   ) => {
-    const contract = token === "cbBTC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const contract = token === "cbBTC" || token === "KRWQ" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
 
     try {
       borrowWithdrawAsync({
@@ -41,6 +42,7 @@ const useWithdrawUsda = (mutation: any) => {
           odosAssembledData,
           expiredETHAmount,
           plFromExpired,
+          token === "KRWQ" ? ethPrice : undefined,
           {
             nonce: BigInt(0n),
             deadline,

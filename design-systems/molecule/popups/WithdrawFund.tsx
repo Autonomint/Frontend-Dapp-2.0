@@ -956,6 +956,7 @@ export function WithdrawFund({
             (borrowSignedData?.signature || "") as `0x${string}`,
             BigInt(borrowSignedData?.expiredETHAmount || 0),
             BigInt(borrowSignedData?.plFromExpired || 0),
+            BigInt(borrowSignedData?.ethPrice || 0),
             position.collateralType
           );
         }
@@ -972,6 +973,7 @@ export function WithdrawFund({
           renewBorrow(
             BigInt(position.index),
             BigInt(renewFormik.values.hedgeDuration || 0),
+            BigInt(signedData.ethPrice),
             BigInt(signedData.volatility),
             signedData,
             position.collateralType === "cbBTC"
@@ -1168,6 +1170,7 @@ export function WithdrawFund({
     renewBorrow(
       BigInt(position.index),
       BigInt(renewFormik.values.hedgeDuration || "1"),
+      BigInt(signedData.ethPrice),
       BigInt(signedData.volatility),
       signedData,
       position.collateralType === "cbBTC"

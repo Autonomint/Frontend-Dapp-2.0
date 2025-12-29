@@ -11,6 +11,7 @@ export interface SignedDataReturn {
   signature: string; // signature from admin2
   nonce: number; // nonce of the contract
   deadline: number; // deadline for this signature
+  ethPrice: number; // eth price
 }
 
 /**

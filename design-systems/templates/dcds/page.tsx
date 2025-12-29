@@ -524,6 +524,7 @@ function DCDSTemplate() {
             liquidationAmount: liquidationGains
               ? BigInt(liqAmnt.toString())
               : 0n,
+            ethPrice: BigInt(cdsDepositSignedData?.ethPrice),
             lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
             expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
             plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),

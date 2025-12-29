@@ -209,7 +209,7 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ"].includes(currency) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
@@ -507,6 +507,10 @@ function InputForm({ currency }: { currency: string }) {
               nativeFee.nativeFee
             : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
+        ethPrice:
+          currency === "KRWQ"
+            ? BigInt(borrowSignedData?.ethPrice || 0)
+            : undefined,
       });
     }
   }

@@ -20,6 +20,7 @@ export interface SignedDataReturn {
   usdtFromOdos: string;
   expiredETHAmount: bigint;
   plFromExpired: bigint;
+  ethPrice: bigint;
 }
 
 /**

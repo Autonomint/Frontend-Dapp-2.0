@@ -48,6 +48,7 @@ export enum AssetName {
   sUSD,
   WSUPER_OETH,
   cbBTC,
+  KRWQ
 }
 
 export const BorrowAssetsEnum = {

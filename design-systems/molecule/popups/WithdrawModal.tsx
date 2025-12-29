@@ -837,6 +837,9 @@ export function DcdsWithdrawModal({
           [
             address,
             BigInt(position.index),
+            res?.excessProfitCumulativeValue,
+            res?.expiredETHAmount,
+            position.collateralType === "KRWQ" ? res?.ethPrice : undefined,
             isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,

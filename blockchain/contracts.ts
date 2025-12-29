@@ -143,6 +143,13 @@ export const cbBTCAddress: ChainAddresses = {
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
 } as const;
 
+// Addresses for the KRWQ contract
+export const KRWQAddress: ChainAddresses = {
+  84532: "0xF0Cc5e691679693221560182F6046F1D6f6cAF98",
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
+} as const;
+
 // Addresses for the borrow assets
 export const borrowAssetsAddress = {
   ETH: ethAddress,
@@ -151,6 +158,7 @@ export const borrowAssetsAddress = {
   rsETH: rsETHAddress,
   wsuperOETHb: wsuperOETHAddress,
   cbBTC: cbBTCAddress,
+  KRWQ: KRWQAddress,
 } as const;
 
 // Addresses for the global contract

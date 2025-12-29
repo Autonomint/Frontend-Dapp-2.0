@@ -11,6 +11,7 @@ export interface SignedDataReturn {
   deadline: number;
   expiredETHAmount: bigint;
   plFromExpired: bigint;
+  ethPrice: bigint
 }
 
 /**
