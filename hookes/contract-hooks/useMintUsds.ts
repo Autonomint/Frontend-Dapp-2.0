@@ -15,7 +15,7 @@ interface BorrowInputs {
   signature: `0x${string}`;
   nonce: bigint;
   hedgeDuration: bigint
-
+  ethPrice: bigint | undefined
 }
 
 const useDepositTokens = (mutation: any) => {
@@ -46,8 +46,8 @@ const useDepositTokens = (mutation: any) => {
     signature,
     expiredETHAmount,
     nonce,
-    hedgeDuration
-
+    hedgeDuration,
+    ethPrice
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     writeContract?.({
@@ -57,6 +57,7 @@ const useDepositTokens = (mutation: any) => {
       args: [
         {
           user: address as `0x${string}`,
+          ethPrice: assetName === 12 ? ethPrice : undefined,
           strikePercent,
           volatility,
           assetName,

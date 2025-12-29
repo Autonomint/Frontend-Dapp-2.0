@@ -11,6 +11,7 @@ export interface SignedDataReturn {
   deadline: number;
   usdtFromOdos: string;
   expiredETHAmount: bigint;
+  ethPrice: bigint;
 }
 
 /**

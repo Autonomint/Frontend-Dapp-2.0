@@ -103,6 +103,7 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
         tokenAmounts: bigint[];
         liquidate: Widen<boolean>;
         liquidationAmount: bigint;
+        ethPrice: bigint;
         lockingPeriod: bigint;
         expiredETHAmount: bigint;
         assetName: AssetName | undefined | string;

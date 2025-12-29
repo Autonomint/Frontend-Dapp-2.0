@@ -7,7 +7,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { assetNameForRewardDataBorrow } from "@/utils/constants";
-import { useTokenConfig } from "@/utils/token-config";
+import { getIconMapping, useTokenConfig } from "@/utils/token-config";
 import { CircleFadingPlus } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -32,6 +32,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:WSUPEROETHUSD|1D"];
       case "cbBTC":
         return ["CRYPTO:CBBTCCUSD|1D"];
+      case "KRWQ":
+        return ["UPBIT:USDTKRW|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
@@ -159,7 +161,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return WsuperOETHIcon;
       case "cbBTC":
         return cbBTC;
-
+      case "KRWQ":
+        return getIconMapping("dark", "KRWQ");
       default:
         return cryptoEth;
     }

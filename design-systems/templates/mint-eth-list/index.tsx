@@ -43,6 +43,7 @@ function MintEthListTemplate() {
   const { tvlValue: ltvWrsETH } = useGetTvl(AssetName.WrsETH);
   const { tvlValue: ltvCbBTC } = useGetTvl(AssetName.cbBTC);
   const { tvlValue: ltvWsuperOETH } = useGetTvl(AssetName.WSUPER_OETH);
+  const { tvlValue: ltvKRWQ } = useGetTvl(AssetName.KRWQ);
 
   // Calculate the downside protection amount
   const downsideProtectionEth = ltvETH?.LTV
@@ -58,6 +59,9 @@ function MintEthListTemplate() {
     ? 100 - Number(ltvETH?.LTV || 0)
     : 0;
   const downsideProtectionWsuperOETH = ltvWsuperOETH?.LTV
+    ? 100 - Number(ltvETH?.LTV || 0)
+    : 0;
+  const downsideProtectionKRWQ = ltvKRWQ?.LTV
     ? 100 - Number(ltvETH?.LTV || 0)
     : 0;
   console.log(ltvWsuperOETH, "downsideProtectionWsuperOETH");
@@ -286,16 +290,36 @@ function MintEthListTemplate() {
     list.push({
       token: "KRWQ",
       tokenImage: KRWQ,
-      BorrowRate: `0%`,
-      DownsideProtectionGiven: `${0}%`,
-      ltv: `${0}%`,
-      isActive: true,
-      InActiveHeading: "Coming Soon",
-      pointsToBeGiven: 0,
-      minAmount: 0,
+      BorrowRate: `${Number(ltvKRWQ?.APR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtectionKRWQ}%`,
+      ltv: `${ltvKRWQ?.LTV || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "KRWQ borrow is paused now",
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["krwq"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList && tokenRewardDetailList?.["krwq"]?.minAmount) ||
+        0,
       link: STRATEGY_LINK,
-      boaster: 0,
-      boasterTime: 0,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["krwq"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["krwq"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0
+        ),
     });
   }
 
