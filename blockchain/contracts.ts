@@ -145,7 +145,7 @@ export const cbBTCAddress: ChainAddresses = {
 
 // Addresses for the KRWQ contract
 export const KRWQAddress: ChainAddresses = {
-  84532: "0xF0Cc5e691679693221560182F6046F1D6f6cAF98",
+  84532: "0xAE2902b0b876473F938a40FdBFFaa4F2b0Ac3BA4",
   11155420: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
 } as const;

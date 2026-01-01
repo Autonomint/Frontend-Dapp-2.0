@@ -241,6 +241,10 @@ function DCDSTemplate() {
       label: "cbBTC",
       onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
     },
+    {
+      label: "KRWQ",
+      onClick: () => formik.setFieldValue("hedgeAsset", "KRWQ"),
+    },
   ];
 
   const lockInPeriodOption = useMemo(() => {
@@ -308,6 +312,8 @@ function DCDSTemplate() {
       ? "ETH"
       : formik.values.hedgeAsset === null
       ? "ETH"
+      : formik.values.hedgeAsset === "KRWQ"
+      ? "KRWQ"
       : "cbBTC"
   );
 
@@ -408,7 +414,12 @@ function DCDSTemplate() {
       // checking is bold token is selected or not for getting Signed data
       const pricesData = await refetchPrices();
       const getPrices = pricesData?.data;
-      const token = formik.values.hedgeAsset === "cbBTC" ? "cbBTC" : "ETH";
+      const token =
+        formik.values.hedgeAsset === "cbBTC"
+          ? "cbBTC"
+          : formik.values.hedgeAsset === "KRWQ"
+          ? "krwq"
+          : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -452,45 +463,6 @@ function DCDSTemplate() {
         );
       }
 
-      const params = [
-        {
-          user: address as `0x${string}`,
-          // token addresses
-          tokenAddresses: filteredTokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return (tokenDetail?.tokenAddress ?? zeroAddress) as `0x${string}`;
-          }),
-          // token amount in wei
-          tokenAmounts: filteredTokenList.map((token) => {
-            const tokenDetail = selectedTokens.find((selectedToken) => {
-              return selectedToken.tokenAddress === token.tokenAddress;
-            });
-            return formik.values[
-              `${tokenDetail?.tokenName.toLowerCase()}Amount`
-            ]
-              ? parseUnits(
-                  formik.values[
-                    `${tokenDetail?.tokenName.toLowerCase()}Amount`
-                  ].toString(),
-                  Number(tokenDetail?.tokenDecimals)
-                )
-              : 0n;
-          }),
-          // liquidation gains
-          liquidate: liquidationGains,
-          liquidationAmount: liquidationGains ? BigInt(liqAmnt.toString()) : 0n,
-          lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
-          expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
-          plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),
-          assetName:
-            formik.values.hedgeAsset === "cbBTC" ? AssetName.cbBTC : undefined,
-        },
-        BigInt(cdsDepositSignedData.deadline),
-        cdsDepositSignedData.signature as `0x${string}`,
-      ];
-
       handleDcdsDeposit?.(
         [
           {
@@ -531,12 +503,16 @@ function DCDSTemplate() {
             assetName:
               formik.values.hedgeAsset === "cbBTC"
                 ? AssetName.cbBTC
+                : formik.values.hedgeAsset === "KRWQ"
+                ? AssetName.KRWQ
                 : undefined,
           },
           BigInt(cdsDepositSignedData.deadline),
           cdsDepositSignedData.signature as `0x${string}`,
         ],
-        chainId === NetworkId.Ethereum || formik.values.hedgeAsset === "cbBTC"
+        chainId === NetworkId.Ethereum ||
+          formik.values.hedgeAsset === "cbBTC" ||
+          formik.values.hedgeAsset === "KRWQ"
           ? undefined
           : nativeFee.nativeFee,
         formik.values.hedgeAsset
@@ -608,7 +584,8 @@ function DCDSTemplate() {
         }, 1000);
 
         const contract =
-          formik.values.hedgeAsset === "cbBTC"
+          formik.values.hedgeAsset === "cbBTC" ||
+          formik.values.hedgeAsset === "KRWQ"
             ? cdsDepositCoreAddress[
                 chainId as keyof typeof cdsDepositCoreAddress
               ]
@@ -862,7 +839,7 @@ function DCDSTemplate() {
     });
 
   const allowanceContract =
-    formik.values.hedgeAsset == "cbBTC"
+    formik.values.hedgeAsset == "cbBTC" || formik.values.hedgeAsset == "KRWQ"
       ? cdsDepositCoreAddress
       : cdsDepositAddress;
 
@@ -1739,7 +1716,7 @@ function DCDSTemplate() {
                   </TooltipTrigger>
                   <TooltipContent className="dark:text-white bg-white text-black dark:bg-black w-[400px] ">
                     <p>
-                      Get discounted ETH or cbBTC and earn USDA+ by backing
+                      Get discounted ETH, cbBTC, KRWQ and earn USDA+ by backing
                       liquidations when USDA+ borrowers default
                     </p>
                   </TooltipContent>

@@ -65,6 +65,7 @@ import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
+import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
 
 /**
  * Yup validation schema for the input form
@@ -119,13 +120,20 @@ function InputForm({ currency }: { currency: string }) {
     usdValue: ethPrice,
     assetPrice,
     exchangeRate,
+    unformattedValue,
   } = useGetUsdValue(
-    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress[
+      currency.toLocaleLowerCase() === "krwq"
+        ? "ETH"
+        : (currency as keyof typeof borrowAssetsAddress)
+    ],
+    currency.toLocaleLowerCase() === "krwq"
   );
 
   // Selected asset price
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
+  console.log(selectedAssetPrice, "selectedAssetPrice");
 
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
@@ -150,7 +158,7 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   const contract =
-    currency === "cbBTC"
+    currency === "cbBTC" || currency === "KRWQ"
       ? borrowDepositCoreAddress
       : borrowingDepositContractAddress;
 
@@ -378,22 +386,32 @@ function InputForm({ currency }: { currency: string }) {
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     Number(
-      formatUnits(
-        BigInt(
-          Math.floor(
-            Number(formik.values.collateralAmount || 0) *
-              Number(exchangeRate || 0)
+      currency === "KRWQ"
+        ? parseUnits(
+            String(Math.floor(Number(formik.values.collateralAmount || 0))),
+            18
           )
-        ),
-        18
-      )
+        : currency === "cbBTC"
+        ? parseUnits(
+            String(Math.floor(Number(formik.values.collateralAmount || 0))),
+            8
+          )
+        : parseUnits(
+            String(
+              Math.floor(
+                Number(formik.values.collateralAmount || 0) *
+                  Number(exchangeRate || 0)
+              )
+            ),
+            18
+          )
     ),
-    (ethPrice || 0) as number,
+    (unformattedValue || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : "ETH",
+    currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
     Number(formik.values.hedgeDuration)
   );
-
+  console.log(exchangeRate, "exchangeRate");
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
@@ -475,7 +493,9 @@ function InputForm({ currency }: { currency: string }) {
     const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
-    const borrowSignedData = await refetchBorrowSignedData(currency);
+    const borrowSignedData = await refetchBorrowSignedData(
+      currency === "KRWQ" ? "krwq" : currency
+    );
 
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
@@ -498,7 +518,7 @@ function InputForm({ currency }: { currency: string }) {
         expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
         plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
         value:
-          currency === "cbBTC"
+          currency === "cbBTC" || currency === "KRWQ"
             ? undefined
             : chainId === NetworkId.Ethereum
             ? parseEther(formik.values.collateralAmount.toString())
@@ -527,7 +547,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv?.LTV || 0)) /
-        10000;
+        (currency === "KRWQ" ? 100 : 10000);
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
       // set the usda to be minted
@@ -538,7 +558,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
-        10000;
+        (currency === "KRWQ" ? 100 : 10000);
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
@@ -550,7 +570,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           formik.values.strikePricePercent) /
-        10000;
+        (currency === "KRWQ" ? 100 : 10000);
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
     } catch (error) {}
@@ -756,7 +776,10 @@ function InputForm({ currency }: { currency: string }) {
               <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
                 <span className="text-grayLight">{currency} Price: </span>{" "}
                 <span className=" dark:text-white text-textBlack font-semibold ml-1">
-                  ${Number(selectedAssetPrice) / 100 || 0}
+                  $
+                  {currency === "KRWQ"
+                    ? Number(selectedAssetPrice)
+                    : Number(selectedAssetPrice) / 100 || 0}
                 </span>
               </div>
               <div className="flex">

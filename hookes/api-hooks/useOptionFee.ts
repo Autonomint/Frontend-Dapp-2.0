@@ -26,10 +26,7 @@ const fetchOptionFees = async ({
 }: OptionFeesRequest): Promise<OptionFeesResponse> => {
   // Construct the URL using the backend base URL and query parameters
   const response = await fetch(
-    `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${token}/${parseUnits(
-      collateralAmount.toString(),
-      18 // Convert collateral amount to 18 decimal units (wei)
-    )}/${ethPrice}/${strikePercent}/${hedgeDuration}`
+    `${BACKEND_API_URL}/borrows/optionFees/${chainId}/${token}/${collateralAmount}/${ethPrice}/${strikePercent}/${hedgeDuration}`
   );
 
   // Throw an error if the response is not OK
@@ -51,7 +48,7 @@ const fetchOptionFees = async ({
  * @returns Object containing option fees, raw data, loading/error state, and refetch function.
  */
 const useFetchOptionFees = (
-  collateralAmount: number,
+  collateralAmount: string,
   ethPrice: number,
   strikePercent: number,
   token: string,
@@ -93,6 +90,8 @@ const useFetchOptionFees = (
   const optionFees = (Fees as number[])?.[1]
     ? formatUnits(BigInt((Fees as number[])?.[1]), 6)
     : 0;
+
+  console.log(optionFees, collateralAmount, !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0 && hedgeDuration > 0, 'optionFees')
 
   return {
     optionFees, // Human-readable fee value

@@ -709,6 +709,11 @@ export const cdsCoreABI = [
           },
           {
             "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
             "name": "lockingPeriod",
             "type": "uint128"
           },
@@ -1855,9 +1860,14 @@ export const cdsCoreABI = [
             "type": "uint256"
           },
           {
-            "internalType": "int128",
-            "name": "plFromExpired",
-            "type": "int128"
+            "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
+          },
+          {
+            "internalType": "enum CDSCoreInterface.WithdrawType",
+            "name": "withdrawType",
+            "type": "uint8"
           }
         ],
         "internalType": "struct CDSCoreInterface.WithdrawUserParams",

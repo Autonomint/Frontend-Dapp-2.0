@@ -114,7 +114,11 @@ export function DcdsWithdrawModal({
     },
     {
       headline: `${
-        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+        position?.collateralType === "cbBTC"
+          ? "cbBTC"
+          : position?.collateralType === "krwq"
+          ? "KRWQ"
+          : "ETH"
       } Price at Deposit`,
       value: "0",
       tooltip: false,
@@ -499,9 +503,16 @@ export function DcdsWithdrawModal({
           : position.depositedAmounts.usdt;
       // Update deposited ETH
       updatedData[2].headline = `${
-        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+        position?.collateralType === "cbBTC"
+          ? "cbBTC"
+          : position?.collateralType === "krwq"
+          ? "KRWQ"
+          : "ETH"
       } Price at Deposit`;
-      updatedData[2].value = `$${Number(position.ethPriceAtDeposit) / 100}`;
+      updatedData[2].value = `$${
+        Number(position.ethPriceAtDeposit) /
+        (position.collateralType === "krwq" ? 1e8 : 100)
+      }`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
       // Update ethPriceAtDeposit value
@@ -565,7 +576,10 @@ export function DcdsWithdrawModal({
         address: address as `0x${string}`,
         index: position.index,
         chainId: chainId as number,
-        ethPrice: (Number(ethPrice ?? 0n) / 100).toFixed(2),
+        ethPrice: (
+          Number(ethPrice ?? 0n) /
+          (position.collateralType === "krwq" ? 1e8 : 100)
+        ).toFixed(2),
       });
       setUpdatingData(false);
     } else {
