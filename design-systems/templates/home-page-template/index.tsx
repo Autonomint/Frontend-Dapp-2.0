@@ -75,7 +75,7 @@ export default function HomeTemplate() {
 
   // getting option fee for one ETH
   const { optionFees: oneEthOptionFees } = useFetchOptionFees(
-    1,
+    "1",
     (ethPrice || 0) as number,
     currentStrikePricePercentLimit as number,
     "ETH"

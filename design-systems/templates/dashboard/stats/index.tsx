@@ -77,7 +77,7 @@ function StatsTemplate() {
   // getting option fees for  1 eth
   const { optionFees: feeOptions, refetchOptionFee: refetch } =
     useFetchOptionFees(
-      1,
+      "1",
       (ethPrice || 0) as number,
       currentStrikePricePercentLimit as number,
       "ETH"
