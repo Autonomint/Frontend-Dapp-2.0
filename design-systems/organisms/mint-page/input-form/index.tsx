@@ -399,27 +399,25 @@ function InputForm({ currency }: { currency: string }) {
 
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    Number(
-      currency === "KRWQ"
-        ? parseUnits(
-            String(Math.floor(Number(formik.values.collateralAmount || 0))),
-            18
-          )
-        : currency === "cbBTC"
-        ? parseUnits(
-            String(Math.floor(Number(formik.values.collateralAmount || 0))),
-            8
-          )
-        : parseUnits(
-            String(
-              Math.floor(
-                Number(formik.values.collateralAmount || 0) *
-                  Number(exchangeRate || 0)
-              )
-            ),
-            18
-          )
-    ),
+    currency === "KRWQ"
+      ? parseUnits(
+          String(Math.floor(Number(formik.values.collateralAmount || 0))),
+          18
+        ).toString()
+      : currency === "cbBTC"
+      ? parseUnits(
+          String(Math.floor(Number(formik.values.collateralAmount || 0))),
+          8
+        ).toString()
+      : parseUnits(
+          String(
+            Math.floor(
+              Number(formik.values.collateralAmount || 0) *
+                Number(exchangeRate || 0)
+            )
+          ),
+          18
+        ).toString(),
     (unformattedValue || 0) as number,
     formik.values.strikePricePercent,
     currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
