@@ -56,6 +56,8 @@ export const BorrowAssetsEnum = {
   rsETH: AssetName.rsETH,
   wsuperOETHb: AssetName.WSUPER_OETH,
   cbBTC: AssetName.cbBTC,
+  KRWQ: AssetName.KRWQ,
+  krwq: AssetName.KRWQ,
 };
 
 export const RedeemAssets = {

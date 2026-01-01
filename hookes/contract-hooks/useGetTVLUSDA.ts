@@ -134,7 +134,7 @@ const useGetTVLBothChain = (tokenAddressArr: `0x${string}`[]) => {
   );
 
   useEffect(() => {
-    getOtherChainData();
+    // getOtherChainData();
   }, [tokenAddressArr, chainId, address]);
 
   // fetching the tvl of the tokens on the other chain

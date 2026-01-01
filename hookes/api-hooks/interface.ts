@@ -6,7 +6,7 @@ export interface OptionFeesResponse {
 
 export interface OptionFeesRequest {
   chainId: number;
-  collateralAmount: number;
+  collateralAmount: string;
   ethPrice: number;
   strikePercent: number;
   token: string;

@@ -376,6 +376,12 @@ export const cdsCoreABI = [
       },
       {
         "indexed": false,
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
         "internalType": "uint128[]",
         "name": "prices",
         "type": "uint128[]"
@@ -671,6 +677,11 @@ export const cdsCoreABI = [
           {
             "internalType": "uint128",
             "name": "liquidationAmount",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "ethPrice",
             "type": "uint128"
           },
           {
@@ -1753,6 +1764,11 @@ export const cdsCoreABI = [
             "internalType": "uint256",
             "name": "expiredETHAmount",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
           },
           {
             "internalType": "enum CDSCoreInterface.WithdrawType",

@@ -209,6 +209,11 @@ export const optionABI = [
         "type": "uint128"
       },
       {
+        "internalType": "uint64",
+        "name": "_priceDecimals",
+        "type": "uint64"
+      },
+      {
         "internalType": "uint256",
         "name": "_ethVolatility",
         "type": "uint256"
@@ -222,6 +227,16 @@ export const optionABI = [
         "internalType": "uint128",
         "name": "_strikePricePercent",
         "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "_hedgeValidity",
+        "type": "uint128"
+      },
+      {
+        "internalType": "bool",
+        "name": "isRenew",
+        "type": "bool"
       }
     ],
     "name": "calculateOptionPrice",
@@ -251,6 +266,11 @@ export const optionABI = [
         "internalType": "uint64",
         "name": "ethPrice",
         "type": "uint64"
+      },
+      {
+        "internalType": "uint128",
+        "name": "repayPercent",
+        "type": "uint128"
       }
     ],
     "name": "calculateStrikePriceGains",
@@ -450,6 +470,50 @@ export const optionABI = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint128",
+        "name": "hedgeValidity",
+        "type": "uint128"
+      }
+    ],
+    "name": "optionsFeesConstantsValidity",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "borrowerPutOptionConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "borrowerCallOptionConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "dCDSConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "strikePriceConstant",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "premiumReductionConstant",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -540,6 +604,11 @@ export const optionABI = [
         "internalType": "enum IBorrowing.AssetName[]",
         "name": "assetNames",
         "type": "uint8[]"
+      },
+      {
+        "internalType": "uint128[]",
+        "name": "hedgeValidities",
+        "type": "uint128[]"
       },
       {
         "components": [

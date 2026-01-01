@@ -119,6 +119,17 @@ export const borowCoreABI = [
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint128",
+          "name": "validity",
+          "type": "uint128"
+        }
+      ],
+      "name": "Borrow_Invalid_Validity",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "Borrow_LTVIsZero",
       "type": "error"
@@ -400,6 +411,12 @@ export const borowCoreABI = [
           "internalType": "uint256",
           "name": "aBondCr",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
         }
       ],
       "name": "Deposit",
@@ -492,8 +509,20 @@ export const borowCoreABI = [
         {
           "indexed": false,
           "internalType": "uint256",
+          "name": "optionsFees",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
         }
       ],
       "name": "Renewed",
@@ -676,6 +705,11 @@ export const borowCoreABI = [
             },
             {
               "internalType": "uint128",
+              "name": "ethPrice",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
               "name": "strikePercent",
               "type": "uint128"
             },
@@ -698,6 +732,11 @@ export const borowCoreABI = [
               "internalType": "uint256",
               "name": "expiredETHAmount",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint128",
+              "name": "hedgeValidity",
+              "type": "uint128"
             }
           ],
           "internalType": "struct IBorrowingCore.BorrowDepositParams",
@@ -933,6 +972,21 @@ export const borowCoreABI = [
           "internalType": "uint64",
           "name": "index",
           "type": "uint64"
+        },
+        {
+          "internalType": "uint128",
+          "name": "ethPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "volatility",
+          "type": "uint256"
         }
       ],
       "name": "getOptionFeesToPay",
@@ -1023,6 +1077,11 @@ export const borowCoreABI = [
               "type": "uint64"
             },
             {
+              "internalType": "uint128",
+              "name": "ethPrice",
+              "type": "uint128"
+            },
+            {
               "internalType": "enum IBorrowing.LiquidationType",
               "name": "liquidationType",
               "type": "uint8"
@@ -1102,6 +1161,43 @@ export const borowCoreABI = [
           "internalType": "uint64",
           "name": "index",
           "type": "uint64"
+        },
+        {
+          "internalType": "uint128",
+          "name": "hedgeValidity",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "ethPrice",
+          "type": "uint128"
+        },
+        {
+          "internalType": "uint256",
+          "name": "volatility",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+          "name": "verifyParams",
+          "type": "tuple"
         }
       ],
       "name": "renewOptions",
@@ -1535,6 +1631,11 @@ export const borowCoreABI = [
           "internalType": "uint256",
           "name": "expiredETHAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint128",
+          "name": "ethPrice",
+          "type": "uint128"
         },
         {
           "components": [

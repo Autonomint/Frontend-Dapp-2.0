@@ -112,6 +112,8 @@ export function WithdrawFund({
     enabled: !!address && !!chainId && !!position.index,
   });
 
+  const priceDecimals = position.collateralType === "krwq" ? 1e8 : 100;
+
   const depositDetails = [
     {
       headline: "ETH Deposited",
@@ -197,7 +199,7 @@ export function WithdrawFund({
     position.index
   );
 
-  const { usdValue: ethPrice, isUsdValuePending } = useGetUsdValue(
+  const { assetPrice: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ]
@@ -242,6 +244,8 @@ export function WithdrawFund({
       handleRepay(values.withdrawAmount);
     },
   });
+
+  console.log(depositData, "depositData");
 
   // Form for renew functionality
   const renewFormik = useFormik({
@@ -452,9 +456,11 @@ export function WithdrawFund({
       // set eth price at deposit
       const ethPriceAtDep =
         (Number(position.ethPrice) *
-          Number(position.exchangeRateAtDeposit || 0)) /
-        100;
-      updatedData[1].value = `$${ethPriceAtDep.toFixed(2)}`;
+          Number(position.exchangeRateAtDeposit || 1)) /
+        priceDecimals;
+      updatedData[1].value = `$${ethPriceAtDep.toFixed(
+        position.collateralType === "krwq" ? 8 : 2
+      )}`;
       // set points earned till now
       updatedData[2].headline = "Points earned till now";
       updatedData[2].value = `${indexPoint?.[1]?.toFixed(0) || 0}` || "-";
@@ -485,9 +491,9 @@ export function WithdrawFund({
         // check if eth price at deposit time is less then current price
         // if yes then calculate the difference
         // else set 0
-        Number(ethPriceAtDep) < Number(currentPrice) / 100
+        Number(ethPriceAtDep) < Number(currentPrice) / priceDecimals
           ? Number(position.depositedAmountInETH) *
-              (Number(currentPrice) / 100) -
+              (Number(currentPrice) / priceDecimals) -
             Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
@@ -501,7 +507,7 @@ export function WithdrawFund({
         // check if eth price at deposit time is less then current price
         // if yes then set curtUpside
         // else set -
-        Number(ethPriceAtDep) < Number(currentPrice) / 100
+        Number(ethPriceAtDep) < Number(currentPrice) / priceDecimals
           ? `${curtUpside.toFixed(2)}`
           : "-";
       // set interest gain
@@ -533,6 +539,8 @@ export function WithdrawFund({
       setDepositData(updatedData);
     }
   }
+
+  console.log(position, "position");
 
   // repay amount details for showing in popup
   const repayAmountDetails = [
@@ -582,7 +590,7 @@ export function WithdrawFund({
     },
     {
       headline: "Liquidation Price",
-      // value: `$${Number((position?.liquidationEthPrice || 0) / 100)?.toFixed(
+      // value: `$${Number((position?.liquidationEthPrice || 0) / priceDecimals)?.toFixed(
       //   2
       // )}`,
       value: position?.downsideProtectionStatus
@@ -590,12 +598,12 @@ export function WithdrawFund({
             Number(position?.ethPrice || 0) *
             Number(position?.exchangeRateAtDeposit || 0) *
             (Number(assetDetails?.LTV || 0) / 1e4)
-          ).toFixed(2)
+          ).toFixed(position.collateralType === "krwq" ? 8 : 2)
         : (
             Number(position?.ethPrice || 0) *
             Number(position?.exchangeRateAtDeposit || 0) *
             (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
-          ).toFixed(2),
+          ).toFixed(position.collateralType === "krwq" ? 8 : 2),
 
       tooltip: false,
       tooltipText: "",
@@ -621,7 +629,7 @@ export function WithdrawFund({
           parseFloat(position.depositedAmount) *
           (position.ethPrice - parseFloat(ethPrice.toString()));
         const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / 100).toFixed(2))
+          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2))
         );
         setAmountProtected(amountProtPrecision);
       }
@@ -631,7 +639,7 @@ export function WithdrawFund({
         const amountProt =
           0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
         const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / 100).toFixed(2))
+          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2))
         );
         setAmountProtected(amountProtPrecision);
       }
@@ -1934,7 +1942,11 @@ export function WithdrawFund({
                   {[
                     {
                       heading: `${
-                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                        position?.collateralType === "cbBTC"
+                          ? "cbBTC"
+                          : position?.collateralType === "krwq"
+                          ? "krwq"
+                          : "ETH"
                       } price at deposit`,
                       value: `$${Number(
                         formatUnits(BigInt(position?.ethPrice || 0), 2)
@@ -1942,7 +1954,11 @@ export function WithdrawFund({
                     },
                     {
                       heading: `Current ${
-                        position?.collateralType === "cbBTC" ? "cbBTC" : "ETH"
+                        position?.collateralType === "cbBTC"
+                          ? "cbBTC"
+                          : position?.collateralType === "krwq"
+                          ? "krwq"
+                          : "ETH"
                       } price`,
                       value: `$${formatUnits(BigInt(ethPrice), 2)}`,
                     },
