@@ -157,6 +157,7 @@ export const borrowAssetsAddress = {
   wsuperOETHb: wsuperOETHAddress,
   cbBTC: cbBTCAddress,
   KRWQ: KRWQAddress,
+  krwq: KRWQAddress,
 } as const;
 
 // Addresses for the global contract

@@ -202,7 +202,8 @@ export function WithdrawFund({
   const { assetPrice: ethPrice, isUsdValuePending } = useGetUsdValue(
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
-    ]
+    ],
+    position.collateralType === "krwq"
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -1948,9 +1949,15 @@ export function WithdrawFund({
                           ? "krwq"
                           : "ETH"
                       } price at deposit`,
-                      value: `$${Number(
-                        formatUnits(BigInt(position?.ethPrice || 0), 2)
-                      )}`,
+                      value: `$${
+                        position.collateralType === "krwq"
+                          ? Number(
+                              formatUnits(BigInt(position?.ethPrice || 0), 8)
+                            )
+                          : Number(
+                              formatUnits(BigInt(position?.ethPrice || 0), 2)
+                            )
+                      }`,
                     },
                     {
                       heading: `Current ${
@@ -1960,7 +1967,11 @@ export function WithdrawFund({
                           ? "krwq"
                           : "ETH"
                       } price`,
-                      value: `$${formatUnits(BigInt(ethPrice), 2)}`,
+                      value: `$${
+                        position.collateralType === "krwq"
+                          ? Number(ethPrice)
+                          : Number(formatUnits(BigInt(ethPrice), 2))
+                      }`,
                     },
                     {
                       heading: "Downside Protection till now",
@@ -2013,7 +2024,12 @@ export function WithdrawFund({
                     {
                       label: "Downside Protection",
                       value: `Up to $${(
-                        (Number(formatUnits(BigInt(position.ethPrice), 2)) *
+                        (Number(
+                          formatUnits(
+                            BigInt(position.ethPrice),
+                            position.collateralType === "krwq" ? 8 : 2
+                          )
+                        ) *
                           Number(position?.depositedAmountInETH) *
                           20) /
                         100
