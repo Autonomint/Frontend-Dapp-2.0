@@ -5,8 +5,6 @@ import { AssetName } from "@/utils/constants";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 
 interface BorrowInputs {
-  strikePercent: bigint; // uint8 can be mapped to the enum
-  // strikePrice: bigint; // uint64 can be represented by bigint
   volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint | undefined; // uint256 can be represented by bigint
@@ -38,7 +36,6 @@ const useDepositTokens = (mutation: any) => {
   console.log(depositErrorData, 'depositErrorData')
 
   const mintUSDa = async ({
-    strikePercent,
     volatility,
     depositingAmount,
     value,
@@ -60,7 +57,6 @@ const useDepositTokens = (mutation: any) => {
         {
           user: address as `0x${string}`,
           ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
-          strikePercent,
           volatility,
           assetName,
           depositingAmount,

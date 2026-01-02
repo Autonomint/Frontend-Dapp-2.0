@@ -516,7 +516,6 @@ function InputForm({ currency }: { currency: string }) {
       }, 1000);
       // calling the mint usda function in the contract
       mintUSDa?.({
-        strikePercent: BigInt(strikePercent),
         volatility: BigInt(borrowSignedData?.volatility || 0),
         depositingAmount:
           currency === "cbBTC"
@@ -692,7 +691,11 @@ function InputForm({ currency }: { currency: string }) {
   const { tokenRewardDetailList } = useGetTokenReward();
 
   const tokenRewardDetailBorrow =
-    tokenRewardDetailList?.[currency as keyof typeof tokenRewardDetailList];
+    tokenRewardDetailList?.[
+      currency === "KRWQ"
+        ? "krwq"
+        : (currency as keyof typeof tokenRewardDetailList)
+    ];
 
   // boaster from farm your luck
   const luckBoaster =

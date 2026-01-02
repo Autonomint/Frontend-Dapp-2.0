@@ -864,7 +864,7 @@ export function DcdsWithdrawModal({
   };
 
   // loading state for withdraw modal
-  const isPopupLoading = false;
+  const isPopupLoading = isLoadingAPY || updatingData || isIndexPointLoading;
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
