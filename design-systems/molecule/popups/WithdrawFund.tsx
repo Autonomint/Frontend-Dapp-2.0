@@ -946,13 +946,19 @@ export function WithdrawFund({
           const repayAmount = BigInt(
             Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
           );
-          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const token =
+            position.collateralType === "cbBTC"
+              ? "cbBTC"
+              : position.collateralType === "krwq"
+              ? "krwq"
+              : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData(token);
 
           withdrawUsda(
             position.index,
             repayAmount,
-            position.collateralType === "cbBTC"
+            position.collateralType === "cbBTC" ||
+              position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
@@ -981,7 +987,8 @@ export function WithdrawFund({
             BigInt(signedData.ethPrice),
             BigInt(signedData.volatility),
             signedData,
-            position.collateralType === "cbBTC"
+            position.collateralType === "cbBTC" ||
+              position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             position.collateralType
