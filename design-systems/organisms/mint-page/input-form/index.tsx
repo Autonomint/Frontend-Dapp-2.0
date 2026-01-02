@@ -415,14 +415,14 @@ function InputForm({ currency }: { currency: string }) {
       address: optionContractAddress[
         chainId as keyof typeof optionContractAddress
       ] as `0x${string}`,
-      functionName: "currentStrikePricePercentLimit",
+      functionName: "strikePricePercentLimits",
+      args: [BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]],
       query: {
-        select: (data) => Number(data || 0),
+        select: (data) => Number(data || 0) / 100,
       },
     });
 
   console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
-
   // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(

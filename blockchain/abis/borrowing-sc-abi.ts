@@ -778,11 +778,6 @@ export const borrowingContractAbi = [
             "type": "address"
           },
           {
-            "internalType": "uint128",
-            "name": "strikePercent",
-            "type": "uint128"
-          },
-          {
             "internalType": "uint256",
             "name": "volatility",
             "type": "uint256"
