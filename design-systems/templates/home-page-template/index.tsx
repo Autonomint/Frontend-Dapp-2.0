@@ -14,6 +14,7 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
+import { BorrowAssetsEnum } from "@/utils/constants";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -65,7 +66,8 @@ export default function HomeTemplate() {
       abi: optionABI,
       address:
         optionContractAddress[chainId as keyof typeof optionContractAddress],
-      functionName: "currentStrikePricePercentLimit",
+      functionName: "strikePricePercentLimits",
+      args: [BorrowAssetsEnum["ETH" as keyof typeof BorrowAssetsEnum]],
       query: {
         select: (data) => Number(data || 0),
       },
