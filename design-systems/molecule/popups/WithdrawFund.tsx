@@ -941,13 +941,20 @@ export function WithdrawFund({
           const repayAmountFormated = Number(
             truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
           );
-          const repayAmount = parseUnits(repayAmountFormated.toString(), 6);
+          const repayAmount = BigInt(
+            Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
+          );
 
           // const percentageValue =
           //   Number(formik.values.withdrawAmount) /
           //   Number(position.noOfUSDaMinted);
 
-          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const token =
+            position.collateralType === "cbBTC"
+              ? "cbBTC"
+              : position.collateralType === "krwq"
+              ? "krwq"
+              : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
             repayPercent: repayAmount,
@@ -956,7 +963,8 @@ export function WithdrawFund({
           withdrawUsda(
             position.index,
             repayAmount,
-            position.collateralType === "cbBTC"
+            position.collateralType === "cbBTC" ||
+              position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.odosAssembledData,
@@ -985,7 +993,8 @@ export function WithdrawFund({
             BigInt(signedData.ethPrice),
             BigInt(signedData.volatility),
             signedData,
-            position.collateralType === "cbBTC"
+            position.collateralType === "cbBTC" ||
+              position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             position.collateralType

@@ -385,31 +385,29 @@ function InputForm({ currency }: { currency: string }) {
 
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
-    currency === "KRWQ"
-      ? parseUnits(
-          String(Math.floor(Number(formik.values.collateralAmount || 0))),
-          18
-        ).toString()
-      : currency === "cbBTC"
-      ? parseUnits(
-          String(Math.floor(Number(formik.values.collateralAmount || 0))),
-          8
-        ).toString()
-      : parseUnits(
-          String(
-            Math.floor(
-              Number(formik.values.collateralAmount || 0) *
-                Number(exchangeRate || 0)
-            )
-          ),
-          18
-        ).toString(),
-    (unformattedValue || 0) as number,
+    String(formik.values.collateralAmount),
+    (currency === "KRWQ"
+      ? parseUnits(String(assetPrice), 8)
+      : assetPrice || 0) as number,
     formik.values.strikePricePercent,
     currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
     Number(formik.values.hedgeDuration)
   );
-  console.log(exchangeRate, "exchangeRate");
+  console.log(
+    parseUnits(String(assetPrice), 8),
+    ethPrice,
+    parseUnits(
+      String(
+        Math.floor(
+          Number(formik.values.collateralAmount || 0) *
+            Number(formatUnits(BigInt(exchangeRate || 0), 18))
+        )
+      ),
+      18
+    ).toString(),
+    exchangeRate,
+    "unformattedValue"
+  );
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
@@ -955,7 +953,8 @@ function InputForm({ currency }: { currency: string }) {
         {/*  displaying the input metrics */}
         <InputMetics
           deposit={(
-            (Number(selectedAssetPrice || 0) / 100) *
+            (Number(selectedAssetPrice || 0) /
+              (currency === "KRWQ" ? 1 : 100)) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={Number(optionFees).toFixed(2)}
