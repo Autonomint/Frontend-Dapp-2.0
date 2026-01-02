@@ -32,7 +32,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
       case "cbBTC":
         return ["CRYPTO:CBBTCCUSD|1D"];
       case "KRWQ":
-        return ["CME:KRW1!|1D"];
+        return ["FX_IDC:KRWUSD|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }

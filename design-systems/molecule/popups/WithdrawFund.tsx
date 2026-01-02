@@ -775,6 +775,8 @@ export function WithdrawFund({
     },
   });
 
+  console.log("borrowWithdrawData", borrowWithdrawData);
+
   const {
     isLoading: isLoadingWithdrawReceipt,
     isSuccess: isSuccessWithdrawReceipt,
@@ -932,6 +934,7 @@ export function WithdrawFund({
         (usdaHashData && usdaHashSucces) ||
         (usdtHashData && usdtHashSucces)
       ) {
+        debugger;
         if (toggleView == "repay") {
           setIsApproveLoadingLocal(false);
           setTimeout(() => {

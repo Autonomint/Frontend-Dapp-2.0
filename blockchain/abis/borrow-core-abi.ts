@@ -1598,39 +1598,46 @@ export const borowCoreABI = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "toAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint64",
-        "name": "index",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint128",
-        "name": "repayAmount",
-        "type": "uint128"
-      },
-      {
-        "internalType": "bytes",
-        "name": "odosAssembledData",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint128",
-        "name": "usdtFromOdos",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint256",
-        "name": "expiredETHAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint128",
-        "name": "ethPrice",
-        "type": "uint128"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "user",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "index",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint128",
+            "name": "repayAmount",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint64",
+            "name": "ethPrice",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "usdtFromOdos",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.BorrowWithdraw_Params",
+        "name": "params",
+        "type": "tuple"
       },
       {
         "components": [
