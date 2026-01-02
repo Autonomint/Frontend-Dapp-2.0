@@ -824,8 +824,10 @@ function InputForm({ currency }: { currency: string }) {
 
   //  Liquidation price
   const LiquidationPrice = useMemo(() => {
-    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(2);
-  }, [selectedAssetPrice]);
+    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(
+      currency === "KRWQ" ? 8 : 2
+    );
+  }, [selectedAssetPrice, currency]);
 
   const hedgeDurationOption = [
     {

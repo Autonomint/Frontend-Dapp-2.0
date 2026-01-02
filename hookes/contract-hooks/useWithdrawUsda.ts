@@ -1,3 +1,4 @@
+import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
@@ -9,11 +10,12 @@ const useWithdrawUsda = (mutation: any) => {
     reset: borrowReset, // Function for resetting borrowing
     data: borrowWithdrawData, // Data for borrowing withdrawal
     isError: borrowWithdrawError, // Error state for borrowing withdrawal
+    error: error
   } = useWriteContract({
     mutation,
   });
   const { chainId, address } = useAccount();
-
+  console.log(error, 'errorerror')
   const withdrawUsda = async (
     index: number,
     amount: bigint,
@@ -28,20 +30,22 @@ const useWithdrawUsda = (mutation: any) => {
     token: string,
   ) => {
     const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-
+    const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
     try {
       borrowWithdrawAsync({
-        abi: borrowingContractAbi,
+        abi: abi,
         address: contract as `0x${string}`,
         functionName: "withDraw",
         args: [
-          address as `0x${string}`,
-          BigInt(index),
-          amount,
-          odosAssembledData,
-          usdtFromOdos,
-          expiredETHAmount,
-          token === "krwq" ? ethPrice : undefined,
+          {
+            user: address as `0x${string}`,
+            index: BigInt(index),
+            ethPrice: token === "krwq" ? ethPrice : undefined,
+            repayAmount: amount,
+            odosAssembledData,
+            usdtFromOdos,
+            expiredETHAmount,
+          },
           {
             nonce,
             deadline,
