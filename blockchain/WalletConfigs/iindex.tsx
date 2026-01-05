@@ -67,7 +67,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [mainnet, base, optimism, mode],
+  networks: [base, optimism, mainnet, mode],
   metadata: metadata,
   features: {
     email: false,
