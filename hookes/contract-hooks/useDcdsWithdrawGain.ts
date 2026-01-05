@@ -1,3 +1,4 @@
+import { cdsCoreABI } from "@/blockchain/abis/cdsCoreDeposit";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsAbiEthereum } from "@/blockchain/abis/dcds-ethereum";
 import { cdsAddress, cdsCoreAddress } from "@/blockchain/contracts";
@@ -24,9 +25,10 @@ const useDcdsWithdrawGain = (mutation: any) => {
   const { chainId } = useAccount();
 
   const handleDcdsWithdrawGain = (args: any, token: string) => {
-    const contract = token === "cbBTC" ? cdsCoreAddress : cdsAddress;
+    const contract = token === "cbBTC" || token === "krwq" ? cdsCoreAddress : cdsAddress;
+    const abi = token === "cbBTC" || token === "krwq" ? cdsCoreABI : cdsAbi;
     dcdsFundWithdrawGain({
-      abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : cdsAbi,
+      abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : abi,
       address: contract[chainId as keyof typeof contract] as `0x${string}`,
       functionName: "withdrawGains",
       args,
