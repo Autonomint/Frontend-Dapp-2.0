@@ -40,7 +40,7 @@ const useWithdrawUsda = (mutation: any) => {
           {
             user: address as `0x${string}`,
             index: BigInt(index),
-            ethPrice: token === "krwq" ? ethPrice : undefined,
+            ethPrice: token === "krwq" || token === "cbBTC" ? ethPrice : undefined,
             repayAmount: amount,
             odosAssembledData,
             usdtFromOdos,
