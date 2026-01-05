@@ -5,6 +5,7 @@ import {
   borrowCoreAddress,
   borrowingContractAddress,
   borrowWithdrawCoreAddress,
+  optionContractAddress,
   testusdtAbiAddress,
   usDaAddress,
 } from "@/blockchain/contracts";
@@ -68,6 +69,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetBorrowRenewSignedData from "@/hookes/api-hooks/useGetBorrowRenewSignedData";
 import { InfoIcon } from "lucide-react";
+import { optionABI } from "@/blockchain/abis/option";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -335,7 +337,7 @@ export function WithdrawFund({
       ? borrowCoreAddress
       : borrowingContractAddress;
   // getting token details
-  const { data: assetDetails, refetch: refetchCurrentData } = useReadContract({
+  const { data: assetDetails } = useReadContract({
     abi: borrowingContractAbi,
     address: contract[chainId as keyof typeof contract] as `0x${string}`,
     args: [
@@ -382,6 +384,23 @@ export function WithdrawFund({
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
+
+  // Custom hook to fetch the current strike price percent limit
+  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
+    useReadContract({
+      abi: optionABI,
+      address:
+        optionContractAddress[chainId as keyof typeof optionContractAddress],
+      functionName: "strikePricePercentLimits",
+      args: [
+        BorrowAssetsEnum[
+          position.collateralType as keyof typeof BorrowAssetsEnum
+        ],
+      ],
+      query: {
+        select: (data) => Number(data || 0) / 100,
+      },
+    });
 
   // fetching allowance of usda for repay
   const {
@@ -482,7 +501,9 @@ export function WithdrawFund({
 
       // calculate upside at deposit time
       const upsideAt =
-        (Number(position.depositedAmountInETH) * Number(ethPriceAtDep) * 5) /
+        (Number(position.depositedAmountInETH) *
+          Number(ethPriceAtDep) *
+          (currentStrikePricePercentLimit || 0)) /
         100;
 
       // calculate price difference
@@ -938,7 +959,6 @@ export function WithdrawFund({
         (usdaHashData && usdaHashSucces) ||
         (usdtHashData && usdtHashSucces)
       ) {
-
         if (toggleView == "repay") {
           setIsApproveLoadingLocal(false);
           setTimeout(() => {
