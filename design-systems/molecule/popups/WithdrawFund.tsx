@@ -354,7 +354,8 @@ export function WithdrawFund({
   const currentEthPrice =
     position.status == BorrowStatus.DEPOSITED
       ? ethPrice || 0
-      : position.ethPriceAtWithdraw || 0;
+      : Number(position.ethPriceAtWithdraw) /
+        (position.collateralType === "krwq" ? 1e8 : 1e2);
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
@@ -363,20 +364,18 @@ export function WithdrawFund({
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
       ? Number(
-          formatUnits(
-            BigInt(position?.ethPrice || 0),
-            position.collateralType === "krwq" ? 8 : 2
-          )
+          (position?.ethPrice || 0) /
+            (position.collateralType === "krwq" ? 1e8 : 1e2)
         ) *
           Number(position?.depositedAmountInETH) -
-        Number(
-          formatUnits(
-            BigInt(currentEthPrice),
-            position.collateralType === "krwq" ? 8 : 2
-          )
-        ) *
-          Number(position?.depositedAmountInETH)
+        Number(currentEthPrice) * Number(position?.depositedAmountInETH)
       : 0;
+
+  console.log(
+    downsideProtection,
+    calculateRemainingDays(Number(position.validTill)),
+    "downsideProtection"
+  );
 
   // fetching allowance of usda for repay
   const {
