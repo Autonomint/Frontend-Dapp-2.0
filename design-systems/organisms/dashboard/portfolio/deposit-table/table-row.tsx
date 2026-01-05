@@ -109,7 +109,11 @@ const DepositTableRow = ({
         (position.ethPrice - parseFloat(ethPrice.toString()));
       const amountProtPrecision = parseFloat(
         displayNumberWithPrecision(
-          (amountProt / 100).toFixed(position.collateralType === "krwq" ? 8 : 2)
+          String(
+            (
+              amountProt / (position.collateralType === "krwq" ? 1e8 : 1e2)
+            ).toFixed(position.collateralType === "krwq" ? 8 : 2)
+          )
         )
       );
       setAmountProtected(amountProtPrecision);
