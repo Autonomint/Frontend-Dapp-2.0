@@ -1,3 +1,4 @@
+import { cdsCoreABI } from "@/blockchain/abis/cdsCoreDeposit";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsAbiEthereum } from "@/blockchain/abis/dcds-ethereum";
 import { cdsAddress, cdsCoreAddress, cdsWithdrawCoreAddress } from "@/blockchain/contracts";
@@ -18,9 +19,11 @@ const useDcdsWithdraw = (mutation: any) => {
   const { chainId } = useAccount();
   console.log(dcdsFundWithdrawErrorDetails, 'dcdsFundWithdrawErrorDetails')
   const handleDcdsFundWithdraw = (args: any, value: any, token: string) => {
-    const contract = token === "cbBTC" ? cdsCoreAddress : cdsAddress;
+    const contract = token === "cbBTC" || token === "krwq" ? cdsCoreAddress : cdsAddress;
+    const abi = token === "cbBTC" || token === "krwq" ? cdsCoreABI : cdsAbi
+    debugger
     dcdsFundWithdraw({
-      abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : cdsAbi,
+      abi: abi,
       address: contract[chainId as keyof typeof contract] as `0x${string}`,
       functionName: "withdraw",
       args,

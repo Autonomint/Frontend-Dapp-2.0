@@ -783,12 +783,17 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
+    debugger;
     try {
       setHalfWithdraw(isHalfWithdraw || false);
       setDcdsFundWithdrawLoadingLocal(true);
       // if position status is deposited then call withdraw function
       if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
-        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const token =
+          position.collateralType === "cbBTC" ||
+          position.collateralType === "krwq"
+            ? "krwq"
+            : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
           [
@@ -796,7 +801,10 @@ export function DcdsWithdrawModal({
             BigInt(position.index),
             res?.excessProfitCumulativeValue,
             res?.expiredETHAmount,
-            position.collateralType === "KRWQ" ? res?.ethPrice : undefined,
+            position.collateralType === "krwq" ||
+            position.collateralType === "cbBTC"
+              ? res?.ethPrice
+              : undefined,
             isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
@@ -818,7 +826,8 @@ export function DcdsWithdrawModal({
           setWithdrawMethodLoading(true);
           handleDcdsFundWithdraw?.(
             params,
-            position.collateralType === "cbBTC"
+            position.collateralType === "cbBTC" ||
+              position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee,
             position.collateralType
@@ -827,7 +836,12 @@ export function DcdsWithdrawModal({
       } else if (position.status == "WITHDREW" || pendingFixedYields > 0) {
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
-        const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+        const token =
+          position.collateralType === "cbBTC"
+            ? "cbBTC"
+            : position.collateralType === "krwq"
+            ? "krwq"
+            : "ETH";
         const res = await refetchBorrowWithDrawGainsSignedData(token);
         let params = [
           BigInt(position.index),
