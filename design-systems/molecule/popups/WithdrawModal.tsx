@@ -825,7 +825,6 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
-
     try {
       setDcdsFundWithdrawLoadingLocal(true);
       if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
