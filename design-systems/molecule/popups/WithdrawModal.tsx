@@ -734,7 +734,12 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const token = position.collateralType === "cbBTC" ? "cbBTC" : "ETH";
+          const token =
+            position.collateralType === "cbBTC"
+              ? "cbBTC"
+              : position.collateralType === "krwq"
+              ? "krwq"
+              : "ETH";
           const res = await refetchBorrowWithDrawGainsSignedData(token);
           let params = [
             BigInt(position.index),
@@ -783,7 +788,6 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
-
     try {
       setHalfWithdraw(isHalfWithdraw || false);
       setDcdsFundWithdrawLoadingLocal(true);
