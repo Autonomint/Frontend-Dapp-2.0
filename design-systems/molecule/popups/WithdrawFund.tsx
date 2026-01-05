@@ -331,7 +331,7 @@ export function WithdrawFund({
   // );
 
   const contract =
-    position.collateralType === "cbBTC"
+    position.collateralType === "cbBTC" || position.collateralType === "krwq"
       ? borrowCoreAddress
       : borrowingContractAddress;
   // getting token details
@@ -594,14 +594,16 @@ export function WithdrawFund({
       // )}`,
       value: position?.downsideProtectionStatus
         ? (
-            Number(position?.ethPrice || 0) *
-            Number(position?.exchangeRateAtDeposit || 0) *
-            (Number(assetDetails?.LTV || 0) / 1e4)
+            (Number(position?.ethPrice || 0) *
+              Number(position?.exchangeRateAtDeposit || 0) *
+              Number(assetDetails?.LTV || 0)) /
+            (1e2 * (position.collateralType === "krwq" ? 1e8 : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2)
         : (
-            Number(position?.ethPrice || 0) *
-            Number(position?.exchangeRateAtDeposit || 0) *
-            (Number(assetDetails?.optionsExpiredLTV || 0) / 1e4)
+            (Number(position?.ethPrice || 0) *
+              Number(position?.exchangeRateAtDeposit || 0) *
+              Number(assetDetails?.optionsExpiredLTV || 0)) /
+            (1e2 * (position.collateralType === "krwq" ? 1e8 : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2),
 
       tooltip: false,
@@ -614,6 +616,8 @@ export function WithdrawFund({
       tooltipText: "",
     },
   ];
+
+  console.log(position, "position");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
