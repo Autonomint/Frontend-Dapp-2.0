@@ -783,7 +783,7 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
-    debugger;
+
     try {
       setHalfWithdraw(isHalfWithdraw || false);
       setDcdsFundWithdrawLoadingLocal(true);
