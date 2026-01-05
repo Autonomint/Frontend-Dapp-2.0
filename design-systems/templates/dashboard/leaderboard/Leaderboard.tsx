@@ -11,7 +11,8 @@ import { formatEther, formatUnits } from "viem";
 
 function Leaderboard() {
   // Fetch the total volume of borrowers amount in USD
-  const { omniChainDataEth, omniChainDataCbbtc } = useGetOmniChainData();
+  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
+    useGetOmniChainData();
 
   // getting leaderboard data
   const {
@@ -136,6 +137,30 @@ function Leaderboard() {
                                   0n
                               ),
                               20
+                            )
+                          )
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex  justify-between">
+                    <span className="font-medium text-grayLight">KRWQ</span>
+                    <span className="font-medium text-black dark:text-white">
+                      {formatNumber(
+                        Number(
+                          formatUnits(
+                            BigInt(
+                              omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n
+                            ),
+                            6
+                          )
+                        ) +
+                          Number(
+                            formatUnits(
+                              BigInt(
+                                omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD ??
+                                  0n
+                              ),
+                              26
                             )
                           )
                       )}

@@ -362,9 +362,19 @@ export function WithdrawFund({
     calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
-      ? Number(formatUnits(BigInt(position?.ethPrice || 0), 2)) *
+      ? Number(
+          formatUnits(
+            BigInt(position?.ethPrice || 0),
+            position.collateralType === "krwq" ? 8 : 2
+          )
+        ) *
           Number(position?.depositedAmountInETH) -
-        Number(formatUnits(BigInt(currentEthPrice), 2)) *
+        Number(
+          formatUnits(
+            BigInt(currentEthPrice),
+            position.collateralType === "krwq" ? 8 : 2
+          )
+        ) *
           Number(position?.depositedAmountInETH)
       : 0;
 
@@ -2013,7 +2023,11 @@ export function WithdrawFund({
                     {
                       heading: "Downside Protection till now",
 
-                      value: "$" + downsideProtection.toFixed(2),
+                      value:
+                        "$" +
+                        downsideProtection.toFixed(
+                          position.collateralType === "krwq" ? 8 : 2
+                        ),
                     },
                     {
                       heading: "Option Fees paid",
