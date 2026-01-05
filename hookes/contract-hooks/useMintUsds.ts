@@ -34,7 +34,6 @@ const useDepositTokens = (mutation: any) => {
     },
   });
 
-  console.log(depositErrorData, 'depositErrorData')
 
   const mintUSDa = async ({
     volatility,

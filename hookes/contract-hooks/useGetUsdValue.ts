@@ -47,7 +47,6 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>, isKR
 
   const { krwqPrice, error } = useGetKrwqPrice()
 
-  console.log(isKRWQ, krwqPrice, (Number(formatUnits(BigInt(krwqPrice || 0), 8))), 'isKRWQ')
 
   return {
     isUsdValuePending, // Indicates if the USD value query is still loading

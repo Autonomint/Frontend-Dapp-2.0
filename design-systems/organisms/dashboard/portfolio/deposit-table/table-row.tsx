@@ -115,11 +115,7 @@ const DepositTableRow = ({
       const amountProtPrecision = parseFloat(
         String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2))
       );
-      console.log(
-        amountProtPrecision,
-        position.index,
-        "amountProtectedFunction"
-      );
+  
       setAmountProtected(amountProtPrecision);
     }
   };
@@ -136,11 +132,7 @@ const DepositTableRow = ({
   const handleRowClick = () => {
     setSelectedPosition(position);
   };
-  console.log(
-    calculateRemainingDays(Number(position.validTill)),
-    idx,
-    "validTill"
-  );
+
   return (
     <tr
       className={`border ${

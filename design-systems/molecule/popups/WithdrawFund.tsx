@@ -247,8 +247,6 @@ export function WithdrawFund({
     },
   });
 
-  console.log(depositData, "depositData");
-
   // Form for renew functionality
   const renewFormik = useFormik({
     initialValues: {
@@ -281,12 +279,7 @@ export function WithdrawFund({
     balance: USDTBalanceFormatted,
     balanceUnformatted,
   } = useGetBalance("USDT");
-  console.log(
-    USDTBalance,
-    USDTBalanceFormatted,
-    balanceUnformatted,
-    "USDTBalanceFormatted"
-  );
+
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
     useState<boolean>(false);
@@ -348,7 +341,6 @@ export function WithdrawFund({
     functionName: "getAssetDetails",
   }) as { data: any; refetch: () => void };
 
-  console.log(assetDetails, "assetDetails");
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
   const currentEthPrice =
@@ -371,12 +363,6 @@ export function WithdrawFund({
         Number(currentEthPrice) * Number(position?.depositedAmountInETH)
       : 0;
 
-  console.log(
-    downsideProtection,
-    calculateRemainingDays(Number(position.validTill)),
-    "downsideProtection"
-  );
-
   // fetching allowance of usda for repay
   const {
     data: allowance,
@@ -398,8 +384,9 @@ export function WithdrawFund({
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
       abi: optionABI,
-      address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress],
+      address: optionContractAddress[
+        chainId as keyof typeof optionContractAddress
+      ] as `0x${string}`,
       functionName: "strikePricePercentLimits",
       args: [
         BorrowAssetsEnum[
@@ -569,7 +556,6 @@ export function WithdrawFund({
     }
   }
 
-  console.log(position, "position");
 
   // repay amount details for showing in popup
   const repayAmountDetails = [
@@ -649,7 +635,6 @@ export function WithdrawFund({
     },
   ];
 
-  console.log(position, "position");
 
   const handleAmountProtected = () => {
     //check if we have current ethPrice available or not
@@ -811,7 +796,6 @@ export function WithdrawFund({
     },
   });
 
-  console.log("borrowWithdrawData", borrowWithdrawData);
 
   const {
     isLoading: isLoadingWithdrawReceipt,
@@ -962,7 +946,6 @@ export function WithdrawFund({
     },
   });
 
-  console.log(renewErrorSm, "renewErrorSm");
 
   useEffect(() => {
     (async () => {
@@ -1128,13 +1111,7 @@ export function WithdrawFund({
     payableOptionFeesError: any;
   };
 
-  console.log(
-    formatUnits(BigInt(payableOptionFees || 0), 6),
-    payableOptionFees,
-    Number(renewFormik.values.hedgeDuration),
-    payableOptionFeesError,
-    "chekc"
-  );
+
 
   const { getOraclePrice } = useMasterPriceOracle(
     testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
@@ -1291,11 +1268,7 @@ export function WithdrawFund({
 
   const hedgeDurationOption = useMemo(() => {
     const currentValidity = position.lastOptedValidity || updatedHedgeValidity;
-    console.log(
-      position.lastOptedValidity,
-      updatedHedgeValidity,
-      "updatedHedgeValidity"
-    );
+ 
     return [
       {
         label: "1 Day",
@@ -1323,15 +1296,6 @@ export function WithdrawFund({
     ].filter(Boolean);
   }, [updatedHedgeValidity, renewFormik, position]);
 
-  console.log(
-    position.status == BorrowStatus.WITHDREW,
-    position.status == BorrowStatus.LIQUIDATED,
-    isFunctionPausedBorrow_Renew,
-    calculateRemainingDays(Number(position.validTill)) <= 0,
-    !isRenewActive,
-    !readyForNewTx,
-    "renewReceiptError"
-  );
   return (
     <>
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>

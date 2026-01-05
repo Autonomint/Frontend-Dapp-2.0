@@ -15,7 +15,7 @@ const useWithdrawUsda = (mutation: any) => {
     mutation,
   });
   const { chainId, address } = useAccount();
-  console.log(error, 'errorerror')
+
   const withdrawUsda = async (
     index: number,
     amount: bigint,

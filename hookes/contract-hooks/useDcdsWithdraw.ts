@@ -1,4 +1,5 @@
-import { cdsCoreABI } from "@/blockchain/abis/cdsCoreDeposit";
+
+import { cdsCoreABI } from "@/blockchain/abis/cdsCore";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsAbiEthereum } from "@/blockchain/abis/dcds-ethereum";
 import { cdsAddress, cdsCoreAddress, cdsWithdrawCoreAddress } from "@/blockchain/contracts";

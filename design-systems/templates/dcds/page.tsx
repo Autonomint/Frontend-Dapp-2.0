@@ -365,7 +365,7 @@ function DCDSTemplate() {
   //   return res;
   // }, [formik.values, getPrices, selectedTokens]);
 
-  // console.log(liqAmnt, "liqAmnt");
+
 
   // deposit function hook
   const {
@@ -379,7 +379,6 @@ function DCDSTemplate() {
     },
   });
 
-  console.log(dcdsDepositeError, "dcdsDepositeError");
   // get the confirmed txn receipt for the cds deposit
   const {
     isLoading: isCdsConfirmationLoadingReceipt,
@@ -1101,7 +1100,6 @@ function DCDSTemplate() {
     isFunctionPausedCDS_Deposit,
   ]);
 
-  console.log(tokenList, "tokenList");
 
   // useEffect for updating the allowance in selected tokens state
   useEffect(() => {
@@ -1367,8 +1365,7 @@ function DCDSTemplate() {
     if (tokenList[5]) list.push(tokenList[5]);
     return list;
   }, [tokenList]);
-  console.log("formik.values", formik);
-  console.log(tokenList, "tokenList");
+
 
   return (
     <div>

@@ -133,7 +133,6 @@ function InputForm({ currency }: { currency: string }) {
   // Selected asset price
   const selectedAssetPrice =
     currency.toLocaleLowerCase() == "eth" ? ethPrice : assetPrice;
-  console.log(selectedAssetPrice, "selectedAssetPrice");
 
   // Custom hook to check the pause state of borrow functions
   const { isFunctionPausedBorrow_Deposit } = useBorrowPause();
@@ -248,8 +247,6 @@ function InputForm({ currency }: { currency: string }) {
     onSubmit: handleSubmit,
   });
 
-  console.log(formik.values, "formik");
-
   useEffect(() => {
     // set the balance of the selected asset to formik values
     formik.setFieldValue("balance", formattedBalance);
@@ -274,7 +271,6 @@ function InputForm({ currency }: { currency: string }) {
     BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]
   );
 
-  console.log(ltv, "ltv");
   // Custom hook to fetch the deposit data hash for the contract
   const { depositDatahash, isDepositsLoading, mintUSDa, reset, depositError } =
     useDepositTokens({
@@ -291,7 +287,6 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
-  console.log(depositError, "depositError");
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
     data: Depositdata,
@@ -393,21 +388,7 @@ function InputForm({ currency }: { currency: string }) {
     currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
     Number(formik.values.hedgeDuration)
   );
-  console.log(
-    parseUnits(String(assetPrice), 8),
-    ethPrice,
-    parseUnits(
-      String(
-        Math.floor(
-          Number(formik.values.collateralAmount || 0) *
-            Number(formatUnits(BigInt(exchangeRate || 0), 18))
-        )
-      ),
-      18
-    ).toString(),
-    exchangeRate,
-    "unformattedValue"
-  );
+
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
@@ -422,7 +403,6 @@ function InputForm({ currency }: { currency: string }) {
       },
     });
 
-  console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
   // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(

@@ -37,7 +37,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["BINANCE:ETHUSD|1D"];
     }
   };
-  console.log(getTokenSymbol(), "getTokenSymbol");
+
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"

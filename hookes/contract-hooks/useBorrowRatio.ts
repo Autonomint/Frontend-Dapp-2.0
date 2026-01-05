@@ -25,7 +25,6 @@ const useBorrowRatio = (amount: bigint) => {
     query: { enabled: !!address },
   });
 
-
   return {
     isRatioPending,
     ratioValue: ratioValue as number,

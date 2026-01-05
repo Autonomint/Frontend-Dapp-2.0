@@ -25,7 +25,6 @@ const useBorrowRenew = (mutation: any) => {
     },
   });
 
-  console.log(error, 'errorerror')
 
   const renewBorrow = async (index: bigint, hedgeValidity: bigint, ethPrice: bigint, volatility: bigint, verifyParams: any, nativeFee: bigint | undefined, token: string) => {
     const contract = token === "cbBTC" || token === "KRWQ" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]

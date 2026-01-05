@@ -19,7 +19,6 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
     mutation,
   });
 
-  console.log(dcdsDepositError, 'dcdsDepositError')
   const handleDcdsDeposit = async (
     args: [
       {

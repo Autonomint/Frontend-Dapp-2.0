@@ -91,7 +91,6 @@ const useFetchOptionFees = (
     ? formatUnits(BigInt((Fees as number[])?.[1]), 6)
     : 0;
 
-  console.log(optionFees, collateralAmount, !!isConnected && !!chainId && !!collateralAmount && strikePercent > 0 && hedgeDuration > 0, 'optionFees')
 
   return {
     optionFees, // Human-readable fee value
