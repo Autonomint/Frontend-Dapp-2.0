@@ -1,5 +1,8 @@
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { borrowingContractAddress } from "@/blockchain/contracts";
+import {
+  borrowAssetsAddress,
+  borrowingContractAddress,
+} from "@/blockchain/contracts";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import { BorrowStatus } from "@/utils/constants";
 import displayNumberWithPrecision, {
@@ -92,7 +95,12 @@ const DepositTableRow = ({
   ];
   const [depositData, setDepositData] = useState(depositDetails);
   const [amountProtected, setAmountProtected] = useState(0);
-  const { usdValue: ethPrice } = useGetUsdValue();
+  const { assetPrice: ethPrice } = useGetUsdValue(
+    borrowAssetsAddress[
+      position.collateralType as keyof typeof borrowAssetsAddress
+    ],
+    position.collateralType === "krwq"
+  );
   const [openChart, setOpenChart] = useState(false);
   const { chainId, address } = useAccount();
   // calculating protect amount
@@ -106,15 +114,16 @@ const DepositTableRow = ({
     } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
       const amountProt =
         parseFloat(position.depositedAmount) *
-        (position.ethPrice - parseFloat(ethPrice.toString()));
+        (position.ethPrice / (position.collateralType === "krwq" ? 1e8 : 1e2) -
+          parseFloat(ethPrice.toString()));
+
       const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision(
-          String(
-            (
-              amountProt / (position.collateralType === "krwq" ? 1e8 : 1e2)
-            ).toFixed(position.collateralType === "krwq" ? 8 : 2)
-          )
-        )
+        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2))
+      );
+      console.log(
+        amountProtPrecision,
+        position.index,
+        "amountProtectedFunction"
       );
       setAmountProtected(amountProtPrecision);
     }
@@ -132,6 +141,11 @@ const DepositTableRow = ({
   const handleRowClick = () => {
     setSelectedPosition(position);
   };
+  console.log(
+    calculateRemainingDays(Number(position.validTill)),
+    idx,
+    "validTill"
+  );
   return (
     <tr
       className={`border ${
