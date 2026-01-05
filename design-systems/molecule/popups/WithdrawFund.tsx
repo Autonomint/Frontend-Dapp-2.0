@@ -600,7 +600,9 @@ export function WithdrawFund({
     },
     {
       headline: "Downside Protection Till Now",
-      value: `$${downsideProtection.toFixed(2)}`,
+      value: `$${downsideProtection.toFixed(
+        position.collateralType === "krwq" ? 8 : 2
+      )}`,
       tooltip: false,
       tooltipText: "",
     },
