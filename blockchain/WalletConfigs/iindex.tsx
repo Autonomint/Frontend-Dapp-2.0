@@ -18,7 +18,7 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
-const chainList: AppKitNetwork[] = [mainnet, base, optimism, mode];
+const chainList: AppKitNetwork[] = [base, optimism, mainnet, mode];
 
 export const opSepolia = defineChain({
   id: 11155420,
