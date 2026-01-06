@@ -54,7 +54,11 @@ function SingleListItem({ item }: { item: any }) {
           <div className="flex items-baseline justify-center  text-nowrap flex-row gap-1">
             <p>{item.pointsToBeGiven}</p>
             <div className="text-base">{`per ${item.minAmount} ${
-              item.token === "cbBTC" ? "cbBTC" : "ETH"
+              item.token === "cbBTC"
+                ? "cbBTC"
+                : item.token === "KRWQ"
+                ? "KRWQ"
+                : "ETH"
             }`}</div>
           </div>
         </div>
@@ -66,10 +70,15 @@ function SingleListItem({ item }: { item: any }) {
       value:
         item.token === "KRWQ" ? (
           <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
-            <p className="text-[14px] sm:hidden block">Upto 16.17%/m</p>
-            <div className="flex items-center text-[14px] lg:text-lg gap-2">
-              <p className="text-lg">Coming Soon</p>
-            </div>
+            <p className="text-[14px] sm:block hidden">Upto 15% APR</p>
+            {/* <p className="text-[14px] sm:hidden block">Upto 16.17%/m</p> */}
+            {/* <div className="flex items-center text-[14px] lg:text-lg gap-2">
+              <Link href={item.link}>
+                <p>Strategies</p>
+              </Link>
+
+              <SquareArrowOutUpRight />
+            </div> */}
           </div>
         ) : (
           <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
