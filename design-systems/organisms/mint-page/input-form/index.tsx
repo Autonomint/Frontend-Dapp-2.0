@@ -503,7 +503,7 @@ function InputForm({ currency }: { currency: string }) {
             : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice:
-          currency === "KRWQ"
+          currency === "KRWQ" || currency === "cbBTC"
             ? BigInt(borrowSignedData?.ethPrice || 0)
             : undefined,
       });
