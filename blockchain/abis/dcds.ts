@@ -1,4 +1,9 @@
-export const cdsAbi = [
+export const cdsAbi =  [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
     {
       "inputs": [
         {
@@ -132,6 +137,11 @@ export const cdsAbi = [
     },
     {
       "inputs": [],
+      "name": "CDS_LockingPeriodLessThanMinimum",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "CDS_MsgSenderNotAllowed",
       "type": "error"
     },
@@ -245,22 +255,6 @@ export const cdsAbi = [
     {
       "inputs": [],
       "name": "CDS_UserDepositHasSufficientHealth",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint128",
-          "name": "withdrawAmount",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint256",
-          "name": "actualDeposited",
-          "type": "uint256"
-        }
-      ],
-      "name": "CDS_WithdrawAmountExceedsActual",
       "type": "error"
     },
     {
@@ -425,6 +419,31 @@ export const cdsAbi = [
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "index",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "liquidatingToken",
+          "type": "address[]"
+        }
+      ],
+      "name": "Liquidated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "previousOwner",
@@ -438,6 +457,12 @@ export const cdsAbi = [
         }
       ],
       "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "UpdatedCv",
       "type": "event"
     },
     {
@@ -467,6 +492,12 @@ export const cdsAbi = [
           "internalType": "uint64",
           "name": "index",
           "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum CDSInterface.WithdrawType",
+          "name": "withdrawType",
+          "type": "uint8"
         },
         {
           "indexed": false,
@@ -537,28 +568,9 @@ export const cdsAbi = [
         },
         {
           "indexed": false,
-          "internalType": "uint256",
-          "name": "optionsFees",
-          "type": "uint256"
-        }
-      ],
-      "name": "WithdrawFixedYields",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint64",
-          "name": "index",
-          "type": "uint64"
+          "internalType": "enum CDSInterface.WithdrawType",
+          "name": "withdrawType",
+          "type": "uint8"
         }
       ],
       "name": "WithdrewGains",
@@ -617,6 +629,11 @@ export const cdsAbi = [
           "internalType": "uint256",
           "name": "expiredETHAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "int128",
+          "name": "plFromExpired",
+          "type": "int128"
         }
       ],
       "name": "calculateLiquidatedETHTogiveToUser",
@@ -696,6 +713,11 @@ export const cdsAbi = [
               "internalType": "uint256",
               "name": "expiredETHAmount",
               "type": "uint256"
+            },
+            {
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
             }
           ],
           "internalType": "struct CDSInterface.DepositUserParams",
@@ -1061,199 +1083,6 @@ export const cdsAbi = [
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "components": [
-            {
-              "internalType": "uint256",
-              "name": "normalizedAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "vaultValue",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "cdsPoolValue",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "collateralRemainingInWithdraw",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "collateralValueRemainingInWithdraw",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "noOfLiquidations",
-              "type": "uint128"
-            },
-            {
-              "internalType": "uint64",
-              "name": "nonce",
-              "type": "uint64"
-            },
-            {
-              "internalType": "uint64",
-              "name": "cdsCount",
-              "type": "uint64"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalCdsDepositedAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalCdsDepositedAmountWithOptionFees",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalAvailableLiquidationAmount",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalAvailableLiquidationAmountForPropCalc",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "usdtAmountDepositedTillNow",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "lastCumulativeRate",
-              "type": "uint128"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalVolumeOfBorrowersAmountinWei",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalVolumeOfBorrowersAmountinUSD",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "noOfBorrowers",
-              "type": "uint128"
-            },
-            {
-              "internalType": "uint256",
-              "name": "collateralProfitsOfLiquidators",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalNoOfDepositIndices",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalVolumeOfBorrowersAmountLiquidatedInWei",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "cumulativeValue",
-              "type": "uint128"
-            },
-            {
-              "internalType": "bool",
-              "name": "cumulativeValueSign",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "downsideProtected",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "nativeTokenDepositedTillNow",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "lastRealisedUpsideCr",
-              "type": "uint128"
-            },
-            {
-              "internalType": "bool",
-              "name": "firstBorrowDeposited",
-              "type": "bool"
-            },
-            {
-              "internalType": "uint256",
-              "name": "totalCdsDepositedAmountForOpFeesCrCalc",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint128",
-              "name": "lastETHPrice",
-              "type": "uint128"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "liqAmountUsedCV",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "liqCollateralCV",
-                  "type": "uint256"
-                }
-              ],
-              "internalType": "struct IBorrowLiquidation.LiquidationCumulativeValues",
-              "name": "liquidationCumulativeValues",
-              "type": "tuple"
-            }
-          ],
-          "internalType": "struct IGlobalVariables.OmniChainData",
-          "name": "omniChainData",
-          "type": "tuple"
-        },
-        {
-          "internalType": "uint128",
-          "name": "value",
-          "type": "uint128"
-        },
-        {
-          "internalType": "bool",
-          "name": "gains",
-          "type": "bool"
-        }
-      ],
-      "name": "getCumulativeValue",
-      "outputs": [
-        {
-          "internalType": "uint128",
-          "name": "",
-          "type": "uint128"
-        },
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "getLatestData",
       "outputs": [
@@ -1301,6 +1130,62 @@ export const cdsAbi = [
     {
       "inputs": [
         {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "index",
+              "type": "uint64"
+            },
+            {
+              "internalType": "enum CDSInterface.WithdrawType",
+              "name": "withdrawType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "excessProfitCumulativeValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "odosAssembledData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "expiredETHAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
+            }
+          ],
+          "internalType": "struct CDSInterface.WithdrawUserParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "getSwapAmount",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "address",
           "name": "_tokenAddress",
           "type": "address"
@@ -1312,30 +1197,6 @@ export const cdsAbi = [
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "user",
-          "type": "address"
-        },
-        {
-          "internalType": "uint64",
-          "name": "index",
-          "type": "uint64"
-        }
-      ],
-      "name": "getUsedAmount",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
         }
       ],
       "stateMutability": "view",
@@ -1407,11 +1268,6 @@ export const cdsAbi = [
           "internalType": "address[]",
           "name": "liquidatingToken",
           "type": "address[]"
-        },
-        {
-          "internalType": "uint128",
-          "name": "usdtFromOdos",
-          "type": "uint128"
         },
         {
           "internalType": "bytes",
@@ -1990,9 +1846,19 @@ export const cdsAbi = [
               "type": "uint64"
             },
             {
+              "internalType": "enum CDSInterface.WithdrawType",
+              "name": "withdrawType",
+              "type": "uint8"
+            },
+            {
               "internalType": "uint256",
               "name": "excessProfitCumulativeValue",
               "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "odosAssembledData",
+              "type": "bytes"
             },
             {
               "internalType": "uint256",
@@ -2000,9 +1866,9 @@ export const cdsAbi = [
               "type": "uint256"
             },
             {
-              "internalType": "enum CDSInterface.WithdrawType",
-              "name": "withdrawType",
-              "type": "uint8"
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
             }
           ],
           "internalType": "struct CDSInterface.WithdrawUserParams",
@@ -2036,26 +1902,6 @@ export const cdsAbi = [
           "internalType": "enum CDSInterface.WithdrawType",
           "name": "withdrawType",
           "type": "uint8"
-        },
-        {
-          "internalType": "bytes",
-          "name": "odosAssembledData",
-          "type": "bytes"
-        },
-        {
-          "internalType": "uint128",
-          "name": "usdtFromOdos",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint256",
-          "name": "deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
         }
       ],
       "name": "withdrawGains",

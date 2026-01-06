@@ -1,5 +1,10 @@
 export const borrowingContractAbi = [
     {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -563,6 +568,12 @@ export const borrowingContractAbi = [
     },
     {
       "anonymous": false,
+      "inputs": [],
+      "name": "UpdatedCv",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
       "inputs": [
         {
           "indexed": true,
@@ -796,6 +807,11 @@ export const borrowingContractAbi = [
               "internalType": "uint256",
               "name": "expiredETHAmount",
               "type": "uint256"
+            },
+            {
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
             },
             {
               "internalType": "uint128",
@@ -1166,24 +1182,9 @@ export const borrowingContractAbi = [
           "type": "address"
         },
         {
-          "internalType": "address[]",
-          "name": "collateralAddresses",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "tokenAddresses",
-          "type": "address[]"
-        },
-        {
           "internalType": "address",
           "name": "globalVariablesAddress",
           "type": "address"
-        },
-        {
-          "internalType": "uint64",
-          "name": "_minInterval",
-          "type": "uint64"
         }
       ],
       "name": "initialize",
@@ -1193,11 +1194,6 @@ export const borrowingContractAbi = [
     },
     {
       "inputs": [
-        {
-          "internalType": "uint128",
-          "name": "tokenAmountFromOdos",
-          "type": "uint128"
-        },
         {
           "components": [
             {
@@ -1226,30 +1222,35 @@ export const borrowingContractAbi = [
               "type": "uint256"
             },
             {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "nonce",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deadline",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "signature",
-                  "type": "bytes"
-                }
-              ],
-              "internalType": "struct IBorrowing.EIP712VerifyParams",
-              "name": "verifyParams",
-              "type": "tuple"
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
             }
           ],
           "internalType": "struct IBorrowing.LiquidationParams",
           "name": "params",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IBorrowing.EIP712VerifyParams",
+          "name": "verifyParams",
           "type": "tuple"
         }
       ],
@@ -1712,9 +1713,9 @@ export const borrowingContractAbi = [
               "type": "uint256"
             },
             {
-              "internalType": "uint128",
-              "name": "usdtFromOdos",
-              "type": "uint128"
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
             }
           ],
           "internalType": "struct IBorrowing.BorrowWithdraw_Params",

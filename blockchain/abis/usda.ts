@@ -1,4 +1,9 @@
-export const usDaAbi = [
+export const usDaAbi =  [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
     {
       "inputs": [
         {
@@ -8,17 +13,6 @@ export const usDaAbi = [
         }
       ],
       "name": "AddressEmptyCode",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        }
-      ],
-      "name": "AddressInsufficientBalance",
       "type": "error"
     },
     {
@@ -135,7 +129,7 @@ export const usDaAbi = [
     },
     {
       "inputs": [],
-      "name": "FailedInnerCall",
+      "name": "FailedCall",
       "type": "error"
     },
     {
