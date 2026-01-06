@@ -456,7 +456,10 @@ function DCDSTemplate() {
       // filtering the token list based on the hedge asset
       // Removing bold token from the token list if cbBTC is selected
       let filteredTokenList = tokenList;
-      if (formik.values.hedgeAsset === "cbBTC") {
+      if (
+        formik.values.hedgeAsset === "cbBTC" ||
+        formik.values.hedgeAsset === "KRWQ"
+      ) {
         filteredTokenList = tokenList.filter(
           (token) => token.tokenName !== "BOLD"
         );
@@ -1365,7 +1368,6 @@ function DCDSTemplate() {
     if (tokenList[5]) list.push(tokenList[5]);
     return list;
   }, [tokenList]);
-
 
   return (
     <div>
