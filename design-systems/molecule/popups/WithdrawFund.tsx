@@ -797,7 +797,6 @@ export function WithdrawFund({
     },
   });
 
-
   const {
     isLoading: isLoadingWithdrawReceipt,
     isSuccess: isSuccessWithdrawReceipt,
@@ -947,6 +946,7 @@ export function WithdrawFund({
     },
   });
 
+  console.log("position", position);
 
   useEffect(() => {
     (async () => {
@@ -961,7 +961,11 @@ export function WithdrawFund({
           }, 800);
 
           const repayAmountFormated = Number(
-            truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
+            truncateDecimals(
+              Number(formik.values.withdrawAmount || 0) /
+                Number(position.noOfUSDaMinted),
+              6
+            )
           );
           const repayAmount = BigInt(
             Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
