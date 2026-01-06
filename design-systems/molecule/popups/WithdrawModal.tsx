@@ -855,12 +855,6 @@ export function DcdsWithdrawModal({
           [
             address,
             BigInt(position.index),
-            res?.excessProfitCumulativeValue,
-            res?.expiredETHAmount,
-            position.collateralType === "krwq" ||
-            position.collateralType === "cbBTC"
-              ? res?.ethPrice
-              : undefined,
             isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
@@ -868,6 +862,10 @@ export function DcdsWithdrawModal({
             res?.odosAssembledData,
             res?.expiredETHAmount,
             res?.plFromExpired,
+            position.collateralType === "krwq" ||
+            position.collateralType === "cbBTC"
+              ? res?.ethPrice
+              : undefined,
           ],
           res?.deadline,
           res?.signature,
