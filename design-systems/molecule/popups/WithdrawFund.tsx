@@ -948,8 +948,6 @@ export function WithdrawFund({
     },
   });
 
-
-
   useEffect(() => {
     (async () => {
       if (
@@ -1264,11 +1262,8 @@ export function WithdrawFund({
         getCompletedDays(position.depositedTime, false, true)
     ) > 0;
 
-
-
   const hedgeDurationOption = useMemo(() => {
     const currentValidity = position.lastOptedValidity || updatedHedgeValidity;
-
     return [
       {
         label: "1 Day",
@@ -2148,7 +2143,7 @@ export function WithdrawFund({
                                 calculateRemainingDays(
                                   Number(position.validTill)
                                 ) <= 0 ||
-                                !isRenewActive ||
+                                isRenewActive ||
                                 !readyForNewTx
                               }
                               onClick={() => renewFormik.handleSubmit()}
