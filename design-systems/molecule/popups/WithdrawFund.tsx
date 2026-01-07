@@ -40,6 +40,8 @@ import {
 } from "@/utils/constants";
 import displayNumberWithPrecision, {
   calculateRemainingDays,
+  calculateRemainingDaysWithoutPrecision,
+  getCompletedDays,
   getMinutesPassed,
   hasFiveMinutesPassed,
   isRenewActiveDaysCompleted,
@@ -1259,9 +1261,15 @@ export function WithdrawFund({
   const isRenewActive =
     Number(
       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-        (Number(position.hedgeValidity || 0) -
-          (calculateRemainingDays(position.validTill) || 0))
+        getCompletedDays(position.depositedTime, false, true)
     ) > 0;
+
+  console.log(
+    isRenewActive,
+    "isRenewActive",
+    getCompletedDays(position.depositedTime, false, true),
+    calculateRemainingDays(Number(position.validTill))
+  );
 
   const hedgeDurationOption = useMemo(() => {
     const currentValidity = position.lastOptedValidity || updatedHedgeValidity;
@@ -1783,21 +1791,30 @@ export function WithdrawFund({
                                           position.validTill
                                         ) || 0))
                                   )
-                              : (updatedHedgeValidity || 0) -
-                                  (currentOptionFeeTimeLimit?.minTimeLimit || 0)
+                              : calculateRemainingDays(
+                                  Number(position.validTill)
+                                )
                           ),
                           days: Number(
-                            calculateRemainingDays(Number(position.validTill)) -
-                              Number(
-                                Number(
-                                  currentOptionFeeTimeLimit?.minTimeLimit || 0
+                            isRenewActive
+                              ? calculateRemainingDays(
+                                  Number(position.validTill)
                                 ) -
-                                  (Number(updatedHedgeValidity || 0) -
-                                    (calculateRemainingDays(
-                                      position.validTill
-                                    ) || 0))
-                              )
+                                  Number(
+                                    Number(
+                                      currentOptionFeeTimeLimit?.minTimeLimit ||
+                                        0
+                                    ) -
+                                      (Number(updatedHedgeValidity || 0) -
+                                        (calculateRemainingDays(
+                                          position.validTill
+                                        ) || 0))
+                                  )
+                              : calculateRemainingDays(
+                                  Number(position.validTill)
+                                )
                           ),
+
                           gradient:
                             "linear-gradient(to right, #08c8646e,#627EEA00)",
                           gradientText: "#0ea658",
@@ -1806,14 +1823,17 @@ export function WithdrawFund({
                         },
                         {
                           label: "Renew",
-                          value: Number(
-                            Number(
-                              currentOptionFeeTimeLimit?.minTimeLimit || 0
-                            ) -
-                              (Number(updatedHedgeValidity || 0) -
-                                (calculateRemainingDays(position.validTill) ||
-                                  0))
-                          ),
+                          value: isRenewActive
+                            ? Number(
+                                Number(
+                                  currentOptionFeeTimeLimit?.minTimeLimit || 0
+                                ) -
+                                  (Number(updatedHedgeValidity || 0) -
+                                    (calculateRemainingDays(
+                                      position.validTill
+                                    ) || 0))
+                              )
+                            : 0,
                           gradient:
                             "linear-gradient(to right, #386fe86e,#FF527000)",
                           gradientText: "#2563eb",
@@ -1824,11 +1844,12 @@ export function WithdrawFund({
 
                         {
                           label: "",
-                          value:
-                            Number(updatedHedgeValidity || 0) -
-                            Number(
-                              calculateRemainingDays(position.validTill) || 0
-                            ),
+                          value: isRenewActive
+                            ? 0
+                            : Number(updatedHedgeValidity || 0) -
+                              Number(
+                                calculateRemainingDays(position.validTill) || 0
+                              ),
                           gradient:
                             "linear-gradient(to right, #7a7a7a94, #FF527000)",
                           gradientText: "#7a7a7a",
@@ -1912,8 +1933,7 @@ export function WithdrawFund({
                                   (calculateRemainingDays(position.validTill) ||
                                     0))
                             )
-                        : (Number(updatedHedgeValidity) || 0) -
-                            (currentOptionFeeTimeLimit?.minTimeLimit || 0)
+                        : calculateRemainingDays(Number(position.validTill))
                     ),
 
                     color: "#05a552",
@@ -1963,11 +1983,13 @@ export function WithdrawFund({
                 ) > 0 && (
                   <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                     <span className="block w-3 h-3 bg-blue-600"></span>
-                    {Number(
-                      Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                        (Number(updatedHedgeValidity || 0) -
-                          (calculateRemainingDays(position.validTill) || 0))
-                    )}{" "}
+                    {isRenewActive
+                      ? Number(
+                          Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
+                            (Number(updatedHedgeValidity || 0) -
+                              (calculateRemainingDays(position.validTill) || 0))
+                        )
+                      : 0}{" "}
                     Days remaining to activate renew
                   </div>
                 )}

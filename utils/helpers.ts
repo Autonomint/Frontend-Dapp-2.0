@@ -297,6 +297,20 @@ export function calculateRemainingDays(timestamp: number): number {
   return remainingDays > 0 ? remainingDays : 0;
 }
 
+export function calculateRemainingDaysWithoutPrecision(timestamp: number): number {
+  // Get the current timestamp in seconds
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+
+  // Calculate how many seconds are left until the given timestamp
+  const timeDifferenceInSeconds = timestamp - currentTimestamp;
+
+  // Convert seconds to days (1 day = 24 * 60 * 60 seconds)
+  // Using Math.ceil() ensures partial days count as a full day
+  const remainingDays = Math.floor(timeDifferenceInSeconds / (24 * 60 * 60));
+
+  // Return the remaining days, or 0 if the timestamp is in the past
+  return remainingDays > 0 ? remainingDays : 0;
+}
 
 export function isRenewActiveDaysCompleted(
   timestamp: number,
@@ -486,3 +500,23 @@ export function calculatePercentage(
   return percentage;
 }
 
+/**
+ * Calculates the number of completed days from a given timestamp
+ * @param timestamp - The timestamp to calculate from (in seconds or milliseconds)
+ * @param isMilliseconds - Whether the timestamp is in milliseconds (true) or seconds (false)
+ * @returns Number of completed days
+ */
+export function getCompletedDays(timestamp: number, isMilliseconds: boolean = true, halfDayPrecision: boolean = false): number {
+  // Convert to milliseconds if timestamp is in seconds
+  const timestampMs = isMilliseconds ? timestamp : timestamp * 1000;
+  const now = Date.now();
+  const diffMs = now - timestampMs;
+  const days = diffMs / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+
+  if (halfDayPrecision) {
+    // Return value with half-day precision (e.g., 1.5 for one and a half days)
+    return Math.round(days * 2) / 2;
+  }
+
+  return Math.ceil(days);
+}
