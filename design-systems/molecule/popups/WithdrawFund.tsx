@@ -961,11 +961,7 @@ export function WithdrawFund({
           }, 800);
 
           const repayAmountFormated = Number(
-            truncateDecimals(
-              Number(formik.values.withdrawAmount || 0) /
-                Number(position.noOfUSDaMinted),
-              6
-            )
+            truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
           );
           const repayAmount = BigInt(
             Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
