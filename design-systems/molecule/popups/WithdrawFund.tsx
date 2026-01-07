@@ -948,7 +948,7 @@ export function WithdrawFund({
     },
   });
 
-  console.log("position", position);
+
 
   useEffect(() => {
     (async () => {
@@ -1264,12 +1264,7 @@ export function WithdrawFund({
         getCompletedDays(position.depositedTime, false, true)
     ) > 0;
 
-  console.log(
-    isRenewActive,
-    "isRenewActive",
-    getCompletedDays(position.depositedTime, false, true),
-    calculateRemainingDays(Number(position.validTill))
-  );
+
 
   const hedgeDurationOption = useMemo(() => {
     const currentValidity = position.lastOptedValidity || updatedHedgeValidity;
