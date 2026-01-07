@@ -30,7 +30,7 @@ const useBorrowRenew = (mutation: any) => {
     const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
 
-    const args = token === "krwq"
+    const args = token === "krwq" || token === "cbBTC"
       ? [index, hedgeValidity, ethPrice, volatility, { nonce: verifyParams?.nonce || 0, deadline: verifyParams?.deadline || 0, signature: verifyParams?.signature }]
       : [index, hedgeValidity, volatility, { nonce: verifyParams?.nonce || 0, deadline: verifyParams?.deadline || 0, signature: verifyParams?.signature }];
 
