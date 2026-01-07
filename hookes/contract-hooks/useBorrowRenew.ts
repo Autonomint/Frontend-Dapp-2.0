@@ -1,6 +1,7 @@
 import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
+import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 enum StrikePrice {
   // Define the enum values according to the IOptions.StrikePrice
   // Example:
@@ -28,8 +29,9 @@ const useBorrowRenew = (mutation: any) => {
 
   const renewBorrow = async (index: bigint, hedgeValidity: bigint, ethPrice: bigint, volatility: bigint, verifyParams: any, nativeFee: bigint | undefined, token: string) => {
     const contract = token === "cbBTC" || token === "KRWQ" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = token === "cbBTC" || token === "KRWQ" ? borowCoreABI : borrowingContractAbi
     writeContract?.({
-      abi: borrowingContractAbi,
+      abi: abi,
       address: contract as `0x${string}`,
       functionName: "renewOptions",
       args: [index, hedgeValidity, (token === "KRWQ" ? ethPrice : undefined), volatility, { nonce: verifyParams?.nonce || 0, deadline: verifyParams?.deadline || 0, signature: verifyParams?.signature }],
