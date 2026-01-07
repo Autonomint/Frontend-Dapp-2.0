@@ -28,13 +28,13 @@ const useBorrowRenew = (mutation: any) => {
 
 
   const renewBorrow = async (index: bigint, hedgeValidity: bigint, ethPrice: bigint, volatility: bigint, verifyParams: any, nativeFee: bigint | undefined, token: string) => {
-    const contract = token === "cbBTC" || token === "KRWQ" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = token === "cbBTC" || token === "KRWQ" ? borowCoreABI : borrowingContractAbi
+    const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
     writeContract?.({
       abi: abi,
       address: contract as `0x${string}`,
       functionName: "renewOptions",
-      args: [index, hedgeValidity, (token === "KRWQ" ? ethPrice : undefined), volatility, { nonce: verifyParams?.nonce || 0, deadline: verifyParams?.deadline || 0, signature: verifyParams?.signature }],
+      args: [index, hedgeValidity, (token === "krwq" ? ethPrice : undefined), volatility, { nonce: verifyParams?.nonce || 0, deadline: verifyParams?.deadline || 0, signature: verifyParams?.signature }],
       value: nativeFee,
     });
   };
