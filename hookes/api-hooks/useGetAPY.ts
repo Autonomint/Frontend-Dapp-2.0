@@ -41,7 +41,7 @@ async function getAPY(
 const useGetAPY = (index: number, token: string) => {
   const { address, chainId } = useAccount();
   const { data: apy, isLoading: isLoadingAPY } = useQuery({
-    queryKey: ["APY", index],
+    queryKey: ["APY", index, token],
     queryFn: () =>
       getAPY(address ? address : undefined, chainId as number, index, token),
     enabled: !!address && !!chainId && !!index,
