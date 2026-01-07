@@ -1205,7 +1205,7 @@ export function WithdrawFund({
       BigInt(signedData.ethPrice),
       BigInt(signedData.volatility),
       signedData,
-      position.collateralType === "cbBTC"
+      position.collateralType === "cbBTC" || position.collateralType === "krwq"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
       position.collateralType
