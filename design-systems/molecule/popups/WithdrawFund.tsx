@@ -392,11 +392,12 @@ export function WithdrawFund({
       address: optionContractAddress[
         chainId as keyof typeof optionContractAddress
       ] as `0x${string}`,
-      functionName: "strikePricePercentLimits",
+      functionName: "strikePricePercentLimits_",
       args: [
         BorrowAssetsEnum[
           position.collateralType as keyof typeof BorrowAssetsEnum
         ],
+        Number(position.hedgeValidity),
       ],
       query: {
         select: (data) => Number(data || 0) / 100,
@@ -503,9 +504,8 @@ export function WithdrawFund({
       // calculate upside at deposit time
       const upsideAt =
         (Number(position.depositedAmountInETH) *
-          Number(ethPriceAtDep) *
-          (currentStrikePricePercentLimit || 0)) /
-        100;
+          ((position.strikePrice || 0) - position.ethPrice)) /
+        (position.collateralType === "krwq" ? 1e8 : 100);
 
       // calculate price difference
       const priceDef =
@@ -561,6 +561,7 @@ export function WithdrawFund({
     }
   }
 
+  console.log(position, "position");
   // repay amount details for showing in popup
   const repayAmountDetails = [
     {

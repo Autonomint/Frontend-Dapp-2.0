@@ -396,8 +396,11 @@ function InputForm({ currency }: { currency: string }) {
       address: optionContractAddress[
         chainId as keyof typeof optionContractAddress
       ] as `0x${string}`,
-      functionName: "strikePricePercentLimits",
-      args: [BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]],
+      functionName: "strikePricePercentLimits_",
+      args: [
+        BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+        Number(formik.values.hedgeDuration),
+      ],
       query: {
         select: (data) => Number(data || 0) / 100,
       },
