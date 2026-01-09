@@ -202,7 +202,12 @@ export function WithdrawFund({
     position.index
   );
 
-  const { assetPrice: ethPrice, isUsdValuePending } = useGetUsdValue(
+  const {
+    assetPrice: ethPrice,
+    isUsdValuePending,
+    unformattedValue,
+    usdValue,
+  } = useGetUsdValue(
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
@@ -1107,7 +1112,8 @@ export function WithdrawFund({
   const { payableOptionFees, payableOptionFeesError } = usePayableOptionFees(
     position.index,
     position.collateralType,
-    Number(renewFormik.values.hedgeDuration)
+    Number(renewFormik.values.hedgeDuration),
+    Number(unformattedValue)
   ) as {
     payableOptionFees: bigint | undefined;
     payableOptionFeesError: any;
@@ -2061,12 +2067,6 @@ export function WithdrawFund({
                     },
                     {
                       label: "Option Fees",
-                      //  value: isRenewActiveDaysCompleted(position.validTill)
-                      //     ? `${formatUnits(
-                      //     BigInt(payableOptionFees || 0),
-                      //     6
-                      //   )}`
-                      //    : "-",
                       value: `$${formatUnits(
                         BigInt((Number(payableOptionFees) as number) || 0),
                         6
