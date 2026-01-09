@@ -1113,7 +1113,7 @@ export function WithdrawFund({
     position.index,
     position.collateralType,
     Number(renewFormik.values.hedgeDuration),
-    Number(unformattedValue)
+    ethPrice
   ) as {
     payableOptionFees: bigint | undefined;
     payableOptionFeesError: any;
