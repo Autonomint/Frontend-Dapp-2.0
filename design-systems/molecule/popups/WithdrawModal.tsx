@@ -846,8 +846,9 @@ export function DcdsWithdrawModal({
       // if position status is deposited then call withdraw function
       if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
         const token =
-          position.collateralType === "cbBTC" ||
-          position.collateralType === "krwq"
+          position.collateralType === "cbBTC"
+            ? "cbBTC "
+            : position.collateralType === "krwq"
             ? "krwq"
             : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
