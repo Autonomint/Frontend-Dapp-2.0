@@ -847,7 +847,7 @@ export function DcdsWithdrawModal({
       if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
         const token =
           position.collateralType === "cbBTC"
-            ? "cbBTC "
+            ? "cbBTC"
             : position.collateralType === "krwq"
             ? "krwq"
             : "ETH";
