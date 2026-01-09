@@ -207,12 +207,19 @@ function ChartComponent({ currency }: { currency: string }) {
     ];
   return (
     <div className="lg:p-6 p-2 h-full">
-      <div className="hidden   md:flex justify-between gap-2 mb-2 items-center">
-        <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
-          <Image src={getTokenSymbolIcon()} width={40} height={40} alt="eth" />
-          <Typography className="text-[32px] dark:text-white font-medium text-black ">
-            {currency}
-          </Typography>
+      <div className="hidden   md:flex flex-col justify-start  gap-2 mb-2 items-start">
+        <div className="hidden w-full  md:flex justify-between gap-2 mb-2 items-center">
+          <div className="flex gap-2">
+            <Image
+              src={getTokenSymbolIcon()}
+              width={40}
+              height={40}
+              alt="eth"
+            />
+            <Typography className="text-[32px] dark:text-white font-medium text-black ">
+              {currency}
+            </Typography>
+          </div>
 
           {/* {currency !== "ETH" && (
           <div className="flex gap-2 items-center">
