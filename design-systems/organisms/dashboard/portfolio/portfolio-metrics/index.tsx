@@ -12,12 +12,18 @@ function PortfolioMetrics({
   isLoading,
   hasLiquidityLandPoints,
   isOG,
+  isShow = true,
+  showHeading,
+  onShowClick,
 }: {
   subHeading: string;
   value: string;
   isLoading?: boolean;
   hasLiquidityLandPoints?: boolean;
   isOG?: boolean;
+  isShow?: boolean;
+  showHeading?: string;
+  onShowClick?: () => void;
 }) {
   return (
     <div className="flex-1 flex flex-col px-4 h-full    py-4 gap-2 border-grayLight  border border-solid">
@@ -28,7 +34,13 @@ function PortfolioMetrics({
           </div>
         ) : (
           <div className="flex justify-start  gap-2 items-center">
-            <div>{value}</div>
+            {isShow ? (
+              <div>{value}</div>
+            ) : (
+              <div className="underline cursor-pointer" onClick={onShowClick}>
+                {showHeading}
+              </div>
+            )}
             {subHeading === "Points (All Chain)" && hasLiquidityLandPoints && (
               <Tooltip>
                 <TooltipTrigger asChild>

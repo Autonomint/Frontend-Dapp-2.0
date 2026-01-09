@@ -13,6 +13,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useWalletClient } from "wagmi";
+import Link from "next/link";
+import { krwqUrl } from "@/utils/urls";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -205,13 +207,21 @@ function ChartComponent({ currency }: { currency: string }) {
     ];
   return (
     <div className="lg:p-6 p-2 h-full">
-      <div className="hidden  md:flex justify-start gap-2 mb-2 items-center">
-        <Image src={getTokenSymbolIcon()} width={40} height={40} alt="eth" />
-        <Typography className="text-[32px] dark:text-white font-medium text-black ">
-          {currency}
-        </Typography>
+      <div className="hidden   md:flex flex-col justify-start  gap-2 mb-2 items-start">
+        <div className="hidden w-full  md:flex justify-between gap-2 mb-2 items-center">
+          <div className="flex gap-2">
+            <Image
+              src={getTokenSymbolIcon()}
+              width={40}
+              height={40}
+              alt="eth"
+            />
+            <Typography className="text-[32px] dark:text-white font-medium text-black ">
+              {currency}
+            </Typography>
+          </div>
 
-        {/* {currency !== "ETH" && (
+          {/* {currency !== "ETH" && (
           <div className="flex gap-2 items-center">
             <div onClick={handleAddToken} className="cursor-pointer">
               {isAddingToken ? (
@@ -220,10 +230,8 @@ function ChartComponent({ currency }: { currency: string }) {
                 <CircleFadingPlus className="stroke-black dark:stroke-white " />
               )}
             </div>
-            <div className="text-md text-grayLight">Add token to wallet</div>
-          </div>
-        )}
-
+          )}
+        </div>
         {/* {!!tokenRewardDetail?.defaultBooster &&
           calculateRemainingTimeDate(
             new Date(tokenRewardDetail.boosterValidity * 1000).toISOString()
@@ -232,16 +240,26 @@ function ChartComponent({ currency }: { currency: string }) {
               {tokenRewardDetail.defaultBooster}x Points
             </div>
           )} */}
-      </div>
+          {currency === "KRWQ" && (
+            <Link
+              target="_blank"
+              href={krwqUrl}
+              className="text-right underline  text-xl cursor-pointer mb-1"
+            >
+              Buy KRWQ
+            </Link>
+          )}
+        </div>
 
-      <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
-        {currency.toLocaleLowerCase() == "wsuperoethb" ? (
-          <div className="w-full h-full flex items-center justify-center">
-            <p className="text-grayLight text-lg">Chart Not Available</p>
-          </div>
-        ) : (
-          <TradingViewWidget currency={currency} />
-        )}
+        <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
+          {currency.toLocaleLowerCase() == "wsuperoethb" ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-grayLight text-lg">Chart Not Available</p>
+            </div>
+          ) : (
+            <TradingViewWidget currency={currency} />
+          )}
+        </div>
       </div>
     </div>
   );
