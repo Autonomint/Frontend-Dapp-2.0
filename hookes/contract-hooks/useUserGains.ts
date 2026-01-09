@@ -9,7 +9,7 @@ interface UserGains {
   liqGains: number;
 }
 
-const useUserGains = () => {
+const useUserGains = (isShow?: boolean) => {
   const { address } = useAccount();
   const {
     data: userGains,
@@ -23,7 +23,7 @@ const useUserGains = () => {
       axios
         .get(`${BACKEND_API_URL}/cds/getUserGains/${address}`)
         .then((res) => res.data as UserGains),
-    enabled: !!address,
+    enabled: !!address && isShow,
     placeholderData: {
       priceChangePL: 0,
       amountAccured: 0,

@@ -33,8 +33,11 @@ export default function HomeTemplate() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // getting omni chain data from blockchain
-  const { omniChainDataEth: GlobalContractData, omniChainDataCbbtc } =
-    useGetUsdtAmountDepositedTillNow();
+  const {
+    omniChainDataEth: GlobalContractData,
+    omniChainDataCbbtc,
+    omniChainDataKrwq,
+  } = useGetUsdtAmountDepositedTillNow();
 
   // box option list for navigation
   const items = [
@@ -42,13 +45,25 @@ export default function HomeTemplate() {
       title: "Mint USDA+",
       subtitle: `TVL - $${(
         Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
-        1e20
+          1e20 +
+        Number(omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD || 0) /
+          1e26 +
+        Number(omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0) /
+          1e20
       ).toFixed(2)}`,
     },
     {
       title: "Earn With dCDS",
       subtitle: `TVL - $${Number(
-        formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
+        Number(
+          formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
+        ) +
+          Number(
+            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6)
+          ) +
+          Number(
+            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6)
+          )
       ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },

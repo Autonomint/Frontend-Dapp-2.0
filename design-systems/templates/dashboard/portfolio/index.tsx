@@ -38,6 +38,8 @@ function PortfolioTemplate() {
     null
   );
 
+  const [showYield, setShowYield] = useState(false);
+
   // selected cds position for withdraw
   const [selectedDcdsPosition, setSelectedDcdsPosition] =
     useState<dcdsDepositDetails | null>(null);
@@ -198,7 +200,7 @@ function PortfolioTemplate() {
     userGainsError,
     userGainsFetching,
     userGainsPending,
-  } = useUserGains();
+  } = useUserGains(showYield);
 
   // calculate user gains total
   const userGainsTotal = useMemo(() => {
@@ -232,6 +234,9 @@ function PortfolioTemplate() {
             subHeading="Yield Earned (All Chain)"
             value={`$${formatNumber(Number(userGainsTotal))}`}
             isLoading={userGainsFetching}
+            isShow={showYield}
+            showHeading="Show Yield"
+            onShowClick={() => setShowYield(!showYield)}
           />
         </div>
         <div className="col-span-1">

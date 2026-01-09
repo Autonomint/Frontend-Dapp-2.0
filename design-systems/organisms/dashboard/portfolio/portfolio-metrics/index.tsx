@@ -6,11 +6,17 @@ function PortfolioMetrics({
   value,
   isLoading,
   hasLiquidityLandPoints,
+  isShow = true,
+  showHeading,
+  onShowClick,
 }: {
   subHeading: string;
   value: string;
   isLoading?: boolean;
   hasLiquidityLandPoints?: boolean;
+  isShow?: boolean;
+  showHeading?: string;
+  onShowClick?: () => void;
 }) {
   return (
     <div className="flex-1 flex flex-col px-4 h-full    py-4 gap-2 border-grayLight  border border-solid">
@@ -21,7 +27,13 @@ function PortfolioMetrics({
           </div>
         ) : (
           <div className="flex justify-start  gap-2 items-center">
-            <div>{value}</div>
+            {isShow ? (
+              <div>{value}</div>
+            ) : (
+              <div className="underline cursor-pointer" onClick={onShowClick}>
+                {showHeading}
+              </div>
+            )}
             {subHeading === "Points (All Chain)" && hasLiquidityLandPoints && (
               <div className="flex relative  ml-4 items-center w-fit     ">
                 <span className="absolute left-[-20px] z-9 ">
