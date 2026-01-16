@@ -46,7 +46,11 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useApproveWrapEth from "@/hookes/contract-hooks/useApproveWrapEth";
 import useBorrowPause from "@/hookes/contract-hooks/useBorrowPause";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
-import { BorrowAssetsEnum, NetworkId, tokenFormatDecimal } from "@/utils/constants";
+import {
+  BorrowAssetsEnum,
+  NetworkId,
+  tokenFormatDecimal,
+} from "@/utils/constants";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -472,9 +476,10 @@ function InputForm({ currency }: { currency: string }) {
     const strikePercent = values.strikePricePercent;
 
     // fetch the borrow signed data
-    const borrowSignedData = await refetchBorrowSignedData(
-      currency === "KRWQ" ? "krwq" : currency
-    );
+    const borrowSignedData = await refetchBorrowSignedData({
+      token: currency === "KRWQ" ? "krwq" : currency,
+      duration: Number(formik.values.hedgeDuration),
+    });
 
     const data = optionFees;
     if (data != undefined && nativeFee != undefined) {
