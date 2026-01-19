@@ -94,7 +94,7 @@ export const OptionFeesValues = [
 
   {
     headline: "Total Upside Gained",
-    value: "15%",
+    value: "-",
   },
   {
     headline: "",
