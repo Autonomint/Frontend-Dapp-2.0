@@ -30,28 +30,6 @@ function Leaderboard() {
 
   const { points, totalPoints } = useGetUserPoint();
 
-  console.log(
-    "points",
-    Number(
-      formatUnits(BigInt(omniChainDataEth?.totalCdsDepositedAmount ?? 0n), 6)
-    ),
-    Number(
-      formatUnits(
-        BigInt(omniChainDataEth?.totalVolumeOfBorrowersAmountinUSD ?? 0n),
-        20
-      )
-    ),
-    Number(
-      formatUnits(BigInt(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n), 6)
-    ),
-    Number(
-      formatUnits(
-        BigInt(omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD ?? 0n),
-        20
-      )
-    )
-  );
-
   return (
     <div className="flex flex-col sm:px-4">
       <div className="grid md:grid-cols-4 grid-cols-2">
@@ -105,6 +83,23 @@ function Leaderboard() {
                             0n
                         ),
                         20
+                      )
+                    ) +
+                    Number(
+                      formatUnits(
+                        BigInt(
+                          omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n
+                        ),
+                        6
+                      )
+                    ) +
+                    Number(
+                      formatUnits(
+                        BigInt(
+                          omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD ??
+                            0n
+                        ),
+                        26
                       )
                     )
                 : 0

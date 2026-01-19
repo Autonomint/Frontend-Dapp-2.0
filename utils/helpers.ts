@@ -470,4 +470,3 @@ export function calculatePercentage(
 }
 
 
-console.log(calculatePercentage(100, 10), 'calculatePercentage');
