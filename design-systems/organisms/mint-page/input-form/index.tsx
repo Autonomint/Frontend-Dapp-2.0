@@ -78,7 +78,7 @@ const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number().max(
     Yup.ref("balance"),
-    `Amount must be less than or equal to balance`
+    `Amount must be less than or equal to balance`,
   ),
   hedgeDuration: Yup.number()
     .required("Hedge duration is required")
@@ -131,7 +131,7 @@ function InputForm({ currency }: { currency: string }) {
         ? "ETH"
         : (currency as keyof typeof borrowAssetsAddress)
     ],
-    currency.toLocaleLowerCase() === "krwq"
+    currency.toLocaleLowerCase() === "krwq",
   );
 
   // Selected asset price
@@ -230,7 +230,7 @@ function InputForm({ currency }: { currency: string }) {
         contract[chainId as keyof typeof contract] as `0x${string}`,
         currency === "cbBTC"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
-          : parseEther(formik.values.collateralAmount.toString())
+          : parseEther(formik.values.collateralAmount.toString()),
       );
       // else mining directly
     } else {
@@ -272,7 +272,7 @@ function InputForm({ currency }: { currency: string }) {
 
   // Custom hook to fetch the tvl for the contract
   const { isTvlPending, tvlValue: ltv } = useGetTvl(
-    BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]
+    BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
   );
 
   // Custom hook to fetch the deposit data hash for the contract
@@ -309,7 +309,7 @@ function InputForm({ currency }: { currency: string }) {
       `${BACKEND_API_URL}/global/get-min-usda-mint-for-luck`,
       {
         chainId,
-      }
+      },
     );
     return response.data;
   };
@@ -390,9 +390,8 @@ function InputForm({ currency }: { currency: string }) {
       : assetPrice || 0) as number,
     formik.values.strikePricePercent,
     currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
-    Number(formik.values.hedgeDuration)
+    Number(formik.values.hedgeDuration),
   );
-
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
     useReadContract({
@@ -414,7 +413,7 @@ function InputForm({ currency }: { currency: string }) {
   useEffect(() => {
     formik.setFieldValue(
       "strikePricePercent",
-      Number(currentStrikePricePercentLimit || 0)
+      Number(currentStrikePricePercentLimit || 0),
     );
   }, [currentStrikePricePercentLimit]);
 
@@ -440,7 +439,7 @@ function InputForm({ currency }: { currency: string }) {
         });
       },
     },
-    currency
+    currency,
   );
 
   const {
@@ -504,11 +503,11 @@ function InputForm({ currency }: { currency: string }) {
           currency === "cbBTC" || currency === "KRWQ"
             ? undefined
             : chainId === NetworkId.Ethereum
-            ? parseEther(formik.values.collateralAmount.toString())
-            : currency.toLocaleLowerCase() == "eth"
-            ? parseEther(formik.values.collateralAmount.toString()) +
-              nativeFee.nativeFee
-            : nativeFee.nativeFee,
+              ? parseEther(formik.values.collateralAmount.toString())
+              : currency.toLocaleLowerCase() == "eth"
+                ? parseEther(formik.values.collateralAmount.toString()) +
+                  nativeFee.nativeFee
+                : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice:
           currency === "KRWQ" || currency === "cbBTC"
@@ -545,7 +544,7 @@ function InputForm({ currency }: { currency: string }) {
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
-        downsideProtection.toString()
+        downsideProtection.toString(),
       );
 
       // calculate the upside collateral
@@ -597,7 +596,7 @@ function InputForm({ currency }: { currency: string }) {
   const handleSetMaxBal = () => {
     formik.setFieldValue(
       "collateralAmount",
-      Number(ethBalance.data?.formatted || 0)
+      Number(ethBalance.data?.formatted || 0),
     );
   };
 
@@ -677,12 +676,13 @@ function InputForm({ currency }: { currency: string }) {
       .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-          .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+            .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || "",
+            ).minutes > 0
+          ? 10
+          : 0;
 
   // total boaster for token
   const totalBooster =
@@ -701,7 +701,7 @@ function InputForm({ currency }: { currency: string }) {
         new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
-    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
+    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0),
   );
 
   // calculate the point based on depositing amount
@@ -710,7 +710,7 @@ function InputForm({ currency }: { currency: string }) {
     Number(formik.values.collateralAmount || 0)
       ? Number(
           formik.values.collateralAmount /
-            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0,
         ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
@@ -723,7 +723,7 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the liquidation price
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(
-      currency === "KRWQ" ? 8 : 2
+      currency === "KRWQ" ? 8 : 2,
     );
   }, [selectedAssetPrice, currency]);
 
@@ -750,7 +750,7 @@ function InputForm({ currency }: { currency: string }) {
           <div className="flex justify-end items-center gap-1">
             {!!totalBooster &&
               calculateRemainingTimeDate(
-                toLocalISOString(new Date(totalTimeStamp * 1000))
+                toLocalISOString(new Date(totalTimeStamp * 1000)),
               ).minutes > 0 &&
               totalBooster > 1 && (
                 <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">

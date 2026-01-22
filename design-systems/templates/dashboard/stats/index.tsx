@@ -55,7 +55,7 @@ function StatsTemplate() {
     queryKey: ["ratioData"],
     queryFn: () =>
       fetch(
-        `${BACKEND_API_URL}/borrows/ratio/${chainId}/${ethPrice ?? 0}`
+        `${BACKEND_API_URL}/borrows/ratio/${chainId}/${ethPrice ?? 0}`,
       ).then((res) => res.json()),
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -138,8 +138,8 @@ function StatsTemplate() {
       lockedValues[1].value = omniChainDataEth.totalCdsDepositedAmount
         ? `${formatNumber(
             Number(
-              formatUnits(BigInt(omniChainDataEth.totalCdsDepositedAmount), 6)
-            )
+              formatUnits(BigInt(omniChainDataEth.totalCdsDepositedAmount), 6),
+            ),
           )} USDA+`
         : "0";
       // lockedValues[2].value = omniChainData.totalCdsDepositedAmount
@@ -193,7 +193,7 @@ function StatsTemplate() {
         (Number(formatUnits(omniChainDataEth.totalCdsDepositedAmount, 6)) /
           total) *
         100
-      ).toFixed(1)}%`;
+      ).toFixed(2)}%`;
 
       // fees values
       OptionFeesValues[0].value = `$${

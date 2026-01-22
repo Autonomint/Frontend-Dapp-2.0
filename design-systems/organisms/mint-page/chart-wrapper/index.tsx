@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { useWalletClient } from "wagmi";
 import Link from "next/link";
 import { krwqUrl } from "@/utils/urls";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
+import { formatEther, formatUnits } from "viem";
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -42,7 +44,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
 
     const script = document.createElement("script");
@@ -62,10 +64,10 @@ function TradingViewWidget({ currency }: { currency: string }) {
         theme === "dark"
           ? "dark"
           : theme === "light"
-          ? "light"
-          : prefersDarkMode
-          ? "dark"
-          : "light",
+            ? "light"
+            : prefersDarkMode
+              ? "dark"
+              : "light",
       autosize: true,
       showVolume: false,
       showMA: false,
@@ -79,10 +81,10 @@ function TradingViewWidget({ currency }: { currency: string }) {
         theme === "dark"
           ? "black"
           : theme === "light"
-          ? "white"
-          : prefersDarkMode
-          ? "black"
-          : "white",
+            ? "white"
+            : prefersDarkMode
+              ? "black"
+              : "white",
 
       fontFamily:
         "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
@@ -104,26 +106,26 @@ function TradingViewWidget({ currency }: { currency: string }) {
         theme === "dark"
           ? "rgba(0, 120, 185, 1 )"
           : theme === "light"
-          ? "rgba(0, 103, 159, 1)"
-          : prefersDarkMode
-          ? "rgba(0, 120, 185, 1 )"
-          : "rgba(0, 103, 159, 1)",
+            ? "rgba(0, 103, 159, 1)"
+            : prefersDarkMode
+              ? "rgba(0, 120, 185, 1 )"
+              : "rgba(0, 103, 159, 1)",
       topColor:
         theme === "dark"
           ? "rgba(0, 42, 78, 1)"
           : theme === "light"
-          ? "rgba(229, 243, 255, 1)"
-          : prefersDarkMode
-          ? "rgba(0, 42, 78, 1)"
-          : "rgba(229, 243, 255, 1)",
+            ? "rgba(229, 243, 255, 1)"
+            : prefersDarkMode
+              ? "rgba(0, 42, 78, 1)"
+              : "rgba(229, 243, 255, 1)",
       bottomColor:
         theme === "dark"
           ? "rgba(0, 42, 78, 0)"
           : theme === "light"
-          ? "rgba(255, 253, 228, 1)"
-          : prefersDarkMode
-          ? "rgba(0, 42, 78, 0)"
-          : "rgba(255, 253, 228, 1)",
+            ? "rgba(255, 253, 228, 1)"
+            : prefersDarkMode
+              ? "rgba(0, 42, 78, 0)"
+              : "rgba(255, 253, 228, 1)",
     };
 
     // Pass the widget configuration as JSON
@@ -131,7 +133,7 @@ function TradingViewWidget({ currency }: { currency: string }) {
     // Append script to container
     if (container?.current && container !== undefined) {
       const element = container?.current?.querySelector(
-        ".tv-widget-chart--with-border"
+        ".tv-widget-chart--with-border",
       );
       if (element) {
         (element as HTMLElement).style.border = "none";
@@ -149,6 +151,58 @@ function TradingViewWidget({ currency }: { currency: string }) {
 function ChartComponent({ currency }: { currency: string }) {
   // Loading state for adding token to wallet
   const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
+
+  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
+    useGetOmniChainData();
+
+  const omniChainDataMap = {
+    ETH: omniChainDataEth,
+    weETH: omniChainDataEth,
+    wrsETH: omniChainDataEth,
+    wsuperOETHb: omniChainDataEth,
+    cbBTC: omniChainDataCbbtc,
+    KRWQ: omniChainDataKrwq,
+  };
+
+  const total =
+    Number(
+      formatEther(
+        (omniChainDataMap[currency as keyof typeof omniChainDataMap]
+          ?.totalVolumeOfBorrowersAmountinUSD || 0n) / BigInt(100),
+      ),
+    ) +
+    Number(
+      formatUnits(
+        omniChainDataMap[currency as keyof typeof omniChainDataMap]
+          ?.totalCdsDepositedAmount || 0n,
+        6,
+      ),
+    );
+
+  const borrowRatio = `${(
+    (Number(
+      formatEther(
+        BigInt(
+          omniChainDataMap[currency as keyof typeof omniChainDataMap]
+            ?.totalVolumeOfBorrowersAmountinUSD || 0n,
+        ) / BigInt(100),
+      ),
+    ) /
+      total) *
+    100
+  ).toFixed(2)}%`;
+
+  const cdsRatio = `${(
+    (Number(
+      formatUnits(
+        omniChainDataMap[currency as keyof typeof omniChainDataMap]
+          ?.totalCdsDepositedAmount || 0n,
+        6,
+      ),
+    ) /
+      total) *
+    100
+  ).toFixed(2)}%`;
 
   const getTokenSymbolIcon = () => {
     switch (currency) {
@@ -240,6 +294,7 @@ function ChartComponent({ currency }: { currency: string }) {
               {tokenRewardDetail.defaultBooster}x Points
             </div>
           )} */}
+        <div className=" flex gap-4 items-center justify-end">
           {currency === "KRWQ" && (
             <Link
               target="_blank"
@@ -249,7 +304,22 @@ function ChartComponent({ currency }: { currency: string }) {
               Buy KRWQ
             </Link>
           )}
+          <div className="flex gap-4">
+            <div>
+              <div className="text-base text-grayLight">Collateral</div>
+              <div className="text-lg text-[#05A552] dark:text-[#06BE5F]">
+                {borrowRatio}
+              </div>
+            </div>
+            <div>
+              <div className="text-base text-grayLight">dCDS</div>
+              <div className="text-lg text-[#478BFF] dark:text-[#38B6FF]">
+                {cdsRatio}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
         <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
           {currency.toLocaleLowerCase() == "wsuperoethb" ? (
