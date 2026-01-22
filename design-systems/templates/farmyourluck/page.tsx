@@ -47,7 +47,7 @@ function FarmYourLuckTemplate() {
   const [isFlipped, setIsFlipped] = useState(Array.from({ length: 9 }).fill(0));
   // state for text heading in right top for current step
   const [supportingText, setSupportingText] = useState(
-    "Tap a card to view details"
+    "Tap a card to view details",
   );
 
   // state for the reward amount after getting luck
@@ -106,9 +106,9 @@ function FarmYourLuckTemplate() {
   }, [farmLuckDetails]);
 
   useEffect(() => {
-    // if the button text is "Claim Reward" and the payed is true and the got reward is true then set the reward amount to "$50"
+    // if the button text is "Claim Reward" and the payed is true and the got reward is true then set the reward amount to "$25"
     if (buttonText === "Claim Reward" && isPayed && gotReward) {
-      setRewardAmount("$50");
+      setRewardAmount(`$${rewardAmountData}`);
     }
   }, [buttonText]);
 
@@ -189,7 +189,7 @@ function FarmYourLuckTemplate() {
       setSupportingText("Congratulations!");
       setButtonText("Congratulations!");
 
-      if (res == 1) setRewardAmount("$50");
+      if (res == 1) setRewardAmount(`$${rewardAmountData}`);
       if (res == 2) setRewardAmount("5x Reward Points");
       if (res == 3) setRewardAmount("10x Reward Points");
       setIsRevealed(true);
@@ -325,7 +325,7 @@ function FarmYourLuckTemplate() {
       setPayLoading(true);
       const amountToPay = calculateEthAmount(
         Number(ethPrice || 0) / 100,
-        Number(luckPrice) + 0.00001
+        Number(luckPrice) + 0.00001,
       );
 
       const txHash = await sendTransactionAsync({
@@ -373,7 +373,7 @@ function FarmYourLuckTemplate() {
           `${BACKEND_API_URL}/global/get-usd-reward-amount-for-luck`,
           {
             chainId,
-          }
+          },
         );
 
         return response.data;
@@ -418,10 +418,10 @@ function FarmYourLuckTemplate() {
                       isPayed
                         ? "selected selected-for-reward"
                         : selectedIndex === index + 1
-                        ? "selected"
-                        : selectedIndexForReward === index + 1
-                        ? "selected-for-reward"
-                        : ""
+                          ? "selected"
+                          : selectedIndexForReward === index + 1
+                            ? "selected-for-reward"
+                            : ""
                     }`}
                   >
                     <div
@@ -551,7 +551,7 @@ function FarmYourLuckTemplate() {
                           <td className="py-2 px-2 md:py-2 md:px-4">
                             {
                               calculateRemainingTimeDate(
-                                farmLuckDetails?.deadLine5xTimestamp || ""
+                                farmLuckDetails?.deadLine5xTimestamp || "",
                               ).formattedTime
                             }
                           </td>
@@ -563,7 +563,7 @@ function FarmYourLuckTemplate() {
                           <td className="py-2 px-2 md:py-2 md:px-4">
                             {
                               calculateRemainingTimeDate(
-                                farmLuckDetails?.deadLine10xTimestamp || ""
+                                farmLuckDetails?.deadLine10xTimestamp || "",
                               ).formattedTime
                             }
                           </td>
