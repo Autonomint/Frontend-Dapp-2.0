@@ -337,3 +337,96 @@ input[type="number"]:-webkit-autofill {
     opacity: 0;
   }
 }
+
+/* Glow Effect for Buttons */
+.glow-button {
+  position: relative;
+  z-index: 1;
+  border-radius: 10px;
+  overflow: visible;
+  padding: 0.3rem 1.5rem;
+  text-align: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: black !important;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background: #abffdebf;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.glow-button::before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(8px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0.8;
+  transition: all 0.3s ease-in-out;
+  border-radius: 12px;
+}
+
+.glow-button:hover::before {
+  opacity: 1;
+  filter: blur(10px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.glow-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.glow-button:active {
+  transform: translateY(1px);
+}
+
+.glow-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: #abffdebf;
+  border-radius: 10px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}

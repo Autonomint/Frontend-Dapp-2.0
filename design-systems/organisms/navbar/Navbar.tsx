@@ -44,7 +44,7 @@ function Navbar() {
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     setSystemThemeDark(prefersDarkMode);
     const unwatch = watchAccount(config, {
@@ -85,7 +85,7 @@ function Navbar() {
     text: string,
     url?: string,
     hashtags?: string,
-    via?: string
+    via?: string,
   ): void {
     // Construct the base Twitter intent URL
     let shareUrl = "https://twitter.com/intent/tweet?";
@@ -285,6 +285,19 @@ function Navbar() {
               </div>
             </div>
           </div> */}
+          <div className="relative ">
+            <a
+              href="https://www.curve.finance/dex/base/pools/factory-stable-ng-325/deposit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glow-button relative z-10 flex flex-col items-center text-black font-medium rounded-lg transition-all duration-300"
+            >
+              <div>Add Liquidity</div>
+              <div className="text-[10px] text-black text-right">
+                Earn 15% + USDC incentives
+              </div>
+            </a>
+          </div>
           <a
             href={meetUrl}
             target="_blank"
@@ -307,10 +320,10 @@ function Navbar() {
               theme == "dark"
                 ? setTheme("light")
                 : theme == "light"
-                ? setTheme("dark")
-                : systemThemeDark
-                ? setTheme("light")
-                : setTheme("dark")
+                  ? setTheme("dark")
+                  : systemThemeDark
+                    ? setTheme("light")
+                    : setTheme("dark")
             }
           >
             {theme == "dark" ? (
