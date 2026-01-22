@@ -56,7 +56,7 @@ function StatsTemplate() {
     queryKey: ["ratioData"],
     queryFn: () =>
       fetch(
-        `${BACKEND_API_URL}/borrows/ratio/${chainId}/${ethPrice ?? 0}`
+        `${BACKEND_API_URL}/borrows/ratio/${chainId}/${ethPrice ?? 0}`,
       ).then((res) => res.json()),
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -80,7 +80,7 @@ function StatsTemplate() {
     "1",
     (ethPrice || 0) as number,
     currentStrikePricePercentLimit as number,
-    "ETH"
+    "ETH",
   );
 
   useEffect(() => {
@@ -125,57 +125,57 @@ function StatsTemplate() {
               ? Number(
                   formatUnits(
                     BigInt(omniChainDataEth?.totalCdsDepositedAmount ?? 0n),
-                    6
-                  )
+                    6,
+                  ),
                 ) +
                   Number(
                     formatUnits(
                       BigInt(
                         omniChainDataEth?.totalVolumeOfBorrowersAmountinUSD ??
-                          0n
+                          0n,
                       ),
-                      20
-                    )
+                      20,
+                    ),
                   ) +
                   Number(
                     formatUnits(
                       BigInt(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n),
-                      6
-                    )
+                      6,
+                    ),
                   ) +
                   Number(
                     formatUnits(
                       BigInt(
                         omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD ??
-                          0n
+                          0n,
                       ),
-                      20
-                    )
+                      20,
+                    ),
                   ) +
                   Number(
                     formatUnits(
                       BigInt(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n),
-                      6
-                    )
+                      6,
+                    ),
                   ) +
                   Number(
                     formatUnits(
                       BigInt(
                         omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD ??
-                          0n
+                          0n,
                       ),
-                      26
-                    )
+                      26,
+                    ),
                   )
-              : 0
+              : 0,
           )
         : "0";
       // total cds deposited amount
       lockedValues[1].value = omniChainDataEth.totalCdsDepositedAmount
         ? `${formatNumber(
             Number(
-              formatUnits(BigInt(omniChainDataEth.totalCdsDepositedAmount), 6)
-            )
+              formatUnits(BigInt(omniChainDataEth.totalCdsDepositedAmount), 6),
+            ),
           )} USDA+`
         : "0";
       // lockedValues[2].value = omniChainData.totalCdsDepositedAmount
@@ -200,15 +200,15 @@ function StatsTemplate() {
                 Number(
                   formatUnits(
                     omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n,
-                    6
-                  )
+                    6,
+                  ),
                 ) +
                 Number(
                   formatUnits(
                     omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n,
-                    6
-                  )
-                )
+                    6,
+                  ),
+                ),
             )
           : "0"
       }`;
@@ -218,7 +218,7 @@ function StatsTemplate() {
           ? formatNumber(
               Number(formatUnits(omniChainDataEth.cdsPoolValue, 6)) +
                 Number(formatUnits(omniChainDataCbbtc?.cdsPoolValue ?? 0n, 6)) +
-                Number(formatUnits(omniChainDataKrwq?.cdsPoolValue ?? 0n, 6))
+                Number(formatUnits(omniChainDataKrwq?.cdsPoolValue ?? 0n, 6)),
             )
           : "0"
       }`;
@@ -229,7 +229,7 @@ function StatsTemplate() {
         Number(formatUnits(omniChainDataKrwq?.cdsPoolValue ?? 0n, 6)) -
         Number(formatUnits(omniChainDataEth.totalCdsDepositedAmount ?? 0n, 6)) +
         Number(
-          formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6)
+          formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6),
         ) +
         Number(formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6))
       ).toFixed(2)}`;
@@ -237,58 +237,62 @@ function StatsTemplate() {
       const total =
         Number(
           formatEther(
-            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-          )
+            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+          ),
         ) +
         Number(
           formatEther(
-            omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-          )
+            omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+          ),
         ) +
         Number(
           formatEther(
-            omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-          )
+            omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+          ),
         ) +
         Number(formatUnits(omniChainDataEth.totalCdsDepositedAmount, 6)) +
         Number(
-          formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6)
+          formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6),
         ) +
         Number(
-          formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6)
+          formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6),
         );
 
       RatioValuesBottom[0].value = `${(
         ((Number(
           formatEther(
-            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-          )
+            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+          ),
         ) +
           (Number(
             formatEther(
-              omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-            )
+              omniChainDataCbbtc.totalVolumeOfBorrowersAmountinUSD /
+                BigInt(100),
+            ),
           ) +
             Number(
               formatEther(
-                omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-              )
+                omniChainDataKrwq.totalVolumeOfBorrowersAmountinUSD /
+                  BigInt(100),
+              ),
             ))) /
           total) *
         100
-      ).toFixed(1)}%`;
+      ).toFixed(2)}%`;
 
       RatioValuesBottom[1].value = `${(
-        ((Number(formatUnits(omniChainDataEth.totalCdsDepositedAmount, 6)) +
+        ((Number(
+          formatUnits(omniChainDataEth.totalCdsDepositedAmount ?? 0n, 6),
+        ) +
           Number(
-            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6)
+            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6),
           ) +
           Number(
-            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6)
+            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6),
           )) /
           total) *
         100
-      ).toFixed(1)}%`;
+      ).toFixed(2)}%`;
 
       // fees values
       OptionFeesValues[0].value = `$${
@@ -302,20 +306,21 @@ function StatsTemplate() {
       BorrowFeesValues[1].value = formatNumber(
         (Number(
           formatEther(
-            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-          )
+            omniChainDataEth.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+          ),
         ) +
           Number(
             formatEther(
-              omniChainDataCbbtc.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-            )
+              omniChainDataCbbtc.totalVolumeOfBorrowersAmountinUSD /
+                BigInt(100),
+            ),
           ) +
           Number(
             formatEther(
-              omniChainDataKrwq.totalVolumeOfBorrowersAmountinUSD / BigInt(100)
-            )
+              omniChainDataKrwq.totalVolumeOfBorrowersAmountinUSD / BigInt(100),
+            ),
           )) *
-          0.2
+          0.2,
       );
 
       // set abond Data

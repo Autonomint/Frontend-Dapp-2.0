@@ -82,7 +82,7 @@ const formSchema = Yup.object({
   collateral: Yup.string().required("Collateral is required"),
   collateralAmount: Yup.number().max(
     Yup.ref("balance"),
-    `Amount must be less than or equal to balance`
+    `Amount must be less than or equal to balance`,
   ),
   hedgeDuration: Yup.number()
     .required("Hedge duration is required")
@@ -135,7 +135,7 @@ function InputForm({ currency }: { currency: string }) {
         ? "ETH"
         : (currency as keyof typeof borrowAssetsAddress)
     ],
-    currency.toLocaleLowerCase() === "krwq"
+    currency.toLocaleLowerCase() === "krwq",
   );
 
   // Selected asset price
@@ -241,7 +241,7 @@ function InputForm({ currency }: { currency: string }) {
         contract[chainId as keyof typeof contract] as `0x${string}`,
         currency === "cbBTC"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
-          : parseEther(formik.values.collateralAmount.toString())
+          : parseEther(formik.values.collateralAmount.toString()),
       );
       // else mining directly
     } else {
@@ -285,7 +285,7 @@ function InputForm({ currency }: { currency: string }) {
 
   // Custom hook to fetch the tvl for the contract
   const { isTvlPending, tvlValue: ltv } = useGetTvl(
-    BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]
+    BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
   );
 
   console.log(ltv, "ltv");
@@ -324,7 +324,7 @@ function InputForm({ currency }: { currency: string }) {
       `${BACKEND_API_URL}/global/get-min-usda-mint-for-luck`,
       {
         chainId,
-      }
+      },
     );
     return response.data;
   };
@@ -405,7 +405,7 @@ function InputForm({ currency }: { currency: string }) {
       : assetPrice || 0) as number,
     formik.values.strikePricePercent,
     currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
-    Number(formik.values.hedgeDuration)
+    Number(formik.values.hedgeDuration),
   );
   console.log(
     parseUnits(String(assetPrice), 8),
@@ -414,13 +414,13 @@ function InputForm({ currency }: { currency: string }) {
       String(
         Math.floor(
           Number(formik.values.collateralAmount || 0) *
-            Number(formatUnits(BigInt(exchangeRate || 0), 18))
-        )
+            Number(formatUnits(BigInt(exchangeRate || 0), 18)),
+        ),
       ),
-      18
+      18,
     ).toString(),
     exchangeRate,
-    "unformattedValue"
+    "unformattedValue",
   );
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
@@ -440,7 +440,7 @@ function InputForm({ currency }: { currency: string }) {
   useEffect(() => {
     formik.setFieldValue(
       "strikePricePercent",
-      Number(currentStrikePricePercentLimit || 0)
+      Number(currentStrikePricePercentLimit || 0),
     );
   }, [currentStrikePricePercentLimit]);
 
@@ -466,7 +466,7 @@ function InputForm({ currency }: { currency: string }) {
         });
       },
     },
-    currency
+    currency,
   );
 
   const {
@@ -503,7 +503,7 @@ function InputForm({ currency }: { currency: string }) {
 
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData(
-      currency === "KRWQ" ? "krwq" : currency
+      currency === "KRWQ" ? "krwq" : currency,
     );
 
     const data = optionFees;
@@ -528,11 +528,11 @@ function InputForm({ currency }: { currency: string }) {
           currency === "cbBTC" || currency === "KRWQ"
             ? undefined
             : chainId === NetworkId.Ethereum
-            ? parseEther(formik.values.collateralAmount.toString())
-            : currency.toLocaleLowerCase() == "eth"
-            ? parseEther(formik.values.collateralAmount.toString()) +
-              nativeFee.nativeFee
-            : nativeFee.nativeFee,
+              ? parseEther(formik.values.collateralAmount.toString())
+              : currency.toLocaleLowerCase() == "eth"
+                ? parseEther(formik.values.collateralAmount.toString()) +
+                  nativeFee.nativeFee
+                : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice:
           currency === "KRWQ"
@@ -569,7 +569,7 @@ function InputForm({ currency }: { currency: string }) {
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
-        downsideProtection.toString()
+        downsideProtection.toString(),
       );
 
       // calculate the upside collateral
@@ -623,7 +623,7 @@ function InputForm({ currency }: { currency: string }) {
   const handleSetMaxBal = () => {
     formik.setFieldValue(
       "collateralAmount",
-      Number(ethBalance.data?.formatted || 0)
+      Number(ethBalance.data?.formatted || 0),
     );
   };
 
@@ -703,12 +703,13 @@ function InputForm({ currency }: { currency: string }) {
       .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-          .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+            .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || "",
+            ).minutes > 0
+          ? 10
+          : 0;
 
   // total boaster for token
   const totalBooster =
@@ -727,7 +728,7 @@ function InputForm({ currency }: { currency: string }) {
         new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
       : 0,
     // timestamp for campaign booster
-    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0)
+    Number(tokenRewardDetailBorrow?.assetBoosterValidity ?? 0),
   );
 
   // calculate the point based on depositing amount
@@ -736,7 +737,7 @@ function InputForm({ currency }: { currency: string }) {
     Number(formik.values.collateralAmount || 0)
       ? Number(
           formik.values.collateralAmount /
-            (tokenRewardDetailBorrow?.minAmount || 0) || 0
+            (tokenRewardDetailBorrow?.minAmount || 0) || 0,
         ) * Number(tokenRewardDetailBorrow?.pointsToBeGiven || 0)
       : 0;
 
@@ -750,12 +751,12 @@ function InputForm({ currency }: { currency: string }) {
   const { readyForNewTx } = useLayerZeroMessages();
 
   const ethAmountForRatio = Number(
-    (formik.values.collateralAmount || 0) * Number(BigInt(exchangeRate || 0))
+    (formik.values.collateralAmount || 0) * Number(BigInt(exchangeRate || 0)),
   );
 
   // Getting ratio value for mint amount
   const { isRatioPending, ratioValue, ratioError } = useBorrowRatio(
-    BigInt(Math.floor(ethAmountForRatio))
+    BigInt(Math.floor(ethAmountForRatio)),
   );
 
   // get borrowed position list
@@ -768,10 +769,10 @@ function InputForm({ currency }: { currency: string }) {
         ? positionList.filter(
             (position) =>
               Number(position.depositedTime) >=
-              (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000
+              (new Date().getTime() - 24 * 60 * 60 * 1000) / 1000,
           )
         : [],
-    [positionList]
+    [positionList],
   );
 
   // total deposit amount in last 24 hours
@@ -788,7 +789,7 @@ function InputForm({ currency }: { currency: string }) {
       if (ratioValue && Number(ratioValue) < 30000) {
         formik.setFieldError(
           "collateralAmount",
-          "USDA+ mint cap reached. Reduce the amount and try again"
+          "USDA+ mint cap reached. Reduce the amount and try again",
         );
         return false;
         // Checking last mint amount and last mint time is valid or not from mint limit
@@ -801,11 +802,11 @@ function InputForm({ currency }: { currency: string }) {
           (Number(last24HourPositionList[0].depositedTime) +
             24 * 60 * 60 -
             new Date().getTime() / 1000) /
-            (60 * 60)
+            (60 * 60),
         );
         formik.setFieldError(
           "collateralAmount",
-          `USDA+ mint cap reached. Please try again after ${remainingTimeInHours} hours`
+          `USDA+ mint cap reached. Please try again after ${remainingTimeInHours} hours`,
         );
         toast.custom((t) => (
           <ToastNotificationError
@@ -825,7 +826,7 @@ function InputForm({ currency }: { currency: string }) {
   //  Liquidation price
   const LiquidationPrice = useMemo(() => {
     return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(
-      currency === "KRWQ" ? 8 : 2
+      currency === "KRWQ" ? 8 : 2,
     );
   }, [selectedAssetPrice, currency]);
 
@@ -852,7 +853,7 @@ function InputForm({ currency }: { currency: string }) {
           <div className="flex justify-end items-center gap-1">
             {!!totalBooster &&
               calculateRemainingTimeDate(
-                toLocalISOString(new Date(totalTimeStamp * 1000))
+                toLocalISOString(new Date(totalTimeStamp * 1000)),
               ).minutes > 0 &&
               totalBooster > 1 && (
                 <div className="badge pulsate w-fit  text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
