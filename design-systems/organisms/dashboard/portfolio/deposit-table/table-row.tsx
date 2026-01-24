@@ -24,6 +24,8 @@ const DepositTableRow = ({
   isLast,
   setRenewRepay,
   highlight = false,
+  isStakePopUpOpen,
+  setStakePopUpOpen,
 }: {
   highlight: boolean;
   isViewPositionOpen: boolean;
@@ -32,6 +34,8 @@ const DepositTableRow = ({
   setRenewRepay: (isOpen: boolean) => void;
   setIsRebalanceDialogOpen: (isOpen: boolean) => void;
   setIsWithdrawDialogOpen: (isOpen: boolean) => void;
+  isStakePopUpOpen?: boolean;
+  setStakePopUpOpen?: (isOpen: boolean) => void;
   position: PositionData;
   tabPosition: "Borrowed" | "Deposited";
   idx: number;
@@ -99,7 +103,7 @@ const DepositTableRow = ({
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
-    position.collateralType === "krwq"
+    position.collateralType === "krwq",
   );
   const [openChart, setOpenChart] = useState(false);
   const { chainId, address } = useAccount();
@@ -118,12 +122,12 @@ const DepositTableRow = ({
           parseFloat(ethPrice.toString()));
 
       const amountProtPrecision = parseFloat(
-        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2))
+        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2)),
       );
       console.log(
         amountProtPrecision,
         position.index,
-        "amountProtectedFunction"
+        "amountProtectedFunction",
       );
       setAmountProtected(amountProtPrecision);
     }
@@ -144,7 +148,7 @@ const DepositTableRow = ({
   console.log(
     calculateRemainingDays(Number(position.validTill)),
     idx,
-    "validTill"
+    "validTill",
   );
   return (
     <tr
@@ -167,8 +171,8 @@ const DepositTableRow = ({
           {calculateRemainingDays(Number(position.validTill)) <= 0
             ? "-"
             : position.status == "DEPOSITED"
-            ? `$${amountProtected}`
-            : "-"}
+              ? `$${amountProtected}`
+              : "-"}
           {Number(calculateRemainingDays(position.validTill) || 0) < 15 &&
             Number(calculateRemainingDays(position.validTill) || 0) > 0 &&
             position.status !== BorrowStatus.WITHDREW &&
@@ -195,24 +199,40 @@ const DepositTableRow = ({
       <td
         className={`px-5 py-4 2xl:py-6 ${
           tabPosition === "Borrowed" ? "block" : "none"
-        } md:text-right  md:space-x-12`}
+        } md:text-right  md:space-x-6`}
         style={{
           display: tabPosition === "Borrowed" ? "block" : "none",
         }}
       >
-        <span
-          onClick={() => {
-            setRenewRepay(true);
-            handleRowClick();
-          }}
-          className="font-bold cursor-pointer text-[20px] underline "
-        >
-          {position.status == BorrowStatus.WITHDREW
-            ? "Repaid"
-            : position.status == BorrowStatus.LIQUIDATED
-            ? "Liquidated"
-            : "Repay/Renew"}
-        </span>
+        {position.status == BorrowStatus.DEPOSITED &&
+          position.collateralType === "krwq" && (
+            <span
+              onClick={() => {
+                setStakePopUpOpen?.(true);
+                handleRowClick();
+              }}
+              className="font-bold cursor-pointer text-[20px] underline "
+            >
+              {"Stake"}
+            </span>
+          )}
+
+        {position.status !== BorrowStatus.STAKED && (
+          <span
+            onClick={() => {
+              setRenewRepay(true);
+              handleRowClick();
+            }}
+            className="font-bold cursor-pointer text-[20px] underline "
+          >
+            {position.status == BorrowStatus.WITHDREW
+              ? "Repaid"
+              : position.status == BorrowStatus.LIQUIDATED
+                ? "Liquidated"
+                : "Repay/Renew"}
+          </span>
+        )}
+
         {/* <spans
             onClick={() => {
               setViewPosition(true);

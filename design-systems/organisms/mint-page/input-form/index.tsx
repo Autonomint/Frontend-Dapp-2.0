@@ -74,6 +74,7 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
+import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
 
 /**
  * Yup validation schema for the input form
@@ -195,7 +196,13 @@ function InputForm({ currency }: { currency: string }) {
   }) as { data: number | undefined };
 
   // handle mint btn click
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
+  ) => {
+    const { submitType, ...formValues } = values;
+    const isStake = submitType === "stake";
+    debugger;
     // check if the user is connected
     if (!address) {
       toast.custom((t) => (
@@ -245,7 +252,7 @@ function InputForm({ currency }: { currency: string }) {
       );
       // else mining directly
     } else {
-      handleMint(formik.values);
+      handleMint(formik.values, isStake);
     }
   };
 
@@ -257,6 +264,7 @@ function InputForm({ currency }: { currency: string }) {
       strikePricePercent: 0, // strike price percent
       balance: 0, // balance
       hedgeDuration: null, // hedge duration
+      submitType: "mint", // tracks which button was clicked
     },
     validationSchema: formSchema,
     onSubmit: handleSubmit,
@@ -304,6 +312,26 @@ function InputForm({ currency }: { currency: string }) {
         });
       },
     });
+  // Custom hook to fetch the deposit data hash for the contract
+  const {
+    depositStakeDatahash,
+    depositStakeError,
+    isDepositsStakeLoading,
+    mintStakeUSDa,
+    resetStake,
+  } = useDepositStakeTokens({
+    onError: () => {
+      setMintLoading(false);
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+    },
+  });
 
   console.log(depositError, "depositError");
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
@@ -483,7 +511,7 @@ function InputForm({ currency }: { currency: string }) {
   useEffect(() => {
     // check if the wrap eth is approved and call the handle mint function
     if (iswrapEthApproveSuccess) {
-      handleMint(formik.values);
+      handleMint(formik.values, formik.values.submitType === "stake");
     } else if (wrapEthApproveErrorDetails || wrapEthApproveHashError) {
       handleResetPage();
       toast.custom((t) => {
@@ -497,17 +525,14 @@ function InputForm({ currency }: { currency: string }) {
     }
   }, [iswrapEthApproveSuccess]);
 
-  async function handleMint(values: any) {
-    // get the strike percent
-    const strikePercent = values.strikePricePercent;
-
+  async function handleMint(values: any, isStake: boolean) {
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData(
       currency === "KRWQ" ? "krwq" : currency,
     );
 
     const data = optionFees;
-    if (data != undefined && nativeFee != undefined) {
+    if (data != undefined && nativeFee != undefined && !isStake) {
       setApproveLoading(false);
       setTimeout(() => {
         setMintLoading(true);
@@ -538,6 +563,43 @@ function InputForm({ currency }: { currency: string }) {
           currency === "KRWQ"
             ? BigInt(borrowSignedData?.ethPrice || 0)
             : undefined,
+      });
+    }
+    if (data != undefined && nativeFee != undefined && isStake) {
+      setApproveLoading(false);
+      setTimeout(() => {
+        setMintLoading(true);
+      }, 1000);
+      // calling the mint usda function in the contract
+      mintStakeUSDa?.({
+        volatility: BigInt(borrowSignedData?.volatility || 0),
+        depositingAmount:
+          currency === "cbBTC"
+            ? parseUnits(formik.values.collateralAmount.toString(), 8)
+            : parseEther(formik.values.collateralAmount.toString()),
+        assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+        deadline: BigInt(borrowSignedData?.deadline || 0),
+        nonce: BigInt(borrowSignedData?.nonce || 0),
+        signature: borrowSignedData?.signature || ("" as `0x${string}`),
+        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
+        plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
+        value:
+          currency === "cbBTC" || currency === "KRWQ"
+            ? undefined
+            : chainId === NetworkId.Ethereum
+              ? parseEther(formik.values.collateralAmount.toString())
+              : currency.toLocaleLowerCase() == "eth"
+                ? parseEther(formik.values.collateralAmount.toString()) +
+                  nativeFee.nativeFee
+                : nativeFee.nativeFee,
+        hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
+        ethPrice:
+          currency === "KRWQ" || currency === "cbBTC"
+            ? BigInt(borrowSignedData?.ethPrice || 0)
+            : undefined,
+        premiumCv: BigInt(borrowSignedData?.premiumCv || 0),
+        hedgeCv: BigInt(borrowSignedData?.hedgeCv || 0),
+        optionFees: BigInt(borrowSignedData.optionFees || 0),
       });
     }
   }
@@ -1060,13 +1122,17 @@ function InputForm({ currency }: { currency: string }) {
           !mintBtnLoading && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="h-full">
+                <div className="h-full flex gap-2 p-2">
                   <Button
                     disabled={isFunctionPausedBorrow_Deposit || !readyForNewTx}
                     type="submit"
+                    name="mint"
+                    onClick={(e) => {
+                      formik.setFieldValue("submitType", "mint");
+                    }}
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
-                    text-white  font-semibold text-[24px] w-full h-full rounded-md `}
+                    text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
                   >
                     {!mintBtnLoading && readyForNewTx ? (
                       "Mint USDA+"
@@ -1103,7 +1169,7 @@ function InputForm({ currency }: { currency: string }) {
           isFailure={depositError || depositHashError}
           isSuccess={Boolean(Depositdata)}
           setSuccessLoading={setMintBtnLoading}
-          heading="Minting USDA+"
+          heading={`${formik.values.submitType === "stake" ? "Mint & Staking" : "Minting"} USDA+`}
           loadingCount={currency.toLocaleLowerCase() === "eth" ? "1/1" : "2/2"}
         />
         {/* displaying the loading box for the approve transaction */}

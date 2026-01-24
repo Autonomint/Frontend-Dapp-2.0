@@ -22,23 +22,26 @@ import { RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
+import { StakePopup } from "@/design-systems/molecule/popups/StakePopup";
 
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
 
   // portfolio current tab
   const [tabPosition, setTabPosition] = useState<"Borrowed" | "Deposited">(
-    "Borrowed"
+    "Borrowed",
   );
   const [refreshLoading, setRefreshLoading] = useState(false);
   // portfolio tab global state
   const { portfolioTab, setPortfolioTab } = usePortfolioTab();
   // selected position for repay renew
   const [selectedPosition, setSelectedPosition] = useState<PositionData | null>(
-    null
+    null,
   );
 
   const [showYield, setShowYield] = useState(false);
+
+  const [isStakePopUpOpen, setStakePopUpOpen] = useState(false);
 
   // selected cds position for withdraw
   const [selectedDcdsPosition, setSelectedDcdsPosition] =
@@ -95,7 +98,7 @@ function PortfolioTemplate() {
     if (selectedPosition?.index) {
       // find the position in the list
       const updatedData = pagedPositionList.find(
-        (position) => position.index === selectedPosition.index
+        (position) => position.index === selectedPosition.index,
       );
       if (updatedData) {
         setSelectedPosition(updatedData);
@@ -104,7 +107,7 @@ function PortfolioTemplate() {
     if (selectedDcdsPosition?.index) {
       // find the position in the list
       const updatedData = dcdsPagedDcdsPositionList.find(
-        (position) => position.index === selectedDcdsPosition.index
+        (position) => position.index === selectedDcdsPosition.index,
       );
       if (updatedData) {
         setSelectedDcdsPosition(updatedData);
@@ -124,7 +127,7 @@ function PortfolioTemplate() {
       `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
       {
         method: "POST",
-      }
+      },
     );
 
     return res;
@@ -136,7 +139,7 @@ function PortfolioTemplate() {
       `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
       {
         method: "POST",
-      }
+      },
     );
     return res;
   };
@@ -243,7 +246,7 @@ function PortfolioTemplate() {
           <PortfolioMetrics
             subHeading={`Points (All Chain)`}
             value={formatNumber(
-              Number(referralPoints || 0) + Number(points || 0)
+              Number(referralPoints || 0) + Number(points || 0),
             )}
             hasLiquidityLandPoints={hasLiquidityLandPoints}
           />
@@ -327,6 +330,8 @@ function PortfolioTemplate() {
           setPageSize={setPageSize}
           setCurrentPage={setCurrentPage}
           isHightlightTab={portfolioTab == "Borrowed"}
+          isStakePopUpOpen={isStakePopUpOpen}
+          setStakePopUpOpen={setStakePopUpOpen}
         />
       ) : (
         <DcdsDepositTable
@@ -375,6 +380,12 @@ function PortfolioTemplate() {
           setRenewRepay(false);
           // setSelectedPosition(null);
         }}
+      />
+      <StakePopup
+        isOpen={isStakePopUpOpen}
+        onClose={() => setStakePopUpOpen(false)}
+        isLoading={false}
+        position={(selectedPosition || []) as PositionData}
       />
     </div>
   );

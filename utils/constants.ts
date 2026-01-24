@@ -10,9 +10,11 @@ export enum NetworkId {
 
 // borrow status
 export const BorrowStatus = {
-  DEPOSITED: "DEPOSITED",
-  WITHDREW: "WITHDREW",
-  LIQUIDATED: "LIQUIDATED",
+  DEPOSITED: 'DEPOSITED',
+  STAKED: 'STAKED',
+  UNSTAKED: 'UNSTAKED',
+  WITHDREW: 'WITHDREW',
+  LIQUIDATED: 'LIQUIDATED'
 } as const;
 
 // toast position

@@ -10,7 +10,11 @@ export interface SignedDataReturn {
   nonce: number;
   deadline: number;
   expiredETHAmount: bigint;
-  ethPrice: bigint
+  plFromExpired: bigint;
+  ethPrice: bigint;
+  premiumCv: bigint;
+  hedgeCv: bigint;
+  optionFees: bigint;
 }
 
 /**
