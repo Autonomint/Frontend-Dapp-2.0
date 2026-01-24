@@ -842,7 +842,6 @@ export function DcdsWithdrawModal({
         );
         return;
       }
-      debugger;
       // if position status is deposited then call withdraw function
       if (position.status == "DEPOSITED" && pendingFixedYields == 0) {
         const token =
