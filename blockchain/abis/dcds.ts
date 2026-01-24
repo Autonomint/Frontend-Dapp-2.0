@@ -531,9 +531,9 @@ export const cdsAbi =  [
         },
         {
           "indexed": false,
-          "internalType": "uint256",
+          "internalType": "int256",
           "name": "excessProfitCumulativeValue",
-          "type": "uint256"
+          "type": "int256"
         },
         {
           "indexed": false,
@@ -621,9 +621,9 @@ export const cdsAbi =  [
           "type": "uint64"
         },
         {
-          "internalType": "uint256",
+          "internalType": "int256",
           "name": "excessProfitCumulativeValue",
-          "type": "uint256"
+          "type": "int256"
         },
         {
           "internalType": "uint256",
@@ -1147,9 +1147,9 @@ export const cdsAbi =  [
               "type": "uint8"
             },
             {
-              "internalType": "uint256",
+              "internalType": "int256",
               "name": "excessProfitCumulativeValue",
-              "type": "uint256"
+              "type": "int256"
             },
             {
               "internalType": "bytes",
@@ -1851,9 +1851,9 @@ export const cdsAbi =  [
               "type": "uint8"
             },
             {
-              "internalType": "uint256",
+              "internalType": "int256",
               "name": "excessProfitCumulativeValue",
-              "type": "uint256"
+              "type": "int256"
             },
             {
               "internalType": "bytes",

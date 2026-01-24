@@ -853,22 +853,21 @@ export function DcdsWithdrawModal({
               : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
-          {
-            user: address,
-            index: BigInt(position.index),
-            withdrawType: isHalfWithdraw
+          [
+            address,
+            BigInt(position.index),
+            isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
-            excessProfitCumulativeValue: res?.excessProfitCumulativeValue,
-            odosAssembledData: res?.odosAssembledData,
-            expiredETHAmount: res?.expiredETHAmount,
-            plFromExpired: res?.plFromExpired,
-            ethPrice:
-              position.collateralType === "krwq" ||
-              position.collateralType === "cbBTC"
-                ? res?.ethPrice
-                : undefined,
-          },
+            res?.excessProfitCumulativeValue,
+            res?.odosAssembledData,
+            res?.expiredETHAmount,
+            res?.plFromExpired,
+            position.collateralType === "krwq" ||
+            position.collateralType === "cbBTC"
+              ? res?.ethPrice
+              : undefined,
+          ],
           res?.deadline,
           res?.signature,
         ];

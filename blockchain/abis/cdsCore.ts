@@ -1,4 +1,4 @@
-export const cdsCoreABI = [
+export const cdsCoreABI =  [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -554,9 +554,9 @@ export const cdsCoreABI = [
         },
         {
           "indexed": false,
-          "internalType": "uint256",
+          "internalType": "int256",
           "name": "excessProfitCumulativeValue",
-          "type": "uint256"
+          "type": "int256"
         },
         {
           "indexed": false,
@@ -654,9 +654,9 @@ export const cdsCoreABI = [
           "type": "uint128"
         },
         {
-          "internalType": "uint256",
+          "internalType": "int256",
           "name": "excessProfitCumulativeValue",
-          "type": "uint256"
+          "type": "int256"
         },
         {
           "internalType": "uint256",
@@ -1150,9 +1150,9 @@ export const cdsCoreABI = [
               "type": "uint8"
             },
             {
-              "internalType": "uint256",
+              "internalType": "int256",
               "name": "excessProfitCumulativeValue",
-              "type": "uint256"
+              "type": "int256"
             },
             {
               "internalType": "bytes",
@@ -1867,9 +1867,9 @@ export const cdsCoreABI = [
               "type": "uint8"
             },
             {
-              "internalType": "uint256",
+              "internalType": "int256",
               "name": "excessProfitCumulativeValue",
-              "type": "uint256"
+              "type": "int256"
             },
             {
               "internalType": "bytes",
