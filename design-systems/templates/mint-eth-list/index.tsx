@@ -95,19 +95,20 @@ function MintEthListTemplate() {
       .minutes > 0
       ? 10
       : calculateRemainingTimeDate(farmLuckDetails?.deadLine5xTimestamp || "")
-          .minutes > 0
-      ? 5
-      : calculateRemainingTimeDate(farmLuckDetails?.deadLine10xTimestamp || "")
-          .minutes > 0
-      ? 10
-      : 0;
+            .minutes > 0
+        ? 5
+        : calculateRemainingTimeDate(
+              farmLuckDetails?.deadLine10xTimestamp || "",
+            ).minutes > 0
+          ? 10
+          : 0;
 
   // List of tokens with their respective data
   const list = [
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: `${Number(ltvETH?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionEth}%`,
       ltv: `${ltvETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -135,14 +136,14 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     },
 
     {
       token: "weETH",
       tokenImage: WeETH,
-      BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWeETH}%`,
       ltv: `${ltvWeETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -171,7 +172,7 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     },
   ];
@@ -180,7 +181,7 @@ function MintEthListTemplate() {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,
-      BorrowRate: `${Number(ltvWrsETH?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWrsETH}%`,
       ltv: `${ltvWrsETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -209,7 +210,7 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     });
   }
@@ -247,13 +248,13 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     });
     list.push({
       token: "wsuperOETHb",
       tokenImage: WsuperOETH,
-      BorrowRate: `${Number(ltvWsuperOETH?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
       ltv: `${ltvWsuperOETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -282,7 +283,7 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     });
 
@@ -317,7 +318,7 @@ function MintEthListTemplate() {
           farmLuckDetails?.deadLine10xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0
+            : 0,
         ),
     });
   }
