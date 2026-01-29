@@ -646,7 +646,7 @@ export function DcdsWithdrawModal({
   options = Options.newOptions()
     .addExecutorLzReceiveOption(
       700000,
-      Math.floor(Number(nativeFeeUSDA?.nativeFee) * 2.5).toString(),
+      Math.floor(Number(nativeFeeUSDA?.nativeFee || 0) * 2.5).toString(),
     )
     .toHex()
     .toString() as `0x${string}`;
