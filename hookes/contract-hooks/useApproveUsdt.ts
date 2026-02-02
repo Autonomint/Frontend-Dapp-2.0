@@ -1,5 +1,5 @@
 import { testusdtAbiAbi } from "@/blockchain/abis/usdt";
-import { testusdtAbiAddress } from "@/blockchain/contracts";
+import { testusdtAbiAddress, usdcAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
 const useUsdtApprove = (mutation: any) => {
@@ -17,7 +17,7 @@ const useUsdtApprove = (mutation: any) => {
   const handleUsdtApprove = (args: [`0x${string}`, bigint]) => {
     usdtApproveWrite({
       abi: testusdtAbiAbi,
-      address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+      address: usdcAddress[chainId as keyof typeof testusdtAbiAddress],
       functionName: "approve",
       args,
     });

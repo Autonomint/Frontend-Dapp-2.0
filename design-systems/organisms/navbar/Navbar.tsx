@@ -295,7 +295,7 @@ function Navbar() {
             >
               <div>Add Liquidity</div>
               <div className="text-[10px] text-black text-right">
-                Earn 15% + USDC incentives
+                Earn 50% + USDC incentives
               </div>
             </a>
           </div>
