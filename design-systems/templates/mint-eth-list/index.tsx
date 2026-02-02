@@ -220,7 +220,7 @@ function MintEthListTemplate() {
     list.push({
       token: "cbBTC",
       tokenImage: cbBTC,
-      BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(120) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
       ltv: `${ltvCbBTC?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
