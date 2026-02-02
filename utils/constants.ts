@@ -135,17 +135,11 @@ export const assetNameForRewardDataBorrow = {
 
 // enum for borrow contract data 
 export enum BorrowData {
-  APR,
   ratePerSec,
-  LTV,
-  bondRatio,
   lastCumulativeRate,
   collateralRemainingInWithdraw,
   collateralValueRemainingInWithdraw,
   pendingUSDaToBurn,
-  debtCeilingTimeLimit,
-  debtCeilingMintLimit,
-  minInterval,
   totalNormalizedAmount
 }
 

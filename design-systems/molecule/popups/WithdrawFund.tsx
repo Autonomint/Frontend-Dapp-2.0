@@ -467,7 +467,7 @@ export function WithdrawFund({
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    args: [BorrowData.APR],
+    args: [BorrowData.ratePerSec],
     functionName: "getBorrowData",
   }) as { data: number[] | undefined; isLoading: boolean };
 
@@ -499,7 +499,7 @@ export function WithdrawFund({
       // set apr at deposit
       updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
-      updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[4].value = `${Number(position.collateralType === "cbBTC" || position.collateralType === "krwq" ? 0 : 120) / 10}%`;
       updatedData[5].value = new Date(
         // set deposited time
         position.depositedTime * 1000,
