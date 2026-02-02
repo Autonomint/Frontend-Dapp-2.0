@@ -1124,9 +1124,9 @@ export function DcdsWithdrawModal({
                             : position.status !== "DEPOSITED"
                               ? calculatePercentage(
                                   position?.apys?.amountAccured || 0,
-                                  90,
+                                  80,
                                 )
-                              : calculatePercentage(apy[1] || 0, 90),
+                              : calculatePercentage(apy[1] || 0, 80),
                         ).toFixed(4)}
                       </Label>
                       {!(position.status == "WITHDREW") && (
