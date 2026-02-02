@@ -64,6 +64,7 @@ function MintEthListTemplate() {
   const downsideProtectionKRWQ = ltvKRWQ?.LTV
     ? 100 - Number(ltvETH?.LTV || 0)
     : 0;
+
   // getting current APR value
   const { data: borrowData } = useReadContract({
     abi: borrowingContractAbi,
@@ -71,7 +72,7 @@ function MintEthListTemplate() {
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    args: [BorrowData.APR],
+    args: [BorrowData.ratePerSec],
     functionName: "getBorrowData",
   });
 
@@ -219,7 +220,7 @@ function MintEthListTemplate() {
     list.push({
       token: "cbBTC",
       tokenImage: cbBTC,
-      BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(120) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
       ltv: `${ltvCbBTC?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
