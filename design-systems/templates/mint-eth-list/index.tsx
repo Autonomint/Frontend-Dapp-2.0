@@ -252,41 +252,41 @@ function MintEthListTemplate() {
             : 0,
         ),
     });
-    list.push({
-      token: "wsuperOETHb",
-      tokenImage: WsuperOETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
-      ltv: `${ltvWsuperOETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wsuperOETHb borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
+    // list.push({
+    //   token: "wsuperOETHb",
+    //   tokenImage: WsuperOETH,
+    //   BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+    //   DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
+    //   ltv: `${ltvWsuperOETH?.LTV || 0}%`,
+    //   isActive: !isFunctionPausedBorrow_Deposit,
+    //   InActiveHeading: "wsuperOETHb borrow is paused now",
+    //   pointsToBeGiven:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
+    //     0,
+    //   minAmount:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
+    //     0,
+    //   link: STRATEGY_LINK,
+    //   boaster:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
+    //     0,
+    //   boasterTime:
+    //     tokenRewardDetailList &&
+    //     Math.max(
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
+    //       farmLuckDetails?.deadLine5xTimestamp
+    //         ? // convert date to timestamp
+    //           new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+    //         : 0,
+    //       farmLuckDetails?.deadLine10xTimestamp
+    //         ? // convert date to timestamp
+    //           new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+    //         : 0,
+    //     ),
+    // });
 
     list.push({
       token: "KRWQ",
