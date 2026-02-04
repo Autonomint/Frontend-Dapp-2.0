@@ -157,7 +157,7 @@ function InputForm({ currency }: { currency: string }) {
 
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(
-    tokenFormatDecimal[currency as keyof typeof tokenFormatDecimal]
+    tokenFormatDecimal[currency as keyof typeof tokenFormatDecimal],
   );
 
   const contract =
@@ -393,21 +393,20 @@ function InputForm({ currency }: { currency: string }) {
     Number(formik.values.hedgeDuration),
   );
   // Custom hook to fetch the current strike price percent limit
-  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
-    useReadContract({
-      abi: optionABI,
-      address: optionContractAddress[
-        chainId as keyof typeof optionContractAddress
-      ] as `0x${string}`,
-      functionName: "strikePricePercentLimits_",
-      args: [
-        BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        Number(formik.values.hedgeDuration),
-      ],
-      query: {
-        select: (data) => Number(data || 0) / 100,
-      },
-    });
+  const { data: currentStrikePricePercentLimit } = useReadContract({
+    abi: optionABI,
+    address: optionContractAddress[
+      chainId as keyof typeof optionContractAddress
+    ] as `0x${string}`,
+    functionName: "strikePricePercentLimits_",
+    args: [
+      BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+      formik.values.hedgeDuration || 1n,
+    ],
+    query: {
+      select: (data) => Number(data || 0) / 100,
+    },
+  });
 
   // set the strike price percent to formik values
   useEffect(() => {

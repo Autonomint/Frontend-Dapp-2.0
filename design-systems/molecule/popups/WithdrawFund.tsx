@@ -142,12 +142,12 @@ export function WithdrawFund({
       tooltip: false,
       tooltipText: "",
     },
-    {
-      headline: "Current APR",
-      value: "0%",
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   headline: "Current APR",
+    //   value: 0,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     {
       headline: "Deposited Time",
       value: "-",
@@ -499,13 +499,13 @@ export function WithdrawFund({
       // set apr at deposit
       updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
-      updatedData[4].value = `${Number(position.collateralType === "krwq" ? 0 : 120) / 10}%`;
-      updatedData[5].value = new Date(
+      // updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[4].value = new Date(
         // set deposited time
         position.depositedTime * 1000,
       ).toLocaleString();
       // downside protection percentage
-      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
       // current price of eth
       const currentPrice =
@@ -534,9 +534,9 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[7].value = `${upsideAt.toFixed(2)}`;
+      updatedData[6].value = `${upsideAt.toFixed(2)}`;
       // set collateral upside till now
-      updatedData[8].value =
+      updatedData[7].value =
         // check if eth price at deposit time is less then current price
         // if yes then set curtUpside
         // else set -
@@ -544,11 +544,11 @@ export function WithdrawFund({
           ? `${curtUpside.toFixed(2)}`
           : "-";
       // set interest gain
-      updatedData[9].value =
+      updatedData[8].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[10].value = position.noOfAbondMinted
+      updatedData[9].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -567,7 +567,7 @@ export function WithdrawFund({
       updatedData[7].value = "-";
       updatedData[8].value = "-";
       updatedData[9].value = "-";
-      updatedData[10].value = "-";
+      // updatedData[10].value = "-";
 
       setDepositData(updatedData);
     }
