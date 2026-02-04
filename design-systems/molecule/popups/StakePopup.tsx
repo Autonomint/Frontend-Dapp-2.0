@@ -69,24 +69,24 @@ export function StakePopup({
   });
 
   const handleStake = (amount: string) => {
-    stakeTokens({
-      user: "0x123",
-      index: 0,
-      stakingAmount: amount,
-      verifyParams: {
-        volatility: "0x123",
-        ethPrice: "0x123",
-        expiredETHAmount: "0x123",
-        plFromExpired: "0x123",
-        premiumCv: "0x123",
-        hedgeCv: "0x123",
-        optionFees: "0x123",
-        odosAssembledData: "0x123",
-        deadline: "0x123",
-        signature: "0x123",
-      },
-      assetName: 12,
-    });
+    // stakeTokens({
+    //   user: "0x123",
+    //   index: 0,
+    //   stakingAmount: amount,
+    //   verifyParams: {
+    //     volatility: "0x123",
+    //     ethPrice: "0x123",
+    //     expiredETHAmount: "0x123",
+    //     plFromExpired: "0x123",
+    //     premiumCv: "0x123",
+    //     hedgeCv: "0x123",
+    //     optionFees: "0x123",
+    //     odosAssembledData: "0x123",
+    //     deadline: "0x123",
+    //     signature: "0x123",
+    //   },
+    //   assetName: 12,
+    // });
   };
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
