@@ -602,6 +602,30 @@ export const optionABI = [
   {
     "inputs": [
       {
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint128",
+        "name": "hedgeValidity",
+        "type": "uint128"
+      }
+    ],
+    "name": "strikePricePercentLimits_",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "strikPricePercentLimit",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
@@ -688,6 +712,11 @@ export const optionABI = [
         "internalType": "enum IBorrowing.AssetName[]",
         "name": "assetNames",
         "type": "uint8[]"
+      },
+      {
+        "internalType": "uint128[]",
+        "name": "hedgeValidities",
+        "type": "uint128[]"
       },
       {
         "internalType": "uint128[]",

@@ -451,17 +451,20 @@ function InputForm({ currency }: { currency: string }) {
     "unformattedValue",
   );
   // Custom hook to fetch the current strike price percent limit
-  const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
-    useReadContract({
-      abi: optionABI,
-      address:
-        optionContractAddress[chainId as keyof typeof optionContractAddress],
-      functionName: "strikePricePercentLimits",
-      args: [BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum]],
-      query: {
-        select: (data) => Number(data || 0) / 100,
-      },
-    });
+  const { data: currentStrikePricePercentLimit } = useReadContract({
+    abi: optionABI,
+    address:
+      optionContractAddress[chainId as keyof typeof optionContractAddress],
+    functionName: "strikePricePercentLimits_",
+    args: [
+      BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+      formik.values.hedgeDuration || 1n,
+    ],
+    query: {
+      select: (data) => Number(data || 0) / 100,
+    },
+  });
+
 
   console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
   // set the strike price percent to formik values
