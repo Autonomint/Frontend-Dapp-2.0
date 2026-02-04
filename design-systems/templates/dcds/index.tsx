@@ -95,7 +95,7 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
     "Hedge Asset is required",
     function (value) {
       return value !== null && value !== undefined && value !== 0;
-    }
+    },
   );
 
   // Add flag for each token
@@ -115,7 +115,7 @@ const createFormSchema = (tokenList: TokenDetails[]) => {
           return this.parent[`${token.tokenName.toLowerCase()}Flag`]
             ? value !== null && value !== undefined && value !== 0
             : true;
-        }
+        },
       )
       .test("max", "max", function (value) {
         const {
@@ -262,10 +262,10 @@ function DCDSTemplate() {
                   new Date(
                     Number(
                       list[Number(key) as keyof typeof list]
-                        ?.lockingBoosterValidity
-                    ) * 1000
-                  )
-                )
+                        ?.lockingBoosterValidity,
+                    ) * 1000,
+                  ),
+                ),
               ).minutes > 0 && (
                 <div className="dark:text-green-600 text-green-700 font-bold">
                   ({booster}x Booster)
@@ -308,10 +308,10 @@ function DCDSTemplate() {
     formik.values.hedgeAsset === "ETH"
       ? "ETH"
       : formik.values.hedgeAsset === null
-      ? "ETH"
-      : formik.values.hedgeAsset === "KRWQ"
-      ? "KRWQ"
-      : "cbBTC"
+        ? "ETH"
+        : formik.values.hedgeAsset === "KRWQ"
+          ? "KRWQ"
+          : "cbBTC",
   );
 
   // assigning the formik values to the local variables because getting old values from formik directly
@@ -417,8 +417,8 @@ function DCDSTemplate() {
         formik.values.hedgeAsset === "cbBTC"
           ? "cbBTC"
           : formik.values.hedgeAsset === "KRWQ"
-          ? "krwq"
-          : "ETH";
+            ? "krwq"
+            : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -434,13 +434,13 @@ function DCDSTemplate() {
                     formik.values[
                       `${token.tokenName.toLowerCase()}Amount`
                     ].toString(),
-                    Number(token.tokenDecimals)
+                    Number(token.tokenDecimals),
                   )
-                : 0
+                : 0,
             );
           }),
 
-          selectedTokens.map((token) => token.tokenDetails)
+          selectedTokens.map((token) => token.tokenDetails),
         );
       }
 
@@ -458,7 +458,7 @@ function DCDSTemplate() {
       let filteredTokenList = tokenList;
       if (formik.values.hedgeAsset === "cbBTC") {
         filteredTokenList = tokenList.filter(
-          (token) => token.tokenName !== "BOLD"
+          (token) => token.tokenName !== "BOLD",
         );
       }
 
@@ -486,7 +486,7 @@ function DCDSTemplate() {
                     formik.values[
                       `${tokenDetail?.tokenName.toLowerCase()}Amount`
                     ].toString(),
-                    Number(tokenDetail?.tokenDecimals)
+                    Number(tokenDetail?.tokenDecimals),
                   )
                 : 0n;
             }),
@@ -502,8 +502,8 @@ function DCDSTemplate() {
               formik.values.hedgeAsset === "cbBTC"
                 ? AssetName.cbBTC
                 : formik.values.hedgeAsset === "KRWQ"
-                ? AssetName.KRWQ
-                : undefined,
+                  ? AssetName.KRWQ
+                  : undefined,
           },
           BigInt(cdsDepositSignedData.deadline),
           cdsDepositSignedData.signature as `0x${string}`,
@@ -513,7 +513,7 @@ function DCDSTemplate() {
           formik.values.hedgeAsset === "KRWQ"
           ? undefined
           : nativeFee.nativeFee,
-        formik.values.hedgeAsset
+        formik.values.hedgeAsset,
       );
     } catch (error) {
       console.log(error, "error");
@@ -568,8 +568,8 @@ function DCDSTemplate() {
       const allowanceAmount = BigInt(
         parseUnits(
           formik.values[`${token.tokenName.toLowerCase()}Amount`].toString(),
-          Number(token.tokenDecimals)
-        )
+          Number(token.tokenDecimals),
+        ),
       );
       // checking if the allowance is less than the allowance amount
       if (Number(token.allowance || 0) < Number(allowanceAmount)) {
@@ -577,7 +577,7 @@ function DCDSTemplate() {
         setTimeout(() => {
           formik.setFieldValue(
             `${token.tokenName.toLowerCase()}Approving`,
-            true
+            true,
           );
         }, 1000);
 
@@ -603,19 +603,19 @@ function DCDSTemplate() {
         if (transactionReceipt) {
           formik.setFieldValue(
             `${token.tokenName.toLowerCase()}ApproveSuccess`,
-            true
+            true,
           );
         } else {
           // setting the approve failure state to true
           formik.setFieldValue(
             `${token.tokenName.toLowerCase()}ApproveFailure`,
-            true
+            true,
           );
         }
         // setting the approve loading state to false
         formik.setFieldValue(
           `${token.tokenName.toLowerCase()}Approving`,
-          false
+          false,
         );
       }
     }
@@ -665,13 +665,13 @@ function DCDSTemplate() {
     selectedTokens.forEach((token) => {
       formik.setFieldValue(
         `${token.tokenName.toLowerCase()}ApproveSuccess`,
-        false
+        false,
       );
     });
     selectedTokens.forEach((token) => {
       formik.setFieldValue(
         `${token.tokenName.toLowerCase()}ApproveFailure`,
-        true
+        true,
       );
     });
   };
@@ -744,7 +744,7 @@ function DCDSTemplate() {
   const depositValue = useMemo(() => {
     return selectedTokens.reduce((total, token) => {
       const amount = Number(
-        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0,
       );
       const price = Number(token.tokenPrice || 0);
 
@@ -761,7 +761,7 @@ function DCDSTemplate() {
       query: {
         placeholderData: [],
       },
-    }
+    },
   ) as { data: `0x${string}`[]; isLoading: boolean };
 
   // fetching the token details for the deposit (name, symbol, decimals)
@@ -928,7 +928,7 @@ function DCDSTemplate() {
       // Format balance with proper decimals
       const formattedBalance = formatUnits(
         balance || 0n,
-        Number(token.decimals || 18)
+        Number(token.decimals || 18),
       );
 
       // Format price with 18 decimals (standard for price oracles)
@@ -944,14 +944,14 @@ function DCDSTemplate() {
           .minutes > 0
           ? 10
           : calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine5xTimestamp || ""
-            ).minutes > 0
-          ? 5
-          : calculateRemainingTimeDate(
-              farmLuckDetails?.deadLine10xTimestamp || ""
-            ).minutes > 0
-          ? 10
-          : 0;
+                farmLuckDetails?.deadLine5xTimestamp || "",
+              ).minutes > 0
+            ? 5
+            : calculateRemainingTimeDate(
+                  farmLuckDetails?.deadLine10xTimestamp || "",
+                ).minutes > 0
+              ? 10
+              : 0;
 
       // total boaster for token
       const totalBooster =
@@ -961,11 +961,11 @@ function DCDSTemplate() {
                 token.symbol === "USDa" || token.symbol === "USDA+"
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
-                  ? "NATIVE"
-                  : token.symbol === "mUSD"
-                  ? "wmUSD"
-                  : token.symbol?.toString()
-              ]?.assetBooster ?? 0
+                    ? "NATIVE"
+                    : token.symbol === "mUSD"
+                      ? "wmUSD"
+                      : token.symbol?.toString()
+              ]?.assetBooster ?? 0,
             )
           : 0) + luckBoaster;
 
@@ -987,26 +987,26 @@ function DCDSTemplate() {
                   token.symbol === "USDa" || token.symbol === "USDA+"
                     ? "USDA"
                     : token.symbol === "OP" || token.symbol === "AERO"
-                    ? "NATIVE"
-                    : token.symbol === "mUSD"
-                    ? "wmUSD"
-                    : token.symbol?.toString()
-                ]?.assetBoosterValidity ?? 0
+                      ? "NATIVE"
+                      : token.symbol === "mUSD"
+                        ? "wmUSD"
+                        : token.symbol?.toString()
+                ]?.assetBoosterValidity ?? 0,
               )
-            : 0
-        )
+            : 0,
+        ),
       );
       return {
         // token image to showing in ui
         tokenImage: getIconMapping(
           (theme === "system" ? "dark" : theme) || "dark",
-          token.symbol?.toString().toLowerCase() || "usda"
+          token.symbol?.toString().toLowerCase() || "usda",
         ),
         // token name to using in codo (name is from smart contract)
         tokenName: String(token.symbol || ""),
         // token label to using in ui
         tokenLabel: String(
-          token.symbol === "USDa" ? "USDA+" : token.symbol || ""
+          token.symbol === "USDa" ? "USDA+" : token.symbol || "",
         ),
         // token loading state
         isLoading: false,
@@ -1024,11 +1024,11 @@ function DCDSTemplate() {
                 token.symbol === "USDa" || token.symbol === "USDA+"
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
-                  ? "NATIVE"
-                  : token.symbol === "mUSD"
-                  ? "wmUSD"
-                  : token.symbol?.toString()
-              ]?.minAmount ?? 0
+                    ? "NATIVE"
+                    : token.symbol === "mUSD"
+                      ? "wmUSD"
+                      : token.symbol?.toString()
+              ]?.minAmount ?? 0,
             )
           : 0,
         // points to be given on per min deposit
@@ -1038,11 +1038,11 @@ function DCDSTemplate() {
                 token.symbol === "USDa" || token.symbol === "USDA+"
                   ? "USDA"
                   : token.symbol === "OP" || token.symbol === "AERO"
-                  ? "NATIVE"
-                  : token.symbol === "mUSD"
-                  ? "wmUSD"
-                  : token.symbol?.toString()
-              ]?.pointsToBeGiven ?? 0
+                    ? "NATIVE"
+                    : token.symbol === "mUSD"
+                      ? "wmUSD"
+                      : token.symbol?.toString()
+              ]?.pointsToBeGiven ?? 0,
             )
           : 0,
         // default booster for token (specific token booster)
@@ -1096,13 +1096,13 @@ function DCDSTemplate() {
     setSelectedTokens((prev) =>
       prev.map((token) => {
         const newToken = tokenList.find(
-          (newToken) => newToken.tokenAddress === token.tokenAddress
+          (newToken) => newToken.tokenAddress === token.tokenAddress,
         );
         return {
           ...token,
           allowance: newToken?.allowance || 0,
         };
-      })
+      }),
     );
   }, [tokenList, setSelectedTokens]);
 
@@ -1115,25 +1115,25 @@ function DCDSTemplate() {
           new Date(
             Number(
               lockInPeriodOption.find(
-                (option) => option.value === formik.values.lockInPeriod
-              )?.boosterValidity
-            ) * 1000
-          )
-        )
+                (option) => option.value === formik.values.lockInPeriod,
+              )?.boosterValidity,
+            ) * 1000,
+          ),
+        ),
       ).minutes > 0;
 
     // getting the lockin booster value
     const lockInBooster = isLockinBoosterActive
       ? Number(
           lockInPeriodOption.find(
-            (option) => option.value === formik.values.lockInPeriod
-          )?.booster || 0
+            (option) => option.value === formik.values.lockInPeriod,
+          )?.booster || 0,
         )
       : 0;
 
     const totalPoints = selectedTokens.reduce((total, token) => {
       const tokenAmount = Number(
-        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0,
       );
       const tokenPrice = Number(token.tokenPrice || 0);
       const valueInUSD = tokenAmount * tokenPrice;
@@ -1141,7 +1141,7 @@ function DCDSTemplate() {
       // checking if default booster (perticular selected token booster) is active or not by using timestamp (boosterValidity) data
       const isDefaultBoosterActive =
         calculateRemainingTimeDate(
-          toLocalISOString(new Date(token.boosterValidity * 1000))
+          toLocalISOString(new Date(token.boosterValidity * 1000)),
         ).minutes > 0;
 
       // getting the default booster value if active else taking 0
@@ -1179,7 +1179,7 @@ function DCDSTemplate() {
     // to show in ui point card
     const individualPoints = selectedTokens.map((token) => {
       const tokenAmount = Number(
-        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0
+        formik.values[`${token.tokenName.toLowerCase()}Amount`] || 0,
       );
       const tokenPrice = Number(token.tokenPrice || 0);
       const valueInUSD = tokenAmount * tokenPrice;
@@ -1213,7 +1213,7 @@ function DCDSTemplate() {
       (total, token) => {
         return total + token.points;
       },
-      0
+      0,
     );
 
     // Calculating Lockin Point
@@ -1252,7 +1252,7 @@ function DCDSTemplate() {
               formik.values[`${token.tokenName.toLowerCase()}ApproveFailure`]
             }
             isSuccess={Boolean(
-              formik.values[`${token.tokenName.toLowerCase()}ApproveSuccess`]
+              formik.values[`${token.tokenName.toLowerCase()}ApproveSuccess`],
             )}
             setSuccessLoading={() => console.log(true)}
             heading={`Approving ${token.tokenLabel}`}
@@ -1261,7 +1261,7 @@ function DCDSTemplate() {
               1
             }/${selectedTokens.length + 1}`}
           />
-        )
+        ),
     );
   }, [formik.values, selectedTokens]);
 
@@ -1353,7 +1353,7 @@ function DCDSTemplate() {
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
     if (tokenList[4]) list.push(tokenList[4]);
-    if (tokenList[5]) list.push(tokenList[5]);
+    // if (tokenList[5]) list.push(tokenList[5]);
     return list;
   }, [tokenList]);
   console.log("formik.values", formik);
@@ -1424,16 +1424,16 @@ function DCDSTemplate() {
                           theme === "dark" && token.tokenName === "USDa"
                             ? USDaIconGreen
                             : theme === "light" && token.tokenName === "USDa"
-                            ? USDaIcon
-                            : token?.tokenImage
+                              ? USDaIcon
+                              : token?.tokenImage
                         }
                         alt={token?.tokenName}
                         width={
                           theme === "dark" && token.tokenName === "USDa"
                             ? 55
                             : theme === "light" && token.tokenName === "USDa"
-                            ? 55
-                            : 80
+                              ? 55
+                              : 80
                         }
                         height={80}
                         className="object-cover"
@@ -1507,7 +1507,7 @@ function DCDSTemplate() {
                 ) : null}
               </div> */}
               {selectedTokens.some((token) =>
-                nativeTokenName.includes(token.tokenLabel)
+                nativeTokenName.includes(token.tokenLabel),
               ) && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -1571,7 +1571,7 @@ function DCDSTemplate() {
                           Number(
                             formik.values[
                               `${token.tokenName?.toLocaleLowerCase()}Amount` as keyof FormValues
-                            ]
+                            ],
                           ) * Number(token?.tokenPrice || 0)
                         ).toFixed(2)}
                       </span>
@@ -1608,7 +1608,7 @@ function DCDSTemplate() {
                         onClick={() => {
                           formik.setFieldValue(
                             `${token?.tokenName?.toLocaleLowerCase()}Amount`,
-                            Number(truncateDecimals(token.tokenCount || "", 4))
+                            Number(truncateDecimals(token.tokenCount || "", 4)),
                           );
                         }}
                         className="text-[12px] cursor-pointer font-semibold text-black bg-[#abffde] dark:border-white  border-black border p-1 py-[0px] mt-4  sm:px-2 sm:py-[2px] rounded-[24px]"
@@ -1812,10 +1812,10 @@ function DCDSTemplate() {
                   selectedTokens.length === 3
                     ? "4/4"
                     : selectedTokens.length === 2
-                    ? "3/3"
-                    : selectedTokens.length === 2
-                    ? "2/2"
-                    : "2/2"
+                      ? "3/3"
+                      : selectedTokens.length === 2
+                        ? "2/2"
+                        : "2/2"
                 }
               />
             </div>
