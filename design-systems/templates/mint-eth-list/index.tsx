@@ -109,7 +109,7 @@ function MintEthListTemplate() {
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionEth}%`,
       ltv: `${ltvETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -144,7 +144,7 @@ function MintEthListTemplate() {
     {
       token: "weETH",
       tokenImage: WeETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWeETH}%`,
       ltv: `${ltvWeETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -182,7 +182,7 @@ function MintEthListTemplate() {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvWrsETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWrsETH}%`,
       ltv: `${ltvWrsETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -255,7 +255,7 @@ function MintEthListTemplate() {
     // list.push({
     //   token: "wsuperOETHb",
     //   tokenImage: WsuperOETH,
-    //   BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+    // BorrowRate: `${Number(ltvWsuperOETH?.APR || 0) / 10}%`,
     //   DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
     //   ltv: `${ltvWsuperOETH?.LTV || 0}%`,
     //   isActive: !isFunctionPausedBorrow_Deposit,
