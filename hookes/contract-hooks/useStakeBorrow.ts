@@ -1,0 +1,231 @@
+import { borrowCoreAddress, borrowDepositCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
+import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
+import { useAccount, useWriteContract } from "wagmi";
+import { AssetName } from "@/utils/constants";
+import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
+import { Address } from "viem";
+
+interface EIP712VerifyParams {
+  volatility: bigint;
+  ethPrice: bigint;
+  expiredETHAmount: bigint;
+  plFromExpired: bigint;
+  premiumCv: bigint;
+  hedgeCv: bigint;
+  optionFees: bigint;
+  odosAssembledData: `0x${string}`;
+  deadline: bigint;
+  signature: `0x${string}`;
+}
+
+interface BorrowStakeInputs {
+  volatility: bigint;
+  depositingAmount: bigint;
+  value: bigint | undefined;
+  assetName: AssetName;
+  expiredETHAmount: bigint;
+  plFromExpired: bigint;
+  deadline: bigint;
+  signature: `0x${string}`;
+  nonce: bigint;
+  hedgeDuration: bigint;
+  ethPrice: bigint | undefined;
+  premiumCv: bigint;
+  hedgeCv: bigint;
+  optionFees: bigint;
+}
+
+interface StakeInputs {
+  user: Address;
+  index: number;
+  stakingAmount: bigint;
+  verifyParams: EIP712VerifyParams;
+  assetName: AssetName;
+}
+
+interface UnstakeInputs {
+  user: Address;
+  index: number;
+  verifyParams: EIP712VerifyParams;
+  assetName: AssetName;
+}
+
+const useDepositStakeTokens = (mutation: any) => {
+  const { chainId, address } = useAccount();
+  // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
+  const {
+    isPending: isDepositsStakeLoading,
+    data: depositStakeDatahash, // Data received from the `useBorrowingContractDepositTokens` hook
+    writeContract, // Function to initiate a write operation
+    reset: resetStake, // Function to reset the state of the hook
+    isError: depositStakeError, // Error state
+    error: depositStakeErrorData
+  } = useWriteContract({
+    mutation: {
+      ...mutation,
+    },
+  });
+  const {
+    isPending: isWithdrawStakeLoading,
+    data: withdrawStakeDataHash, // Data received from the `useBorrowingContractDepositTokens` hook
+    writeContract: withdrawStakeWriteContract, // Function to initiate a write operation
+    reset: resetWithdrawStake, // Function to reset the state of the hook
+    isError: withdrawStakeError, // Error state
+    error: withdrawStakeErrorData
+  } = useWriteContract({
+    mutation: {
+      ...mutation,
+    },
+  });
+  const {
+    isPending: isWithdrawUnStakeLoading,
+    data: withdrawUnStakeDatahash, // Data received from the `useBorrowingContractDepositTokens` hook
+    writeContract: withdrawUnStakeWriteContract, // Function to initiate a write operation
+    reset: resetWithdrawUnStake, // Function to reset the state of the hook
+    isError: withdrawUnStakeError, // Error state
+    error: withdrawUnStakeErrorData
+  } = useWriteContract({
+    mutation: {
+      ...mutation,
+    },
+  });
+
+
+
+
+  const mintStakeUSDa = async ({
+    volatility,
+    depositingAmount,
+    value,
+    assetName,
+    deadline,
+    signature,
+    expiredETHAmount,
+    plFromExpired,
+    nonce,
+    hedgeDuration,
+    ethPrice,
+    premiumCv,
+    hedgeCv,
+    optionFees
+  }: BorrowStakeInputs) => {
+    const contractAddress = assetName === 12 || assetName === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi
+    writeContract?.({
+      abi: abi,
+      address: contractAddress as `0x${string}`,
+      functionName: "depositAndStake",
+      args: [
+        {
+          user: address as `0x${string}`,
+          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
+          volatility,
+          assetName,
+          depositingAmount,
+          hedgeValidity: hedgeDuration
+        },
+        {
+          expiredETHAmount,
+          plFromExpired,
+          premiumCv,
+          hedgeCv,
+          optionFees,
+          nonce,
+          deadline,
+          signature,
+        },
+      ],
+      value,
+    });
+  };
+
+  const stakeTokens = async ({
+    user,
+    index,
+    stakingAmount,
+    verifyParams,
+    assetName,
+  }: StakeInputs) => {
+    const contractAddress = assetName === 12 || assetName === 13
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress];
+
+    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi;
+
+    return withdrawStakeWriteContract({
+      abi,
+      address: contractAddress as `0x${string}`,
+      functionName: 'stake',
+      args: [
+        user,
+        index,
+        stakingAmount,
+        {
+          volatility: verifyParams.volatility,
+          ethPrice: verifyParams.ethPrice,
+          expiredETHAmount: verifyParams.expiredETHAmount,
+          plFromExpired: verifyParams.plFromExpired,
+          premiumCv: verifyParams.premiumCv,
+          hedgeCv: verifyParams.hedgeCv,
+          optionFees: verifyParams.optionFees,
+          odosAssembledData: verifyParams.odosAssembledData,
+          deadline: verifyParams.deadline,
+          signature: verifyParams.signature,
+        },
+      ],
+    });
+  };
+
+  const unstakeTokens = async ({
+    user,
+    index,
+    verifyParams,
+    assetName,
+  }: UnstakeInputs) => {
+    const contractAddress = assetName === 12 || assetName === 13
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress];
+
+    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi;
+
+    return withdrawUnStakeWriteContract({
+      abi,
+      address: contractAddress as `0x${string}`,
+      functionName: 'unstake',
+      args: [
+        user,
+        index,
+        {
+          volatility: verifyParams.volatility,
+          ethPrice: verifyParams.ethPrice,
+          expiredETHAmount: verifyParams.expiredETHAmount,
+          plFromExpired: verifyParams.plFromExpired,
+          premiumCv: verifyParams.premiumCv,
+          hedgeCv: verifyParams.hedgeCv,
+          optionFees: verifyParams.optionFees,
+          odosAssembledData: verifyParams.odosAssembledData,
+          deadline: verifyParams.deadline,
+          signature: verifyParams.signature,
+        },
+      ],
+    });
+  };
+
+  return {
+    isDepositsStakeLoading,
+    depositStakeDatahash,
+    mintStakeUSDa,
+    stakeTokens,
+    unstakeTokens,
+    resetStake,
+    depositStakeError,
+    isWithdrawStakeLoading,
+    withdrawStakeDataHash,
+    withdrawStakeError,
+    isWithdrawUnStakeLoading,
+    withdrawUnStakeDatahash,
+    withdrawUnStakeError,
+  };
+};
+
+export default useDepositStakeTokens;

@@ -113,10 +113,10 @@ const DepositTableRow = ({
           parseFloat(
             (
               ethPrice / (position.collateralType === "krwq" ? 1 : 1e2)
-            ).toString()
+            ).toString(),
           ));
       const amountProtPrecision = parseFloat(
-        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2))
+        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2)),
       );
 
       setAmountProtected(amountProtPrecision);
@@ -179,19 +179,33 @@ const DepositTableRow = ({
           display: tabPosition === "Borrowed" ? "block" : "none",
         }}
       >
-        <span
-          onClick={() => {
-            setRenewRepay(true);
-            handleRowClick();
-          }}
-          className="font-bold cursor-pointer text-[20px] underline "
-        >
-          {position.status == BorrowStatus.WITHDREW
-            ? "Repaid"
-            : position.status == BorrowStatus.LIQUIDATED
-            ? "Liquidated"
-            : "Repay/Renew"}
-        </span>
+        {position.status !== BorrowStatus.STAKED && (
+          <span
+            onClick={() => {
+              setRenewRepay(true);
+              handleRowClick();
+            }}
+            className="font-bold cursor-pointer text-[20px] underline "
+          >
+            {position.status == BorrowStatus.WITHDREW
+              ? "Repaid"
+              : position.status == BorrowStatus.LIQUIDATED
+                ? "Liquidated"
+                : "Repay/Renew"}
+          </span>
+        )}
+        {position.status == BorrowStatus.DEPOSITED &&
+          position.collateralType === "krwq" && (
+            <span
+              onClick={() => {
+                setStakePopUpOpen?.(true);
+                handleRowClick();
+              }}
+              className="font-bold cursor-pointer text-[20px] underline "
+            >
+              {"Stake"}
+            </span>
+          )}
         {/* <spans
             onClick={() => {
               setViewPosition(true);

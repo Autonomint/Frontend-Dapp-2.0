@@ -442,6 +442,7 @@ function InputForm({ currency }: { currency: string }) {
     },
   });
 
+  console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
   // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(
@@ -1007,7 +1008,28 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}{" "}
+                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}
+                    <span className="text-base">
+                      {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                    </span>
+                  </Button>
+
+                  <Button
+                    disabled={isFunctionPausedBorrow_Deposit}
+                    type="submit"
+                    name="stake"
+                    onClick={(e) => {
+                      formik.setFieldValue("submitType", "stake");
+                    }}
+                    className={`
+                    bg-black dark:bg-custom-gradient-to-top py-6
+                    text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
+                  >
+                    {!mintBtnLoading ? (
+                      "Mint & Stake"
+                    ) : (
+                      <Spinner color="#fff" />
+                    )}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
