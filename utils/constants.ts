@@ -54,7 +54,9 @@ export enum AssetName {
 export const BorrowAssetsEnum = {
   ETH: AssetName.ETH,
   weETH: AssetName.WeETH,
+  WeETH: AssetName.WeETH,
   wrsETH: AssetName.WrsETH,
+  WrsETH: AssetName.WrsETH,
   rsETH: AssetName.rsETH,
   wsuperOETHb: AssetName.WSUPER_OETH,
   cbBTC: AssetName.cbBTC,

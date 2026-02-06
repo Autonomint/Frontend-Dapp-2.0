@@ -199,7 +199,7 @@ export function WithdrawFund({
 
   // interest gain from backend
   const { interestGained, isInterestGainedPending } = useInterestGain(
-    position.index
+    position.index,
   );
 
   const {
@@ -211,7 +211,7 @@ export function WithdrawFund({
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
-    position.collateralType === "krwq"
+    position.collateralType === "krwq",
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -362,16 +362,16 @@ export function WithdrawFund({
     calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) < (position?.ethPrice || 0)
-      ? Number(
-          (position?.ethPrice || 0) /
-            (position.collateralType === "krwq" ? 1e8 : 1e2)
-        ) *
-          Number(position?.depositedAmountInETH) -
-        Number(
-          currentEthPrice / (position.collateralType === "krwq" ? 1 : 1e2)
-        ) *
-          Number(position?.depositedAmountInETH)
-      : 0;
+        ? Number(
+            (position?.ethPrice || 0) /
+              (position.collateralType === "krwq" ? 1e8 : 1e2),
+          ) *
+            Number(position?.depositedAmountInETH) -
+          Number(
+            currentEthPrice / (position.collateralType === "krwq" ? 1 : 1e2),
+          ) *
+            Number(position?.depositedAmountInETH)
+        : 0;
 
   // fetching allowance of usda for repay
   const {
@@ -442,7 +442,7 @@ export function WithdrawFund({
   const totalUsdaAmntWithCumulativeRate = BigInt(
     position.normalizedAmount
       ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
-      : 0
+      : 0,
   );
 
   // updating repay amount according to status
@@ -484,7 +484,7 @@ export function WithdrawFund({
           Number(position.exchangeRateAtDeposit || 1)) /
         priceDecimals;
       updatedData[1].value = `$${ethPriceAtDep.toFixed(
-        position.collateralType === "krwq" ? 8 : 2
+        position.collateralType === "krwq" ? 8 : 2,
       )}`;
       // set points earned till now
       updatedData[2].headline = "Points earned till now";
@@ -495,7 +495,7 @@ export function WithdrawFund({
       updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
       updatedData[5].value = new Date(
         // set deposited time
-        position.depositedTime * 1000
+        position.depositedTime * 1000,
       ).toLocaleString();
       // downside protection percentage
       updatedData[6].value = `${position.downsideProtectionPercentage}%`;
@@ -589,14 +589,16 @@ export function WithdrawFund({
         position.status === BorrowStatus.LIQUIDATED
           ? 0
           : position.status === BorrowStatus.DEPOSITED
-          ? // if position withdrawn using totalDebtAmount else total usda with cumulative
-            (
-              Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-              Number(position.noOfUSDaMinted)
-            ).toFixed(4)
-          : (
-              Number(position.totalDebtAmount) - Number(position.noOfUSDaMinted)
-            ).toFixed(4)
+            ? // if position withdrawn using totalDebtAmount else total usda with cumulative
+              (
+                Number(
+                  formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
+                ) - Number(position.noOfUSDaMinted)
+              ).toFixed(4)
+            : (
+                Number(position.totalDebtAmount) -
+                Number(position.noOfUSDaMinted)
+              ).toFixed(4)
       }`,
       tooltip: false,
       tooltipText: "",
@@ -604,7 +606,7 @@ export function WithdrawFund({
     {
       headline: "Downside Protection Till Now",
       value: `$${downsideProtection.toFixed(
-        position.collateralType === "krwq" ? 8 : 2
+        position.collateralType === "krwq" ? 8 : 2,
       )}`,
       tooltip: false,
       tooltipText: "",
@@ -658,7 +660,7 @@ export function WithdrawFund({
           parseFloat(position.depositedAmount) *
           (position.ethPrice - parseFloat(ethPrice.toString()));
         const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2))
+          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2)),
         );
         setAmountProtected(amountProtPrecision);
       }
@@ -668,7 +670,7 @@ export function WithdrawFund({
         const amountProt =
           0.2 * parseFloat(position.depositedAmount) * position.ethPrice;
         const amountProtPrecision = parseFloat(
-          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2))
+          displayNumberWithPrecision((amountProt / priceDecimals).toFixed(2)),
         );
         setAmountProtected(amountProtPrecision);
       }
@@ -888,7 +890,7 @@ export function WithdrawFund({
     const extraAmount = Number(percentageValue) * interest;
 
     const repayAmountFormated = Number(
-      truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6)
+      truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
     );
 
     // check if balance is greater than or equal to repay amount
@@ -908,7 +910,7 @@ export function WithdrawFund({
     approveReset?.();
     borrowReset?.();
     const approveRepayAmount = BigInt(
-      Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6)))
+      Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6))),
     );
     if (
       position.status === "DEPOSITED"
@@ -928,7 +930,7 @@ export function WithdrawFund({
   const [renewLoadingSM, setRenewLoadingSM] = useState<boolean>(false);
 
   const { refetchBorrowWithDrawSignedData } = useGetBorrowWithdrawSignedData(
-    position.index
+    position.index,
   );
   const {
     renewBorrow,
@@ -967,10 +969,10 @@ export function WithdrawFund({
           }, 800);
 
           const repayAmountFormated = Number(
-            truncateDecimals(Number(formik.values.withdrawAmount || 0), 6)
+            truncateDecimals(Number(formik.values.withdrawAmount || 0), 6),
           );
           const repayAmount = BigInt(
-            Math.round(Number(parseUnits(repayAmountFormated.toString(), 6)))
+            Math.round(Number(parseUnits(repayAmountFormated.toString(), 6))),
           );
 
           // const percentageValue =
@@ -981,8 +983,8 @@ export function WithdrawFund({
             position.collateralType === "cbBTC"
               ? "cbBTC"
               : position.collateralType === "krwq"
-              ? "krwq"
-              : "ETH";
+                ? "krwq"
+                : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
             repayPercent: repayAmount,
@@ -1002,7 +1004,7 @@ export function WithdrawFund({
             BigInt(borrowSignedData?.expiredETHAmount || 0),
             BigInt(borrowSignedData?.plFromExpired || 0),
             BigInt(borrowSignedData?.ethPrice || 0),
-            position.collateralType
+            position.collateralType,
           );
         }
         if (toggleView == "renew") {
@@ -1013,7 +1015,7 @@ export function WithdrawFund({
 
           // fetching signed data
           const signedData = await fetchBorrowRenewSignedData(
-            position.collateralType
+            position.collateralType,
           );
           renewBorrow(
             BigInt(position.index),
@@ -1025,7 +1027,7 @@ export function WithdrawFund({
               position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
-            position.collateralType
+            position.collateralType,
           );
         }
       } else if (usdaHashError || usdtHashError) {
@@ -1113,14 +1115,14 @@ export function WithdrawFund({
     position.index,
     position.collateralType,
     Number(renewFormik.values.hedgeDuration),
-    ethPrice
+    ethPrice,
   ) as {
     payableOptionFees: bigint | undefined;
     payableOptionFeesError: any;
   };
 
   const { getOraclePrice } = useMasterPriceOracle(
-    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
+    testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
   );
 
   const handleRenew = () => {
@@ -1148,9 +1150,9 @@ export function WithdrawFund({
       Math.round(
         Number(
           Number(payableOptionFees || 0) /
-            Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0
-        )
-      ) + 1e6
+            Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0,
+        ),
+      ) + 1e6,
     );
 
     // check if renew amount is greater than 0
@@ -1186,7 +1188,7 @@ export function WithdrawFund({
   };
 
   const { fetchBorrowRenewSignedData } = useGetBorrowRenewSignedData(
-    position.index
+    position.index,
   );
 
   const callRenewInContract = async () => {
@@ -1204,7 +1206,7 @@ export function WithdrawFund({
 
     // fetching signed data
     const signedData = await fetchBorrowRenewSignedData(
-      position.collateralType
+      position.collateralType,
     );
     renewBorrow(
       BigInt(position.index),
@@ -1215,7 +1217,7 @@ export function WithdrawFund({
       position.collateralType === "cbBTC" || position.collateralType === "krwq"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
-      position.collateralType
+      position.collateralType,
     );
   };
 
@@ -1266,7 +1268,7 @@ export function WithdrawFund({
   const isRenewActive =
     Number(
       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-        getCompletedDays(position.depositedTime, false, true)
+        getCompletedDays(position.depositedTime, false, true),
     ) > 0;
 
   const hedgeDurationOption = useMemo(() => {
@@ -1382,10 +1384,10 @@ export function WithdrawFund({
                         {
                           label: "Maturity",
                           value: Number(
-                            calculateRemainingDays(Number(position.validTill))
+                            calculateRemainingDays(Number(position.validTill)),
                           ),
                           days: Number(
-                            calculateRemainingDays(Number(position.validTill))
+                            calculateRemainingDays(Number(position.validTill)),
                           ),
                           gradient:
                             "linear-gradient(to right, #08c8646e,#627EEA00)",
@@ -1399,7 +1401,7 @@ export function WithdrawFund({
                           value:
                             (updatedHedgeValidity || 0) -
                             Number(
-                              calculateRemainingDays(position.validTill) || 0
+                              calculateRemainingDays(position.validTill) || 0,
                             ),
                           gradient:
                             "linear-gradient(to right, #7a7a7a94, #FF527000)",
@@ -1472,7 +1474,7 @@ export function WithdrawFund({
                   {
                     label: "days",
                     value: Number(
-                      calculateRemainingDays(Number(position.validTill))
+                      calculateRemainingDays(Number(position.validTill)),
                     ),
 
                     color: "#05a552",
@@ -1649,8 +1651,8 @@ export function WithdrawFund({
                                       "withdrawAmount",
                                       truncateDecimals(
                                         Number(position.noOfUSDaMinted),
-                                        6
-                                      )
+                                        6,
+                                      ),
                                     );
                                   }}
                                   className="flex text-[16px] justify-center cursor-pointer font-semibold px-2 items-center  border border-l-0 border-grayLight h-full"
@@ -1679,8 +1681,8 @@ export function WithdrawFund({
                             position.status == BorrowStatus.WITHDREW
                               ? "md:p-4 h-auto w-full"
                               : position.status == BorrowStatus.LIQUIDATED
-                              ? "md:p-4 h-auto w-full"
-                              : "md:p-4 h-[50px] w-[30%]"
+                                ? "md:p-4 h-auto w-full"
+                                : "md:p-4 h-[50px] w-[30%]"
                           }`}
                         >
                           {repayLoading ? (
@@ -1691,14 +1693,14 @@ export function WithdrawFund({
                             `Repay`
                           ) : position.status == BorrowStatus.LIQUIDATED ? (
                             `Liquidated ${parseFloat(
-                              Number(position.depositedAmount).toFixed(6)
+                              Number(position.depositedAmount).toFixed(6),
                             )} ${position.collateralType}`
                           ) : (
                             `Withdrawn ${parseFloat(
                               (
                                 Number(position.depositedAmount) /
                                 (position.collateralType === "cbBTC" ? 1 : 2)
-                              ).toFixed(6)
+                              ).toFixed(6),
                             )} ${position.collateralType}`
                           )}
                           {position.status == BorrowStatus.WITHDREW && (
@@ -1776,40 +1778,40 @@ export function WithdrawFund({
                           value: Number(
                             isRenewActive
                               ? calculateRemainingDays(
-                                  Number(position.validTill)
+                                  Number(position.validTill),
                                 ) -
                                   Number(
                                     Number(
                                       currentOptionFeeTimeLimit?.minTimeLimit ||
-                                        0
+                                        0,
                                     ) -
                                       (Number(updatedHedgeValidity || 0) -
                                         (calculateRemainingDays(
-                                          position.validTill
-                                        ) || 0))
+                                          position.validTill,
+                                        ) || 0)),
                                   )
                               : calculateRemainingDays(
-                                  Number(position.validTill)
-                                )
+                                  Number(position.validTill),
+                                ),
                           ),
                           days: Number(
                             isRenewActive
                               ? calculateRemainingDays(
-                                  Number(position.validTill)
+                                  Number(position.validTill),
                                 ) -
                                   Number(
                                     Number(
                                       currentOptionFeeTimeLimit?.minTimeLimit ||
-                                        0
+                                        0,
                                     ) -
                                       (Number(updatedHedgeValidity || 0) -
                                         (calculateRemainingDays(
-                                          position.validTill
-                                        ) || 0))
+                                          position.validTill,
+                                        ) || 0)),
                                   )
                               : calculateRemainingDays(
-                                  Number(position.validTill)
-                                )
+                                  Number(position.validTill),
+                                ),
                           ),
 
                           gradient:
@@ -1823,12 +1825,12 @@ export function WithdrawFund({
                           value: isRenewActive
                             ? Number(
                                 Number(
-                                  currentOptionFeeTimeLimit?.minTimeLimit || 0
+                                  currentOptionFeeTimeLimit?.minTimeLimit || 0,
                                 ) -
                                   (Number(updatedHedgeValidity || 0) -
                                     (calculateRemainingDays(
-                                      position.validTill
-                                    ) || 0))
+                                      position.validTill,
+                                    ) || 0)),
                               )
                             : 0,
                           gradient:
@@ -1845,7 +1847,7 @@ export function WithdrawFund({
                             ? 0
                             : Number(updatedHedgeValidity || 0) -
                               Number(
-                                calculateRemainingDays(position.validTill) || 0
+                                calculateRemainingDays(position.validTill) || 0,
                               ),
                           gradient:
                             "linear-gradient(to right, #7a7a7a94, #FF527000)",
@@ -1924,13 +1926,13 @@ export function WithdrawFund({
                         ? calculateRemainingDays(Number(position.validTill)) -
                             Number(
                               Number(
-                                currentOptionFeeTimeLimit?.minTimeLimit || 0
+                                currentOptionFeeTimeLimit?.minTimeLimit || 0,
                               ) -
                                 (Number(updatedHedgeValidity || 0) -
                                   (calculateRemainingDays(position.validTill) ||
-                                    0))
+                                    0)),
                             )
-                        : calculateRemainingDays(Number(position.validTill))
+                        : calculateRemainingDays(Number(position.validTill)),
                     ),
 
                     color: "#05a552",
@@ -1940,7 +1942,7 @@ export function WithdrawFund({
                     value: Number(
                       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
                         (Number(updatedHedgeValidity || 0) -
-                          (calculateRemainingDays(position.validTill) || 0))
+                          (calculateRemainingDays(position.validTill) || 0)),
                     ),
                     color: isRenewActive ? "#2563eb" : "#05a552",
                   },
@@ -1976,7 +1978,7 @@ export function WithdrawFund({
                 {Number(
                   Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
                     (Number(updatedHedgeValidity || 0) -
-                      (calculateRemainingDays(position.validTill) + 1 || 0))
+                      (calculateRemainingDays(position.validTill) + 1 || 0)),
                 ) > 0 && (
                   <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
                     <span className="block w-3 h-3 bg-blue-600"></span>
@@ -1984,7 +1986,8 @@ export function WithdrawFund({
                       ? Number(
                           Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
                             (Number(updatedHedgeValidity || 0) -
-                              (calculateRemainingDays(position.validTill) || 0))
+                              (calculateRemainingDays(position.validTill) ||
+                                0)),
                         )
                       : 0}{" "}
                     Days remaining to activate renew
@@ -1999,16 +2002,16 @@ export function WithdrawFund({
                         position?.collateralType === "cbBTC"
                           ? "cbBTC"
                           : position?.collateralType === "krwq"
-                          ? "krwq"
-                          : "ETH"
+                            ? "krwq"
+                            : "ETH"
                       } price at deposit`,
                       value: `$${
                         position.collateralType === "krwq"
                           ? Number(
-                              formatUnits(BigInt(position?.ethPrice || 0), 8)
+                              formatUnits(BigInt(position?.ethPrice || 0), 8),
                             )
                           : Number(
-                              formatUnits(BigInt(position?.ethPrice || 0), 2)
+                              formatUnits(BigInt(position?.ethPrice || 0), 2),
                             )
                       }`,
                     },
@@ -2017,8 +2020,8 @@ export function WithdrawFund({
                         position?.collateralType === "cbBTC"
                           ? "cbBTC"
                           : position?.collateralType === "krwq"
-                          ? "krwq"
-                          : "ETH"
+                            ? "krwq"
+                            : "ETH"
                       } price`,
                       value: `$${
                         position.collateralType === "krwq"
@@ -2032,13 +2035,13 @@ export function WithdrawFund({
                       value:
                         "$" +
                         downsideProtection.toFixed(
-                          position.collateralType === "krwq" ? 8 : 2
+                          position.collateralType === "krwq" ? 8 : 2,
                         ),
                     },
                     {
                       heading: "Option Fees paid",
                       value: `$${Number(
-                        position?.totalOptionFees || position?.optionFees
+                        position?.totalOptionFees || position?.optionFees,
                       ).toFixed(2)}`,
                     },
                   ].map((item) => (
@@ -2069,7 +2072,7 @@ export function WithdrawFund({
                       label: "Option Fees",
                       value: `$${formatUnits(
                         BigInt((Number(payableOptionFees) as number) || 0),
-                        6
+                        6,
                       )}`,
                     },
                     {
@@ -2078,8 +2081,8 @@ export function WithdrawFund({
                         (Number(
                           formatUnits(
                             BigInt(position.ethPrice),
-                            position.collateralType === "krwq" ? 8 : 2
-                          )
+                            position.collateralType === "krwq" ? 8 : 2,
+                          ),
                         ) *
                           Number(position?.depositedAmountInETH) *
                           20) /
@@ -2142,7 +2145,7 @@ export function WithdrawFund({
                                 position.status == BorrowStatus.LIQUIDATED ||
                                 isFunctionPausedBorrow_Renew ||
                                 calculateRemainingDays(
-                                  Number(position.validTill)
+                                  Number(position.validTill),
                                 ) <= 0 ||
                                 isRenewActive ||
                                 !readyForNewTx
