@@ -41,7 +41,7 @@ function PortfolioTemplate() {
 
   const [showYield, setShowYield] = useState(false);
 
-  const [isStakePopUpOpen, setStakePopUpOpen] = useState(false);
+  const [isStakePopUpOpen, setStakePopUpOpen] = useState(true);
 
   // selected cds position for withdraw
   const [selectedDcdsPosition, setSelectedDcdsPosition] =

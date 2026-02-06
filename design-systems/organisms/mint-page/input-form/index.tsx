@@ -465,7 +465,6 @@ function InputForm({ currency }: { currency: string }) {
     },
   });
 
-
   console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
   // set the strike price percent to formik values
   useEffect(() => {
@@ -1137,18 +1136,28 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
                   >
-                    {!mintBtnLoading && readyForNewTx ? (
-                      "Mint USDA+"
+                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}
+                    <span className="text-base">
+                      {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                    </span>
+                  </Button>
+
+                  <Button
+                    disabled={isFunctionPausedBorrow_Deposit}
+                    type="submit"
+                    name="stake"
+                    onClick={(e) => {
+                      formik.setFieldValue("submitType", "stake");
+                    }}
+                    className={`
+                    bg-black dark:bg-custom-gradient-to-top py-6
+                    text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
+                  >
+                    {!mintBtnLoading ? (
+                      "Mint & Stake"
                     ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <Spinner color="#fff" />
-                        {!readyForNewTx && (
-                          <p className="text-[14px]">
-                            Updating data on other chain
-                          </p>
-                        )}
-                      </div>
-                    )}{" "}
+                      <Spinner color="#fff" />
+                    )}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>

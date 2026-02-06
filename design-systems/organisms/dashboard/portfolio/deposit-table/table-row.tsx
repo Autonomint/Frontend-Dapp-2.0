@@ -119,16 +119,15 @@ const DepositTableRow = ({
       const amountProt =
         parseFloat(position.depositedAmount) *
         (position.ethPrice / (position.collateralType === "krwq" ? 1e8 : 1e2) -
-          parseFloat(ethPrice.toString()));
-
+          parseFloat(
+            (
+              ethPrice / (position.collateralType === "krwq" ? 1 : 1e2)
+            ).toString(),
+          ));
       const amountProtPrecision = parseFloat(
         String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2)),
       );
-      console.log(
-        amountProtPrecision,
-        position.index,
-        "amountProtectedFunction",
-      );
+
       setAmountProtected(amountProtPrecision);
     }
   };
@@ -204,19 +203,6 @@ const DepositTableRow = ({
           display: tabPosition === "Borrowed" ? "block" : "none",
         }}
       >
-        {position.status == BorrowStatus.DEPOSITED &&
-          position.collateralType === "krwq" && (
-            <span
-              onClick={() => {
-                setStakePopUpOpen?.(true);
-                handleRowClick();
-              }}
-              className="font-bold cursor-pointer text-[20px] underline "
-            >
-              {"Stake"}
-            </span>
-          )}
-
         {position.status !== BorrowStatus.STAKED && (
           <span
             onClick={() => {
@@ -232,7 +218,18 @@ const DepositTableRow = ({
                 : "Repay/Renew"}
           </span>
         )}
-
+        {position.status == BorrowStatus.DEPOSITED &&
+          position.collateralType === "krwq" && (
+            <span
+              onClick={() => {
+                setStakePopUpOpen?.(true);
+                handleRowClick();
+              }}
+              className="font-bold cursor-pointer text-[20px] underline "
+            >
+              {"Stake"}
+            </span>
+          )}
         {/* <spans
             onClick={() => {
               setViewPosition(true);

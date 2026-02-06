@@ -37,7 +37,7 @@ interface BorrowStakeInputs {
 
 interface StakeInputs {
   user: Address;
-  index: bigint;
+  index: number;
   stakingAmount: bigint;
   verifyParams: EIP712VerifyParams;
   assetName: AssetName;
@@ -45,7 +45,7 @@ interface StakeInputs {
 
 interface UnstakeInputs {
   user: Address;
-  index: bigint;
+  index: number;
   verifyParams: EIP712VerifyParams;
   assetName: AssetName;
 }

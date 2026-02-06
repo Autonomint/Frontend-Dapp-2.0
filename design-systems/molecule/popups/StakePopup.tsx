@@ -7,6 +7,9 @@ import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
 import ToastNotificationError from "../toasts/ToastNotificationError";
 import { toast } from "sonner";
 import { PositionData } from "@/utils/interface";
+import { useAccount } from "wagmi";
+import { posix } from "node:path";
+import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -23,6 +26,7 @@ export function StakePopup({
   mintedAmount = 0,
   position,
 }: StakePopupProps) {
+  const { address } = useAccount();
   const minAmount = (mintedAmount * 0.5).toFixed(2);
   const validationSchema = Yup.object({
     amount: Yup.string()
@@ -56,7 +60,8 @@ export function StakePopup({
     withdrawUnStakeDatahash,
     withdrawUnStakeError,
   } = useDepositStakeTokens({
-    onError: () => {
+    onError: (data: any) => {
+      debugger;
       toast.custom((t) => {
         return (
           <ToastNotificationError
@@ -68,25 +73,32 @@ export function StakePopup({
     },
   });
 
-  const handleStake = (amount: string) => {
-    // stakeTokens({
-    //   user: "0x123",
-    //   index: 0,
-    //   stakingAmount: amount,
-    //   verifyParams: {
-    //     volatility: "0x123",
-    //     ethPrice: "0x123",
-    //     expiredETHAmount: "0x123",
-    //     plFromExpired: "0x123",
-    //     premiumCv: "0x123",
-    //     hedgeCv: "0x123",
-    //     optionFees: "0x123",
-    //     odosAssembledData: "0x123",
-    //     deadline: "0x123",
-    //     signature: "0x123",
-    //   },
-    //   assetName: 12,
-    // });
+  // Custom hook to fetch the borrow signed data
+  const { refetchBorrowSignedData } = useGetBorrowSignedData();
+
+  console.log(depositStakeError, "depositStakeError");
+  const handleStake = async (amount: string) => {
+    debugger;
+    // fetch the borrow signed data
+    const borrowSignedData = await refetchBorrowSignedData(
+      position.collateralType === "KRWQ" ? "krwq" : position.collateralType,
+    );
+    if (position.status === "STAKED") {
+      unstakeTokens({
+        user: address as `0x${string}`,
+        index: position.index,
+        verifyParams: borrowSignedData as any,
+        assetName: 12,
+      });
+    } else {
+      stakeTokens({
+        user: address as `0x${string}`,
+        index: position.index,
+        stakingAmount: BigInt(amount),
+        verifyParams: borrowSignedData as any,
+        assetName: 12,
+      });
+    }
   };
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -137,7 +149,11 @@ export function StakePopup({
               className="w-full py-6 text-xl font-medium"
               //   disabled={isLoading || !formik.isValid || !formik.dirty}
             >
-              {isLoading ? "Processing..." : "Stake"}
+              {isLoading || isWithdrawUnStakeLoading || isWithdrawStakeLoading
+                ? isWithdrawStakeLoading
+                  ? "Staking..."
+                  : "Unstaking..."
+                : "Stake"}
             </Button>
 
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
