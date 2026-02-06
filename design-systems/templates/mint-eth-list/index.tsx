@@ -64,6 +64,7 @@ function MintEthListTemplate() {
   const downsideProtectionKRWQ = ltvKRWQ?.LTV
     ? 100 - Number(ltvETH?.LTV || 0)
     : 0;
+
   // getting current APR value
   const { data: borrowData } = useReadContract({
     abi: borrowingContractAbi,
@@ -71,7 +72,7 @@ function MintEthListTemplate() {
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    args: [BorrowData.APR],
+    args: [BorrowData.ratePerSec],
     functionName: "getBorrowData",
   });
 
@@ -108,7 +109,7 @@ function MintEthListTemplate() {
     {
       token: "ETH",
       tokenImage: cryptoEth,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionEth}%`,
       ltv: `${ltvETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -143,7 +144,7 @@ function MintEthListTemplate() {
     {
       token: "weETH",
       tokenImage: WeETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWeETH}%`,
       ltv: `${ltvWeETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -181,7 +182,7 @@ function MintEthListTemplate() {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
+      BorrowRate: `${Number(ltvWrsETH?.APR || 0) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionWrsETH}%`,
       ltv: `${ltvWrsETH?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -219,7 +220,7 @@ function MintEthListTemplate() {
     list.push({
       token: "cbBTC",
       tokenImage: cbBTC,
-      BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
+      BorrowRate: `${Number(120) / 10}%`,
       DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
       ltv: `${ltvCbBTC?.LTV || 0}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
@@ -251,41 +252,41 @@ function MintEthListTemplate() {
             : 0,
         ),
     });
-    list.push({
-      token: "wsuperOETHb",
-      tokenImage: WsuperOETH,
-      BorrowRate: `${Number(BigInt(120) || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
-      ltv: `${ltvWsuperOETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wsuperOETHb borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
+    // list.push({
+    //   token: "wsuperOETHb",
+    //   tokenImage: WsuperOETH,
+    // BorrowRate: `${Number(ltvWsuperOETH?.APR || 0) / 10}%`,
+    //   DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
+    //   ltv: `${ltvWsuperOETH?.LTV || 0}%`,
+    //   isActive: !isFunctionPausedBorrow_Deposit,
+    //   InActiveHeading: "wsuperOETHb borrow is paused now",
+    //   pointsToBeGiven:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
+    //     0,
+    //   minAmount:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
+    //     0,
+    //   link: STRATEGY_LINK,
+    //   boaster:
+    //     (tokenRewardDetailList &&
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
+    //     0,
+    //   boasterTime:
+    //     tokenRewardDetailList &&
+    //     Math.max(
+    //       tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
+    //       farmLuckDetails?.deadLine5xTimestamp
+    //         ? // convert date to timestamp
+    //           new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+    //         : 0,
+    //       farmLuckDetails?.deadLine10xTimestamp
+    //         ? // convert date to timestamp
+    //           new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+    //         : 0,
+    //     ),
+    // });
 
     list.push({
       token: "KRWQ",

@@ -894,7 +894,7 @@ export function DcdsWithdrawModal({
             position.collateralType,
           );
         }
-      } else if (position.status == "WITHDREW") {
+      } else if (position.status == "WITHDREW" || pendingFixedYields > 0) {
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
         const token =
@@ -961,7 +961,7 @@ export function DcdsWithdrawModal({
     ? 0.0
     : Number(variableYields) < 0
       ? Number(variableYields)
-      : calculatePercentage(Number(variableYields), 80);
+      : calculatePercentage(Number(variableYields), 60);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
@@ -1124,9 +1124,9 @@ export function DcdsWithdrawModal({
                             : position.status !== "DEPOSITED"
                               ? calculatePercentage(
                                   position?.apys?.amountAccured || 0,
-                                  90,
+                                  60,
                                 )
-                              : calculatePercentage(apy[1] || 0, 90),
+                              : calculatePercentage(apy[1] || 0, 60),
                         ).toFixed(4)}
                       </Label>
                       {!(position.status == "WITHDREW") && (
@@ -1201,9 +1201,9 @@ export function DcdsWithdrawModal({
                           : position.status !== "DEPOSITED"
                             ? calculatePercentage(
                                 position?.apys?.currentTimeAPYTillNow,
-                                80,
+                                60,
                               ) || 0
-                            : calculatePercentage(apy[5], 80) || 0,
+                            : calculatePercentage(apy[5], 60) || 0,
                       ).toFixed(2)}%`}
                     </Label>
                   </div>
@@ -1221,11 +1221,11 @@ export function DcdsWithdrawModal({
                                 ? position?.apys?.priceChangePL
                                 : calculatePercentage(
                                     position?.apys?.priceChangePL || 0,
-                                    80,
+                                    60,
                                   ) || 0
                               : apy[2] < 0
                                 ? apy[2]
-                                : calculatePercentage(apy[2], 80) || 0,
+                                : calculatePercentage(apy[2], 60) || 0,
                         ).toFixed(4),
                       )}
                     </Label>

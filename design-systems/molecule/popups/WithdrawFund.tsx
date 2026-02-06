@@ -8,6 +8,7 @@ import {
   optionContractAddress,
   testusdtAbiAddress,
   usDaAddress,
+  usdcAddress,
 } from "@/blockchain/contracts";
 import { Button } from "@/design-systems/atoms/button";
 import { Dialog, DialogContent } from "@/design-systems/atoms/dialog";
@@ -141,12 +142,12 @@ export function WithdrawFund({
       tooltip: false,
       tooltipText: "",
     },
-    {
-      headline: "Current APR",
-      value: "0%",
-      tooltip: false,
-      tooltipText: "",
-    },
+    // {
+    //   headline: "Current APR",
+    //   value: 0,
+    //   tooltip: false,
+    //   tooltipText: "",
+    // },
     {
       headline: "Deposited Time",
       value: "-",
@@ -285,7 +286,7 @@ export function WithdrawFund({
     balanceString: USDTBalance,
     balance: USDTBalanceFormatted,
     balanceUnformatted,
-  } = useGetBalance("USDT");
+  } = useGetBalance("USDC");
 
   // loadings for transaction
   const [isLoadingCumulativeLocal, setIsLoadingCumulativeLocal] =
@@ -416,7 +417,7 @@ export function WithdrawFund({
     refetch: refetchAllowanceUSDT,
   } = useReadContract({
     abi: testusdtAbiAbi,
-    address: testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress],
+    address: usdcAddress[chainId as keyof typeof usdcAddress],
     functionName: "allowance",
     args: [
       address || zeroAddress,
@@ -426,32 +427,38 @@ export function WithdrawFund({
     ],
   }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
   // usda amount multiply by cumulative rate
-  // const totalUsdaAmntWithCumulativeRate =
-  //   lastCumulativeRate === undefined
-  //     ? parseUnits((position?.normalizedAmount?.toString() || "0"), 6)
-  //     : BigInt(
-  //       BigInt(
-  //         Math.round(
-  //           position.normalizedAmount
-  //             ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
-  //             : 0
-  //         )
-  //       ) * BigInt(lastCumulativeRate || 0)
-  //     ) / BigInt(10 ** 27);
+  const totalUsdaAmntWithCumulativeRate =
+    lastCumulativeRate === undefined
+      ? parseUnits(position?.normalizedAmount?.toString() || "0", 6)
+      : BigInt(
+          BigInt(
+            Math.round(
+              position.normalizedAmount
+                ? Number(
+                    parseUnits(
+                      position?.normalizedAmount?.toString() || "0",
+                      6,
+                    ),
+                  )
+                : 0,
+            ),
+          ) * BigInt(lastCumulativeRate || 0),
+        ) / BigInt(10 ** 27);
 
-  const totalUsdaAmntWithCumulativeRate = BigInt(
-    position.normalizedAmount
-      ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
-      : 0,
-  );
+  // const totalUsdaAmntWithCumulativeRate = BigInt(
+  //   position.normalizedAmount
+  //     ? Number(parseUnits(position?.normalizedAmount?.toString() || "0", 6))
+  //     : 0,
+  // );
 
   // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-        (Number(downsideProtection) + Number(position?.optionFees))
-      : Number(position.totalDebtAmount) -
-        (Number(downsideProtection) + Number(position?.optionFees));
+        Number(downsideProtection)
+      : // (Number(downsideProtection) + Number(position?.optionFees))
+        Number(position.totalDebtAmount) - Number(downsideProtection);
+  // (Number(downsideProtection) + Number(position?.optionFees));
 
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
@@ -460,7 +467,7 @@ export function WithdrawFund({
       borrowingContractAddress[
         chainId as keyof typeof borrowingContractAddress
       ],
-    args: [BorrowData.APR],
+    args: [BorrowData.ratePerSec],
     functionName: "getBorrowData",
   }) as { data: number[] | undefined; isLoading: boolean };
 
@@ -492,13 +499,13 @@ export function WithdrawFund({
       // set apr at deposit
       updatedData[3].value = `${position.aprAtDeposit}%`;
       // set current apr
-      updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
-      updatedData[5].value = new Date(
+      // updatedData[4].value = `${Number(currentAPR || 0) / 10}%`;
+      updatedData[4].value = new Date(
         // set deposited time
         position.depositedTime * 1000,
       ).toLocaleString();
       // downside protection percentage
-      updatedData[6].value = `${position.downsideProtectionPercentage}%`;
+      updatedData[5].value = `${position.downsideProtectionPercentage}%`;
 
       // current price of eth
       const currentPrice =
@@ -527,9 +534,9 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[7].value = `${upsideAt.toFixed(2)}`;
+      updatedData[6].value = `${upsideAt.toFixed(2)}`;
       // set collateral upside till now
-      updatedData[8].value =
+      updatedData[7].value =
         // check if eth price at deposit time is less then current price
         // if yes then set curtUpside
         // else set -
@@ -537,11 +544,11 @@ export function WithdrawFund({
           ? `${curtUpside.toFixed(2)}`
           : "-";
       // set interest gain
-      updatedData[9].value =
+      updatedData[8].value =
         interestGained != undefined && position.status == BorrowStatus.WITHDREW
           ? `$${Number(interestGained || 0).toFixed(2)}`
           : "-";
-      updatedData[10].value = position.noOfAbondMinted
+      updatedData[9].value = position.noOfAbondMinted
         ? `${position.noOfAbondMinted}`
         : "-";
       setDepositData(updatedData);
@@ -560,7 +567,7 @@ export function WithdrawFund({
       updatedData[7].value = "-";
       updatedData[8].value = "-";
       updatedData[9].value = "-";
-      updatedData[10].value = "-";
+      // updatedData[10].value = "-";
 
       setDepositData(updatedData);
     }
@@ -1159,7 +1166,7 @@ export function WithdrawFund({
     if (balanceUnformatted < renewAmount) {
       toast.custom((t) => (
         <ToastNotificationError
-          title="You don't have enough USDT to renew"
+          title="You don't have enough USDC to renew"
           onClose={() => toast.dismiss(t)}
         />
       ));
