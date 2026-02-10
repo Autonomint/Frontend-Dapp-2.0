@@ -541,16 +541,11 @@ function InputForm({ currency }: { currency: string }) {
       }, 1000);
       // calling the mint usda function in the contract
       mintUSDa?.({
-        volatility: BigInt(borrowSignedData?.volatility || 0),
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        deadline: BigInt(borrowSignedData?.deadline || 0),
-        nonce: BigInt(borrowSignedData?.nonce || 0),
-        signature: borrowSignedData?.signature || ("" as `0x${string}`),
-        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
         value:
           currency === "cbBTC" || currency === "KRWQ"
             ? undefined
@@ -565,6 +560,7 @@ function InputForm({ currency }: { currency: string }) {
           currency === "KRWQ"
             ? BigInt(borrowSignedData?.ethPrice || 0)
             : undefined,
+        verifyParams: borrowSignedData,
       });
     }
     if (data != undefined && nativeFee != undefined && isStake) {

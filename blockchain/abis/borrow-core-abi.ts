@@ -122,6 +122,17 @@ export const borowCoreABI = [
     "inputs": [
       {
         "internalType": "uint128",
+        "name": "stakingAmount",
+        "type": "uint128"
+      }
+    ],
+    "name": "Borrow_Invalid_StakeAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint128",
         "name": "validity",
         "type": "uint128"
       }
@@ -229,6 +240,11 @@ export const borowCoreABI = [
   {
     "inputs": [],
     "name": "Borrow_SlippageExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Borrow_StakeNotSupported",
     "type": "error"
   },
   {
@@ -576,9 +592,9 @@ export const borowCoreABI = [
       },
       {
         "indexed": false,
-        "internalType": "uint128",
+        "internalType": "uint256",
         "name": "withdrawAmount",
-        "type": "uint128"
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -704,16 +720,6 @@ export const borowCoreABI = [
             "type": "address"
           },
           {
-            "internalType": "uint128",
-            "name": "ethPrice",
-            "type": "uint128"
-          },
-          {
-            "internalType": "uint256",
-            "name": "volatility",
-            "type": "uint256"
-          },
-          {
             "internalType": "enum IBorrowing.AssetName",
             "name": "assetName",
             "type": "uint8"
@@ -724,40 +730,70 @@ export const borowCoreABI = [
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "expiredETHAmount",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint128",
             "name": "hedgeValidity",
             "type": "uint128"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "volatility",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint128",
+                "name": "ethPrice",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredETHAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "int128",
+                "name": "plFromExpired",
+                "type": "int128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "premiumCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "hedgeCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "optionFees",
+                "type": "uint128"
+              },
+              {
+                "internalType": "bytes",
+                "name": "odosAssembledData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint256",
+                "name": "deadline",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes",
+                "name": "signature",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+            "name": "verifyParams",
+            "type": "tuple"
           }
         ],
         "internalType": "struct IBorrowingCore.BorrowDepositParams",
         "name": "depositParam",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "deadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
-        "name": "verifyParams",
         "type": "tuple"
       }
     ],
@@ -1072,31 +1108,51 @@ export const borowCoreABI = [
             "type": "uint64"
           },
           {
-            "internalType": "uint128",
-            "name": "ethPrice",
-            "type": "uint128"
-          },
-          {
             "internalType": "enum IBorrowing.LiquidationType",
             "name": "liquidationType",
             "type": "uint8"
           },
           {
-            "internalType": "bytes",
-            "name": "odosAssembledData",
-            "type": "bytes"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expiredETHAmount",
-            "type": "uint256"
-          },
-          {
             "components": [
               {
                 "internalType": "uint256",
-                "name": "nonce",
+                "name": "volatility",
                 "type": "uint256"
+              },
+              {
+                "internalType": "uint128",
+                "name": "ethPrice",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredETHAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "int128",
+                "name": "plFromExpired",
+                "type": "int128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "premiumCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "hedgeCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "optionFees",
+                "type": "uint128"
+              },
+              {
+                "internalType": "bytes",
+                "name": "odosAssembledData",
+                "type": "bytes"
               },
               {
                 "internalType": "uint256",
@@ -1163,21 +1219,46 @@ export const borowCoreABI = [
         "type": "uint128"
       },
       {
-        "internalType": "uint128",
-        "name": "ethPrice",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint256",
-        "name": "volatility",
-        "type": "uint256"
-      },
-      {
         "components": [
           {
             "internalType": "uint256",
-            "name": "nonce",
+            "name": "volatility",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "premiumCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "hedgeCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "optionFees",
+            "type": "uint128"
+          },
+          {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
           },
           {
             "internalType": "uint256",
@@ -1289,12 +1370,157 @@ export const borowCoreABI = [
   {
     "inputs": [
       {
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint128",
+        "name": "stakingAmount",
+        "type": "uint128"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "volatility",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "premiumCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "hedgeCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "optionFees",
+            "type": "uint128"
+          },
+          {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+        "name": "verifyParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "index",
+        "type": "uint64"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "volatility",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "ethPrice",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiredETHAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int128",
+            "name": "plFromExpired",
+            "type": "int128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "premiumCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "hedgeCv",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "optionFees",
+            "type": "uint128"
+          },
+          {
+            "internalType": "bytes",
+            "name": "odosAssembledData",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "signature",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+        "name": "verifyParams",
+        "type": "tuple"
+      }
+    ],
+    "name": "unstake",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1615,50 +1841,70 @@ export const borowCoreABI = [
             "type": "uint128"
           },
           {
-            "internalType": "uint64",
-            "name": "ethPrice",
-            "type": "uint64"
-          },
-          {
-            "internalType": "bytes",
-            "name": "odosAssembledData",
-            "type": "bytes"
-          },
-          {
-            "internalType": "uint256",
-            "name": "expiredETHAmount",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint128",
             "name": "usdtFromOdos",
             "type": "uint128"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "volatility",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint128",
+                "name": "ethPrice",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint256",
+                "name": "expiredETHAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "int128",
+                "name": "plFromExpired",
+                "type": "int128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "premiumCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "hedgeCv",
+                "type": "uint128"
+              },
+              {
+                "internalType": "uint128",
+                "name": "optionFees",
+                "type": "uint128"
+              },
+              {
+                "internalType": "bytes",
+                "name": "odosAssembledData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint256",
+                "name": "deadline",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes",
+                "name": "signature",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IBorrowingCore.EIP712VerifyParams",
+            "name": "verifyParams",
+            "type": "tuple"
           }
         ],
         "internalType": "struct IBorrowingCore.BorrowWithdraw_Params",
         "name": "params",
-        "type": "tuple"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "nonce",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "deadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes",
-            "name": "signature",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IBorrowingCore.EIP712VerifyParams",
-        "name": "verifyParams",
         "type": "tuple"
       }
     ],
