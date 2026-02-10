@@ -5,17 +5,12 @@ import { AssetName } from "@/utils/constants";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 
 interface BorrowInputs {
-  volatility: bigint; // uint256 can be represented by bigint
   depositingAmount: bigint; // uint256 can be represented by bigint
   value: bigint | undefined; // uint256 can be represented by bigint
   assetName: AssetName;
-  expiredETHAmount: bigint;
-  plFromExpired: bigint;
-  deadline: bigint;
-  signature: `0x${string}`;
-  nonce: bigint;
   hedgeDuration: bigint
   ethPrice: bigint | undefined
+  verifyParams: Record<any, any>
 }
 
 const useDepositTokens = (mutation: any) => {
@@ -36,17 +31,12 @@ const useDepositTokens = (mutation: any) => {
 
 
   const mintUSDa = async ({
-    volatility,
     depositingAmount,
     value,
     assetName,
-    deadline,
-    signature,
-    expiredETHAmount,
-    plFromExpired,
-    nonce,
     hedgeDuration,
-    ethPrice
+    ethPrice,
+    verifyParams
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 || assetName === 13 || assetName === 14 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     const abi = assetName === 12 || assetName === 13 || assetName === 14 ? borowCoreABI : borrowingContractAbi
@@ -57,18 +47,11 @@ const useDepositTokens = (mutation: any) => {
       args: [
         {
           user: address as `0x${string}`,
-          ethPrice: assetName === 12 || assetName === 13 || assetName === 14 ? ethPrice : undefined,
-          volatility,
           assetName,
           depositingAmount,
-          expiredETHAmount,
-          plFromExpired,
-          hedgeValidity: hedgeDuration
-        },
-        {
-          nonce,
-          deadline,
-          signature,
+          hedgeValidity: hedgeDuration,
+          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
+          verifyParams
         },
       ],
       value,

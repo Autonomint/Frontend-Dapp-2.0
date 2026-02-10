@@ -143,6 +143,17 @@ export const borowCoreABI = [
     "inputs": [
       {
         "internalType": "uint128",
+        "name": "stakingAmount",
+        "type": "uint128"
+      }
+    ],
+    "name": "Borrow_Invalid_StakeAmount",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint128",
         "name": "validity",
         "type": "uint128"
       }
