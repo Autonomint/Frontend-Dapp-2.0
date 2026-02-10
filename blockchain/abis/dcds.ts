@@ -1,4 +1,4 @@
-export const cdsAbi = [
+export const cdsAbi =  [
     {
       "inputs": [
         {
@@ -617,6 +617,11 @@ export const cdsAbi = [
           "internalType": "uint256",
           "name": "expiredETHAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "int128",
+          "name": "plFromExpired",
+          "type": "int128"
         }
       ],
       "name": "calculateLiquidatedETHTogiveToUser",
@@ -693,24 +698,66 @@ export const cdsAbi = [
               "type": "uint128"
             },
             {
-              "internalType": "uint256",
-              "name": "expiredETHAmount",
-              "type": "uint256"
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "excessProfitCumulativeValue",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "ethPrice",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "expiredETHAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "int128",
+                  "name": "plFromExpired",
+                  "type": "int128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "premiumCv",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "hedgeCv",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "optionFees",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "odosAssembledData",
+                  "type": "bytes"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "deadline",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "signature",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct CDSInterface.EIP712VerifyParams",
+              "name": "verifyParams",
+              "type": "tuple"
             }
           ],
           "internalType": "struct CDSInterface.DepositUserParams",
           "name": "params",
           "type": "tuple"
-        },
-        {
-          "internalType": "uint256",
-          "name": "deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
         }
       ],
       "name": "deposit",
@@ -1414,19 +1461,61 @@ export const cdsAbi = [
           "type": "uint128"
         },
         {
-          "internalType": "bytes",
-          "name": "odosAssembledData",
-          "type": "bytes"
-        },
-        {
-          "internalType": "uint256",
-          "name": "deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "excessProfitCumulativeValue",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint128",
+              "name": "ethPrice",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint256",
+              "name": "expiredETHAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "int128",
+              "name": "plFromExpired",
+              "type": "int128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "premiumCv",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "hedgeCv",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "optionFees",
+              "type": "uint128"
+            },
+            {
+              "internalType": "bytes",
+              "name": "odosAssembledData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct CDSInterface.EIP712VerifyParams",
+          "name": "verifyParams",
+          "type": "tuple"
         }
       ],
       "name": "liquidateNativeTokenDeposit",
@@ -1990,34 +2079,71 @@ export const cdsAbi = [
               "type": "uint64"
             },
             {
-              "internalType": "uint256",
-              "name": "excessProfitCumulativeValue",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "expiredETHAmount",
-              "type": "uint256"
-            },
-            {
               "internalType": "enum CDSInterface.WithdrawType",
               "name": "withdrawType",
               "type": "uint8"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "excessProfitCumulativeValue",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "ethPrice",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "expiredETHAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "int128",
+                  "name": "plFromExpired",
+                  "type": "int128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "premiumCv",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "hedgeCv",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "optionFees",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "odosAssembledData",
+                  "type": "bytes"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "deadline",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "signature",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct CDSInterface.EIP712VerifyParams",
+              "name": "verifyParams",
+              "type": "tuple"
             }
           ],
           "internalType": "struct CDSInterface.WithdrawUserParams",
           "name": "params",
           "type": "tuple"
-        },
-        {
-          "internalType": "uint256",
-          "name": "deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
         }
       ],
       "name": "withdraw",
@@ -2036,26 +2162,6 @@ export const cdsAbi = [
           "internalType": "enum CDSInterface.WithdrawType",
           "name": "withdrawType",
           "type": "uint8"
-        },
-        {
-          "internalType": "bytes",
-          "name": "odosAssembledData",
-          "type": "bytes"
-        },
-        {
-          "internalType": "uint128",
-          "name": "usdtFromOdos",
-          "type": "uint128"
-        },
-        {
-          "internalType": "uint256",
-          "name": "deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "signature",
-          "type": "bytes"
         }
       ],
       "name": "withdrawGains",
