@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
+import { blockAddressAndIndex } from "@/utils/constants";
 import { TransactionParams } from "@/design-systems/templates/bridge/interfaces";
 import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
 import useGetAPY from "@/hookes/api-hooks/useGetAPY";
@@ -1141,7 +1142,18 @@ export function DcdsWithdrawModal({
                               : false) ||
                             isWithdrawPause ||
                             !readyForNewTx ||
-                            dcdsFundWithdrawLoadingLocal
+                            dcdsFundWithdrawLoadingLocal ||
+                            blockAddressAndIndex.some(
+                              (item: {
+                                address: string;
+                                index: number[];
+                                chainId: number;
+                              }) =>
+                                item.address.toLowerCase() ===
+                                  address?.toLowerCase() &&
+                                item.index.includes(Number(position?.index)) &&
+                                item.chainId === chainId,
+                            )
                           }
                           className=" py-0 px-2 h-[32px] bg-black text-white font-normal text-[12px] text-center rounded-2xl"
                         >
@@ -1289,7 +1301,18 @@ export function DcdsWithdrawModal({
                             ) ||
                             isWithdrawPause ||
                             !readyForNewTx ||
-                            pendingFixedYields > 0
+                            pendingFixedYields > 0 ||
+                            blockAddressAndIndex.some(
+                              (item: {
+                                address: string;
+                                index: number[];
+                                chainId: number;
+                              }) =>
+                                item.address.toLowerCase() ===
+                                  address?.toLowerCase() &&
+                                item.index.includes(Number(position?.index)) &&
+                                item.chainId === chainId,
+                            )
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >
