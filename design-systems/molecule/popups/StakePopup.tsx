@@ -86,19 +86,22 @@ export function StakePopup({
     isWithdrawUnStakeLoading,
     withdrawUnStakeDatahash,
     withdrawUnStakeError,
-  } = useDepositStakeTokens({
-    onError: (data: any) => {
-      debugger;
-      toast.custom((t) => {
-        return (
-          <ToastNotificationError
-            title="Transaction failed, Please try again"
-            onClose={() => toast.dismiss(t)}
-          />
-        );
-      });
+  } = useDepositStakeTokens(
+    {
+      onError: (data: any) => {
+        debugger;
+        toast.custom((t) => {
+          return (
+            <ToastNotificationError
+              title="Transaction failed, Please try again"
+              onClose={() => toast.dismiss(t)}
+            />
+          );
+        });
+      },
     },
-  });
+    popUpresetter,
+  );
 
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
@@ -137,12 +140,12 @@ export function StakePopup({
     } catch (error) {}
   };
 
-  const popUpresetter = () => {
+  function popUpresetter() {
     // onClose();
     resetStake();
     formik.resetForm();
     refetchData?.();
-  };
+  }
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[98%] sm:max-w-[425px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
