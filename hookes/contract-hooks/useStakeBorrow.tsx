@@ -1,11 +1,16 @@
-import { borrowCoreAddress, borrowDepositCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
+import {
+  borrowCoreAddress,
+  borrowDepositCoreAddress,
+  borrowingContractAddress,
+} from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
 import { AssetName } from "@/utils/constants";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { Address } from "viem";
 import { toast } from "sonner";
-
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 interface EIP712VerifyParams {
   volatility: bigint;
   ethPrice: bigint;
@@ -60,17 +65,28 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     writeContract, // Function to initiate a write operation
     reset: resetStake, // Function to reset the state of the hook
     isError: depositStakeError, // Error state
-    error: depositStakeErrorData
+    error: depositStakeErrorData,
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
-        toast.success("Mint And Stake successful");
-        resetterFn?.()
+        resetterFn?.();
+        toast.custom((t) => (
+          <ToastNotification
+            title="Mint & Stake successful"
+            message=""
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
       },
 
       onError: () => {
-        toast.error("Mint And Stake failed");
-        resetterFn?.()
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        resetterFn?.();
       },
     },
   });
@@ -80,21 +96,29 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     writeContract: withdrawStakeWriteContract, // Function to initiate a write operation
     reset: resetWithdrawStake, // Function to reset the state of the hook
     isError: withdrawStakeError, // Error state
-    error: withdrawStakeErrorData
+    error: withdrawStakeErrorData,
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
-        toast.success("Stake successful");
-        resetterFn?.()
+        toast.custom((t) => (
+          <ToastNotification
+            title="Stake successful"
+            message=""
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        resetterFn?.();
       },
 
       onError: () => {
-        toast.error("Stake failed");
-        resetterFn?.()
+        resetterFn?.();
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
       },
-
-
-
     },
   });
   const {
@@ -103,25 +127,32 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     writeContract: withdrawUnStakeWriteContract, // Function to initiate a write operation
     reset: resetWithdrawUnStake, // Function to reset the state of the hook
     isError: withdrawUnStakeError, // Error state
-    error: withdrawUnStakeErrorData
+    error: withdrawUnStakeErrorData,
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
-        toast.success("Stake successful");
-        resetterFn?.()
+        toast.custom((t) => (
+          <ToastNotification
+            title="Stake successful"
+            message=""
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        resetterFn?.();
       },
 
       onError: () => {
-        toast.error("Stake failed");
-        resetterFn?.()
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        resetterFn?.();
       },
       ...mutation,
-
     },
   });
-
-
-
 
   const mintStakeUSDa = async ({
     volatility,
@@ -137,10 +168,18 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     ethPrice,
     premiumCv,
     hedgeCv,
-    optionFees
+    optionFees,
   }: BorrowStakeInputs) => {
-    const contractAddress = assetName === 12 || assetName === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi
+    const contractAddress =
+      assetName === 12 || assetName === 13
+        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+        : borrowingContractAddress[
+            chainId as keyof typeof borrowingContractAddress
+          ];
+    const abi =
+      assetName === 12 || assetName === 13
+        ? borowCoreABI
+        : borrowingContractAbi;
     writeContract?.({
       abi: abi,
       address: contractAddress as `0x${string}`,
@@ -152,7 +191,7 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
           volatility,
           assetName,
           depositingAmount,
-          hedgeValidity: hedgeDuration
+          hedgeValidity: hedgeDuration,
         },
         {
           expiredETHAmount,
@@ -176,21 +215,23 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     verifyParams,
     assetName,
   }: StakeInputs) => {
-    const contractAddress = assetName === 12 || assetName === 13
-      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
-      : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress];
+    const contractAddress =
+      assetName === 12 || assetName === 13
+        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+        : borrowingContractAddress[
+            chainId as keyof typeof borrowingContractAddress
+          ];
 
-    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi;
+    const abi =
+      assetName === 12 || assetName === 13
+        ? borowCoreABI
+        : borrowingContractAbi;
 
     return withdrawStakeWriteContract({
       abi,
       address: contractAddress as `0x${string}`,
-      functionName: 'stake',
-      args: [
-        index,
-        stakingAmount,
-        verifyParams
-      ],
+      functionName: "stake",
+      args: [index, stakingAmount, verifyParams],
     });
   };
 
@@ -200,20 +241,23 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     verifyParams,
     assetName,
   }: UnstakeInputs) => {
-    const contractAddress = assetName === 12 || assetName === 13
-      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
-      : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress];
+    const contractAddress =
+      assetName === 12 || assetName === 13
+        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+        : borrowingContractAddress[
+            chainId as keyof typeof borrowingContractAddress
+          ];
 
-    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi;
+    const abi =
+      assetName === 12 || assetName === 13
+        ? borowCoreABI
+        : borrowingContractAbi;
 
     return withdrawUnStakeWriteContract({
       abi,
       address: contractAddress as `0x${string}`,
-      functionName: 'unstake',
-      args: [
-        index,
-        verifyParams
-      ],
+      functionName: "unstake",
+      args: [index, verifyParams],
     });
   };
 

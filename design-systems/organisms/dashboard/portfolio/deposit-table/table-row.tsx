@@ -194,17 +194,18 @@ const DepositTableRow = ({
                 : "Repay/Renew"}
           </span>
         )}
-        {position.collateralType === "krwq" && (
-          <span
-            onClick={() => {
-              setStakePopUpOpen?.(true);
-              handleRowClick();
-            }}
-            className="font-bold cursor-pointer text-[20px] underline "
-          >
-            {position.status == BorrowStatus.STAKED ? "Unstake" : "Stake"}
-          </span>
-        )}
+        {position.collateralType === "krwq" &&
+          position.status !== "UNSTAKED" && (
+            <span
+              onClick={() => {
+                setStakePopUpOpen?.(true);
+                handleRowClick();
+              }}
+              className="font-bold cursor-pointer text-[20px] underline "
+            >
+              {position.status == BorrowStatus.STAKED ? "Unstake" : "Stake"}
+            </span>
+          )}
         {/* <spans
             onClick={() => {
               setViewPosition(true);
