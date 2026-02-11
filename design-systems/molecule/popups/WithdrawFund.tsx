@@ -873,6 +873,7 @@ export function WithdrawFund({
   }, [isSuccessWithdrawReceipt, withdrawReceipt, withdrawErrorReceipt]);
 
   const handleRepay = async (withdrawAmount: string) => {
+    debugger;
     // check if repay amount is greater than or equal to repay amount
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
@@ -920,7 +921,8 @@ export function WithdrawFund({
       Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6))),
     );
     if (
-      position.status === "DEPOSITED"
+      position.status === "DEPOSITED" ||
+      position.status === "UNSTAKED"
       // BigInt(allowance || 0) < approveRepayAmount
     ) {
       setIsApproveLoadingLocal(true);
@@ -1004,14 +1006,9 @@ export function WithdrawFund({
               position.collateralType === "krwq"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
-            borrowSignedData?.odosAssembledData,
-            // BigInt(borrowSignedData?.nonce || 0),
-            BigInt(borrowSignedData?.deadline || 0),
-            (borrowSignedData?.signature || "") as `0x${string}`,
-            BigInt(borrowSignedData?.expiredETHAmount || 0),
-            BigInt(borrowSignedData?.plFromExpired || 0),
-            BigInt(borrowSignedData?.ethPrice || 0),
+            borrowSignedData?.usdtFromOdos,
             position.collateralType,
+            borrowSignedData,
           );
         }
         if (toggleView == "renew") {
@@ -1027,8 +1024,6 @@ export function WithdrawFund({
           renewBorrow(
             BigInt(position.index),
             BigInt(renewFormik.values.hedgeDuration || 0),
-            BigInt(signedData.ethPrice),
-            BigInt(signedData.volatility),
             signedData,
             position.collateralType === "cbBTC" ||
               position.collateralType === "krwq"
@@ -1217,9 +1212,7 @@ export function WithdrawFund({
     );
     renewBorrow(
       BigInt(position.index),
-      BigInt(renewFormik.values.hedgeDuration || "1"),
-      BigInt(signedData.ethPrice),
-      BigInt(signedData.volatility),
+      BigInt(renewFormik.values.hedgeDuration || 0),
       signedData,
       position.collateralType === "cbBTC" || position.collateralType === "krwq"
         ? undefined
@@ -1702,13 +1695,15 @@ export function WithdrawFund({
                             `Liquidated ${parseFloat(
                               Number(position.depositedAmount).toFixed(6),
                             )} ${position.collateralType}`
-                          ) : (
+                          ) : position.status == BorrowStatus.WITHDREW ? (
                             `Withdrawn ${parseFloat(
                               (
                                 Number(position.depositedAmount) /
                                 (position.collateralType === "cbBTC" ? 1 : 2)
                               ).toFixed(6),
                             )} ${position.collateralType}`
+                          ) : (
+                            "Withdraw"
                           )}
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="sm:text-sm text-[10px] text-wrap">

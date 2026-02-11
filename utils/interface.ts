@@ -100,7 +100,7 @@ export interface PositionData {
   normalizedAmount: string;
   amountYetToWithdraw: string;
   noOfAbondMinted: string;
-  status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED";
+  status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED" | "STAKED" | "UNSTAKED";
   totalDebtAmount: string;
   liquidationEthPrice: number;
   hedgeValidity: number;

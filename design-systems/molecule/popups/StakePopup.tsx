@@ -16,6 +16,7 @@ import {
   borrowDepositCoreAddress,
 } from "@/blockchain/contracts";
 import { parseUnits } from "ethers";
+import { BorrowStatus } from "@/utils/constants";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -23,6 +24,7 @@ type StakePopupProps = {
   isLoading?: boolean;
   mintedAmount?: number;
   position: PositionData;
+  refetchData?: () => void;
 };
 
 export function StakePopup({
@@ -31,6 +33,7 @@ export function StakePopup({
   isLoading = false,
   mintedAmount = 0,
   position,
+  refetchData,
 }: StakePopupProps) {
   const { address, chainId } = useAccount();
   const minAmount = (Number(position.noOfUSDaMinted) * 0.5).toFixed(2);
@@ -133,6 +136,13 @@ export function StakePopup({
       }
     } catch (error) {}
   };
+
+  const popUpresetter = () => {
+    // onClose();
+    resetStake();
+    formik.resetForm();
+    refetchData?.();
+  };
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[98%] sm:max-w-[425px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
@@ -145,54 +155,80 @@ export function StakePopup({
           </div>
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            <div>
-              <div className="relative">
-                <input
-                  type="text"
-                  id="amount"
-                  name="amount"
-                  value={formik.values.amount}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  placeholder="0.0"
-                  className={cn(
-                    "w-full p-3 text-base bg-transparent border border-gray-200 dark:border-grayLight rounded-md",
-                    "focus:outline-none focus:ring-0 focus:border-gray-400 dark:focus:border-gray-300 text-gray-900 dark:text-white",
-                    formik.touched.amount && formik.errors.amount
-                      ? "border-red-500 dark:border-red-500"
-                      : "hover:border-gray-300 dark:hover:border-gray-400",
+            {position.status != BorrowStatus.STAKED && (
+              <div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="amount"
+                    name="amount"
+                    value={formik.values.amount}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    placeholder="0.0"
+                    className={cn(
+                      "w-full p-3 text-base bg-transparent border border-gray-200 dark:border-grayLight rounded-md",
+                      "focus:outline-none focus:ring-0 focus:border-gray-400 dark:focus:border-gray-300 text-gray-900 dark:text-white",
+                      formik.touched.amount && formik.errors.amount
+                        ? "border-red-500 dark:border-red-500"
+                        : "hover:border-gray-300 dark:hover:border-gray-400",
+                    )}
+                  />
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  {formik.touched.amount && formik.errors.amount ? (
+                    <p className="text-sm text-red-500">
+                      {formik.errors.amount}
+                    </p>
+                  ) : (
+                    <div />
                   )}
-                />
-              </div>
-              <div className="flex justify-between items-center mt-1">
-                {formik.touched.amount && formik.errors.amount ? (
-                  <p className="text-sm text-red-500">{formik.errors.amount}</p>
-                ) : (
-                  <div />
-                )}
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Min. Amount - {minAmount} USDA+
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Min. Amount - {minAmount} USDA+
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <Button
-              type="submit"
-              variant="default"
-              className="w-full py-6 text-xl font-medium"
-              //   disabled={isLoading || !formik.isValid || !formik.dirty}
-            >
-              {isLoading ||
-              isWithdrawUnStakeLoading ||
-              isWithdrawStakeLoading ||
-              usdaApproveLoading
-                ? usdaApproveLoading
-                  ? "Approving..."
-                  : isWithdrawStakeLoading
-                    ? "Staking..."
-                    : "Unstaking..."
-                : "Stake"}
-            </Button>
+            {position.status == BorrowStatus.STAKED ? (
+              <Button
+                onClick={() => handleStake("0")}
+                variant="default"
+                className="w-full py-6 text-xl font-medium"
+                //   disabled={isLoading || !formik.isValid || !formik.dirty}
+              >
+                {isLoading ||
+                isWithdrawUnStakeLoading ||
+                isWithdrawStakeLoading ||
+                usdaApproveLoading
+                  ? usdaApproveLoading
+                    ? "Approving..."
+                    : isWithdrawStakeLoading
+                      ? "Staking..."
+                      : "Unstaking..."
+                  : position.status == BorrowStatus.STAKED
+                    ? "Unstake"
+                    : "Stake"}
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                variant="default"
+                className="w-full py-6 text-xl font-medium"
+                //   disabled={isLoading || !formik.isValid || !formik.dirty}
+              >
+                {isLoading ||
+                isWithdrawUnStakeLoading ||
+                isWithdrawStakeLoading ||
+                usdaApproveLoading
+                  ? usdaApproveLoading
+                    ? "Approving..."
+                    : isWithdrawStakeLoading
+                      ? "Staking..."
+                      : "Unstaking..."
+                  : "Stake"}
+              </Button>
+            )}
 
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
               <p>

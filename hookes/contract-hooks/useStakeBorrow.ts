@@ -51,7 +51,7 @@ interface UnstakeInputs {
   assetName: AssetName;
 }
 
-const useDepositStakeTokens = (mutation: any) => {
+const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
   const { chainId, address } = useAccount();
   // Use the useWriteBorrowingContractDepositTokens hook to deposit tokens
   const {
@@ -65,10 +65,12 @@ const useDepositStakeTokens = (mutation: any) => {
     mutation: {
       onSuccess: () => {
         toast.success("Mint And Stake successful");
+        resetterFn?.()
       },
 
       onError: () => {
         toast.error("Mint And Stake failed");
+        resetterFn?.()
       },
     },
   });
@@ -82,12 +84,13 @@ const useDepositStakeTokens = (mutation: any) => {
   } = useWriteContract({
     mutation: {
       onSuccess: () => {
-
         toast.success("Stake successful");
+        resetterFn?.()
       },
 
       onError: () => {
         toast.error("Stake failed");
+        resetterFn?.()
       },
 
 
@@ -103,7 +106,17 @@ const useDepositStakeTokens = (mutation: any) => {
     error: withdrawUnStakeErrorData
   } = useWriteContract({
     mutation: {
+      onSuccess: () => {
+        toast.success("Stake successful");
+        resetterFn?.()
+      },
+
+      onError: () => {
+        toast.error("Stake failed");
+        resetterFn?.()
+      },
       ...mutation,
+
     },
   });
 
@@ -198,20 +211,8 @@ const useDepositStakeTokens = (mutation: any) => {
       address: contractAddress as `0x${string}`,
       functionName: 'unstake',
       args: [
-        user,
         index,
-        {
-          volatility: verifyParams.volatility,
-          ethPrice: verifyParams.ethPrice,
-          expiredETHAmount: verifyParams.expiredETHAmount,
-          plFromExpired: verifyParams.plFromExpired,
-          premiumCv: verifyParams.premiumCv,
-          hedgeCv: verifyParams.hedgeCv,
-          optionFees: verifyParams.optionFees,
-          odosAssembledData: verifyParams.odosAssembledData,
-          deadline: verifyParams.deadline,
-          signature: verifyParams.signature,
-        },
+        verifyParams
       ],
     });
   };

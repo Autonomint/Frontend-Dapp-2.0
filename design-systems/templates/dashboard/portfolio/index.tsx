@@ -388,6 +388,13 @@ function PortfolioTemplate() {
           // setSelectedPosition(null);
         }}
       />
+      <StakePopup
+        isOpen={isStakePopUpOpen}
+        onClose={() => setStakePopUpOpen(false)}
+        isLoading={false}
+        position={(selectedPosition || []) as PositionData}
+        refetchData={positionListRefetch}
+      />
     </div>
   );
 }
