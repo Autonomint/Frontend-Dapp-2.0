@@ -75,6 +75,7 @@ import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
 import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 /**
  * Yup validation schema for the input form
@@ -195,6 +196,33 @@ function InputForm({ currency }: { currency: string }) {
     args: [address, contract[chainId as keyof typeof contract]],
   }) as { data: number | undefined };
 
+  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
+    useGetOmniChainData();
+
+  const omniChainDataMap = {
+    ETH: omniChainDataEth,
+    weETH: omniChainDataEth,
+    wrsETH: omniChainDataEth,
+    wsuperOETHb: omniChainDataEth,
+    cbBTC: omniChainDataCbbtc,
+    KRWQ: omniChainDataKrwq,
+  };
+
+  const maxMintAmount =
+    Number(
+      omniChainDataMap[currency as keyof typeof omniChainDataMap]
+        ?.totalCdsDepositedAmount || 0,
+    ) /
+    1e6 /
+    0.2 /
+    (assetPrice / 1e2);
+
+  useEffect(() => {
+    formik.setFieldValue("maxMintAmount", maxMintAmount);
+  }, [maxMintAmount]);
+
+  console.log(maxMintAmount, "maxMintAmount");
+
   // handle mint btn click
   const handleSubmit = async (
     values: any,
@@ -265,6 +293,7 @@ function InputForm({ currency }: { currency: string }) {
       balance: 0, // balance
       hedgeDuration: null, // hedge duration
       submitType: "mint", // tracks which button was clicked
+      maxMintAmount: 0,
     },
     validationSchema: formSchema,
     onSubmit: handleSubmit,
@@ -925,14 +954,20 @@ function InputForm({ currency }: { currency: string }) {
         <div className="flex flex-col gap-[18px] ">
           <div className="flex flex-col">
             <div className="flex-col gap-1 justify-start">
-              <div className="w-full text-[14px] 3xl:text-lg flex justify-end items-center">
-                <span className="text-grayLight">{currency} Price: </span>{" "}
-                <span className=" dark:text-white text-textBlack font-semibold ml-1">
-                  $
-                  {currency === "KRWQ"
-                    ? Number(selectedAssetPrice)
-                    : Number(selectedAssetPrice) / 100 || 0}
-                </span>
+              <div className="w-full text-[14px] 3xl:text-lg flex justify-between items-center">
+                <div>
+                  <span className="text-grayLight">Max Mint Amount:</span>{" "}
+                  <span>{maxMintAmount.toFixed(2)}</span>
+                </div>
+                <div>
+                  <span className="text-grayLight">{currency} Price: </span>{" "}
+                  <span className=" dark:text-white text-textBlack font-semibold ml-1">
+                    $
+                    {currency === "KRWQ"
+                      ? Number(selectedAssetPrice)
+                      : Number(selectedAssetPrice) / 100 || 0}
+                  </span>
+                </div>
               </div>
               <div className="flex">
                 <Input
