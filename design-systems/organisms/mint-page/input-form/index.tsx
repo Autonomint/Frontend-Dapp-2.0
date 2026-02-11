@@ -791,6 +791,9 @@ function InputForm({ currency }: { currency: string }) {
                 <div>
                   <span className="text-grayLight">Max Mint Amount:</span>{" "}
                   <span>{(maxMintAmount || 0).toFixed(2)}</span>
+                  <span className="ml-1 dark:text-white font-semibold text-textBlack">
+                    {currency}
+                  </span>
                 </div>
                 <div>
                   <span className="text-grayLight">{currency} Price: </span>{" "}
