@@ -20,14 +20,9 @@ const useWithdrawUsda = (mutation: any) => {
     index: number,
     amount: bigint,
     nativeFee: bigint | undefined,
-    odosAssembledData: any,
     usdtFromOdos: any,
-    nonce: bigint,
-    deadline: bigint,
-    signature: `0x${string}`,
-    expiredETHAmount: bigint,
-    ethPrice: bigint,
     token: string,
+    verifyParams: any,
   ) => {
     const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
@@ -40,17 +35,11 @@ const useWithdrawUsda = (mutation: any) => {
           {
             user: address as `0x${string}`,
             index: BigInt(index),
-            ethPrice: token === "krwq" || token === "cbBTC" ? ethPrice : undefined,
             repayAmount: amount,
-            odosAssembledData,
             usdtFromOdos,
-            expiredETHAmount,
+            verifyParams
           },
-          {
-            nonce,
-            deadline,
-            signature,
-          },
+
         ],
         value: nativeFee,
       });
