@@ -10,6 +10,12 @@ import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
 import { posix } from "node:path";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
+import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
+import {
+  borrowCoreAddress,
+  borrowDepositCoreAddress,
+} from "@/blockchain/contracts";
+import { parseUnits } from "ethers";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -26,8 +32,9 @@ export function StakePopup({
   mintedAmount = 0,
   position,
 }: StakePopupProps) {
-  const { address } = useAccount();
-  const minAmount = (mintedAmount * 0.5).toFixed(2);
+  const { address, chainId } = useAccount();
+  const minAmount = (Number(position.noOfUSDaMinted) * 0.5).toFixed(2);
+  const minDepositAmount = Number(position.noOfUSDaMinted) * 0.5;
   const validationSchema = Yup.object({
     amount: Yup.string()
       .required("Amount is required")
@@ -35,9 +42,26 @@ export function StakePopup({
         if (!value) return false;
         const numValue = Number(value);
         return !isNaN(numValue) && numValue > 0;
-      }),
+      })
+      .test(
+        "min-amount",
+        `Amount must be at least 50% of your deposited amount`,
+        function (value) {
+          if (!value) return false;
+          const numValue = Number(value);
+          return numValue >= minDepositAmount;
+        },
+      ),
   });
-
+  console.log(position, "position");
+  const {
+    approveReset,
+    approveUsdaDynamic,
+    approveUsda,
+    usdaApproveLoading,
+    usdaApproveErrorData,
+  } = useApproveUsda({});
+  console.log(usdaApproveErrorData, "usdaApproveErrorData");
   const formik = useFormik({
     initialValues: {
       amount: "",
@@ -76,29 +100,38 @@ export function StakePopup({
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
 
-  console.log(depositStakeError, "depositStakeError");
+  console.log(depositStakeError, usdaApproveLoading, "depositStakeError");
   const handleStake = async (amount: string) => {
     debugger;
-    // fetch the borrow signed data
-    const borrowSignedData = await refetchBorrowSignedData(
-      position.collateralType === "KRWQ" ? "krwq" : position.collateralType,
-    );
-    if (position.status === "STAKED") {
-      unstakeTokens({
-        user: address as `0x${string}`,
-        index: position.index,
-        verifyParams: borrowSignedData as any,
-        assetName: 12,
-      });
-    } else {
-      stakeTokens({
-        user: address as `0x${string}`,
-        index: position.index,
-        stakingAmount: BigInt(amount),
-        verifyParams: borrowSignedData as any,
-        assetName: 12,
-      });
-    }
+    try {
+      // fetch the borrow signed data
+      const borrowSignedData = await refetchBorrowSignedData(
+        position.collateralType === "KRWQ" ? "krwq" : position.collateralType,
+      );
+      if (position.status === "STAKED") {
+        unstakeTokens({
+          user: address as `0x${string}`,
+          index: position.index,
+          verifyParams: borrowSignedData as any,
+          assetName: 12,
+        });
+      } else {
+        await approveUsdaDynamic(
+          parseUnits(String(amount || 0), 6),
+          borrowDepositCoreAddress[
+            chainId as keyof typeof borrowDepositCoreAddress
+          ] as `0x${string}`,
+        );
+
+        await stakeTokens({
+          user: address as `0x${string}`,
+          index: position.index,
+          stakingAmount: parseUnits(String(amount || 0), 6),
+          verifyParams: borrowSignedData as any,
+          assetName: 12,
+        });
+      }
+    } catch (error) {}
   };
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -149,10 +182,15 @@ export function StakePopup({
               className="w-full py-6 text-xl font-medium"
               //   disabled={isLoading || !formik.isValid || !formik.dirty}
             >
-              {isLoading || isWithdrawUnStakeLoading || isWithdrawStakeLoading
-                ? isWithdrawStakeLoading
-                  ? "Staking..."
-                  : "Unstaking..."
+              {isLoading ||
+              isWithdrawUnStakeLoading ||
+              isWithdrawStakeLoading ||
+              usdaApproveLoading
+                ? usdaApproveLoading
+                  ? "Approving..."
+                  : isWithdrawStakeLoading
+                    ? "Staking..."
+                    : "Unstaking..."
                 : "Stake"}
             </Button>
 

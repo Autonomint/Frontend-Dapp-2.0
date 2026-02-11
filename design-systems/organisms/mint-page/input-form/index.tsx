@@ -70,6 +70,8 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
+import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
+import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 /**
  * Yup validation schema for the input form
@@ -203,6 +205,8 @@ function InputForm({ currency }: { currency: string }) {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
   }, [maxMintAmount]);
 
+  console.log(maxMintAmount, "maxMintAmount");
+
   // handle mint btn click
   const handleSubmit = async (values: any) => {
     // check if the user is connected
@@ -273,6 +277,7 @@ function InputForm({ currency }: { currency: string }) {
       strikePricePercent: 0, // strike price percent
       balance: 0, // balance
       hedgeDuration: null, // hedge duration
+      submitType: "mint", // tracks which button was clicked
       maxMintAmount: 0,
     },
     validationSchema: formSchema,
@@ -828,10 +833,7 @@ function InputForm({ currency }: { currency: string }) {
               <div className="w-full text-[14px] 3xl:text-lg flex justify-between items-center">
                 <div>
                   <span className="text-grayLight">Max Mint Amount:</span>{" "}
-                  <span>{(maxMintAmount || 0).toFixed(2)}</span>
-                  <span className="ml-1 dark:text-white font-semibold text-textBlack">
-                    {currency}
-                  </span>
+                  <span>{maxMintAmount.toFixed(2)}</span>
                 </div>
                 <div>
                   <span className="text-grayLight">{currency} Price: </span>{" "}

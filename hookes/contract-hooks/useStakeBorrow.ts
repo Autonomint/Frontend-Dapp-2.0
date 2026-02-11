@@ -4,6 +4,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import { AssetName } from "@/utils/constants";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { Address } from "viem";
+import { toast } from "sonner";
 
 interface EIP712VerifyParams {
   volatility: bigint;
@@ -62,7 +63,13 @@ const useDepositStakeTokens = (mutation: any) => {
     error: depositStakeErrorData
   } = useWriteContract({
     mutation: {
-      ...mutation,
+      onSuccess: () => {
+        toast.success("Mint And Stake successful");
+      },
+
+      onError: () => {
+        toast.error("Mint And Stake failed");
+      },
     },
   });
   const {
@@ -74,7 +81,17 @@ const useDepositStakeTokens = (mutation: any) => {
     error: withdrawStakeErrorData
   } = useWriteContract({
     mutation: {
-      ...mutation,
+      onSuccess: () => {
+
+        toast.success("Stake successful");
+      },
+
+      onError: () => {
+        toast.error("Stake failed");
+      },
+
+
+
     },
   });
   const {
@@ -157,21 +174,9 @@ const useDepositStakeTokens = (mutation: any) => {
       address: contractAddress as `0x${string}`,
       functionName: 'stake',
       args: [
-        user,
         index,
         stakingAmount,
-        {
-          volatility: verifyParams.volatility,
-          ethPrice: verifyParams.ethPrice,
-          expiredETHAmount: verifyParams.expiredETHAmount,
-          plFromExpired: verifyParams.plFromExpired,
-          premiumCv: verifyParams.premiumCv,
-          hedgeCv: verifyParams.hedgeCv,
-          optionFees: verifyParams.optionFees,
-          odosAssembledData: verifyParams.odosAssembledData,
-          deadline: verifyParams.deadline,
-          signature: verifyParams.signature,
-        },
+        verifyParams
       ],
     });
   };
