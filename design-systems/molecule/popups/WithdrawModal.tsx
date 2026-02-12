@@ -666,7 +666,8 @@ export function DcdsWithdrawModal({
 
   const { quoteValue: nativeFeeWithdraw, quoteError } = useGetGlobalQuote(
     options,
-    1,
+    5,
+    0,
   );
 
   const nativeFeeAll =
@@ -795,12 +796,22 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const params = [
+          const token =
+            position.collateralType === "cbBTC"
+              ? "cbBTC"
+              : position.collateralType === "krwq"
+                ? "krwq"
+                : "ETH";
+          const res = await refetchBorrowWithDrawGainsSignedData(token);
+          let params = [
             BigInt(position.index),
             halfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
           ];
+          if (chainId === NetworkId.Ethereum) {
+            params = [BigInt(position.index)];
+          }
           // If close position is success then call withdraw gain function
           handleDcdsWithdrawGain?.(params, position.collateralType);
         }, 3000);
@@ -859,20 +870,15 @@ export function DcdsWithdrawModal({
           [
             address,
             BigInt(position.index),
-            isHalfWithdraw
-              ? WithdrawType.WITHDRAW_YIELDS
-              : WithdrawType.FULL_WITHDRAW,
-            res?.excessProfitCumulativeValue,
-            res?.odosAssembledData,
-            res?.expiredETHAmount,
-            res?.plFromExpired,
             position.collateralType === "krwq" ||
             position.collateralType === "cbBTC"
               ? res?.ethPrice
               : undefined,
+            isHalfWithdraw
+              ? WithdrawType.WITHDRAW_YIELDS
+              : WithdrawType.FULL_WITHDRAW,
+            res,
           ],
-          res?.deadline,
-          res?.signature,
         ];
 
         if (chainId === NetworkId?.Ethereum) {
@@ -907,13 +913,16 @@ export function DcdsWithdrawModal({
             : position.collateralType === "krwq"
               ? "krwq"
               : "ETH";
-
-        const params = [
+        const res = await refetchBorrowWithDrawGainsSignedData(token);
+        let params = [
           BigInt(position.index),
           isHalfWithdraw
             ? WithdrawType.WITHDRAW_YIELDS
             : WithdrawType.FULL_WITHDRAW,
         ];
+        if (chainId === NetworkId.Ethereum) {
+          params = [BigInt(position.index)];
+        }
         handleDcdsWithdrawGain?.(params, position.collateralType);
       }
     } catch (error) {

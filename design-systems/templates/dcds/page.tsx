@@ -400,6 +400,7 @@ function DCDSTemplate() {
 
   // useEffect to check the status of the cds deposit transaction
   useEffect(() => {
+    debugger;
     if (cdsDepositErrorReceipt) {
       // handling the deposit failure
       handleDepositFailure();
@@ -509,21 +510,15 @@ function DCDSTemplate() {
             liquidationAmount: liquidationGains
               ? BigInt(liqAmnt.toString())
               : 0n,
-            ethPrice: BigInt(cdsDepositSignedData?.ethPrice),
             lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
-            expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
-            plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),
             assetName:
               formik.values.hedgeAsset === "cbBTC"
                 ? AssetName.cbBTC
                 : formik.values.hedgeAsset === "KRWQ"
                   ? AssetName.KRWQ
-                  : formik.values.hedgeAsset === "EURC"
-                    ? AssetName.EURC
-                    : undefined,
+                  : undefined,
+            verifyParams: cdsDepositSignedData,
           },
-          BigInt(cdsDepositSignedData.deadline),
-          cdsDepositSignedData.signature as `0x${string}`,
         ],
         chainId === NetworkId.Ethereum ||
           formik.values.hedgeAsset === "cbBTC" ||
