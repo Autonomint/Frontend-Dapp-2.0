@@ -230,7 +230,6 @@ function InputForm({ currency }: { currency: string }) {
   ) => {
     const { submitType, ...formValues } = values;
     const isStake = submitType === "stake";
-    debugger;
     // check if the user is connected
     if (!address) {
       toast.custom((t) => (
