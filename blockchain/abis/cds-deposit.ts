@@ -80,7 +80,7 @@ export const cdsDepositABI = [
     },
     {
         "inputs": [],
-        "name": "FailedInnerCall",
+        "name": "FailedCall",
         "type": "error"
     },
     {
@@ -324,9 +324,61 @@ export const cdsDepositABI = [
                         "type": "uint128"
                     },
                     {
-                        "internalType": "uint256",
-                        "name": "expiredETHAmount",
-                        "type": "uint256"
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "excessProfitCumulativeValue",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "ethPrice",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expiredETHAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "int128",
+                                "name": "plFromExpired",
+                                "type": "int128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "premiumCv",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "hedgeCv",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "optionFees",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "odosAssembledData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "deadline",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "signature",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct CDSInterface.EIP712VerifyParams",
+                        "name": "verifyParams",
+                        "type": "tuple"
                     }
                 ],
                 "internalType": "struct CDSInterface.DepositUserParams",
@@ -630,11 +682,6 @@ export const cdsDepositABI = [
                         "type": "bytes32"
                     },
                     {
-                        "internalType": "enum CDSInterface.FunctionName",
-                        "name": "functionName",
-                        "type": "uint8"
-                    },
-                    {
                         "internalType": "address",
                         "name": "user",
                         "type": "address"
@@ -645,29 +692,61 @@ export const cdsDepositABI = [
                         "type": "uint64"
                     },
                     {
-                        "internalType": "uint256",
-                        "name": "excessProfitCumulativeValue",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "odosAssembledData",
-                        "type": "bytes"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "expiredETHAmount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "deadline",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "bytes",
-                        "name": "signature",
-                        "type": "bytes"
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "excessProfitCumulativeValue",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "ethPrice",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "expiredETHAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "int128",
+                                "name": "plFromExpired",
+                                "type": "int128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "premiumCv",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "hedgeCv",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "uint128",
+                                "name": "optionFees",
+                                "type": "uint128"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "odosAssembledData",
+                                "type": "bytes"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "deadline",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "signature",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct CDSInterface.EIP712VerifyParams",
+                        "name": "verifyParams",
+                        "type": "tuple"
                     }
                 ],
                 "internalType": "struct ICdsDeposit.EIP712VerifyParams",

@@ -1172,7 +1172,7 @@ function InputForm({ currency }: { currency: string }) {
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
                   </Button>
-
+                  {/* 
                   {currency === "KRWQ" && (
                     <Button
                       disabled={isFunctionPausedBorrow_Deposit}
@@ -1194,7 +1194,7 @@ function InputForm({ currency }: { currency: string }) {
                         {isFunctionPausedBorrow_Deposit && "(Paused)"}
                       </span>
                     </Button>
-                  )}
+                  )} */}
                 </div>
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (
