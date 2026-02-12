@@ -133,7 +133,7 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
       onSuccess: () => {
         toast.custom((t) => (
           <ToastNotification
-            title="Stake successful"
+            title="Unstake successful"
             message=""
             onClose={() => toast.dismiss(t)}
           />
