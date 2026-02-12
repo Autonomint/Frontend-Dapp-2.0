@@ -310,7 +310,7 @@ function DCDSTemplate() {
       : formik.values.hedgeAsset === null
         ? "ETH"
         : formik.values.hedgeAsset === "KRWQ"
-          ? "KRWQ"
+          ? "krwq"
           : "cbBTC",
   );
 
