@@ -208,7 +208,12 @@ function InputForm({ currency }: { currency: string }) {
   console.log(maxMintAmount, "maxMintAmount");
 
   // handle mint btn click
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
+  ) => {
+    const { submitType, ...formValues } = values;
+    const isStake = submitType === "stake";
     // check if the user is connected
     if (!address) {
       toast.custom((t) => (

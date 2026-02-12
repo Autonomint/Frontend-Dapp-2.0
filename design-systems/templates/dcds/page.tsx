@@ -400,7 +400,6 @@ function DCDSTemplate() {
 
   // useEffect to check the status of the cds deposit transaction
   useEffect(() => {
-    debugger;
     if (cdsDepositErrorReceipt) {
       // handling the deposit failure
       handleDepositFailure();
