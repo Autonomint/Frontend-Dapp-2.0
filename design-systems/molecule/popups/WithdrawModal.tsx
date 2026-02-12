@@ -870,14 +870,22 @@ export function DcdsWithdrawModal({
           [
             address,
             BigInt(position.index),
-            position.collateralType === "krwq" ||
-            position.collateralType === "cbBTC"
-              ? res?.ethPrice
-              : undefined,
             isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
-            res,
+
+            [
+              res.excessProfitCumulativeValue,
+              res.ethPrice,
+              res.expiredETHAmount,
+              res.plFromExpired,
+              res.premiumCv,
+              res.hedgeCv,
+              res.optionFees,
+              res.odosAssembleData,
+              res.deadline,
+              res.signature,
+            ],
           ],
         ];
 
@@ -907,13 +915,13 @@ export function DcdsWithdrawModal({
       } else if (position.status == "WITHDREW" || pendingFixedYields > 0) {
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
-        const token =
-          position.collateralType === "cbBTC"
-            ? "cbBTC"
-            : position.collateralType === "krwq"
-              ? "krwq"
-              : "ETH";
-        const res = await refetchBorrowWithDrawGainsSignedData(token);
+        // const token =
+        //   position.collateralType === "cbBTC"
+        //     ? "cbBTC"
+        //     : position.collateralType === "krwq"
+        //       ? "krwq"
+        //       : "ETH";
+        // const res = await refetchBorrowWithDrawGainsSignedData(token);
         let params = [
           BigInt(position.index),
           isHalfWithdraw

@@ -7,12 +7,16 @@ export interface SignedDataReturn {
   signature: string;
   nonce: number;
   deadline: number;
-  odosAssembledData: string;
   usdtFromOdos: string;
   expiredETHAmount: number;
   plFromExpired: number;
   pythUpdateSucceeded: boolean;
-  ethPrice: bigint
+  ethPrice: bigint;
+  plFromExpired: number;
+  premiumCv: number
+  hedgeCv: number
+  optionFees: number
+  odosAssembleData: string
 }
 /**
  *

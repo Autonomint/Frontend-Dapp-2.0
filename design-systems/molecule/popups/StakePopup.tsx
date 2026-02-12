@@ -17,6 +17,8 @@ import {
 } from "@/blockchain/contracts";
 import { parseUnits } from "ethers";
 import { BorrowStatus } from "@/utils/constants";
+import useGetStakingGain from "@/hookes/api-hooks/useGetStakingGain";
+import { Label } from "@/design-systems/atoms/label";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -57,6 +59,16 @@ export function StakePopup({
       ),
   });
   console.log(position, "position");
+
+  const token =
+    position?.collateralType === "cbBTC"
+      ? "cbBTC"
+      : position?.collateralType === "KRWQ"
+        ? "krwq"
+        : "ETH";
+
+  const { stakingGain } = useGetStakingGain(position?.index, token);
+
   const {
     approveReset,
     approveUsdaDynamic,
@@ -154,6 +166,19 @@ export function StakePopup({
             </h2>
             <p className="text-sm text-grayLight">You can unstake anytime</p>
           </div>
+
+          {position.status === BorrowStatus.STAKED && (
+            <div className="flex flex-col gap-1 items-center">
+              <p className="text-2xl font-bold text-center text-grayLight"></p>
+              <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                ${Number(stakingGain).toFixed(4)}
+              </Label>
+
+              <Label className="text-[14px] font-normal text-[#777777]">
+                Staking Earnings
+              </Label>
+            </div>
+          )}
 
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {position.status != BorrowStatus.STAKED && (
