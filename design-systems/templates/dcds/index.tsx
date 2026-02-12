@@ -502,7 +502,19 @@ function DCDSTemplate() {
                 : formik.values.hedgeAsset === "KRWQ"
                   ? AssetName.KRWQ
                   : undefined,
-            verifyParams: cdsDepositSignedData,
+            verifyParams: {
+              excessProfitCumulativeValue:
+                cdsDepositSignedData?.excessProfitCumulativeValue,
+              ethPrice: cdsDepositSignedData?.ethPrice,
+              expiredETHAmount: cdsDepositSignedData?.expiredETHAmount,
+              plFromExpired: cdsDepositSignedData?.plFromExpired,
+              premiumCv: cdsDepositSignedData?.premiumCv,
+              hedgeCv: cdsDepositSignedData?.hedgeCv,
+              optionFees: cdsDepositSignedData?.optionFees,
+              odosAssembledData: cdsDepositSignedData?.odosAssembleData,
+              signature: cdsDepositSignedData?.signature,
+              deadline: cdsDepositSignedData?.deadline,
+            },
           },
         ],
         chainId === NetworkId.Ethereum ||

@@ -425,6 +425,25 @@ export const cdsCoreABI = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "enum IBorrowing.AssetName",
+        "name": "assetName",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint128",
+        "name": "fees",
+        "type": "uint128"
+      }
+    ],
+    "name": "OptionsFeesCrUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",

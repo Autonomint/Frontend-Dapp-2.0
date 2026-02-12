@@ -21,6 +21,7 @@ const useDcdsWithdraw = (mutation: any) => {
   const handleDcdsFundWithdraw = (args: any, value: any, token: string) => {
     const contract = token === "cbBTC" || token === "krwq" ? cdsCoreAddress : cdsAddress;
     const abi = token === "cbBTC" || token === "krwq" ? cdsCoreABI : cdsAbi
+    debugger
     dcdsFundWithdraw({
       abi: abi,
       address: contract[chainId as keyof typeof contract] as `0x${string}`,
