@@ -40,6 +40,9 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
 
     const abi = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" ? cdsCoreABI : cdsAbi;
     debugger
+
+    console.log(args,
+      value,'value')
     writeDcdsDeposit({
       abi: abi,
       address: contract[chainId as keyof typeof cdsAddress] as `0x${string}`,
