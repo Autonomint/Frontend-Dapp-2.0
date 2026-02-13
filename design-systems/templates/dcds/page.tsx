@@ -1790,7 +1790,7 @@ function DCDSTemplate() {
                           {allowanceLoading ? (
                             <Spinner color="#fff" />
                           ) : (
-                            "Deposits"
+                            "Deposit"
                           )}
                           <span className="text-base">
                             {isFunctionPausedCDS_Deposit && "(Paused)"}
