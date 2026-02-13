@@ -525,7 +525,7 @@ function DCDSTemplate() {
               premiumCv: cdsDepositSignedData?.premiumCv,
               hedgeCv: cdsDepositSignedData?.hedgeCv,
               optionFees: cdsDepositSignedData?.optionFees,
-              odosAssembledData: cdsDepositSignedData?.odosAssembleData,
+              odosAssembledData: cdsDepositSignedData?.odosAssembledData,
               signature: cdsDepositSignedData?.signature,
               deadline: cdsDepositSignedData?.deadline,
             },
