@@ -119,6 +119,7 @@ export function StakePopup({
 
   console.log(depositStakeError, usdaApproveLoading, "depositStakeError");
   const handleStake = async (amount: string) => {
+    debugger;
     try {
       // fetch the borrow signed data
       const borrowSignedData = await refetchBorrowSignedData(
