@@ -15,7 +15,7 @@ export interface SignedDataReturn {
   premiumCv: number
   hedgeCv: number
   optionFees: number
-  odosAssembleData: string
+  odosAssembledData: string
 }
 /**
  *
