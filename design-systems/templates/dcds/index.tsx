@@ -1751,7 +1751,7 @@ function DCDSTemplate() {
                               )}
                             </div>
                           ) : (
-                            "Deposits"
+                            "Deposit"
                           )}
                           <span className="text-base">
                             {isFunctionPausedCDS_Deposit && "(Paused)"}

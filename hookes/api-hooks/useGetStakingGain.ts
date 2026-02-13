@@ -11,7 +11,7 @@ async function getStakingGain(
   chainId: number,
   index: number,
   token: string
-): Promise<number> {
+): Promise<{ premium: number; hedge: number }> {
   return fetch(`${BACKEND_API_URL}/borrows/getStakingRewards`, {
     method: "POST",
     headers: {

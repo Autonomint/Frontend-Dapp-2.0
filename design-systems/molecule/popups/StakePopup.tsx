@@ -169,15 +169,27 @@ export function StakePopup({
           </div>
 
           {position.status === BorrowStatus.STAKED && (
-            <div className="flex flex-col gap-1 items-center">
-              <p className="text-2xl font-bold text-center text-grayLight"></p>
-              <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                ${Number(stakingGain).toFixed(4)}
-              </Label>
+            <div className="w-full flex items-center justify-between px-4">
+              <div className="flex flex-col gap-1 items-center">
+                <p className="text-2xl font-bold text-center text-grayLight"></p>
+                <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                  ${Number(stakingGain?.hedge).toFixed(2)}
+                </Label>
 
-              <Label className="text-[14px] font-normal text-[#777777]">
-                Staking Earnings
-              </Label>
+                <Label className="text-[14px] font-normal text-[#777777]">
+                  Hedge Earnings
+                </Label>
+              </div>
+              <div className="flex flex-col gap-1 items-center">
+                <p className="text-2xl font-bold text-center text-grayLight"></p>
+                <Label className=" text-[22px] font-bold  md:text-[26px] text-black dark:text-white  ">
+                  ${Number(stakingGain?.premium).toFixed(2)}
+                </Label>
+
+                <Label className="text-[14px] font-normal text-[#777777]">
+                  Premium Paid
+                </Label>
+              </div>
             </div>
           )}
 
