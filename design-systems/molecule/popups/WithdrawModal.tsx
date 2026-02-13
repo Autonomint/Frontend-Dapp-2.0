@@ -807,7 +807,7 @@ export function DcdsWithdrawModal({
               res.premiumCv,
               res.hedgeCv,
               res.optionFees,
-              res.odosAssembleData,
+              res.odosAssembledData,
               res.deadline,
               res.signature,
             ],
