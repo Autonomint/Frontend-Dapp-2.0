@@ -1,5 +1,6 @@
 "use client";
 import opImage from "@/app/assets/op.svg";
+import riseChainLogo from "@/app/assets/rise-chain-logo.png";
 import { Button } from "@/design-systems/atoms/button";
 import {
   Dialog,
@@ -45,7 +46,14 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
     if (
       (chainId &&
         !["/bridge"].includes(pathname) &&
-        ![NetworkId.BaseSepolia, NetworkId.Optimism].includes(chainId || 0) &&
+        ![
+          NetworkId.BaseSepolia,
+          NetworkId.Optimism,
+          NetworkId.Ethereum,
+          NetworkId.Rise,
+        ].includes(chainId || 0) &&
+        isConnected &&
+        (chainId || 0) &&
         isConnected) ||
       !isConnected
     ) {
@@ -63,7 +71,12 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
       >
         {chainId &&
           !["/bridge"].includes(pathname) &&
-          ![NetworkId.BaseSepolia, NetworkId.Optimism].includes(chainId || 0) &&
+          ![
+            NetworkId.BaseSepolia,
+            NetworkId.Optimism,
+            NetworkId.Ethereum,
+            NetworkId.Rise,
+          ].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">
@@ -126,32 +139,31 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                       <div className="text-[16px]">Base</div>
                     )}
                   </Button>
-                  {/* <Button
+                  <Button
                     disabled={isPending}
                     onClick={() => {
                       switchChain({
-                        chainId: NetworkId.Ethereum,
+                        chainId: NetworkId.Rise,
                       });
-
-                      setSwitchingChain(NetworkId.Ethereum);
+                      setSwitchingChain(NetworkId.Rise);
                     }}
                     variant={"shadowOutline"}
-                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-black dark:text-white "
+                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
                   >
-                    <div>
-                      <EthereumIcon
-                        className=" stroke-black dark:stroke-white  "
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </div>
-                    {isPending && switchingChain === NetworkId.Ethereum ? (
+                    <Image
+                      src={riseChainLogo}
+                      alt="Rise Chain"
+                      width={50}
+                      height={50}
+                    />
+                    {isPending && switchingChain === NetworkId.Rise ? (
                       <div className="h-[20px] mx-auto">
                         <Spinner />
                       </div>
                     ) : (
-                      <div className="text-[16px]">Ethereum</div>
+                      <div className="text-[16px]">Rise</div>
                     )}
-                  </Button> */}
+                  </Button>
                 </div>
               </div>
             </div>

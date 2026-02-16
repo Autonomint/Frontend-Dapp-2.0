@@ -18,7 +18,30 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
-const chainList: AppKitNetwork[] = [base, optimism, mainnet, mode];
+// Chain Configuration Rise Mainnet
+export const riseMainnet = defineChain({
+  id: 4242,
+  name: "RISE Mainnet",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.riselabs.xyz"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "RISE Explorer",
+      url: "https://explorer.riselabs.xyz",
+    },
+  },
+  testnet: false,
+});
+
+const chainList: AppKitNetwork[] = [base, optimism, mainnet, mode, riseMainnet];
 
 export const opSepolia = defineChain({
   id: 11155420,
@@ -45,7 +68,7 @@ export const opSepolia = defineChain({
 // Metadata for the app
 const metadata = {
   name: "autonomint",
-  description: "Autonomint Testnet",
+  description: "Autonomint Mainnet",
   url: AUTONOMINT_DAPP_URL, // origin must match your domain & subdomain
   icons: [BRAND_ICON_URL],
 };
@@ -58,6 +81,10 @@ export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
+  transports: {
+    [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
+    [riseMainnet.id]: http(riseMainnet.rpcUrls.default.http[0]),
+  },
 });
 
 // Wagmi Config
@@ -67,7 +94,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [base, optimism, mainnet, mode],
+  networks: [base, optimism, mainnet, mode, riseMainnet],
+  defaultNetwork: base,
   metadata: metadata,
   features: {
     email: false,

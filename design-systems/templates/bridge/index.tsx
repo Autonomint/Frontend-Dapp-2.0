@@ -38,10 +38,10 @@ import { scanUrls } from "@/utils/urls";
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDA" | "TUSDT">("USDA");
   const [sendNetwork, setSendNetwork] = useState<
-    "Sepolia" | "Base" | "Mode" | "OP"
+    "Sepolia" | "Base" | "Mode" | "OP" | "Rise"
   >("Sepolia");
   const [receiveNetwork, setReceiveNetwork] = useState<
-    "Sepolia" | "Base" | "Mode" | "OP"
+    "Sepolia" | "Base" | "Mode" | "OP" | "Rise"
   >("Mode");
 
   const {
@@ -101,7 +101,7 @@ function BridgeTemplate() {
     // checking if the send amount is greater than the usda balance
     if ((Number(sendAmount) || 0) > Number(usdaBal?.formatted)) {
       setAmountError(
-        `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`
+        `Transfer amount cannot be greater than ${usdaBal?.formatted}USDa`,
       );
     } else {
       setAmountError("");
@@ -421,6 +421,14 @@ function BridgeTemplate() {
         setSendNetwork("OP");
       },
     },
+    {
+      label: "Rise",
+      onClick: () => {
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.Rise });
+        setSendNetwork("Rise");
+      },
+    },
   ];
 
   // to network dropdown options
@@ -456,6 +464,14 @@ function BridgeTemplate() {
         label: "OP",
         onClick: () => {
           setReceiveNetwork("OP");
+        },
+      });
+    }
+    if (sendNetwork !== "Rise") {
+      option.push({
+        label: "Rise",
+        onClick: () => {
+          setReceiveNetwork("Rise");
         },
       });
     }

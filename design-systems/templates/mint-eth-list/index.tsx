@@ -145,8 +145,10 @@ function MintEthListTemplate() {
             : 0,
         ),
     },
+  ];
 
-    {
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Rise) {
+    list.push({
       token: "weETH",
       tokenImage: WeETH,
       BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
@@ -180,10 +182,9 @@ function MintEthListTemplate() {
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0,
         ),
-    },
-  ];
-
-  if (chainId !== NetworkId.Ethereum) {
+    });
+  }
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Rise) {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,
