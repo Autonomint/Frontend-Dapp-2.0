@@ -141,8 +141,10 @@ function MintEthListTemplate() {
             : 0,
         ),
     },
+  ];
 
-    {
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Rise) {
+    list.push({
       token: "weETH",
       tokenImage: WeETH,
       BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
@@ -151,8 +153,9 @@ function MintEthListTemplate() {
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "wrsETH borrow is paused now",
       pointsToBeGiven:
-        tokenRewardDetailList &&
-        tokenRewardDetailList?.["weETH"]?.pointsToBeGiven,
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["weETH"]?.pointsToBeGiven) ||
+        0,
       minAmount:
         (tokenRewardDetailList &&
           tokenRewardDetailList?.["weETH"]?.minAmount) ||
@@ -175,10 +178,9 @@ function MintEthListTemplate() {
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0,
         ),
-    },
-  ];
-
-  if (chainId !== NetworkId.Ethereum) {
+    });
+  }
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Rise) {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,

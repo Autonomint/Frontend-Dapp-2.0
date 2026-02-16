@@ -36,6 +36,29 @@ export const opSepolia = defineChain({
   testnet: true,
 });
 
+// Chain Configuration Rise Testnet
+export const riseTestnet = defineChain({
+  id: 11155931,
+  name: "RISE Testnet",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://testnet.riselabs.xyz"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "RISE Explorer",
+      url: "https://explorer.testnet.riselabs.xyz",
+    },
+  },
+  testnet: true,
+});
+
 // Metadata for the app
 const metadata = {
   name: "autonomint",
@@ -46,7 +69,7 @@ const metadata = {
 
 // Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
-  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
+  networks: [opSepolia, baseSepolia, sepolia, modeTestnet, riseTestnet],
   projectId,
   ssr: true,
   storage: createStorage({
@@ -54,6 +77,7 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   transports: {
     [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
+    [riseTestnet.id]: http(riseTestnet.rpcUrls.default.http[0]),
   },
 });
 
@@ -64,7 +88,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [opSepolia, baseSepolia, sepolia, modeTestnet],
+  networks: [opSepolia, baseSepolia, sepolia, modeTestnet, riseTestnet],
   defaultNetwork: baseSepolia,
   metadata: metadata,
   features: {

@@ -6,6 +6,7 @@ export enum NetworkId {
   BaseSepolia = 84532,
   Optimism = 11155420,
   Mode = 919,
+  Rise = 11155931,
 }
 
 // borrow status
@@ -89,6 +90,7 @@ export const eId = {
   Mode: eidModeSepolia,
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
+  Rise: 0, // Placeholder - Rise not supported for LayerZero bridging
 };
 export const eIdWithChainId = {
   [NetworkId.Optimism]: eidOpSepolia,

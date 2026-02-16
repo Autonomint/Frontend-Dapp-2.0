@@ -24,7 +24,7 @@ export default function BridgeComponentLeft({
   setSendAmount: Dispatch<SetStateAction<number | string | undefined>>;
   sendAmount: number | string | undefined;
   setSendNetwork: Dispatch<
-    React.SetStateAction<"Sepolia" | "Base" | "Mode" | "OP">
+    React.SetStateAction<"Sepolia" | "Base" | "Mode" | "OP" | "Rise">
   >;
   heading: string;
   network: string;

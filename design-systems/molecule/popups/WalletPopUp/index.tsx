@@ -1,6 +1,7 @@
 "use client";
 import modeIconNew from "@/app/assets/mode.svg";
 import opIconNew from "@/app/assets/op.svg";
+import riseChainLogo from "@/app/assets/rise-chain-logo.png";
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
 import Spinner from "@/design-systems/atoms/Spinner";
@@ -53,7 +54,7 @@ interface WalletPopupProps {
  *
  *
  */
-const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
+const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPolicyDialogOpen, setIsPolicyDialogOpen] = useState(false);
   const router = useRouter();
@@ -107,6 +108,14 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
       ),
       loading: chainId != NetworkId.Ethereum && isPending,
     },
+    {
+      id: Number(NetworkId.Rise),
+      name: "Rise",
+      Icon: () => (
+        <Image src={riseChainLogo} alt="Rise Chain" width={24} height={24} />
+      ),
+      loading: chainId != NetworkId.Rise && isPending,
+    },
   ];
 
   const MobileNavOption = () => {
@@ -133,8 +142,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
                       className=" fill-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.Ethereum &&
-                    pathName == "/bridge" ? (
+                  ) : chainId == NetworkId.Ethereum && pathName == "/bridge" ? (
                     <EthereumIcon
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
@@ -143,6 +151,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
                     <BaseIcon
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
+                    />
+                  ) : chainId == NetworkId.Rise ? (
+                    <Image
+                      src={riseChainLogo}
+                      alt="Rise Chain"
+                      width={20}
+                      height={20}
                     />
                   ) : (
                     <OptimismIcon
@@ -291,6 +306,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
+                  ) : chainId == NetworkId.Rise ? (
+                    <Image
+                      src={riseChainLogo}
+                      alt="Rise Chain"
+                      width={20}
+                      height={20}
+                    />
                   ) : (
                     <OptimismIcon
                       className=" fill-black  "
@@ -369,6 +391,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
                       <BaseIcon
                         className=" stroke-black  "
                         style={{ width: "20px", height: "20px" }}
+                      />
+                    ) : chainId == NetworkId.Rise ? (
+                      <Image
+                        src={riseChainLogo}
+                        alt="Rise Chain"
+                        width={20}
+                        height={20}
                       />
                     ) : (
                       <OptimismIcon
@@ -460,7 +489,9 @@ const WalletPopup: React.FC<WalletPopupProps> = ({ }) => {
                   href={
                     chainId == NetworkId.BaseSepolia
                       ? `https://sepolia-explorer.base.org/address/${address}`
-                      : `https://sepolia-optimism.etherscan.io/address/${address}`
+                      : chainId == NetworkId.Rise
+                        ? `https://explorer.testnet.riselabs.xyz/address/${address}`
+                        : `https://sepolia-optimism.etherscan.io/address/${address}`
                   }
                   target="__blank"
                 >

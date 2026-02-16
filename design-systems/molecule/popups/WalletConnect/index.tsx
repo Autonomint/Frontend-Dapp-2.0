@@ -1,5 +1,6 @@
 "use client";
 import opImage from "@/app/assets/op.svg";
+import riseChainLogo from "@/app/assets/rise-chain-logo.png";
 import { Button } from "@/design-systems/atoms/button";
 import {
   Dialog,
@@ -15,7 +16,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
-interface SwitchChainPopupProps { }
+interface SwitchChainPopupProps {}
 
 /**
  * SwitchChainPopup is a component that allows the user to switch the chain.
@@ -24,7 +25,7 @@ interface SwitchChainPopupProps { }
  *
  *
  */
-const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
+const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
   const { chainId, isConnected, address } = useAccount();
@@ -45,7 +46,14 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
     if (
       (chainId &&
         !["/bridge"].includes(pathname) &&
-        ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
+        ![
+          NetworkId.BaseSepolia,
+          NetworkId.Optimism,
+          NetworkId.Ethereum,
+          NetworkId.Rise,
+        ].includes(chainId || 0) &&
+        isConnected &&
+        (chainId || 0) &&
         isConnected) ||
       !isConnected
     ) {
@@ -65,7 +73,12 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
 
         {chainId &&
           !["/bridge"].includes(pathname) &&
-          ![NetworkId.BaseSepolia, NetworkId.Optimism, NetworkId.Ethereum].includes(chainId || 0) &&
+          ![
+            NetworkId.BaseSepolia,
+            NetworkId.Optimism,
+            NetworkId.Ethereum,
+            NetworkId.Rise,
+          ].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">
@@ -126,6 +139,31 @@ const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
                       </div>
                     ) : (
                       <div className="text-[16px]">Base</div>
+                    )}
+                  </Button>
+                  <Button
+                    disabled={isPending}
+                    onClick={() => {
+                      switchChain({
+                        chainId: NetworkId.Rise,
+                      });
+                      setSwitchingChain(NetworkId.Rise);
+                    }}
+                    variant={"shadowOutline"}
+                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
+                  >
+                    <Image
+                      src={riseChainLogo}
+                      alt="Rise Chain"
+                      width={50}
+                      height={50}
+                    />
+                    {isPending && switchingChain === NetworkId.Rise ? (
+                      <div className="h-[20px] mx-auto">
+                        <Spinner />
+                      </div>
+                    ) : (
+                      <div className="text-[16px]">Rise</div>
                     )}
                   </Button>
                 </div>

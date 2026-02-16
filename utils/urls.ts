@@ -20,6 +20,7 @@ export const scanUrls = {
   11155420: "https://sepolia-optimism.etherscan.io/",
   11155111: `https://sepolia.etherscan.io/`,
   84532: `https://sepolia.basescan.org/`,
+  11155931: "https://explorer.testnet.riselabs.xyz/",
 } as Record<number, string>;
 
 export const meetUrl = "https://meet.brevo.com/aks-autonomint";
