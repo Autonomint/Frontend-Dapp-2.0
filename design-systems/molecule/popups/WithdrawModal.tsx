@@ -18,7 +18,10 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
-import { blockAddressAndIndex } from "@/utils/constants";
+import {
+  blockAddressAndIndex,
+  hideYieldsAddressAndIndex,
+} from "@/utils/constants";
 import { TransactionParams } from "@/design-systems/templates/bridge/interfaces";
 import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
 import useGetAPY from "@/hookes/api-hooks/useGetAPY";
@@ -1119,16 +1122,28 @@ export function DcdsWithdrawModal({
                     <div className="flex items-center justify-between gap-3">
                       <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
                         $
-                        {Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                              ? calculatePercentage(
-                                  position?.apys?.amountAccured || 0,
-                                  60,
-                                )
-                              : calculatePercentage(apy[1] || 0, 60),
-                        ).toFixed(4)}
+                        {hideYieldsAddressAndIndex.some(
+                          (item: {
+                            address: string;
+                            index: number[];
+                            chainId: number;
+                          }) =>
+                            item.address.toLowerCase() ===
+                              address?.toLowerCase() &&
+                            item.index.includes(Number(position?.index)) &&
+                            item.chainId === chainId,
+                        )
+                          ? "NaN"
+                          : Number(
+                              apy == undefined
+                                ? 0
+                                : position.status !== "DEPOSITED"
+                                  ? calculatePercentage(
+                                      position?.apys?.amountAccured || 0,
+                                      60,
+                                    )
+                                  : calculatePercentage(apy[1] || 0, 60),
+                            ).toFixed(4)}
                       </Label>
                       {!(position.status == "WITHDREW") && (
                         <Button
@@ -1207,16 +1222,28 @@ export function DcdsWithdrawModal({
                       </div> */}
                     </div>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {`${Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                            ? calculatePercentage(
-                                position?.apys?.currentTimeAPYTillNow,
-                                60,
-                              ) || 0
-                            : calculatePercentage(apy[5], 60) || 0,
-                      ).toFixed(2)}%`}
+                      {hideYieldsAddressAndIndex.some(
+                        (item: {
+                          address: string;
+                          index: number[];
+                          chainId: number;
+                        }) =>
+                          item.address.toLowerCase() ===
+                            address?.toLowerCase() &&
+                          item.index.includes(Number(position?.index)) &&
+                          item.chainId === chainId,
+                      )
+                        ? "NaN%"
+                        : `${Number(
+                            apy == undefined
+                              ? 0
+                              : position.status !== "DEPOSITED"
+                                ? calculatePercentage(
+                                    position?.apys?.currentTimeAPYTillNow,
+                                    60,
+                                  ) || 0
+                                : calculatePercentage(apy[5], 60) || 0,
+                          ).toFixed(2)}%`}
                     </Label>
                   </div>
                 </div>
@@ -1224,22 +1251,34 @@ export function DcdsWithdrawModal({
                   <div className="flex flex-col w-full items-start justify-between">
                     <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
                       $
-                      {toPositiveDecimalString(
-                        Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                              ? Number(position?.apys?.priceChangePL) < 0
-                                ? position?.apys?.priceChangePL
-                                : calculatePercentage(
-                                    position?.apys?.priceChangePL || 0,
-                                    60,
-                                  ) || 0
-                              : apy[2] < 0
-                                ? apy[2]
-                                : calculatePercentage(apy[2], 60) || 0,
-                        ).toFixed(4),
-                      )}
+                      {hideYieldsAddressAndIndex.some(
+                        (item: {
+                          address: string;
+                          index: number[];
+                          chainId: number;
+                        }) =>
+                          item.address.toLowerCase() ===
+                            address?.toLowerCase() &&
+                          item.index.includes(Number(position?.index)) &&
+                          item.chainId === chainId,
+                      )
+                        ? "NaN"
+                        : toPositiveDecimalString(
+                            Number(
+                              apy == undefined
+                                ? 0
+                                : position.status !== "DEPOSITED"
+                                  ? Number(position?.apys?.priceChangePL) < 0
+                                    ? position?.apys?.priceChangePL
+                                    : calculatePercentage(
+                                        position?.apys?.priceChangePL || 0,
+                                        60,
+                                      ) || 0
+                                  : apy[2] < 0
+                                    ? apy[2]
+                                    : calculatePercentage(apy[2], 60) || 0,
+                            ).toFixed(4),
+                          )}
                     </Label>
 
                     <div className="flex">
@@ -1269,7 +1308,20 @@ export function DcdsWithdrawModal({
                       Variable Yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {variableYieldsCheck}%
+                      {hideYieldsAddressAndIndex.some(
+                        (item: {
+                          address: string;
+                          index: number[];
+                          chainId: number;
+                        }) =>
+                          item.address.toLowerCase() ===
+                            address?.toLowerCase() &&
+                          item.index.includes(Number(position?.index)) &&
+                          item.chainId === chainId,
+                      )
+                        ? "NaN"
+                        : variableYieldsCheck}
+                      %
                     </Label>
                   </div>
                 </div>
