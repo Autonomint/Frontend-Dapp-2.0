@@ -1122,28 +1122,16 @@ export function DcdsWithdrawModal({
                     <div className="flex items-center justify-between gap-3">
                       <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
                         $
-                        {hideYieldsAddressAndIndex.some(
-                          (item: {
-                            address: string;
-                            index: number[];
-                            chainId: number;
-                          }) =>
-                            item.address.toLowerCase() ===
-                              address?.toLowerCase() &&
-                            item.index.includes(Number(position?.index)) &&
-                            item.chainId === chainId,
-                        )
-                          ? "NaN"
-                          : Number(
-                              apy == undefined
-                                ? 0
-                                : position.status !== "DEPOSITED"
-                                  ? calculatePercentage(
-                                      position?.apys?.amountAccured || 0,
-                                      60,
-                                    )
-                                  : calculatePercentage(apy[1] || 0, 60),
-                            ).toFixed(4)}
+                        {Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                              ? calculatePercentage(
+                                  position?.apys?.amountAccured || 0,
+                                  60,
+                                )
+                              : calculatePercentage(apy[1] || 0, 60),
+                        ).toFixed(4)}
                       </Label>
                       {!(position.status == "WITHDREW") && (
                         <Button
@@ -1222,28 +1210,16 @@ export function DcdsWithdrawModal({
                       </div> */}
                     </div>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {hideYieldsAddressAndIndex.some(
-                        (item: {
-                          address: string;
-                          index: number[];
-                          chainId: number;
-                        }) =>
-                          item.address.toLowerCase() ===
-                            address?.toLowerCase() &&
-                          item.index.includes(Number(position?.index)) &&
-                          item.chainId === chainId,
-                      )
-                        ? "NaN%"
-                        : `${Number(
-                            apy == undefined
-                              ? 0
-                              : position.status !== "DEPOSITED"
-                                ? calculatePercentage(
-                                    position?.apys?.currentTimeAPYTillNow,
-                                    60,
-                                  ) || 0
-                                : calculatePercentage(apy[5], 60) || 0,
-                          ).toFixed(2)}%`}
+                      {`${Number(
+                        apy == undefined
+                          ? 0
+                          : position.status !== "DEPOSITED"
+                            ? calculatePercentage(
+                                position?.apys?.currentTimeAPYTillNow,
+                                60,
+                              ) || 0
+                            : calculatePercentage(apy[5], 60) || 0,
+                      ).toFixed(2)}%`}
                     </Label>
                   </div>
                 </div>
