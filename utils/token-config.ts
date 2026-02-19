@@ -8,7 +8,7 @@ import UsdcIcon from "@/app/assets/usdc.svg";
 import cbBTC from "@/app/assets/cbbtc.webp";
 import wBLT from "@/app/assets/wBLT.svg";
 import KRWQ from "@/app/assets/krwq-logo.svg";
-
+import EURC from "@/app/assets/euro-coin-2.png";
 import {
   boldTokenAddress,
   nativeTokenAddress,
@@ -177,6 +177,8 @@ export const getIconMapping = (theme: string, token: string) => {
     wBLT: wBLT,
     KRWQ: KRWQ,
     krwq: KRWQ,
+    EURC: EURC,
+    eurc: EURC,
   };
   return mapping[token as keyof typeof mapping];
 };

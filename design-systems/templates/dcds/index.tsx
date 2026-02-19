@@ -237,14 +237,18 @@ function DCDSTemplate() {
       label: "ETH",
       onClick: () => formik.setFieldValue("hedgeAsset", "ETH"),
     },
-    {
-      label: "cbBTC",
-      onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
-    },
-    {
-      label: "KRWQ",
-      onClick: () => formik.setFieldValue("hedgeAsset", "KRWQ"),
-    },
+    ...(chainId !== NetworkId.Rise
+      ? [
+          {
+            label: "cbBTC",
+            onClick: () => formik.setFieldValue("hedgeAsset", "cbBTC"),
+          },
+          {
+            label: "KRWQ",
+            onClick: () => formik.setFieldValue("hedgeAsset", "KRWQ"),
+          },
+        ]
+      : []),
   ];
 
   const lockInPeriodOption = useMemo(() => {
@@ -1362,7 +1366,8 @@ function DCDSTemplate() {
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
     if (tokenList[4]) list.push(tokenList[4]);
-    // if (tokenList[5]) list.push(tokenList[5]);
+    if (tokenList[5]) list.push(tokenList[5]);
+    if (tokenList[6]) list.push(tokenList[6]);
     return list;
   }, [tokenList]);
   console.log("formik.values", formik);
