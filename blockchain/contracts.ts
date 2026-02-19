@@ -152,10 +152,9 @@ export const KRWQAddress: ChainAddresses = {
 
 // Addresses for the EURC contract
 export const EURCAddress: ChainAddresses = {
-  84532: "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
-  11155420: zeroAddress,
+  [NetworkId.BaseSepolia]: "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+  [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
-  [NetworkId.Rise]: ZeroAddress as `0x${string}`
 } as const;
 
 // Addresses for the borrow assets
