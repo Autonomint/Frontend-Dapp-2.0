@@ -13,6 +13,8 @@ export const BorrowStatus = {
   DEPOSITED: "DEPOSITED",
   WITHDREW: "WITHDREW",
   LIQUIDATED: "LIQUIDATED",
+  STAKED: "STAKED",
+  UNSTAKED: "UNSTAKED",
 } as const;
 
 export const DEFAULT_TOAST_POSITION_VALUE =

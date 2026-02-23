@@ -9,7 +9,6 @@ export interface SignedDataReturn {
   deadline: number;
   usdtFromOdos: string;
   expiredETHAmount: number;
-  plFromExpired: number;
   pythUpdateSucceeded: boolean;
   ethPrice: bigint;
   plFromExpired: number;

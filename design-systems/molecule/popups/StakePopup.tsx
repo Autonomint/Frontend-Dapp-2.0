@@ -122,9 +122,11 @@ export function StakePopup({
     debugger;
     try {
       // fetch the borrow signed data
-      const borrowSignedData = await refetchBorrowSignedData(
-        position.collateralType === "KRWQ" ? "krwq" : position.collateralType,
-      );
+      const borrowSignedData = await refetchBorrowSignedData({
+        token:
+          position.collateralType === "KRWQ" ? "krwq" : position.collateralType,
+        duration: position.hedgeValidity,
+      });
       if (position.status === "STAKED") {
         unstakeTokens({
           user: address as `0x${string}`,

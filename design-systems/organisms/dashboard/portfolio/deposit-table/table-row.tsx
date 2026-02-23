@@ -19,6 +19,7 @@ const DepositTableRow = ({
   isLast,
   setRenewRepay,
   highlight = false,
+  setStakePopUpOpen,
 }: {
   highlight: boolean;
   isViewPositionOpen: boolean;
@@ -31,6 +32,7 @@ const DepositTableRow = ({
   tabPosition: "Borrowed" | "Deposited";
   idx: number;
   setSelectedPosition: (position: PositionData) => void;
+  setStakePopUpOpen: (isOpen: boolean) => void;
 }) => {
   const depositDetails = [
     {
@@ -94,7 +96,7 @@ const DepositTableRow = ({
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
-    position.collateralType === "krwq"
+    position.collateralType === "krwq",
   );
   const [openChart, setOpenChart] = useState(false);
 
@@ -158,8 +160,8 @@ const DepositTableRow = ({
         {calculateRemainingDays(Number(position.validTill)) <= 0
           ? "-"
           : position.status == "DEPOSITED"
-          ? `$${amountProtected}`
-          : "-"}
+            ? `$${amountProtected}`
+            : "-"}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {" "}

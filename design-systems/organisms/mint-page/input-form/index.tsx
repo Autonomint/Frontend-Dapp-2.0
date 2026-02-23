@@ -71,7 +71,6 @@ import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
 import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 
 /**
  * Yup validation schema for the input form
@@ -552,40 +551,6 @@ function InputForm({ currency }: { currency: string }) {
             ? BigInt(borrowSignedData?.ethPrice || 0)
             : undefined,
         verifyParams: borrowSignedData,
-      });
-    }
-    if (data != undefined && nativeFee != undefined && isStake) {
-      setApproveLoading(false);
-      setTimeout(() => {
-        setMintLoading(true);
-      }, 1000);
-      // calling the mint usda function in the contract
-      mintStakeUSDa?.({
-        volatility: BigInt(borrowSignedData?.volatility || 0),
-        depositingAmount:
-          currency === "cbBTC"
-            ? parseUnits(formik.values.collateralAmount.toString(), 8)
-            : parseEther(formik.values.collateralAmount.toString()),
-        assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        deadline: BigInt(borrowSignedData?.deadline || 0),
-        nonce: BigInt(borrowSignedData?.nonce || 0),
-        signature: borrowSignedData?.signature || ("" as `0x${string}`),
-        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
-        plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
-        value:
-          currency === "cbBTC" || currency === "KRWQ"
-            ? undefined
-            : chainId === NetworkId.Ethereum
-              ? parseEther(formik.values.collateralAmount.toString())
-              : currency.toLocaleLowerCase() == "eth"
-                ? parseEther(formik.values.collateralAmount.toString()) +
-                  nativeFee.nativeFee
-                : nativeFee.nativeFee,
-        hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
-        ethPrice:
-          currency === "KRWQ" || currency === "cbBTC"
-            ? BigInt(borrowSignedData?.ethPrice || 0)
-            : undefined,
       });
     }
   }
