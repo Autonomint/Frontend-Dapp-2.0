@@ -427,7 +427,7 @@ function DCDSTemplate() {
           : formik.values.hedgeAsset === "KRWQ"
             ? "krwq"
             : formik.values.hedgeAsset === "EURC"
-              ? "eurc"
+              ? "EURC"
               : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
