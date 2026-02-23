@@ -162,7 +162,7 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   const contract =
-    currency === "cbBTC" || currency === "KRWQ"
+    currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
       ? borrowDepositCoreAddress
       : borrowingDepositContractAddress;
 

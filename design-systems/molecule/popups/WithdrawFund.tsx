@@ -334,7 +334,9 @@ export function WithdrawFund({
   // );
 
   const contract =
-    position.collateralType === "cbBTC" || position.collateralType === "krwq"
+    position.collateralType === "cbBTC" ||
+    position.collateralType === "krwq" ||
+    position.collateralType === "EURC"
       ? borrowCoreAddress
       : borrowingContractAddress;
   // getting token details
@@ -992,7 +994,9 @@ export function WithdrawFund({
               ? "cbBTC"
               : position.collateralType === "krwq"
                 ? "krwq"
-                : "ETH";
+                : position.collateralType === "EURC"
+                  ? "EURC"
+                  : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
             repayPercent: repayAmount,
@@ -1002,7 +1006,8 @@ export function WithdrawFund({
             position.index,
             repayAmount,
             position.collateralType === "cbBTC" ||
-              position.collateralType === "krwq"
+              position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.usdtFromOdos,
@@ -1025,7 +1030,8 @@ export function WithdrawFund({
             BigInt(renewFormik.values.hedgeDuration || 0),
             signedData,
             position.collateralType === "cbBTC" ||
-              position.collateralType === "krwq"
+              position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             position.collateralType,
@@ -1176,7 +1182,8 @@ export function WithdrawFund({
     if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
       const contract =
-        position.collateralType === "cbBTC"
+        position.collateralType === "cbBTC" ||
+        position.collateralType === "EURC"
           ? borrowCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress]
           : borrowingContractAddress[
               chainId as keyof typeof borrowingContractAddress
@@ -1213,7 +1220,9 @@ export function WithdrawFund({
       BigInt(position.index),
       BigInt(renewFormik.values.hedgeDuration || 0),
       signedData,
-      position.collateralType === "cbBTC" || position.collateralType === "krwq"
+      position.collateralType === "cbBTC" ||
+        position.collateralType === "krwq" ||
+        position.collateralType === "EURC"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
       position.collateralType,
@@ -1591,7 +1600,8 @@ export function WithdrawFund({
                 className={`  ${
                   position.status == BorrowStatus.WITHDREW
                     ? position.status == BorrowStatus.WITHDREW &&
-                      position.collateralType === "cbBTC"
+                      (position.collateralType === "cbBTC" ||
+                        position.collateralType === "EURC")
                       ? "h-[130px]"
                       : "h-[150px]"
                     : "md:h-[80px] sm:h-[50px] h-[80px]"
