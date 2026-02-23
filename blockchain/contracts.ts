@@ -152,7 +152,7 @@ export const KRWQAddress: ChainAddresses = {
 
 // Addresses for the EURC contract
 export const EURCAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42",
+  [NetworkId.BaseSepolia]: "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
 } as const;
@@ -167,6 +167,8 @@ export const borrowAssetsAddress = {
   cbBTC: cbBTCAddress,
   KRWQ: KRWQAddress,
   krwq: KRWQAddress,
+  EURC: EURCAddress,
+  eurc: EURCAddress,
 } as const;
 
 // Addresses for the global contract

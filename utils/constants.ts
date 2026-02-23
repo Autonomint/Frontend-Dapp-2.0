@@ -48,7 +48,8 @@ export enum AssetName {
   sUSD,
   WSUPER_OETH,
   cbBTC,
-  KRWQ
+  KRWQ,
+  EURC
 }
 
 export const BorrowAssetsEnum = {
@@ -60,6 +61,8 @@ export const BorrowAssetsEnum = {
   cbBTC: AssetName.cbBTC,
   KRWQ: AssetName.KRWQ,
   krwq: AssetName.KRWQ,
+  EURC: AssetName.EURC,
+  eurc: AssetName.EURC,
 };
 
 export const RedeemAssets = {

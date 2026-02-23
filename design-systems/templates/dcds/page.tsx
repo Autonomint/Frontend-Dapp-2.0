@@ -245,6 +245,14 @@ function DCDSTemplate() {
       label: "KRWQ",
       onClick: () => formik.setFieldValue("hedgeAsset", "KRWQ"),
     },
+    ...(chainId === NetworkId.BaseSepolia
+      ? [
+          {
+            label: "EURC",
+            onClick: () => formik.setFieldValue("hedgeAsset", "EURC"),
+          },
+        ]
+      : []),
   ];
 
   const lockInPeriodOption = useMemo(() => {
@@ -314,7 +322,9 @@ function DCDSTemplate() {
         ? "ETH"
         : formik.values.hedgeAsset === "KRWQ"
           ? "KRWQ"
-          : "cbBTC",
+          : formik.values.hedgeAsset === "EURC"
+            ? "EURC"
+            : "cbBTC",
   );
 
   // assigning the formik values to the local variables because getting old values from formik directly
@@ -416,7 +426,9 @@ function DCDSTemplate() {
           ? "cbBTC"
           : formik.values.hedgeAsset === "KRWQ"
             ? "krwq"
-            : "ETH";
+            : formik.values.hedgeAsset === "EURC"
+              ? "eurc"
+              : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -456,7 +468,8 @@ function DCDSTemplate() {
       let filteredTokenList = tokenList;
       if (
         formik.values.hedgeAsset === "cbBTC" ||
-        formik.values.hedgeAsset === "KRWQ"
+        formik.values.hedgeAsset === "KRWQ" ||
+        formik.values.hedgeAsset === "EURC"
       ) {
         filteredTokenList = tokenList.filter(
           (token) => token.tokenName !== "BOLD",
@@ -505,14 +518,17 @@ function DCDSTemplate() {
                 ? AssetName.cbBTC
                 : formik.values.hedgeAsset === "KRWQ"
                   ? AssetName.KRWQ
-                  : undefined,
+                  : formik.values.hedgeAsset === "EURC"
+                    ? AssetName.EURC
+                    : undefined,
           },
           BigInt(cdsDepositSignedData.deadline),
           cdsDepositSignedData.signature as `0x${string}`,
         ],
         chainId === NetworkId.Ethereum ||
           formik.values.hedgeAsset === "cbBTC" ||
-          formik.values.hedgeAsset === "KRWQ"
+          formik.values.hedgeAsset === "KRWQ" ||
+          formik.values.hedgeAsset === "EURC"
           ? undefined
           : nativeFee.nativeFee,
         formik.values.hedgeAsset,
@@ -585,7 +601,8 @@ function DCDSTemplate() {
 
         const contract =
           formik.values.hedgeAsset === "cbBTC" ||
-          formik.values.hedgeAsset === "KRWQ"
+          formik.values.hedgeAsset === "KRWQ" ||
+          formik.values.hedgeAsset === "EURC"
             ? cdsDepositCoreAddress[
                 chainId as keyof typeof cdsDepositCoreAddress
               ]
@@ -839,7 +856,9 @@ function DCDSTemplate() {
     });
 
   const allowanceContract =
-    formik.values.hedgeAsset == "cbBTC" || formik.values.hedgeAsset == "KRWQ"
+    formik.values.hedgeAsset == "cbBTC" ||
+    formik.values.hedgeAsset == "KRWQ" ||
+    formik.values.hedgeAsset == "EURC"
       ? cdsDepositCoreAddress
       : cdsDepositAddress;
 
