@@ -36,9 +36,9 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
     value: bigint | undefined,
     hedgeAsset: string
   ) => {
-    const contract = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" ? cdsCoreAddress : cdsAddress;
+    const contract = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" || hedgeAsset === "EURC" ? cdsCoreAddress : cdsAddress;
 
-    const abi = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" ? cdsCoreABI : cdsAbi;
+    const abi = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" || hedgeAsset === "EURC" ? cdsCoreABI : cdsAbi;
     debugger
 
     console.log(args,

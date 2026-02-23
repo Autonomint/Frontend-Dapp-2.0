@@ -515,7 +515,9 @@ function DCDSTemplate() {
                 ? AssetName.cbBTC
                 : formik.values.hedgeAsset === "KRWQ"
                   ? AssetName.KRWQ
-                  : undefined,
+                  : formik.values.hedgeAsset === "EURC"
+                    ? AssetName.EURC
+                    : undefined,
             verifyParams: {
               excessProfitCumulativeValue:
                 cdsDepositSignedData?.excessProfitCumulativeValue,
