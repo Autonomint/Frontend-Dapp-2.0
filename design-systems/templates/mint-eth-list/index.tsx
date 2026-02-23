@@ -338,20 +338,20 @@ function MintEthListTemplate() {
       InActiveHeading: "EURC borrow is paused now",
       pointsToBeGiven:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["eurc"]?.pointsToBeGiven) ||
+          tokenRewardDetailList?.["EURC"]?.pointsToBeGiven) ||
         0,
       minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["eurc"]?.minAmount) ||
+        (tokenRewardDetailList && tokenRewardDetailList?.["EURC"]?.minAmount) ||
         0,
       link: STRATEGY_LINK,
       boaster:
         (tokenRewardDetailList &&
-          tokenRewardDetailList?.["eurc"]?.assetBooster + luckBoaster) ||
+          tokenRewardDetailList?.["EURC"]?.assetBooster + luckBoaster) ||
         0,
       boasterTime:
         tokenRewardDetailList &&
         Math.max(
-          tokenRewardDetailList?.["eurc"]?.assetBoosterValidity || 0,
+          tokenRewardDetailList?.["EURC"]?.assetBoosterValidity || 0,
           farmLuckDetails?.deadLine5xTimestamp
             ? // convert date to timestamp
               new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000

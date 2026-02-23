@@ -417,7 +417,13 @@ function InputForm({ currency }: { currency: string }) {
       ? parseUnits(String(assetPrice), 8)
       : assetPrice || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
+    currency === "cbBTC"
+      ? "BTC"
+      : currency === "KRWQ"
+        ? "krwq"
+        : currency === "EURC"
+          ? "EURC"
+          : "ETH",
     Number(formik.values.hedgeDuration),
   );
   // Custom hook to fetch the current strike price percent limit
