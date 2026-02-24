@@ -265,7 +265,9 @@ function InputForm({ currency }: { currency: string }) {
         contract[chainId as keyof typeof contract] as `0x${string}`,
         currency === "cbBTC"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
-          : parseEther(formik.values.collateralAmount.toString()),
+          : currency === "EURC"
+            ? parseUnits(formik.values.collateralAmount.toString(), 6)
+            : parseEther(formik.values.collateralAmount.toString()),
       );
       // else mining directly
     } else {
@@ -534,10 +536,12 @@ function InputForm({ currency }: { currency: string }) {
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
-            : parseEther(formik.values.collateralAmount.toString()),
+            : currency === "EURC"
+              ? parseUnits(formik.values.collateralAmount.toString(), 6)
+              : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" || currency === "KRWQ"
+          currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
@@ -546,10 +550,7 @@ function InputForm({ currency }: { currency: string }) {
                   nativeFee.nativeFee
                 : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
-        ethPrice:
-          currency === "KRWQ"
-            ? BigInt(borrowSignedData?.ethPrice || 0)
-            : undefined,
+        ethPrice: BigInt(borrowSignedData?.ethPrice || 0),
         verifyParams: borrowSignedData,
       });
     }

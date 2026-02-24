@@ -40,18 +40,30 @@ const useDepositTokens = (mutation: any) => {
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 || assetName === 13 || assetName === 14 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     const abi = assetName === 12 || assetName === 13 || assetName === 14 ? borowCoreABI : borrowingContractAbi
+    debugger
     writeContract?.({
       abi: abi,
       address: contractAddress as `0x${string}`,
       functionName: "depositTokens",
+
       args: [
         {
           user: address as `0x${string}`,
           assetName,
           depositingAmount,
           hedgeValidity: hedgeDuration,
-          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
-          verifyParams
+          verifyParams: {
+            volatility: verifyParams?.volatility,
+            ethPrice: verifyParams?.ethPrice,
+            expiredETHAmount: verifyParams?.expiredETHAmount,
+            plFromExpired: verifyParams?.plFromExpired,
+            premiumCv: verifyParams?.premiumCv,
+            hedgeCv: verifyParams?.hedgeCv,
+            optionFees: verifyParams?.optionFees,
+            odosAssembledData: verifyParams?.odosAssembledData,
+            signature: verifyParams?.signature,
+            deadline: verifyParams?.deadline,
+          }
         },
       ],
       value,
