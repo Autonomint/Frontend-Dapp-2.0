@@ -58,12 +58,11 @@ export function StakePopup({
         },
       ),
   });
-  console.log(position, "position");
 
   const token =
     position?.collateralType === "cbBTC"
       ? "cbBTC"
-      : position?.collateralType === "KRWQ"
+      : position?.collateralType === "krwq"
         ? "krwq"
         : "ETH";
 
@@ -76,7 +75,7 @@ export function StakePopup({
     usdaApproveLoading,
     usdaApproveErrorData,
   } = useApproveUsda({});
-  console.log(usdaApproveErrorData, "usdaApproveErrorData");
+
   const formik = useFormik({
     initialValues: {
       amount: "",
