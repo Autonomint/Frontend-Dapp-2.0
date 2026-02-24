@@ -511,11 +511,17 @@ export function DcdsWithdrawModal({
           ? "cbBTC"
           : position?.collateralType === "krwq"
             ? "KRWQ"
-            : "ETH"
+            : position?.collateralType === "EURC"
+              ? "EURC"
+              : "ETH"
       } Price at Deposit`;
       updatedData[2].value = `$${
         Number(position.ethPriceAtDeposit) /
-        (position.collateralType === "krwq" ? 1e8 : 100)
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 100)
       }`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
