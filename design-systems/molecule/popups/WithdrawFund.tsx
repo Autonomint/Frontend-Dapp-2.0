@@ -545,7 +545,11 @@ export function WithdrawFund({
       const upsideAt =
         (Number(position.depositedAmountInETH) *
           ((position.strikePrice || 0) - position.ethPrice)) /
-        (position.collateralType === "krwq" ? 1e8 : 100);
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 100);
 
       // calculate price difference
       const priceDef =
@@ -562,7 +566,7 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[6].value = `${upsideAt.toFixed(5)}`;
       // set collateral upside till now
       updatedData[7].value =
         // check if eth price at deposit time is less then current price
@@ -629,11 +633,11 @@ export function WithdrawFund({
                 Number(
                   formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
                 ) - Number(position.noOfUSDaMinted)
-              ).toFixed(4)
+              ).toFixed(5)
             : (
                 Number(position.totalDebtAmount) -
                 Number(position.noOfUSDaMinted)
-              ).toFixed(4)
+              ).toFixed(5)
       }`,
       tooltip: false,
       tooltipText: "",
@@ -2137,7 +2141,11 @@ export function WithdrawFund({
                         (Number(
                           formatUnits(
                             BigInt(position.ethPrice),
-                            position.collateralType === "krwq" ? 8 : 2,
+                            position.collateralType === "krwq"
+                              ? 8
+                              : position.collateralType === "EURC"
+                                ? 6
+                                : 2,
                           ),
                         ) *
                           Number(position?.depositedAmountInETH) *

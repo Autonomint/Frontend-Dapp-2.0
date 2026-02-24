@@ -214,7 +214,8 @@ const DepositTableRow = ({
                 : "Repay/Renew"}
           </span>
         )}
-        {position.collateralType === "krwq" &&
+        {(position.collateralType === "krwq" ||
+          position.collateralType === "EURC") &&
           position.status !== "UNSTAKED" &&
           position.status !== "LIQUIDATED" &&
           position.status !== "WITHDREW" && (
