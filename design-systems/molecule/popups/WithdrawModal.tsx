@@ -872,7 +872,9 @@ export function DcdsWithdrawModal({
             ? "cbBTC"
             : position.collateralType === "krwq"
               ? "krwq"
-              : "ETH";
+              : position.collateralType === "EURC"
+                ? "EURC"
+                : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
           [
@@ -915,7 +917,7 @@ export function DcdsWithdrawModal({
             params,
             position.collateralType === "cbBTC" ||
               position.collateralType === "krwq" ||
-              position.collateralType === "ETH"
+              position.collateralType === "EURC"
               ? undefined
               : nativeFeeAll,
             position.collateralType,
