@@ -360,7 +360,8 @@ export function WithdrawFund({
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
   const currentEthPrice =
-    position.status == BorrowStatus.DEPOSITED
+    position.status == BorrowStatus.DEPOSITED ||
+    position.status == BorrowStatus.UNSTAKED
       ? ethPrice || 0
       : Number(position.ethPriceAtWithdraw) /
         (position.collateralType === "krwq"
@@ -481,13 +482,20 @@ export function WithdrawFund({
 
   // updating repay amount according to status
   const repayAmount =
-    position.status == BorrowStatus.DEPOSITED
+    position.status == BorrowStatus.DEPOSITED ||
+    position.status == BorrowStatus.UNSTAKED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
         Number(downsideProtection)
       : // (Number(downsideProtection) + Number(position?.optionFees))
         Number(position.totalDebtAmount) - Number(downsideProtection);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
+  console.log(
+    downsideProtection,
+    repayAmount,
+    position.status,
+    "downsideProtection",
+  );
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
@@ -537,7 +545,8 @@ export function WithdrawFund({
 
       // current price of eth
       const currentPrice =
-        position.status == BorrowStatus.DEPOSITED
+        position.status == BorrowStatus.DEPOSITED ||
+        position.status == BorrowStatus.UNSTAKED
           ? ethPrice
           : position.ethPriceAtWithdraw;
 
@@ -916,6 +925,7 @@ export function WithdrawFund({
 
   const handleRepay = async (withdrawAmount: string) => {
     // check if repay amount is greater than or equal to repay amount
+    debugger;
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
       Number(position.noOfUSDaMinted)
@@ -961,17 +971,11 @@ export function WithdrawFund({
     const approveRepayAmount = BigInt(
       Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6))),
     );
-    if (
-      position.status === "DEPOSITED" ||
-      position.status === "UNSTAKED"
-      // BigInt(allowance || 0) < approveRepayAmount
-    ) {
+
+    if (position.status === "DEPOSITED" || position.status === "UNSTAKED") {
       setIsApproveLoadingLocal(true);
       approveUsda(approveRepayAmount, position.collateralType);
     }
-    // else {
-    //   callRepayInContract();
-    // }
   };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
@@ -1738,7 +1742,8 @@ export function WithdrawFund({
                             <div className="flex flex-col items-center gap-2">
                               <Spinner color="#fff" />
                             </div>
-                          ) : position.status == BorrowStatus.DEPOSITED ? (
+                          ) : position.status == BorrowStatus.DEPOSITED ||
+                            position.status == BorrowStatus.UNSTAKED ? (
                             `Repay`
                           ) : position.status == BorrowStatus.LIQUIDATED ? (
                             `Liquidated ${parseFloat(
