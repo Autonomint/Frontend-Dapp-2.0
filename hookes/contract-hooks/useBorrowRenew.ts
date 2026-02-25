@@ -29,8 +29,8 @@ const useBorrowRenew = (mutation: any) => {
   console.log(error, 'errorerror')
 
   const renewBorrow = async (index: bigint, hedgeValidity: bigint, verifyParams: any, nativeFee: bigint | undefined, token: string) => {
-    const contract = token === "cbBTC" || token === "KRWQ" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
+    const contract = token === "cbBTC" || token === "KRWQ" || token === "EURC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? borowCoreABI : borrowingContractAbi
     writeContract?.({
       abi: abi,
       address: contract as `0x${string}`,

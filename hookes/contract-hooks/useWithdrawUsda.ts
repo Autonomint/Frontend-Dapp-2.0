@@ -24,8 +24,8 @@ const useWithdrawUsda = (mutation: any) => {
     token: string,
     verifyParams: any,
   ) => {
-    const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
+    const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? borowCoreABI : borrowingContractAbi
     try {
       borrowWithdrawAsync({
         abi: abi,
