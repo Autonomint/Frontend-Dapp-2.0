@@ -73,6 +73,7 @@ import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/Gener
 import useGetBorrowRenewSignedData from "@/hookes/api-hooks/useGetBorrowRenewSignedData";
 import { InfoIcon } from "lucide-react";
 import { optionABI } from "@/blockchain/abis/option";
+import useGetStakingGain from "@/hookes/api-hooks/useGetStakingGain";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -112,6 +113,11 @@ export function WithdrawFund({
     },
     enabled: !!address && !!chainId && !!position.index,
   });
+
+  const { stakingRealisedReward } = useGetStakingGain(
+    position.index,
+    position.collateralType,
+  );
 
   const priceDecimals =
     position.collateralType === "krwq"
@@ -485,9 +491,12 @@ export function WithdrawFund({
     position.status == BorrowStatus.DEPOSITED ||
     position.status == BorrowStatus.UNSTAKED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-        Number(downsideProtection)
+        Number(downsideProtection) -
+        Number(stakingRealisedReward || 0)
       : // (Number(downsideProtection) + Number(position?.optionFees))
-        Number(position.totalDebtAmount) - Number(downsideProtection);
+        Number(position.totalDebtAmount) -
+        Number(downsideProtection) -
+        Number(stakingRealisedReward || 0);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
   console.log(
@@ -636,7 +645,8 @@ export function WithdrawFund({
           Number(position.noOfUSDaMinted) ||
         position.status === BorrowStatus.LIQUIDATED
           ? 0
-          : position.status === BorrowStatus.DEPOSITED
+          : position.status === BorrowStatus.DEPOSITED ||
+              position.status === BorrowStatus.UNSTAKED
             ? // if position withdrawn using totalDebtAmount else total usda with cumulative
               (
                 Number(
@@ -948,9 +958,10 @@ export function WithdrawFund({
 
     const extraAmount = Number(percentageValue) * interest;
 
-    const repayAmountFormated = Number(
-      truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
-    );
+    const repayAmountFormated =
+      Number(
+        truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
+      ) - Number(stakingRealisedReward || 0);
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
@@ -1703,7 +1714,10 @@ export function WithdrawFund({
                                     formik.setFieldValue(
                                       "withdrawAmount",
                                       truncateDecimals(
-                                        Number(position.noOfUSDaMinted),
+                                        Number(
+                                          position.noOfUSDaMinted -
+                                            Number(stakingRealisedReward || 0),
+                                        ),
                                         6,
                                       ),
                                     );

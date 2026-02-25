@@ -26,6 +26,26 @@ async function getStakingGain(
   }).then((response) => response.json());
 }
 
+async function getStakingRealisedReward(
+  address: `0x${string}` | undefined,
+  chainId: number,
+  index: number,
+  token: string
+): Promise<{ premium: number; hedge: number }> {
+  return fetch(`${BACKEND_API_URL}/borrows/getRealisedStakingRewards`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      address: address,
+      chainId: chainId,
+      index: index,
+      collateralType: token,
+    }),
+  }).then((response) => response.json());
+}
+
 
 const useGetStakingGain = (index: number, token: string) => {
 
@@ -46,14 +66,33 @@ const useGetStakingGain = (index: number, token: string) => {
       ),
   });
 
+  const {
+    data: stakingRealisedReward,
+    isPending: isPendingStakingRealisedReward,
+    refetch: refetchStakingRealisedReward,
+  } = useQuery({
+    queryKey: ["stakingRealisedReward", index],
+    queryFn: () =>
+      getStakingRealisedReward(
+        address ? address : undefined,
+        chainId as number,
+        index || 0,
+        token
+      ),
+  });
+
   useEffect(() => {
     refetchStakingGain()
+    refetchStakingRealisedReward()
   }, [index])
 
   return {
     stakingGain,
     isPendingStakingGain,
     refetchStakingGain,
+    stakingRealisedReward,
+    isPendingStakingRealisedReward,
+    refetchStakingRealisedReward,
   };
 };
 
