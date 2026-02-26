@@ -47,7 +47,7 @@ async function getStakingRealisedReward(
 }
 
 
-const useGetStakingGain = (index: number, token: string) => {
+const useGetStakingGain = (index: number, token: string, activeGain: boolean, activeReward: boolean) => {
 
 
   const { address, chainId } = useAccount();
@@ -56,7 +56,7 @@ const useGetStakingGain = (index: number, token: string) => {
     isPending: isPendingStakingGain,
     refetch: refetchStakingGain,
   } = useQuery({
-    queryKey: ["stakingGain", index],
+    queryKey: ["stakingGain", index, activeGain],
     queryFn: () =>
       getStakingGain(
         address ? address : undefined,
@@ -64,6 +64,7 @@ const useGetStakingGain = (index: number, token: string) => {
         index || 0,
         token
       ),
+    enabled: activeGain
   });
 
   const {
@@ -71,7 +72,7 @@ const useGetStakingGain = (index: number, token: string) => {
     isPending: isPendingStakingRealisedReward,
     refetch: refetchStakingRealisedReward,
   } = useQuery({
-    queryKey: ["stakingRealisedReward", index],
+    queryKey: ["stakingRealisedReward", index, activeReward],
     queryFn: () =>
       getStakingRealisedReward(
         address ? address : undefined,
@@ -79,12 +80,10 @@ const useGetStakingGain = (index: number, token: string) => {
         index || 0,
         token
       ),
+    enabled: activeReward
   });
 
-  useEffect(() => {
-    refetchStakingGain()
-    refetchStakingRealisedReward()
-  }, [index])
+
 
   return {
     stakingGain,

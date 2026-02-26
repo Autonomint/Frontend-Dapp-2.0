@@ -117,6 +117,8 @@ export function WithdrawFund({
   const { stakingRealisedReward } = useGetStakingGain(
     position.index,
     position.collateralType,
+    false,
+    isDialogOpen,
   );
 
   const priceDecimals =
@@ -499,12 +501,6 @@ export function WithdrawFund({
         Number(stakingRealisedReward || 0);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
-  console.log(
-    downsideProtection,
-    repayAmount,
-    position.status,
-    "downsideProtection",
-  );
   // getting current APR value
   const { data: currentAPR, isLoading: isCurrentAPRPending } = useReadContract({
     abi: borrowingContractAbi,
@@ -623,7 +619,6 @@ export function WithdrawFund({
     }
   }
 
-  console.log(position, "position");
   // repay amount details for showing in popup
   const repayAmountDetails = [
     {
@@ -935,7 +930,6 @@ export function WithdrawFund({
 
   const handleRepay = async (withdrawAmount: string) => {
     // check if repay amount is greater than or equal to repay amount
-    debugger;
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
       Number(position.noOfUSDaMinted)

@@ -45,7 +45,7 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>, isKR
     query: { enabled: !!address && !!chainId }, // Only run the query if wallet is connected and chain is available
   }) as { isPending: boolean; data: [bigint, bigint] | undefined };
 
-  const { krwqPrice, error } = useGetKrwqPrice()
+  const { krwqPrice, error } = useGetKrwqPrice(Boolean(isKRWQ))
 
 
   return {

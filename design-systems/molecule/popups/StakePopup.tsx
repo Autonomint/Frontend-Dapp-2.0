@@ -64,9 +64,16 @@ export function StakePopup({
       ? "cbBTC"
       : position?.collateralType === "krwq"
         ? "krwq"
-        : "ETH";
+        : position?.collateralType === "EURC"
+          ? "EURC"
+          : "ETH";
 
-  const { stakingGain } = useGetStakingGain(position?.index, token);
+  const { stakingGain } = useGetStakingGain(
+    position?.index,
+    token,
+    isOpen,
+    false,
+  );
 
   const {
     approveReset,
@@ -116,9 +123,7 @@ export function StakePopup({
   // Custom hook to fetch the borrow signed data
   const { refetchBorrowSignedData } = useGetBorrowSignedData();
 
-  console.log(depositStakeError, usdaApproveLoading, "depositStakeError");
   const handleStake = async (amount: string) => {
-    debugger;
     try {
       // fetch the borrow signed data
       const borrowSignedData = await refetchBorrowSignedData({
@@ -174,7 +179,7 @@ export function StakePopup({
               <div className="flex flex-col gap-1 items-center">
                 <p className="text-2xl font-bold text-center text-grayLight"></p>
                 <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                  ${Number(stakingGain?.hedge).toFixed(2)}
+                  ${Number(stakingGain?.hedge || 0).toFixed(4)}
                 </Label>
 
                 <Label className="text-[14px] font-normal text-[#777777]">
@@ -184,7 +189,7 @@ export function StakePopup({
               <div className="flex flex-col gap-1 items-center">
                 <p className="text-2xl font-bold text-center text-grayLight"></p>
                 <Label className=" text-[22px] font-bold  md:text-[26px] text-black dark:text-white  ">
-                  ${Number(stakingGain?.premium).toFixed(2)}
+                  ${Number(stakingGain?.premium || 0).toFixed(4)}
                 </Label>
 
                 <Label className="text-[14px] font-normal text-[#777777]">

@@ -204,7 +204,7 @@ function InputForm({ currency }: { currency: string }) {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
   }, [maxMintAmount]);
 
-  console.log(maxMintAmount, "maxMintAmount");
+
 
   // handle mint btn click
   const handleSubmit = async (
@@ -453,7 +453,7 @@ function InputForm({ currency }: { currency: string }) {
     },
   });
 
-  console.log(currentStrikePricePercentLimit, "currentStrikePricePercentLimit");
+
   // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(
