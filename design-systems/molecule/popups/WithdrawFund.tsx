@@ -73,6 +73,7 @@ import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/Gener
 import useGetBorrowRenewSignedData from "@/hookes/api-hooks/useGetBorrowRenewSignedData";
 import { InfoIcon } from "lucide-react";
 import { optionABI } from "@/blockchain/abis/option";
+import useGetStakingGain from "@/hookes/api-hooks/useGetStakingGain";
 export function WithdrawFund({
   position,
   isDialogOpen,
@@ -113,7 +114,19 @@ export function WithdrawFund({
     enabled: !!address && !!chainId && !!position.index,
   });
 
-  const priceDecimals = position.collateralType === "krwq" ? 1e8 : 100;
+  const { stakingRealisedReward } = useGetStakingGain(
+    position.index,
+    position.collateralType,
+    false,
+    isDialogOpen,
+  );
+
+  const priceDecimals =
+    position.collateralType === "krwq"
+      ? 1e8
+      : position.collateralType === "EURC"
+        ? 1e6
+        : 100;
 
   const depositDetails = [
     {
@@ -213,6 +226,7 @@ export function WithdrawFund({
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
     position.collateralType === "krwq",
+    position.collateralType === "EURC",
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -334,7 +348,9 @@ export function WithdrawFund({
   // );
 
   const contract =
-    position.collateralType === "cbBTC" || position.collateralType === "krwq"
+    position.collateralType === "cbBTC" ||
+    position.collateralType === "krwq" ||
+    position.collateralType === "EURC"
       ? borrowCoreAddress
       : borrowingContractAddress;
   // getting token details
@@ -352,24 +368,45 @@ export function WithdrawFund({
   // if position withdrawn using withdrawn time eth price as current eth price else using
   // current eth price
   const currentEthPrice =
-    position.status == BorrowStatus.DEPOSITED
+    position.status == BorrowStatus.DEPOSITED ||
+    position.status == BorrowStatus.UNSTAKED
       ? ethPrice || 0
       : Number(position.ethPriceAtWithdraw) /
-        (position.collateralType === "krwq" ? 1e8 : 1e2);
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 1e2);
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     position.status == BorrowStatus.LIQUIDATED ||
     calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
-      : (currentEthPrice || 0) < (position?.ethPrice || 0)
+      : (currentEthPrice || 0) <
+          Number(
+            (position?.ethPrice || 0) /
+              (position.collateralType === "krwq"
+                ? 1e8
+                : position.collateralType === "EURC"
+                  ? 1e6
+                  : 1e2),
+          )
         ? Number(
             (position?.ethPrice || 0) /
-              (position.collateralType === "krwq" ? 1e8 : 1e2),
+              (position.collateralType === "krwq"
+                ? 1e8
+                : position.collateralType === "EURC"
+                  ? 1e6
+                  : 1e2),
           ) *
             Number(position?.depositedAmountInETH) -
           Number(
-            currentEthPrice / (position.collateralType === "krwq" ? 1 : 1e2),
+            currentEthPrice /
+              (position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
+                ? 1
+                : 1e2),
           ) *
             Number(position?.depositedAmountInETH)
         : 0;
@@ -453,11 +490,15 @@ export function WithdrawFund({
 
   // updating repay amount according to status
   const repayAmount =
-    position.status == BorrowStatus.DEPOSITED
+    position.status == BorrowStatus.DEPOSITED ||
+    position.status == BorrowStatus.UNSTAKED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-        Number(downsideProtection)
+        Number(downsideProtection) -
+        Number(stakingRealisedReward || 0)
       : // (Number(downsideProtection) + Number(position?.optionFees))
-        Number(position.totalDebtAmount) - Number(downsideProtection);
+        Number(position.totalDebtAmount) -
+        Number(downsideProtection) -
+        Number(stakingRealisedReward || 0);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
   // getting current APR value
@@ -509,7 +550,8 @@ export function WithdrawFund({
 
       // current price of eth
       const currentPrice =
-        position.status == BorrowStatus.DEPOSITED
+        position.status == BorrowStatus.DEPOSITED ||
+        position.status == BorrowStatus.UNSTAKED
           ? ethPrice
           : position.ethPriceAtWithdraw;
 
@@ -517,7 +559,11 @@ export function WithdrawFund({
       const upsideAt =
         (Number(position.depositedAmountInETH) *
           ((position.strikePrice || 0) - position.ethPrice)) /
-        (position.collateralType === "krwq" ? 1e8 : 100);
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 100);
 
       // calculate price difference
       const priceDef =
@@ -534,7 +580,7 @@ export function WithdrawFund({
       // is less that 5%
       const curtUpside = upsideAt < priceDef ? upsideAt : priceDef;
       // set collateral upside at deposit
-      updatedData[6].value = `${upsideAt.toFixed(2)}`;
+      updatedData[6].value = `${upsideAt.toFixed(5)}`;
       // set collateral upside till now
       updatedData[7].value =
         // check if eth price at deposit time is less then current price
@@ -573,7 +619,6 @@ export function WithdrawFund({
     }
   }
 
-  console.log(position, "position");
   // repay amount details for showing in popup
   const repayAmountDetails = [
     {
@@ -595,17 +640,15 @@ export function WithdrawFund({
           Number(position.noOfUSDaMinted) ||
         position.status === BorrowStatus.LIQUIDATED
           ? 0
-          : position.status === BorrowStatus.DEPOSITED
+          : position.status === BorrowStatus.DEPOSITED ||
+              position.status === BorrowStatus.UNSTAKED
             ? // if position withdrawn using totalDebtAmount else total usda with cumulative
               (
                 Number(
                   formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
                 ) - Number(position.noOfUSDaMinted)
-              ).toFixed(4)
-            : (
-                Number(position.totalDebtAmount) -
-                Number(position.noOfUSDaMinted)
-              ).toFixed(4)
+              ).toFixed(5)
+            : Number(position.totalInterest || 0).toFixed(5)
       }`,
       tooltip: false,
       tooltipText: "",
@@ -634,13 +677,23 @@ export function WithdrawFund({
             (Number(position?.ethPrice || 0) *
               Number(position?.exchangeRateAtDeposit || 0) *
               Number(assetDetails?.LTV || 0)) /
-            (1e2 * (position.collateralType === "krwq" ? 1e8 : 1e2))
+            (1e2 *
+              (position.collateralType === "krwq"
+                ? 1e8
+                : position.collateralType === "EURC"
+                  ? 1e6
+                  : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2)
         : (
             (Number(position?.ethPrice || 0) *
               Number(position?.exchangeRateAtDeposit || 0) *
               Number(assetDetails?.optionsExpiredLTV || 0)) /
-            (1e2 * (position.collateralType === "krwq" ? 1e8 : 1e2))
+            (1e2 *
+              (position.collateralType === "krwq"
+                ? 1e8
+                : position.collateralType === "EURC"
+                  ? 1e6
+                  : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2),
 
       tooltip: false,
@@ -896,9 +949,10 @@ export function WithdrawFund({
 
     const extraAmount = Number(percentageValue) * interest;
 
-    const repayAmountFormated = Number(
-      truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
-    );
+    const repayAmountFormated =
+      Number(
+        truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
+      ) - Number(stakingRealisedReward || 0);
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
@@ -919,16 +973,11 @@ export function WithdrawFund({
     const approveRepayAmount = BigInt(
       Math.round(Number(parseUnits((repayAmountFormated + 0.5).toString(), 6))),
     );
-    if (
-      position.status === "DEPOSITED"
-      // BigInt(allowance || 0) < approveRepayAmount
-    ) {
+
+    if (position.status === "DEPOSITED" || position.status === "UNSTAKED") {
       setIsApproveLoadingLocal(true);
       approveUsda(approveRepayAmount, position.collateralType);
     }
-    // else {
-    //   callRepayInContract();
-    // }
   };
 
   const [renewLoading, setRenewLoading] = useState<boolean>(false);
@@ -991,7 +1040,9 @@ export function WithdrawFund({
               ? "cbBTC"
               : position.collateralType === "krwq"
                 ? "krwq"
-                : "ETH";
+                : position.collateralType === "EURC"
+                  ? "EURC"
+                  : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
             repayPercent: repayAmount,
@@ -1001,17 +1052,13 @@ export function WithdrawFund({
             position.index,
             repayAmount,
             position.collateralType === "cbBTC" ||
-              position.collateralType === "krwq"
+              position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
-            borrowSignedData?.odosAssembledData,
-            // BigInt(borrowSignedData?.nonce || 0),
-            BigInt(borrowSignedData?.deadline || 0),
-            (borrowSignedData?.signature || "") as `0x${string}`,
-            BigInt(borrowSignedData?.expiredETHAmount || 0),
-            BigInt(borrowSignedData?.plFromExpired || 0),
-            BigInt(borrowSignedData?.ethPrice || 0),
+            borrowSignedData?.usdtFromOdos,
             position.collateralType,
+            borrowSignedData,
           );
         }
         if (toggleView == "renew") {
@@ -1027,11 +1074,10 @@ export function WithdrawFund({
           renewBorrow(
             BigInt(position.index),
             BigInt(renewFormik.values.hedgeDuration || 0),
-            BigInt(signedData.ethPrice),
-            BigInt(signedData.volatility),
             signedData,
             position.collateralType === "cbBTC" ||
-              position.collateralType === "krwq"
+              position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             position.collateralType,
@@ -1182,7 +1228,8 @@ export function WithdrawFund({
     if ((allowanceUSDT || 0) < renewAmount) {
       setRenewApproveLoading(true);
       const contract =
-        position.collateralType === "cbBTC"
+        position.collateralType === "cbBTC" ||
+        position.collateralType === "EURC"
           ? borrowCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress]
           : borrowingContractAddress[
               chainId as keyof typeof borrowingContractAddress
@@ -1217,11 +1264,11 @@ export function WithdrawFund({
     );
     renewBorrow(
       BigInt(position.index),
-      BigInt(renewFormik.values.hedgeDuration || "1"),
-      BigInt(signedData.ethPrice),
-      BigInt(signedData.volatility),
+      BigInt(renewFormik.values.hedgeDuration || 0),
       signedData,
-      position.collateralType === "cbBTC" || position.collateralType === "krwq"
+      position.collateralType === "cbBTC" ||
+        position.collateralType === "krwq" ||
+        position.collateralType === "EURC"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
       position.collateralType,
@@ -1599,7 +1646,8 @@ export function WithdrawFund({
                 className={`  ${
                   position.status == BorrowStatus.WITHDREW
                     ? position.status == BorrowStatus.WITHDREW &&
-                      position.collateralType === "cbBTC"
+                      (position.collateralType === "cbBTC" ||
+                        position.collateralType === "EURC")
                       ? "h-[130px]"
                       : "h-[150px]"
                     : "md:h-[80px] sm:h-[50px] h-[80px]"
@@ -1657,7 +1705,10 @@ export function WithdrawFund({
                                     formik.setFieldValue(
                                       "withdrawAmount",
                                       truncateDecimals(
-                                        Number(position.noOfUSDaMinted),
+                                        Number(
+                                          position.noOfUSDaMinted -
+                                            Number(stakingRealisedReward || 0),
+                                        ),
                                         6,
                                       ),
                                     );
@@ -1696,19 +1747,22 @@ export function WithdrawFund({
                             <div className="flex flex-col items-center gap-2">
                               <Spinner color="#fff" />
                             </div>
-                          ) : position.status == BorrowStatus.DEPOSITED ? (
+                          ) : position.status == BorrowStatus.DEPOSITED ||
+                            position.status == BorrowStatus.UNSTAKED ? (
                             `Repay`
                           ) : position.status == BorrowStatus.LIQUIDATED ? (
                             `Liquidated ${parseFloat(
                               Number(position.depositedAmount).toFixed(6),
                             )} ${position.collateralType}`
-                          ) : (
+                          ) : position.status == BorrowStatus.WITHDREW ? (
                             `Withdrawn ${parseFloat(
                               (
                                 Number(position.depositedAmount) /
                                 (position.collateralType === "cbBTC" ? 1 : 2)
                               ).toFixed(6),
                             )} ${position.collateralType}`
+                          ) : (
+                            "Withdraw"
                           )}
                           {position.status == BorrowStatus.WITHDREW && (
                             <div className="sm:text-sm text-[10px] text-wrap">
@@ -2010,16 +2064,22 @@ export function WithdrawFund({
                           ? "cbBTC"
                           : position?.collateralType === "krwq"
                             ? "krwq"
-                            : "ETH"
+                            : position?.collateralType === "EURC"
+                              ? "EURC"
+                              : "ETH"
                       } price at deposit`,
                       value: `$${
                         position.collateralType === "krwq"
                           ? Number(
                               formatUnits(BigInt(position?.ethPrice || 0), 8),
                             )
-                          : Number(
-                              formatUnits(BigInt(position?.ethPrice || 0), 2),
-                            )
+                          : position.collateralType === "EURC"
+                            ? Number(
+                                formatUnits(BigInt(position?.ethPrice || 0), 6),
+                              )
+                            : Number(
+                                formatUnits(BigInt(position?.ethPrice || 0), 2),
+                              )
                       }`,
                     },
                     {
@@ -2028,10 +2088,13 @@ export function WithdrawFund({
                           ? "cbBTC"
                           : position?.collateralType === "krwq"
                             ? "krwq"
-                            : "ETH"
+                            : position?.collateralType === "EURC"
+                              ? "EURC"
+                              : "ETH"
                       } price`,
                       value: `$${
-                        position.collateralType === "krwq"
+                        position.collateralType === "krwq" ||
+                        position.collateralType === "EURC"
                           ? Number(ethPrice)
                           : Number(formatUnits(BigInt(ethPrice), 2))
                       }`,
@@ -2088,7 +2151,11 @@ export function WithdrawFund({
                         (Number(
                           formatUnits(
                             BigInt(position.ethPrice),
-                            position.collateralType === "krwq" ? 8 : 2,
+                            position.collateralType === "krwq"
+                              ? 8
+                              : position.collateralType === "EURC"
+                                ? 6
+                                : 2,
                           ),
                         ) *
                           Number(position?.depositedAmountInETH) *

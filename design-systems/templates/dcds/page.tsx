@@ -245,6 +245,14 @@ function DCDSTemplate() {
       label: "KRWQ",
       onClick: () => formik.setFieldValue("hedgeAsset", "KRWQ"),
     },
+    ...(chainId === NetworkId.BaseSepolia
+      ? [
+          {
+            label: "EURC",
+            onClick: () => formik.setFieldValue("hedgeAsset", "EURC"),
+          },
+        ]
+      : []),
   ];
 
   const lockInPeriodOption = useMemo(() => {
@@ -314,7 +322,9 @@ function DCDSTemplate() {
         ? "ETH"
         : formik.values.hedgeAsset === "KRWQ"
           ? "KRWQ"
-          : "cbBTC",
+          : formik.values.hedgeAsset === "EURC"
+            ? "EURC"
+            : "cbBTC",
   );
 
   // assigning the formik values to the local variables because getting old values from formik directly
@@ -416,7 +426,9 @@ function DCDSTemplate() {
           ? "cbBTC"
           : formik.values.hedgeAsset === "KRWQ"
             ? "krwq"
-            : "ETH";
+            : formik.values.hedgeAsset === "EURC"
+              ? "EURC"
+              : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -456,7 +468,8 @@ function DCDSTemplate() {
       let filteredTokenList = tokenList;
       if (
         formik.values.hedgeAsset === "cbBTC" ||
-        formik.values.hedgeAsset === "KRWQ"
+        formik.values.hedgeAsset === "KRWQ" ||
+        formik.values.hedgeAsset === "EURC"
       ) {
         filteredTokenList = tokenList.filter(
           (token) => token.tokenName !== "BOLD",
@@ -496,23 +509,34 @@ function DCDSTemplate() {
             liquidationAmount: liquidationGains
               ? BigInt(liqAmnt.toString())
               : 0n,
-            ethPrice: BigInt(cdsDepositSignedData?.ethPrice),
             lockingPeriod: BigInt(Number(lockInPeriodLocal || 0) * 86400),
-            expiredETHAmount: BigInt(cdsDepositSignedData.expiredETHAmount),
-            plFromExpired: BigInt(cdsDepositSignedData.plFromExpired),
             assetName:
               formik.values.hedgeAsset === "cbBTC"
                 ? AssetName.cbBTC
                 : formik.values.hedgeAsset === "KRWQ"
                   ? AssetName.KRWQ
-                  : undefined,
+                  : formik.values.hedgeAsset === "EURC"
+                    ? AssetName.EURC
+                    : undefined,
+            verifyParams: {
+              excessProfitCumulativeValue:
+                cdsDepositSignedData?.excessProfitCumulativeValue,
+              ethPrice: cdsDepositSignedData?.ethPrice,
+              expiredETHAmount: cdsDepositSignedData?.expiredETHAmount,
+              plFromExpired: cdsDepositSignedData?.plFromExpired,
+              premiumCv: cdsDepositSignedData?.premiumCv,
+              hedgeCv: cdsDepositSignedData?.hedgeCv,
+              optionFees: cdsDepositSignedData?.optionFees,
+              odosAssembledData: cdsDepositSignedData?.odosAssembledData,
+              signature: cdsDepositSignedData?.signature,
+              deadline: cdsDepositSignedData?.deadline,
+            },
           },
-          BigInt(cdsDepositSignedData.deadline),
-          cdsDepositSignedData.signature as `0x${string}`,
         ],
         chainId === NetworkId.Ethereum ||
           formik.values.hedgeAsset === "cbBTC" ||
-          formik.values.hedgeAsset === "KRWQ"
+          formik.values.hedgeAsset === "KRWQ" ||
+          formik.values.hedgeAsset === "EURC"
           ? undefined
           : nativeFee.nativeFee,
         formik.values.hedgeAsset,
@@ -585,7 +609,8 @@ function DCDSTemplate() {
 
         const contract =
           formik.values.hedgeAsset === "cbBTC" ||
-          formik.values.hedgeAsset === "KRWQ"
+          formik.values.hedgeAsset === "KRWQ" ||
+          formik.values.hedgeAsset === "EURC"
             ? cdsDepositCoreAddress[
                 chainId as keyof typeof cdsDepositCoreAddress
               ]
@@ -839,7 +864,9 @@ function DCDSTemplate() {
     });
 
   const allowanceContract =
-    formik.values.hedgeAsset == "cbBTC" || formik.values.hedgeAsset == "KRWQ"
+    formik.values.hedgeAsset == "cbBTC" ||
+    formik.values.hedgeAsset == "KRWQ" ||
+    formik.values.hedgeAsset == "EURC"
       ? cdsDepositCoreAddress
       : cdsDepositAddress;
 
@@ -1362,7 +1389,8 @@ function DCDSTemplate() {
     if (tokenList[1]) list.push(tokenList[1]);
     if (tokenList[2]) list.push(tokenList[2]);
     if (tokenList[4]) list.push(tokenList[4]);
-    // if (tokenList[5]) list.push(tokenList[5]);
+    if (tokenList[5]) list.push(tokenList[5]);
+    if (tokenList[6]) list.push(tokenList[6]);
     return list;
   }, [tokenList]);
 

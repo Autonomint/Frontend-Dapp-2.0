@@ -15,6 +15,7 @@ const useApproveUsda = (mutation: any) => {
     writeContractAsync: usdaApproveAsync,
     reset: approveReset,
     data: usdaApproveHash,
+    error: usdaApproveErrorData,
   } = useWriteContract({
     mutation,
   });
@@ -43,7 +44,7 @@ const useApproveUsda = (mutation: any) => {
     values: bigint,
     contractAddress: `0x${string}`
   ) => {
-    usdaApproveAsync({
+    const approveData = await usdaApproveAsync({
       abi: usDaAbi,
       address: usDaAddress[chainId as keyof typeof usDaAddress],
       functionName: "approve",
@@ -52,7 +53,9 @@ const useApproveUsda = (mutation: any) => {
         values,
       ],
     });
+    return approveData
   };
+
   return {
     usdaApproveLoading,
     usdaApproveSuccess,
@@ -61,6 +64,7 @@ const useApproveUsda = (mutation: any) => {
     approveReset,
     usdaApproveHash,
     approveUsdaDynamic,
+    usdaApproveErrorData
   };
 };
 

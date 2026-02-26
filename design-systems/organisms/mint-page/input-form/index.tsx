@@ -70,6 +70,7 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import { optionABI } from "@/blockchain/abis/option";
 import { GenericDropdownMenu } from "@/design-systems/atoms/DropdownCustom/GenericDropdownMenu";
 import useGetKrwqPrice from "@/hookes/api-hooks/useGetKrwqPrice";
+import useDepositStakeTokens from "@/hookes/contract-hooks/useStakeBorrow";
 
 /**
  * Yup validation schema for the input form
@@ -161,7 +162,7 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   const contract =
-    currency === "cbBTC" || currency === "KRWQ"
+    currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
       ? borrowDepositCoreAddress
       : borrowingDepositContractAddress;
 
@@ -203,8 +204,15 @@ function InputForm({ currency }: { currency: string }) {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
   }, [maxMintAmount]);
 
+
+
   // handle mint btn click
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
+  ) => {
+    const { submitType, ...formValues } = values;
+    const isStake = submitType === "stake";
     // check if the user is connected
     if (!address) {
       toast.custom((t) => (
@@ -245,7 +253,9 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ", "EURC"].includes(
+        currency,
+      ) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
@@ -255,7 +265,9 @@ function InputForm({ currency }: { currency: string }) {
         contract[chainId as keyof typeof contract] as `0x${string}`,
         currency === "cbBTC"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
-          : parseEther(formik.values.collateralAmount.toString()),
+          : currency === "EURC"
+            ? parseUnits(formik.values.collateralAmount.toString(), 6)
+            : parseEther(formik.values.collateralAmount.toString()),
       );
       // else mining directly
     } else {
@@ -271,6 +283,7 @@ function InputForm({ currency }: { currency: string }) {
       strikePricePercent: 0, // strike price percent
       balance: 0, // balance
       hedgeDuration: null, // hedge duration
+      submitType: "mint", // tracks which button was clicked
       maxMintAmount: 0,
     },
     validationSchema: formSchema,
@@ -415,7 +428,13 @@ function InputForm({ currency }: { currency: string }) {
       ? parseUnits(String(assetPrice), 8)
       : assetPrice || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
+    currency === "cbBTC"
+      ? "BTC"
+      : currency === "KRWQ"
+        ? "krwq"
+        : currency === "EURC"
+          ? "EURC"
+          : "ETH",
     Number(formik.values.hedgeDuration),
   );
   // Custom hook to fetch the current strike price percent limit
@@ -433,6 +452,7 @@ function InputForm({ currency }: { currency: string }) {
       select: (data) => Number(data || 0) / 100,
     },
   });
+
 
   // set the strike price percent to formik values
   useEffect(() => {
@@ -513,19 +533,15 @@ function InputForm({ currency }: { currency: string }) {
       }, 1000);
       // calling the mint usda function in the contract
       mintUSDa?.({
-        volatility: BigInt(borrowSignedData?.volatility || 0),
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
-            : parseEther(formik.values.collateralAmount.toString()),
+            : currency === "EURC"
+              ? parseUnits(formik.values.collateralAmount.toString(), 6)
+              : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        deadline: BigInt(borrowSignedData?.deadline || 0),
-        nonce: BigInt(borrowSignedData?.nonce || 0),
-        signature: borrowSignedData?.signature || ("" as `0x${string}`),
-        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
-        plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
         value:
-          currency === "cbBTC" || currency === "KRWQ"
+          currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
@@ -534,10 +550,8 @@ function InputForm({ currency }: { currency: string }) {
                   nativeFee.nativeFee
                 : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
-        ethPrice:
-          currency === "KRWQ" || currency === "cbBTC"
-            ? BigInt(borrowSignedData?.ethPrice || 0)
-            : undefined,
+        ethPrice: BigInt(borrowSignedData?.ethPrice || 0),
+        verifyParams: borrowSignedData,
       });
     }
   }
@@ -790,10 +804,7 @@ function InputForm({ currency }: { currency: string }) {
               <div className="w-full text-[14px] 3xl:text-lg flex justify-between items-center">
                 <div>
                   <span className="text-grayLight">Max Mint Amount:</span>{" "}
-                  <span>{(maxMintAmount || 0).toFixed(2)}</span>
-                  <span className="ml-1 dark:text-white font-semibold text-textBlack">
-                    {currency}
-                  </span>
+                  <span>{maxMintAmount.toFixed(2)}</span>
                 </div>
                 <div>
                   <span className="text-grayLight">{currency} Price: </span>{" "}
@@ -999,11 +1010,34 @@ function InputForm({ currency }: { currency: string }) {
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white  font-semibold text-[24px] w-full h-full rounded-md `}
                   >
-                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}{" "}
+                    {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}
                     <span className="text-base">
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
                   </Button>
+                  {/* 
+                  {currency === "KRWQ" && (
+                    <Button
+                      disabled={isFunctionPausedBorrow_Deposit}
+                      type="submit"
+                      name="stake"
+                      onClick={(e) => {
+                        formik.setFieldValue("submitType", "stake");
+                      }}
+                      className={`
+                    bg-black dark:bg-custom-gradient-to-top py-6
+                    text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
+                    >
+                      {!mintBtnLoading ? (
+                        "Mint & Stake"
+                      ) : (
+                        <Spinner color="#fff" />
+                      )}
+                      <span className="text-base">
+                        {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                      </span>
+                    </Button>
+                  )} */}
                 </div>
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (

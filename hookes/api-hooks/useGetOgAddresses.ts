@@ -9,11 +9,11 @@ import { useEffect } from "react";
  * @returns {Promise<OgAddressesResponse>} A promise that resolves to the OG addresses response
  */
 async function fetchOgAddresses(): Promise<string[]> {
-    console.log("Fetching OG addresses...");
+
     const response = await axios.get<string[]>(
         `${BACKEND_API_URL}/global/get-ogAddresses`
     );
-    console.log("OG addresses fetched successfully.");
+
     return response.data;
 }
 

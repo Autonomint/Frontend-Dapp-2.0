@@ -689,7 +689,7 @@ const RedeemContainer = () => {
 
   // fetching layer zero transaction data to add loading state to user to initiate transaction
   const { readyForNewTx } = useLayerZeroMessages();
-  console.log(abondbalance, "abondbalance");
+
   return (
     <div className="flex flex-col min-h-[calc(100vh-185px)] ">
       <AppNavbar

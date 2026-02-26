@@ -27,21 +27,19 @@ const useDcdsDeposit = (mutation: Record<string, any>) => {
         tokenAmounts: bigint[];
         liquidate: Widen<boolean>;
         liquidationAmount: bigint;
-        ethPrice: bigint;
         lockingPeriod: bigint;
-        expiredETHAmount: bigint;
-        plFromExpired: bigint;
         assetName: AssetName | undefined | string;
+        verifyParams: Record<string, any>;
       },
-      bigint,
-      `0x${string}`
+
     ],
     value: bigint | undefined,
     hedgeAsset: string
   ) => {
-    const contract = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" ? cdsCoreAddress : cdsAddress;
+    const contract = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" || hedgeAsset === "EURC" ? cdsCoreAddress : cdsAddress;
 
-    const abi = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" ? cdsCoreABI : cdsAbi;
+    const abi = hedgeAsset === "cbBTC" || hedgeAsset === "KRWQ" || hedgeAsset === "EURC" ? cdsCoreABI : cdsAbi;
+
 
     writeDcdsDeposit({
       abi: abi,
