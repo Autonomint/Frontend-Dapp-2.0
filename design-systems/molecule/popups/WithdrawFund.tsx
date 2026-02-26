@@ -648,7 +648,7 @@ export function WithdrawFund({
                   formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
                 ) - Number(position.noOfUSDaMinted)
               ).toFixed(5)
-            : Number(position.totalInterest).toFixed(5)
+            : Number(position.totalInterest || 0).toFixed(5)
       }`,
       tooltip: false,
       tooltipText: "",
