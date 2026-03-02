@@ -560,7 +560,7 @@ function InputForm({ currency }: { currency: string }) {
     const borrowSignedData = await refetchBorrowSignedData(
       currency === "KRWQ" ? "krwq" : currency,
     );
-
+    debugger;
     const data = optionFees;
     if (data != undefined && nativeFee != undefined && !isStake) {
       setApproveLoading(false);
@@ -598,17 +598,11 @@ function InputForm({ currency }: { currency: string }) {
       }, 1000);
       // calling the mint usda function in the contract
       mintStakeUSDa?.({
-        volatility: BigInt(borrowSignedData?.volatility || 0),
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
-        deadline: BigInt(borrowSignedData?.deadline || 0),
-        nonce: BigInt(borrowSignedData?.nonce || 0),
-        signature: borrowSignedData?.signature || ("" as `0x${string}`),
-        expiredETHAmount: BigInt(borrowSignedData?.expiredETHAmount || 0),
-        plFromExpired: BigInt(borrowSignedData?.plFromExpired || 0),
         value:
           currency === "cbBTC" || currency === "KRWQ"
             ? undefined
@@ -620,12 +614,10 @@ function InputForm({ currency }: { currency: string }) {
                 : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice:
-          currency === "KRWQ" || currency === "cbBTC"
+          currency === "KRWQ"
             ? BigInt(borrowSignedData?.ethPrice || 0)
             : undefined,
-        premiumCv: BigInt(borrowSignedData?.premiumCv || 0),
-        hedgeCv: BigInt(borrowSignedData?.hedgeCv || 0),
-        optionFees: BigInt(borrowSignedData.optionFees || 0),
+        verifyParams: borrowSignedData,
       });
     }
   }
@@ -1171,7 +1163,7 @@ function InputForm({ currency }: { currency: string }) {
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
                   </Button>
-                  {/* 
+
                   {currency === "KRWQ" && (
                     <Button
                       disabled={isFunctionPausedBorrow_Deposit}
@@ -1193,7 +1185,7 @@ function InputForm({ currency }: { currency: string }) {
                         {isFunctionPausedBorrow_Deposit && "(Paused)"}
                       </span>
                     </Button>
-                  )} */}
+                  )}
                 </div>
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (

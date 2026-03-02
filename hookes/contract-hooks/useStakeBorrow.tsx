@@ -25,20 +25,12 @@ interface EIP712VerifyParams {
 }
 
 interface BorrowStakeInputs {
-  volatility: bigint;
-  depositingAmount: bigint;
-  value: bigint | undefined;
+  depositingAmount: bigint; // uint256 can be represented by bigint
+  value: bigint | undefined; // uint256 can be represented by bigint
   assetName: AssetName;
-  expiredETHAmount: bigint;
-  plFromExpired: bigint;
-  deadline: bigint;
-  signature: `0x${string}`;
-  nonce: bigint;
   hedgeDuration: bigint;
   ethPrice: bigint | undefined;
-  premiumCv: bigint;
-  hedgeCv: bigint;
-  optionFees: bigint;
+  verifyParams: Record<any, any>;
 }
 
 interface StakeInputs {
@@ -155,20 +147,12 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
   });
 
   const mintStakeUSDa = async ({
-    volatility,
     depositingAmount,
     value,
     assetName,
-    deadline,
-    signature,
-    expiredETHAmount,
-    plFromExpired,
-    nonce,
     hedgeDuration,
     ethPrice,
-    premiumCv,
-    hedgeCv,
-    optionFees,
+    verifyParams,
   }: BorrowStakeInputs) => {
     const contractAddress =
       assetName === 12 || assetName === 13
@@ -187,21 +171,11 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
       args: [
         {
           user: address as `0x${string}`,
-          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
-          volatility,
           assetName,
           depositingAmount,
           hedgeValidity: hedgeDuration,
-        },
-        {
-          expiredETHAmount,
-          plFromExpired,
-          premiumCv,
-          hedgeCv,
-          optionFees,
-          nonce,
-          deadline,
-          signature,
+          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
+          verifyParams,
         },
       ],
       value,
