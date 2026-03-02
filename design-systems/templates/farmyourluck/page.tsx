@@ -184,11 +184,11 @@ function FarmYourLuckTemplate() {
         chainId,
       });
     }
-    if (selectedIndexForReward !== -1 && (res || 0) > 0) {
+    if (selectedIndexForReward !== -1 && (res || 0) > 1) {
       setSupportingText("Congratulations!");
       setButtonText("Congratulations!");
 
-      if (res == 1) setRewardAmount(`$${rewardAmountData}`);
+      // if (res == 1) setRewardAmount(`$${rewardAmountData}`);
       if (res == 2) setRewardAmount("5x Reward Points");
       if (res == 3) setRewardAmount("10x Reward Points");
       setIsRevealed(true);
