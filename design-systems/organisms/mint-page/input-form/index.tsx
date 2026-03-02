@@ -204,8 +204,6 @@ function InputForm({ currency }: { currency: string }) {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
   }, [maxMintAmount]);
 
-
-
   // handle mint btn click
   const handleSubmit = async (
     values: any,
@@ -271,7 +269,7 @@ function InputForm({ currency }: { currency: string }) {
       );
       // else mining directly
     } else {
-      handleMint(formik.values);
+      handleMint(formik.values, isStake);
     }
   };
 
@@ -329,6 +327,27 @@ function InputForm({ currency }: { currency: string }) {
         });
       },
     });
+
+  // Custom hook to fetch the deposit data hash for the contract
+  const {
+    depositStakeDatahash,
+    depositStakeError,
+    isDepositsStakeLoading,
+    mintStakeUSDa,
+    resetStake,
+  } = useDepositStakeTokens({
+    onError: () => {
+      setMintLoading(false);
+      toast.custom((t) => {
+        return (
+          <ToastNotificationError
+            title="Transaction failed, Please try again"
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+    },
+  });
 
   // Use the useWaitForTransactionReceipt hook to wait for the transaction receipt
   const {
@@ -453,7 +472,6 @@ function InputForm({ currency }: { currency: string }) {
     },
   });
 
-
   // set the strike price percent to formik values
   useEffect(() => {
     formik.setFieldValue(
@@ -501,7 +519,7 @@ function InputForm({ currency }: { currency: string }) {
   useEffect(() => {
     // check if the wrap eth is approved and call the handle mint function
     if (iswrapEthApproveSuccess) {
-      handleMint(formik.values);
+      handleMint(formik.values, formik.values.submitType === "stake");
     } else if (wrapEthApproveErrorDetails || wrapEthApproveHashError) {
       handleResetPage();
       toast.custom((t) => {
@@ -515,7 +533,7 @@ function InputForm({ currency }: { currency: string }) {
     }
   }, [iswrapEthApproveSuccess]);
 
-  async function handleMint(values: any) {
+  async function handleMint(values: any, isStake: boolean) {
     // get the strike percent
     const strikePercent = values.strikePricePercent;
 
@@ -551,6 +569,35 @@ function InputForm({ currency }: { currency: string }) {
                 : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice: BigInt(borrowSignedData?.ethPrice || 0),
+        verifyParams: borrowSignedData,
+      });
+    }
+    if (data != undefined && nativeFee != undefined && isStake) {
+      setApproveLoading(false);
+      setTimeout(() => {
+        setMintLoading(true);
+      }, 1000);
+      // calling the mint usda function in the contract
+      mintStakeUSDa?.({
+        depositingAmount:
+          currency === "cbBTC"
+            ? parseUnits(formik.values.collateralAmount.toString(), 8)
+            : parseEther(formik.values.collateralAmount.toString()),
+        assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
+        value:
+          currency === "cbBTC" || currency === "KRWQ"
+            ? undefined
+            : chainId === NetworkId.Ethereum
+              ? parseEther(formik.values.collateralAmount.toString())
+              : currency.toLocaleLowerCase() == "eth"
+                ? parseEther(formik.values.collateralAmount.toString()) +
+                  nativeFee.nativeFee
+                : nativeFee.nativeFee,
+        hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
+        ethPrice:
+          currency === "KRWQ"
+            ? BigInt(borrowSignedData?.ethPrice || 0)
+            : undefined,
         verifyParams: borrowSignedData,
       });
     }
@@ -1015,7 +1062,7 @@ function InputForm({ currency }: { currency: string }) {
                       {isFunctionPausedBorrow_Deposit && "(Paused)"}
                     </span>
                   </Button>
-                  {/* 
+
                   {currency === "KRWQ" && (
                     <Button
                       disabled={isFunctionPausedBorrow_Deposit}
@@ -1037,7 +1084,7 @@ function InputForm({ currency }: { currency: string }) {
                         {isFunctionPausedBorrow_Deposit && "(Paused)"}
                       </span>
                     </Button>
-                  )} */}
+                  )}
                 </div>
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (
