@@ -20,17 +20,12 @@ const useWithdrawUsda = (mutation: any) => {
     index: number,
     amount: bigint,
     nativeFee: bigint | undefined,
-    odosAssembledData: any,
-    // nonce: bigint,
-    deadline: bigint,
-    signature: `0x${string}`,
-    expiredETHAmount: bigint,
-    plFromExpired: bigint,
-    ethPrice: bigint,
+    usdtFromOdos: any,
     token: string,
+    verifyParams: any,
   ) => {
-    const contract = token === "cbBTC" || token === "krwq" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = token === "cbBTC" || token === "krwq" ? borowCoreABI : borrowingContractAbi
+    const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? borowCoreABI : borrowingContractAbi
     try {
       borrowWithdrawAsync({
         abi: abi,
@@ -40,18 +35,11 @@ const useWithdrawUsda = (mutation: any) => {
           {
             user: address as `0x${string}`,
             index: BigInt(index),
-            ethPrice: token === "krwq" || token === "cbBTC" ? ethPrice : undefined,
             repayAmount: amount,
-            odosAssembledData,
-            expiredETHAmount,
-            plFromExpired,
+            usdtFromOdos,
+            verifyParams
+          },
 
-          },
-          {
-            nonce: BigInt(0n),
-            deadline,
-            signature,
-          },
         ],
         value: nativeFee,
       });

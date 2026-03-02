@@ -496,7 +496,7 @@ export function calculatePercentage(
   value: number,
   total: number
 ): string {
-  const percentage = ((value * total) / 100).toFixed(2);
+  const percentage = ((value * total) / 100).toFixed(8);
   return percentage;
 }
 

@@ -19,6 +19,7 @@ const DepositTableRow = ({
   isLast,
   setRenewRepay,
   highlight = false,
+  setStakePopUpOpen,
 }: {
   highlight: boolean;
   isViewPositionOpen: boolean;
@@ -31,6 +32,7 @@ const DepositTableRow = ({
   tabPosition: "Borrowed" | "Deposited";
   idx: number;
   setSelectedPosition: (position: PositionData) => void;
+  setStakePopUpOpen: (isOpen: boolean) => void;
 }) => {
   const depositDetails = [
     {
@@ -94,7 +96,8 @@ const DepositTableRow = ({
     borrowAssetsAddress[
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
-    position.collateralType === "krwq"
+    position.collateralType === "krwq",
+    position.collateralType === "EURC",
   );
   const [openChart, setOpenChart] = useState(false);
 
@@ -106,17 +109,34 @@ const DepositTableRow = ({
     }
     if (parseFloat(ethPrice.toString()) > position.ethPrice) {
       setAmountProtected(0);
-    } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
+    } else if (
+      parseFloat(ethPrice.toString()) <
+      position.ethPrice /
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 1e2)
+    ) {
       const amountProt =
         parseFloat(position.depositedAmount) *
-        (position.ethPrice / (position.collateralType === "krwq" ? 1e8 : 1e2) -
+        (position.ethPrice /
+          (position.collateralType === "krwq"
+            ? 1e8
+            : position.collateralType === "EURC"
+              ? 1e6
+              : 1e2) -
           parseFloat(
             (
-              ethPrice / (position.collateralType === "krwq" ? 1 : 1e2)
-            ).toString()
+              ethPrice /
+              (position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
+                ? 1
+                : 1e2)
+            ).toString(),
           ));
       const amountProtPrecision = parseFloat(
-        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2))
+        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2)),
       );
 
       setAmountProtected(amountProtPrecision);
@@ -158,8 +178,8 @@ const DepositTableRow = ({
         {calculateRemainingDays(Number(position.validTill)) <= 0
           ? "-"
           : position.status == "DEPOSITED"
-          ? `$${amountProtected}`
-          : "-"}
+            ? `$${amountProtected}`
+            : "-"}
       </td>
       <td className="px-5 py-4 2xl:py-6  ">
         {" "}
@@ -179,19 +199,36 @@ const DepositTableRow = ({
           display: tabPosition === "Borrowed" ? "block" : "none",
         }}
       >
-        <span
-          onClick={() => {
-            setRenewRepay(true);
-            handleRowClick();
-          }}
-          className="font-bold cursor-pointer text-[20px] underline "
-        >
-          {position.status == BorrowStatus.WITHDREW
-            ? "Repaid"
-            : position.status == BorrowStatus.LIQUIDATED
-            ? "Liquidated"
-            : "Repay/Renew"}
-        </span>
+        {position.status !== BorrowStatus.STAKED && (
+          <span
+            onClick={() => {
+              setRenewRepay(true);
+              handleRowClick();
+            }}
+            className="font-bold cursor-pointer text-[20px] underline "
+          >
+            {position.status == BorrowStatus.WITHDREW
+              ? "Repaid"
+              : position.status == BorrowStatus.LIQUIDATED
+                ? "Liquidated"
+                : "Repay/Renew"}
+          </span>
+        )}
+        {(position.collateralType === "krwq" ||
+          position.collateralType === "EURC") &&
+          position.status !== "UNSTAKED" &&
+          position.status !== "LIQUIDATED" &&
+          position.status !== "WITHDREW" && (
+            <span
+              onClick={() => {
+                setStakePopUpOpen?.(true);
+                handleRowClick();
+              }}
+              className="font-bold cursor-pointer text-[20px] underline "
+            >
+              {position.status == BorrowStatus.STAKED ? "Unstake" : "Stake"}
+            </span>
+          )}
         {/* <spans
             onClick={() => {
               setViewPosition(true);

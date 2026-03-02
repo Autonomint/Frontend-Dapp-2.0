@@ -1,8 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-
-
 
 
 /**
@@ -26,7 +23,7 @@ const fetchKrwqPrice = async (): Promise<number> => {
  * - isError: Boolean indicating if an error occurred
  * - refetch: Function to manually refetch the data
  */
-const useGetKrwqPrice = () => {
+const useGetKrwqPrice = (enabled: boolean) => {
     const {
         data,
         isLoading,
@@ -36,11 +33,10 @@ const useGetKrwqPrice = () => {
     } = useQuery({
         queryKey: ["krwqPrice"],
         queryFn: fetchKrwqPrice,
+        enabled: Boolean(enabled)
     });
 
-    useEffect(() => {
-        refetch();
-    }, []);
+
 
     return {
         krwqPrice: data,

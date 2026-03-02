@@ -18,6 +18,10 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import { Typography } from "@/design-systems/atoms/Typography";
+import {
+  blockAddressAndIndex,
+  hideYieldsAddressAndIndex,
+} from "@/utils/constants";
 import { TransactionParams } from "@/design-systems/templates/bridge/interfaces";
 import useCalculateWithdrawAmount from "@/hookes/api-hooks/useCalculateBackendWithdraw";
 import useGetAPY from "@/hookes/api-hooks/useGetAPY";
@@ -507,11 +511,17 @@ export function DcdsWithdrawModal({
           ? "cbBTC"
           : position?.collateralType === "krwq"
             ? "KRWQ"
-            : "ETH"
+            : position?.collateralType === "EURC"
+              ? "EURC"
+              : "ETH"
       } Price at Deposit`;
       updatedData[2].value = `$${
         Number(position.ethPriceAtDeposit) /
-        (position.collateralType === "krwq" ? 1e8 : 100)
+        (position.collateralType === "krwq"
+          ? 1e8
+          : position.collateralType === "EURC"
+            ? 1e6
+            : 100)
       }`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
@@ -662,7 +672,8 @@ export function DcdsWithdrawModal({
 
   const { quoteValue: nativeFeeWithdraw, quoteError } = useGetGlobalQuote(
     options,
-    1,
+    5,
+    0,
   );
 
   const nativeFeeAll =
@@ -791,12 +802,24 @@ export function DcdsWithdrawModal({
         dcdsPositionListRefetch();
 
         setTimeout(async () => {
-          const params = [
+          const token =
+            position.collateralType === "cbBTC"
+              ? "cbBTC"
+              : position.collateralType === "krwq"
+                ? "krwq"
+                : position.collateralType === "EURC"
+                  ? "EURC"
+                  : "ETH";
+          const res = await refetchBorrowWithDrawGainsSignedData(token);
+          let params = [
             BigInt(position.index),
             halfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
           ];
+          if (chainId === NetworkId.Ethereum) {
+            params = [BigInt(position.index)];
+          }
           // If close position is success then call withdraw gain function
           handleDcdsWithdrawGain?.(params, position.collateralType);
         }, 3000);
@@ -849,7 +872,9 @@ export function DcdsWithdrawModal({
             ? "cbBTC"
             : position.collateralType === "krwq"
               ? "krwq"
-              : "ETH";
+              : position.collateralType === "EURC"
+                ? "EURC"
+                : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
           [
@@ -858,17 +883,20 @@ export function DcdsWithdrawModal({
             isHalfWithdraw
               ? WithdrawType.WITHDRAW_YIELDS
               : WithdrawType.FULL_WITHDRAW,
-            res?.excessProfitCumulativeValue,
-            res?.odosAssembledData,
-            res?.expiredETHAmount,
-            res?.plFromExpired,
-            position.collateralType === "krwq" ||
-            position.collateralType === "cbBTC"
-              ? res?.ethPrice
-              : undefined,
+
+            [
+              res.excessProfitCumulativeValue,
+              res.ethPrice,
+              res.expiredETHAmount,
+              res.plFromExpired,
+              res.premiumCv,
+              res.hedgeCv,
+              res.optionFees,
+              res.odosAssembledData,
+              res.deadline,
+              res.signature,
+            ],
           ],
-          res?.deadline,
-          res?.signature,
         ];
 
         if (chainId === NetworkId?.Ethereum) {
@@ -888,7 +916,8 @@ export function DcdsWithdrawModal({
           handleDcdsFundWithdraw?.(
             params,
             position.collateralType === "cbBTC" ||
-              position.collateralType === "krwq"
+              position.collateralType === "krwq" ||
+              position.collateralType === "EURC"
               ? undefined
               : nativeFeeAll,
             position.collateralType,
@@ -897,19 +926,22 @@ export function DcdsWithdrawModal({
       } else if (position.status == "WITHDREW" || pendingFixedYields > 0) {
         // if position status is withdrawn then call withdraw gain function
         setWithdrawGainLoading(true);
-        const token =
-          position.collateralType === "cbBTC"
-            ? "cbBTC"
-            : position.collateralType === "krwq"
-              ? "krwq"
-              : "ETH";
-
-        const params = [
+        // const token =
+        //   position.collateralType === "cbBTC"
+        //     ? "cbBTC"
+        //     : position.collateralType === "krwq"
+        //       ? "krwq"
+        //       : "ETH";
+        // const res = await refetchBorrowWithDrawGainsSignedData(token);
+        let params = [
           BigInt(position.index),
           isHalfWithdraw
             ? WithdrawType.WITHDRAW_YIELDS
             : WithdrawType.FULL_WITHDRAW,
         ];
+        if (chainId === NetworkId.Ethereum) {
+          params = [BigInt(position.index)];
+        }
         handleDcdsWithdrawGain?.(params, position.collateralType);
       }
     } catch (error) {
@@ -1141,7 +1173,18 @@ export function DcdsWithdrawModal({
                               : false) ||
                             isWithdrawPause ||
                             !readyForNewTx ||
-                            dcdsFundWithdrawLoadingLocal
+                            dcdsFundWithdrawLoadingLocal ||
+                            blockAddressAndIndex.some(
+                              (item: {
+                                address: string;
+                                index: number[];
+                                chainId: number;
+                              }) =>
+                                item.address.toLowerCase() ===
+                                  address?.toLowerCase() &&
+                                item.index.includes(Number(position?.index)) &&
+                                item.chainId === chainId,
+                            )
                           }
                           className=" py-0 px-2 h-[32px] bg-black text-white font-normal text-[12px] text-center rounded-2xl"
                         >
@@ -1212,22 +1255,34 @@ export function DcdsWithdrawModal({
                   <div className="flex flex-col w-full items-start justify-between">
                     <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
                       $
-                      {toPositiveDecimalString(
-                        Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                              ? Number(position?.apys?.priceChangePL) < 0
-                                ? position?.apys?.priceChangePL
-                                : calculatePercentage(
-                                    position?.apys?.priceChangePL || 0,
-                                    60,
-                                  ) || 0
-                              : apy[2] < 0
-                                ? apy[2]
-                                : calculatePercentage(apy[2], 60) || 0,
-                        ).toFixed(4),
-                      )}
+                      {hideYieldsAddressAndIndex.some(
+                        (item: {
+                          address: string;
+                          index: number[];
+                          chainId: number;
+                        }) =>
+                          item.address.toLowerCase() ===
+                            address?.toLowerCase() &&
+                          item.index.includes(Number(position?.index)) &&
+                          item.chainId === chainId,
+                      )
+                        ? "NaN"
+                        : toPositiveDecimalString(
+                            Number(
+                              apy == undefined
+                                ? 0
+                                : position.status !== "DEPOSITED"
+                                  ? Number(position?.apys?.priceChangePL) < 0
+                                    ? position?.apys?.priceChangePL
+                                    : calculatePercentage(
+                                        position?.apys?.priceChangePL || 0,
+                                        60,
+                                      ) || 0
+                                  : apy[2] < 0
+                                    ? apy[2]
+                                    : calculatePercentage(apy[2], 60) || 0,
+                            ).toFixed(4),
+                          )}
                     </Label>
 
                     <div className="flex">
@@ -1257,7 +1312,20 @@ export function DcdsWithdrawModal({
                       Variable Yields
                     </Label>
                     <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {variableYieldsCheck}%
+                      {hideYieldsAddressAndIndex.some(
+                        (item: {
+                          address: string;
+                          index: number[];
+                          chainId: number;
+                        }) =>
+                          item.address.toLowerCase() ===
+                            address?.toLowerCase() &&
+                          item.index.includes(Number(position?.index)) &&
+                          item.chainId === chainId,
+                      )
+                        ? "NaN"
+                        : variableYieldsCheck}
+                      %
                     </Label>
                   </div>
                 </div>
@@ -1289,7 +1357,18 @@ export function DcdsWithdrawModal({
                             ) ||
                             isWithdrawPause ||
                             !readyForNewTx ||
-                            pendingFixedYields > 0
+                            pendingFixedYields > 0 ||
+                            blockAddressAndIndex.some(
+                              (item: {
+                                address: string;
+                                index: number[];
+                                chainId: number;
+                              }) =>
+                                item.address.toLowerCase() ===
+                                  address?.toLowerCase() &&
+                                item.index.includes(Number(position?.index)) &&
+                                item.chainId === chainId,
+                            )
                           }
                           className="w-full p-5 py-6  md:p-8 md:py-10 bg-black text-white text-[24px] md:text-[32px]"
                         >

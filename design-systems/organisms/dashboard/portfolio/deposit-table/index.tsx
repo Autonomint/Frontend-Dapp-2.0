@@ -31,6 +31,7 @@ function DepositTable({
   setCurrentPage,
   isSticky,
   isHightlightTab,
+  setStakePopUpOpen,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -51,6 +52,7 @@ function DepositTable({
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   isSticky: boolean;
   isHightlightTab: boolean;
+  setStakePopUpOpen: (isOpen: boolean) => void;
 }) {
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -110,7 +112,7 @@ function DepositTable({
         parseFloat(position.depositedAmount) *
         (position.ethPrice - parseFloat(ethPrice.toString()));
       const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision((amountProt / 100).toFixed(8))
+        displayNumberWithPrecision((amountProt / 100).toFixed(8)),
       );
       dp = amountProtPrecision;
     }
@@ -148,8 +150,8 @@ function DepositTable({
             ? -1
             : 1
           : a.status === "LIQUIDATED"
-          ? 1
-          : -1;
+            ? 1
+            : -1;
       }
       return 0;
     });
@@ -353,6 +355,7 @@ function DepositTable({
                     totalPages == currentPage &&
                     isHightlightTab
                   }
+                  setStakePopUpOpen={setStakePopUpOpen}
                 />
               );
             })}

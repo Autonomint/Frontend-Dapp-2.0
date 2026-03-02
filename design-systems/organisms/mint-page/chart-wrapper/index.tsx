@@ -37,6 +37,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:CBBTCCUSD|1D"];
       case "KRWQ":
         return ["FX_IDC:KRWUSD|1D"];
+      case "EURC":
+        return ["COINBASE:EURCUSDC|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
@@ -152,8 +154,12 @@ function ChartComponent({ currency }: { currency: string }) {
   // Loading state for adding token to wallet
   const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
 
-  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
-    useGetOmniChainData();
+  const {
+    omniChainDataEth,
+    omniChainDataCbbtc,
+    omniChainDataKrwq,
+    omniChainDataEURC,
+  } = useGetOmniChainData();
 
   const omniChainDataMap = {
     ETH: omniChainDataEth,
@@ -162,6 +168,7 @@ function ChartComponent({ currency }: { currency: string }) {
     wsuperOETHb: omniChainDataEth,
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
+    EURC: omniChainDataEURC,
   };
 
   const total =
@@ -218,6 +225,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return cbBTC;
       case "KRWQ":
         return getIconMapping("dark", "KRWQ");
+      case "EURC":
+        return getIconMapping("dark", "EURC");
       default:
         return cryptoEth;
     }
@@ -266,7 +275,7 @@ function ChartComponent({ currency }: { currency: string }) {
           <div className="flex gap-2">
             <Image
               src={getTokenSymbolIcon()}
-              width={40}
+              width={46}
               height={40}
               alt="eth"
             />
@@ -294,32 +303,32 @@ function ChartComponent({ currency }: { currency: string }) {
               {tokenRewardDetail.defaultBooster}x Points
             </div>
           )} */}
-        <div className=" flex gap-4 items-center justify-end">
-          {currency === "KRWQ" && (
-            <Link
-              target="_blank"
-              href={krwqUrl}
-              className="text-right underline  text-xl cursor-pointer mb-1"
-            >
-              Buy KRWQ
-            </Link>
-          )}
-          <div className="flex gap-4">
-            <div>
-              <div className="text-base text-grayLight">Collateral</div>
-              <div className="text-lg text-[#05A552] dark:text-[#06BE5F]">
-                {borrowRatio}
+          <div className=" flex gap-4 items-center justify-end">
+            {currency === "KRWQ" && (
+              <Link
+                target="_blank"
+                href={krwqUrl}
+                className="text-right underline  text-xl cursor-pointer mb-1"
+              >
+                Buy KRWQ
+              </Link>
+            )}
+            <div className="flex gap-4">
+              <div>
+                <div className="text-base text-grayLight">Collateral</div>
+                <div className="text-lg text-[#05A552] dark:text-[#06BE5F]">
+                  {borrowRatio}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-base text-grayLight">dCDS</div>
-              <div className="text-lg text-[#478BFF] dark:text-[#38B6FF]">
-                {cdsRatio}
+              <div>
+                <div className="text-base text-grayLight">dCDS</div>
+                <div className="text-lg text-[#478BFF] dark:text-[#38B6FF]">
+                  {cdsRatio}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
         <div className="w-full h-[262px] md:h-[310px] lg:h-[560px] flex items-center justify-center">
           {currency.toLocaleLowerCase() == "wsuperoethb" ? (

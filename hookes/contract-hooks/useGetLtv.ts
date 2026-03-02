@@ -11,7 +11,7 @@ import { AssetName, BorrowData } from "@/utils/constants";
  */
 const useGetLtv = (tokenEnum: number) => {
   const { address, chainId } = useAccount();
-  const contract = (tokenEnum) === 12 || (tokenEnum) === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+  const contract = (tokenEnum) === 12 || (tokenEnum) === 13 || (tokenEnum) === 14 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
   const { isPending: isTvlPending, data: tvlValue, error } = useReadContract({
     abi: borrowingContractAbi,
     address: contract as `0x${string}`,

@@ -13,6 +13,8 @@ export const BorrowStatus = {
   DEPOSITED: "DEPOSITED",
   WITHDREW: "WITHDREW",
   LIQUIDATED: "LIQUIDATED",
+  STAKED: "STAKED",
+  UNSTAKED: "UNSTAKED",
 } as const;
 
 export const DEFAULT_TOAST_POSITION_VALUE =
@@ -48,7 +50,8 @@ export enum AssetName {
   sUSD,
   WSUPER_OETH,
   cbBTC,
-  KRWQ
+  KRWQ,
+  EURC
 }
 
 export const BorrowAssetsEnum = {
@@ -62,6 +65,8 @@ export const BorrowAssetsEnum = {
   cbBTC: AssetName.cbBTC,
   KRWQ: AssetName.KRWQ,
   krwq: AssetName.KRWQ,
+  EURC: AssetName.EURC,
+  eurc: AssetName.EURC,
 };
 
 export const RedeemAssets = {
@@ -170,3 +175,37 @@ export const tokenFormatDecimal = {
 export enum WithdrawType {
   FULL_WITHDRAW, WITHDRAW_YIELDS
 }
+
+
+export const blockAddressAndIndex = [
+
+  {
+    address: '0x9fD72C31862E91a39325b277483BFcca64C9aE87',
+    index: [1],
+    chainId: NetworkId.BaseSepolia
+  },
+  {
+    address: '0x7fc80CEBf818aacaC76163fB2c1837145d5ADDf7',
+    index: [1, 2],
+    chainId: NetworkId.Optimism
+  },
+  {
+    address: '0x5b54b6EA0b682BD484b5A580BaeCcF1B85A6A73C',
+    index: [1, 2, 3, 4, 5],
+    chainId: NetworkId.BaseSepolia
+
+  },
+  {
+    address: '0x82738b0EBc1d667765cB9CDEB4A2a96dA6e6A77A',
+    index: [1, 2],
+    chainId: NetworkId.BaseSepolia
+  }
+]
+
+export const hideYieldsAddressAndIndex = [
+  {
+    address: '0x51bC3dd10a9ee4946F961038CF5D50057E49eb77',
+    index: [15],
+    chainId: NetworkId.BaseSepolia
+  },
+]
