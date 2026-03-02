@@ -390,7 +390,9 @@ export function WithdrawFund({
                 ? 1e8
                 : position.collateralType === "EURC"
                   ? 1e6
-                  : 1e2),
+                  : position.collateralType === "cbBTC"
+                    ? 1
+                    : 1e2),
           )
         ? Number(
             (position?.ethPrice || 0) /
@@ -410,6 +412,23 @@ export function WithdrawFund({
           ) *
             Number(position?.depositedAmountInETH)
         : 0;
+
+  console.log(
+    "downsideProtection",
+    downsideProtection,
+    currentEthPrice,
+    position?.ethPrice,
+    (currentEthPrice || 0) <
+      Number(
+        (position?.ethPrice || 0) /
+          (position.collateralType === "krwq"
+            ? 1e8
+            : position.collateralType === "EURC"
+              ? 1e6
+              : 1e2),
+      ),
+    position.status,
+  );
 
   // fetching allowance of usda for repay
   const {
