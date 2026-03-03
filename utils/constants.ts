@@ -177,11 +177,11 @@ export enum WithdrawType {
 
 export const blockAddressAndIndex = [
 
-  {
-    address: '0x9fD72C31862E91a39325b277483BFcca64C9aE87',
-    index: [1],
-    chainId: NetworkId.BaseSepolia
-  },
+  // {
+  //   address: '0x9fD72C31862E91a39325b277483BFcca64C9aE87',
+  //   index: [1],
+  //   chainId: NetworkId.BaseSepolia
+  // },
   {
     address: '0x7fc80CEBf818aacaC76163fB2c1837145d5ADDf7',
     index: [1, 2],
