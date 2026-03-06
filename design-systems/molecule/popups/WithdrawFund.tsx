@@ -1725,10 +1725,7 @@ export function WithdrawFund({
                                     formik.setFieldValue(
                                       "withdrawAmount",
                                       truncateDecimals(
-                                        Number(
-                                          position.noOfUSDaMinted -
-                                            Number(stakingRealisedReward || 0),
-                                        ),
+                                        Number(position.noOfUSDaMinted),
                                         6,
                                       ),
                                     );
