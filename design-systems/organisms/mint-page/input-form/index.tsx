@@ -133,6 +133,7 @@ function InputForm({ currency }: { currency: string }) {
         : (currency as keyof typeof borrowAssetsAddress)
     ],
     currency.toLocaleLowerCase() === "krwq",
+    currency.toLocaleLowerCase() === "eurc",
   );
 
   // Selected asset price
@@ -445,7 +446,9 @@ function InputForm({ currency }: { currency: string }) {
     String(formik.values.collateralAmount),
     (currency === "KRWQ"
       ? parseUnits(String(assetPrice), 8)
-      : assetPrice || 0) as number,
+      : currency === "EURC"
+        ? parseUnits(String(assetPrice), 6)
+        : assetPrice || 0) as number,
     formik.values.strikePricePercent,
     currency === "cbBTC"
       ? "BTC"
@@ -456,6 +459,7 @@ function InputForm({ currency }: { currency: string }) {
           : "ETH",
     Number(formik.values.hedgeDuration),
   );
+  console.log(assetPrice, "assetPrice");
   // Custom hook to fetch the current strike price percent limit
   const { data: currentStrikePricePercentLimit } = useReadContract({
     abi: optionABI,
@@ -861,7 +865,7 @@ function InputForm({ currency }: { currency: string }) {
                   <span className="text-grayLight">{currency} Price: </span>{" "}
                   <span className=" dark:text-white text-textBlack font-semibold ml-1">
                     $
-                    {currency === "KRWQ"
+                    {currency === "KRWQ" || currency === "EURC"
                       ? Number(selectedAssetPrice)
                       : Number(selectedAssetPrice) / 100 || 0}
                   </span>
