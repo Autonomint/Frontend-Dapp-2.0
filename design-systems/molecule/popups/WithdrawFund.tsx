@@ -390,7 +390,8 @@ export function WithdrawFund({
                 ? 1e8
                 : position.collateralType === "EURC"
                   ? 1e6
-                  : position.collateralType === "cbBTC"
+                  : position.collateralType === "cbBTC" ||
+                      position.collateralType === "ETH"
                     ? 1
                     : 1e2),
           )
