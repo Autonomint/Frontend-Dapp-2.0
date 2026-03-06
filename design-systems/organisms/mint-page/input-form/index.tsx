@@ -544,7 +544,7 @@ function InputForm({ currency }: { currency: string }) {
     });
 
     const data = optionFees;
-    if (data != undefined && nativeFee != undefined) {
+    if (data != undefined && nativeFee != undefined && !isStake) {
       setApproveLoading(false);
       setTimeout(() => {
         setMintLoading(true);
@@ -1057,7 +1057,7 @@ function InputForm({ currency }: { currency: string }) {
                   <Button
                     disabled={isFunctionPausedBorrow_Deposit}
                     type="submit"
-                      className={`
+                    className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
                   >
