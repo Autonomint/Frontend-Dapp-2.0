@@ -23,7 +23,7 @@ const useApproveUsda = (mutation: any) => {
 
   const approveUsda = async (repayAmount: bigint, token: string) => {
 
-    const contract = token === "cbBTC" || token === "krwq" ? borrowWithdrawCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress] : borrowingWithdrawContractAddress[chainId as keyof typeof borrowingWithdrawContractAddress]
+    const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowWithdrawCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress] : borrowingWithdrawContractAddress[chainId as keyof typeof borrowingWithdrawContractAddress]
 
     usdaApproveAsync({
       abi: usDaAbi,
