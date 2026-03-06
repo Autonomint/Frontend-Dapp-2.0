@@ -818,14 +818,18 @@ function InputForm({ currency }: { currency: string }) {
       label: "1 Day",
       onClick: () => formik.setFieldValue("hedgeDuration", "1"),
     },
-    {
-      label: "1 Week",
-      onClick: () => formik.setFieldValue("hedgeDuration", "7"),
-    },
-    {
-      label: "1 Month",
-      onClick: () => formik.setFieldValue("hedgeDuration", "30"),
-    },
+    ...(currency === "KRWQ" || currency === "EURC"
+      ? []
+      : [
+          {
+            label: "1 Week",
+            onClick: () => formik.setFieldValue("hedgeDuration", "7"),
+          },
+          {
+            label: "1 Month",
+            onClick: () => formik.setFieldValue("hedgeDuration", "30"),
+          },
+        ]),
   ];
 
   return (
