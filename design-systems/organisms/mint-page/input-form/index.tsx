@@ -831,7 +831,7 @@ function InputForm({ currency }: { currency: string }) {
           },
         ]),
   ];
-
+  console.log(currency, currency === "KRWQ" || currency === "EURC", "KRWQ");
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className="flex flex-col p-6 gap-[18px] relative">
@@ -1053,13 +1053,13 @@ function InputForm({ currency }: { currency: string }) {
           !mintBtnLoading && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="h-full">
+                <div className="h-full flex p-2 gap-2">
                   <Button
                     disabled={isFunctionPausedBorrow_Deposit}
                     type="submit"
-                    className={`
+                      className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
-                    text-white  font-semibold text-[24px] w-full h-full rounded-md `}
+                    text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
                   >
                     {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}
                     <span className="text-base">
@@ -1067,29 +1067,28 @@ function InputForm({ currency }: { currency: string }) {
                     </span>
                   </Button>
 
-                  {currency === "KRWQ" ||
-                    (currency === "EURC" && (
-                      <Button
-                        disabled={isFunctionPausedBorrow_Deposit}
-                        type="submit"
-                        name="stake"
-                        onClick={(e) => {
-                          formik.setFieldValue("submitType", "stake");
-                        }}
-                        className={`
+                  {(currency === "KRWQ" || currency === "EURC") && (
+                    <Button
+                      disabled={isFunctionPausedBorrow_Deposit}
+                      type="submit"
+                      name="stake"
+                      onClick={(e) => {
+                        formik.setFieldValue("submitType", "stake");
+                      }}
+                      className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
                     text-white font-semibold text-[24px] w-full h-full rounded-[12px]`}
-                      >
-                        {!mintBtnLoading ? (
-                          "Mint & Stake"
-                        ) : (
-                          <Spinner color="#fff" />
-                        )}
-                        <span className="text-base">
-                          {isFunctionPausedBorrow_Deposit && "(Paused)"}
-                        </span>
-                      </Button>
-                    ))}
+                    >
+                      {!mintBtnLoading ? (
+                        "Mint & Stake"
+                      ) : (
+                        <Spinner color="#fff" />
+                      )}
+                      <span className="text-base">
+                        {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                      </span>
+                    </Button>
+                  )}
                 </div>
               </TooltipTrigger>
               {isFunctionPausedBorrow_Deposit && (
