@@ -610,6 +610,7 @@ function InputForm({ currency }: { currency: string }) {
   /**
    * Handles the calculation and setting of the usda to be minted and downside protection amounts.
    */
+  console.log(selectedAssetPrice, "selectedAssetPrice");
   const CalculateAmtToBeMinted = async () => {
     try {
       // Calculate the usda to be minted
@@ -619,7 +620,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv?.LTV || 0)) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
       // set the usda to be minted
@@ -812,9 +813,10 @@ function InputForm({ currency }: { currency: string }) {
 
   // calculate the liquidation price
   const LiquidationPrice = useMemo(() => {
-    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(
-      currency === "KRWQ" ? 8 : 2,
-    );
+    return (
+      ((Number(selectedAssetPrice) / (currency === "EURC" ? 1 : 100)) * 80) /
+      100
+    ).toFixed(currency === "KRWQ" ? 8 : 2);
   }, [selectedAssetPrice, currency]);
 
   const hedgeDurationOption = [
