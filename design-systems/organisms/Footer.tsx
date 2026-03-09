@@ -4,21 +4,18 @@ import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
 import logo from "@/app/assets/logo.svg";
 import { Button } from "@/design-systems/atoms/button";
 import {
-  NEXT_PUBLIC_LINK_DISCORD,
   NEXT_PUBLIC_LINK_DOCS,
   NEXT_PUBLIC_LINK_TELEGRAM,
   NEXT_PUBLIC_LINK_TWITTER,
 } from "@/utils/constants";
 import { StickyNote } from "lucide-react";
 import Image from "next/image";
-import { AiOutlineDiscord } from "react-icons/ai";
 import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
 
 export default function Footer() {
   // Define fallback URLs in case environment variables are not set
   const docsUrl = NEXT_PUBLIC_LINK_DOCS || "#";
-  const discordUrl = NEXT_PUBLIC_LINK_DISCORD || "#";
   const twitterUrl = NEXT_PUBLIC_LINK_TWITTER || "#";
   const telegramUrl = NEXT_PUBLIC_LINK_TELEGRAM || "#";
 
@@ -125,15 +122,6 @@ export default function Footer() {
               >
                 <a href={docsUrl} target="_blank" rel="noreferrer">
                   <StickyNote style={{ width: "24px", height: "24px" }} />
-                </a>
-              </Button>
-              {/* Discord Link */}
-              <Button
-                variant={"shadowOutline"}
-                className="border-[#041A50]  lg:p-[10px] w-[44px] h-[44px]"
-              >
-                <a href={discordUrl} target="_blank" rel="noreferrer">
-                  <AiOutlineDiscord style={{ width: "24px", height: "24px" }} />
                 </a>
               </Button>
               {/* Twitter/X Link */}

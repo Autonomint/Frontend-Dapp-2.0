@@ -164,8 +164,8 @@ function Navbar() {
         </div>
 
         <Link onClick={closeMenu} href="/">
-          <div className="flex justify-start  items-center  gap-4">
-            <div className="w-[3rem] lg:hidden h-[3rem]">
+          <div className="flex justify-start  items-center  gap-2">
+            <div className="w-[3rem] h-[3rem]">
               <Image
                 src={getIconMapping(theme || "dark", "usda")}
                 alt="autonomint-dapp"
@@ -177,7 +177,16 @@ function Navbar() {
                 }}
               />
             </div>
-            <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
+            <div className="">
+              <div className="dark:text-white text-black text-[20px] sm:text-[24px] md:text-[28px] tracking-widest leading-tight">
+                NONDOLLAR
+                <span className="dark:text-white text-black">.LIFE</span>
+              </div>
+              <div className="dark:text-[#FFFFFF80] text-grayLight text-[10px] sm:text-[11px] md:text-[12px] tracking-widest">
+                YIELD PROTOCOL
+              </div>
+            </div>
+            {/* <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
               <div
                 className=" dark:block hidden w-full  shrink-0"
 
@@ -264,8 +273,8 @@ function Navbar() {
                 src={autonomintTxtImage}
                 alt="light-mode-image"
               />
-            </div>
-            <div className="mt-4 ml-[-8px] text-lg  font-medium">BETA</div>
+            </div> */}
+            {/* <div className="mt-4 ml-[-8px] text-lg  font-medium">BETA</div> */}
           </div>
         </Link>
       </div>
