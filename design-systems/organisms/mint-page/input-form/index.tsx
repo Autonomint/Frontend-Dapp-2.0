@@ -631,7 +631,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
@@ -643,7 +643,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           formik.values.strikePricePercent) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
     } catch (error) {}
@@ -1046,7 +1046,7 @@ function InputForm({ currency }: { currency: string }) {
         <InputMetics
           deposit={(
             (Number(selectedAssetPrice || 0) /
-              (currency === "KRWQ" ? 1 : 100)) *
+              (currency === "KRWQ" || currency === "EURC" ? 1 : 100)) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={Number(optionFees).toFixed(2)}
