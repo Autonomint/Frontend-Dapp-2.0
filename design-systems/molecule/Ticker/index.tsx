@@ -23,52 +23,52 @@ const Ticker = () => {
   // Message list for scrolling ticker bar
   const message = [
     <a
+      key="ticker-1"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white  text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
     <a
+      key="ticker-2"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
     <a
+      key="ticker-3"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
     <a
+      key="ticker-4"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
     <a
+      key="ticker-5"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
     <a
+      key="ticker-6"
       href="https://app.liquidity.land/project/autonomint"
       target="_blank"
       className=" dark:text-white text-white   text-[14px] lg:text-[16px]  font-plex-grotesk"
     >
-      Autonomint is listed on Liquidity.Land. Now get 25% boost on your points -{" "}
-      <span className="font-bold  cursor-pointer">Read More</span>{" "}
+      app.autonomint.com is now app.nondollar.life
     </a>,
   ];
   return (
