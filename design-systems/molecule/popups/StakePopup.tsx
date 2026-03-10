@@ -179,7 +179,16 @@ export function StakePopup({
               <div className="flex flex-col gap-1 items-center">
                 <p className="text-2xl font-bold text-center text-grayLight"></p>
                 <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                  ${Number(stakingGain?.hedge || 0).toFixed(4)}
+                  ${Number(stakingGain?.hedge || 0).toFixed(4)}{" "}
+                  <span className="text-base">
+                    (
+                    {(
+                      (Number(stakingGain?.hedge || 0) /
+                        Number(position.depositedAmount || 0)) *
+                      100
+                    ).toFixed(2)}
+                    ) %
+                  </span>
                 </Label>
 
                 <Label className="text-[14px] font-normal text-[#777777]">

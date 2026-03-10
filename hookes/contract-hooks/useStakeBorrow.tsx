@@ -171,13 +171,13 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     optionFees,
   }: BorrowStakeInputs) => {
     const contractAddress =
-      assetName === 12 || assetName === 13
+      assetName === 12 || assetName === 13 || assetName === 14
         ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
         : borrowingContractAddress[
             chainId as keyof typeof borrowingContractAddress
           ];
     const abi =
-      assetName === 12 || assetName === 13
+      assetName === 12 || assetName === 13 || assetName === 14
         ? borowCoreABI
         : borrowingContractAbi;
     writeContract?.({
