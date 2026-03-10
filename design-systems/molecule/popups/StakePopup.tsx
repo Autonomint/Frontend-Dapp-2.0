@@ -19,6 +19,8 @@ import { parseUnits } from "ethers";
 import { BorrowStatus } from "@/utils/constants";
 import useGetStakingGain from "@/hookes/api-hooks/useGetStakingGain";
 import { Label } from "@/design-systems/atoms/label";
+import { getIconMapping } from "@/utils/token-config";
+import Image from "next/image";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -163,47 +165,68 @@ export function StakePopup({
     formik.resetForm();
     refetchData?.();
   }
+
+  console.log(position, "position");
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[98%] sm:max-w-[425px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
         <div className="flex flex-col gap-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Stake Your Tokens
+            <h2 className="text-2xl flex gap-1 justify-start items-center font-semibold text-gray-900 dark:text-white">
+              Stake Your Tokens{" "}
+              <span>
+                <Image
+                  width={26}
+                  height={26}
+                  alt="image"
+                  src={getIconMapping("dark", position.collateralType)}
+                />
+              </span>
             </h2>
             <p className="text-sm text-grayLight">You can unstake anytime</p>
           </div>
 
           {position.status === BorrowStatus.STAKED && (
-            <div className="w-full flex items-center justify-between px-4">
-              <div className="flex flex-col gap-1 items-center">
-                <p className="text-2xl font-bold text-center text-grayLight"></p>
-                <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                  ${Number(stakingGain?.hedge || 0).toFixed(4)}{" "}
-                  <span className="text-base">
+            <div>
+              <div className="w-full flex items-center justify-between px-4">
+                <div className="flex flex-col  items-start">
+                  <p className="text-2xl font-bold text-center text-grayLight"></p>
+                  <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                    ${Number(stakingGain?.hedge || 0).toFixed(4)}{" "}
+                  </Label>
+
+                  <Label className="text-[14px] font-normal text-[#777777]">
+                    Hedge Earnings
+                  </Label>
+                  <Label className="text-[14px] font-normal text-[#777777]">
                     (
                     {(
-                      (Number(stakingGain?.hedge || 0) /
+                      ((Number(stakingGain?.hedge || 0) -
+                        Number(
+                          Number(stakingGain?.premium) >
+                            Number(stakingGain?.hedge)
+                            ? 0
+                            : stakingGain?.premium || 0,
+                        )) /
                         Number(position.depositedAmount || 0)) *
-                      100
+                      (Number(position.ethPrice) /
+                        (position.collateralType == "EURC" ? 1e6 : 1e8)) *
+                      10
                     ).toFixed(2)}
-                    ) %
-                  </span>
-                </Label>
+                    % APY)
+                  </Label>
+                </div>
+                <div className="flex flex-col gap-1 items-center">
+                  <p className="text-2xl font-bold text-center text-grayLight"></p>
+                  <Label className=" text-[22px] font-bold  md:text-[26px] text-black dark:text-white  ">
+                    ${Number(stakingGain?.premium || 0).toFixed(4)}
+                  </Label>
 
-                <Label className="text-[14px] font-normal text-[#777777]">
-                  Hedge Earnings
-                </Label>
-              </div>
-              <div className="flex flex-col gap-1 items-center">
-                <p className="text-2xl font-bold text-center text-grayLight"></p>
-                <Label className=" text-[22px] font-bold  md:text-[26px] text-black dark:text-white  ">
-                  ${Number(stakingGain?.premium || 0).toFixed(4)}
-                </Label>
-
-                <Label className="text-[14px] font-normal text-[#777777]">
-                  Premium Paid
-                </Label>
+                  <Label className="text-[14px] font-normal text-[#777777]">
+                    Premium Paid
+                  </Label>
+                </div>
               </div>
             </div>
           )}
@@ -283,7 +306,14 @@ export function StakePopup({
                   : "Stake"}
               </Button>
             )}
-
+            {position.status === BorrowStatus.STAKED && position.stakedTime && (
+              <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                <span className="font-medium">Staking Date:</span>{" "}
+                {new Date(
+                  Number(position.stakedTime) * 1000,
+                ).toLocaleDateString()}
+              </div>
+            )}
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
               <p>
                 Note - Staking runs in 3-month periods. At the end of each

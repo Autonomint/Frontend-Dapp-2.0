@@ -17,6 +17,8 @@ import Link from "next/link";
 import { krwqUrl } from "@/utils/urls";
 import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import { formatEther, formatUnits } from "viem";
+import { AssetBuyLink } from "@/utils/urls";
+
 function TradingViewWidget({ currency }: { currency: string }) {
   const container = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
@@ -304,13 +306,13 @@ function ChartComponent({ currency }: { currency: string }) {
             </div>
           )} */}
           <div className=" flex gap-4 items-center justify-end">
-            {currency === "KRWQ" && (
+            {(currency === "KRWQ" || currency === "EURC") && (
               <Link
                 target="_blank"
-                href={krwqUrl}
+                href={AssetBuyLink[currency as keyof typeof AssetBuyLink]}
                 className="text-right underline  text-xl cursor-pointer mb-1"
               >
-                Buy KRWQ
+                Buy {currency}
               </Link>
             )}
             <div className="flex gap-4">
