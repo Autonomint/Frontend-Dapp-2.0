@@ -166,7 +166,13 @@ export function StakePopup({
     refetchData?.();
   }
 
-  console.log(position, "position");
+  const value1 = Number(stakingGain?.hedge || 0);
+
+  const value2 =
+    (Number(position.depositedAmount || 0) * Number(position.ethPrice)) /
+    (position.collateralType == "EURC" ? 1e6 : 1e8);
+
+  const finalValue = (value1 / value2) * 100;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -200,24 +206,10 @@ export function StakePopup({
                     Hedge Earnings
                   </Label>
                   <Label className="text-[14px] font-normal text-[#777777]">
-                    (
-                    {(
-                      ((Number(stakingGain?.hedge || 0) -
-                        Number(
-                          Number(stakingGain?.premium) >
-                            Number(stakingGain?.hedge)
-                            ? 0
-                            : stakingGain?.premium || 0,
-                        )) /
-                        Number(position.depositedAmount || 0)) *
-                      (Number(position.ethPrice) /
-                        (position.collateralType == "EURC" ? 1e6 : 1e8)) *
-                      10
-                    ).toFixed(2)}
-                    % APY)
+                    Yield Till Now - {finalValue.toFixed(2)}%
                   </Label>
                 </div>
-                <div className="flex flex-col gap-1 items-center">
+                <div className="flex flex-col  items-center">
                   <p className="text-2xl font-bold text-center text-grayLight"></p>
                   <Label className=" text-[22px] font-bold  md:text-[26px] text-black dark:text-white  ">
                     ${Number(stakingGain?.premium || 0).toFixed(4)}
@@ -225,6 +217,9 @@ export function StakePopup({
 
                   <Label className="text-[14px] font-normal text-[#777777]">
                     Premium Paid
+                  </Label>
+                  <Label className="text-[14px] font-normal text-[#777777]">
+                    (To Hedge {position.collateralType} Price)
                   </Label>
                 </div>
               </div>
@@ -314,6 +309,13 @@ export function StakePopup({
                 ).toLocaleDateString()}
               </div>
             )}
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
+              <p>
+                Daily hedge earnings follow EURC price movement — if it drops,
+                the loss is hedged and added as earnings; if it rises, you keep
+                the gain.
+              </p>
+            </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
               <p>
                 Note - Staking runs in 3-month periods. At the end of each
