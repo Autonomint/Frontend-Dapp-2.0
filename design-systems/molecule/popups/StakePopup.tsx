@@ -311,9 +311,10 @@ export function StakePopup({
             )}
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
               <p>
-                Daily hedge earnings follow EURC price movement — if it drops,
-                the loss is hedged and added as earnings; if it rises, you keep
-                the gain.
+                Daily hedge earnings follow{" "}
+                {position.collateralType?.toUpperCase()} price movement — if it
+                drops, the loss is hedged and added as earnings; if it rises,
+                you keep the gain.
               </p>
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
