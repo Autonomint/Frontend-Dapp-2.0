@@ -105,6 +105,7 @@ export interface PositionData {
   liquidationEthPrice: number;
   hedgeValidity: number;
   totalInterest: string;
+  stakedTime: number;
 }
 
 export interface LeaderboardDetails {
