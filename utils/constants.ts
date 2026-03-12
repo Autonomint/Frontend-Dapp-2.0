@@ -6,7 +6,7 @@ export enum NetworkId {
   BaseSepolia = 8453,
   Optimism = 10,
   Mode = 34443,
-  Rise = 4242,
+  Rise = 4153,
 }
 
 // borrow status

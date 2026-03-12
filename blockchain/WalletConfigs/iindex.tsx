@@ -20,7 +20,7 @@ if (!projectId) throw new Error("Project ID is not defined");
 
 // Chain Configuration Rise Mainnet
 export const riseMainnet = defineChain({
-  id: 4242,
+  id: 4153,
   name: "RISE Mainnet",
   nativeCurrency: {
     name: "ETH",
@@ -29,13 +29,13 @@ export const riseMainnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.riselabs.xyz"],
+      http: ["https://rpc.risechain.com?apikey=Autonomint-qA8Z7P9"],
     },
   },
   blockExplorers: {
     default: {
       name: "RISE Explorer",
-      url: "https://explorer.riselabs.xyz",
+      url: "https://explorer.risechain.com/",
     },
   },
   testnet: false,
@@ -67,8 +67,8 @@ export const opSepolia = defineChain({
 
 // Metadata for the app
 const metadata = {
-  name: "autonomint",
-  description: "Autonomint Mainnet",
+  name: "NONDOLLAR",
+  description: "NONDOLLAR Mainnet",
   url: AUTONOMINT_DAPP_URL, // origin must match your domain & subdomain
   icons: [BRAND_ICON_URL],
 };

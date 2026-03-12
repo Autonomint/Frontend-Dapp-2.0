@@ -22,7 +22,7 @@ export const scanUrls = {
   10: "https://optimistic.etherscan.io/",
   1: `https://etherscan.io/`,
   8453: `https://basescan.org/`,
-  4242: "https://explorer.riselabs.xyz/",
+  4153: "https://explorer.riselabs.xyz/",
 } as Record<number, string>;
 
 // urls

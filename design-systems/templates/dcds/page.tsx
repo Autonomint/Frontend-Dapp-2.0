@@ -780,16 +780,18 @@ function DCDSTemplate() {
   }, [formik.values, selectedTokens]);
 
   // fetching list of the token addresses for the deposit
-  const { data: tokenAddress, isLoading: isTokenListPending } = useReadContract(
-    {
-      address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-      abi: cdsAbi,
-      functionName: "getSupportedTokenAddresses",
-      query: {
-        placeholderData: [],
-      },
+  const {
+    data: tokenAddress,
+    isLoading: isTokenListPending,
+    error: errorL,
+  } = useReadContract({
+    address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
+    abi: cdsAbi,
+    functionName: "getSupportedTokenAddresses",
+    query: {
+      placeholderData: [],
     },
-  ) as { data: `0x${string}`[]; isLoading: boolean };
+  }) as { data: `0x${string}`[]; isLoading: boolean; error: any };
 
   // fetching the token details for the deposit (name, symbol, decimals)
   const { data: tokenDetailsList, isLoading: isTokenBasisDetailsLoading } =
