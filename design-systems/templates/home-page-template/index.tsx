@@ -38,6 +38,7 @@ export default function HomeTemplate() {
     omniChainDataEth: GlobalContractData,
     omniChainDataCbbtc,
     omniChainDataKrwq,
+    omniChainDataEURC,
   } = useGetUsdtAmountDepositedTillNow();
 
   // box option list for navigation
@@ -50,21 +51,25 @@ export default function HomeTemplate() {
         Number(omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD || 0) /
           1e26 +
         Number(omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0) /
-          1e20
+          1e20 +
+        Number(omniChainDataEURC?.totalVolumeOfBorrowersAmountinUSD || 0) / 1e24
       ).toFixed(2)}`,
     },
     {
       title: "Earn With dCDS",
       subtitle: `TVL - $${Number(
         Number(
-          formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6)
+          formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6),
         ) +
           Number(
-            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6)
+            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6),
           ) +
           Number(
-            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6)
-          )
+            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6),
+          ) +
+          Number(
+            formatUnits(omniChainDataEURC?.totalCdsDepositedAmount ?? 0n, 6),
+          ),
       ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },
@@ -95,7 +100,7 @@ export default function HomeTemplate() {
     "1",
     (ethPrice || 0) as number,
     currentStrikePricePercentLimit as number,
-    "ETH"
+    "ETH",
   );
 
   // fee list for showing in borrow hover box
@@ -296,9 +301,9 @@ export default function HomeTemplate() {
               hoveredIndex === 0
                 ? "w-full lg:w-[80%] h-[380px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px] 3xl:!h-[630px]"
                 : // height and width style based on hoveredIndex
-                hoveredIndex === 1
-                ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
-                : "w-full lg:w-[50%]"
+                  hoveredIndex === 1
+                  ? "lg:w-[40%]  lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  : "w-full lg:w-[50%]"
             } h-[300px] lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null || hoveredIndex === 2
@@ -338,16 +343,16 @@ export default function HomeTemplate() {
                 ? // height and width style based on hoveredIndex
                   "w-full lg:w-[60%] h-[360px] sm:h-[360px] md:h-[400px] lg:!h-[490px]  xl:!h-[560px]  3xl:!h-[630px]"
                 : hoveredIndex === 0
-                ? // height and width style based on hoveredIndex
-                  " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
-                : "w-full lg:w-[50%]"
+                  ? // height and width style based on hoveredIndex
+                    " w-full lg:w-[30%] lg:!h-[490px] md:h-[400px]  xl:!h-[560px]  3xl:!h-[630px]"
+                  : "w-full lg:w-[50%]"
             } h-[300px]  lg:h-[400px] ${
               // Border style based on hoveredIndex
               hoveredIndex === null
                 ? "border-x border-y lg:border-x lg:border-y-0  border-[1px]  border-grayLight"
                 : hoveredIndex === 3
-                ? " border-x border-y lg:border-y-0 border-[1px]  border-grayLight"
-                : ""
+                  ? " border-x border-y lg:border-y-0 border-[1px]  border-grayLight"
+                  : ""
             }`}
             onMouseEnter={() => {
               setHoveredIndex(1);
