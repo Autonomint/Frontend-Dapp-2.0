@@ -189,12 +189,12 @@ export const blockAddressAndIndex = [
     index: [1, 2],
     chainId: NetworkId.Optimism
   },
-  {
-    address: '0x5b54b6EA0b682BD484b5A580BaeCcF1B85A6A73C',
-    index: [1, 2, 3, 4, 5],
-    chainId: NetworkId.BaseSepolia
+  // {
+  //   address: '0x5b54b6EA0b682BD484b5A580BaeCcF1B85A6A73C',
+  //   index: [1, 2, 3, 4, 5],
+  //   chainId: NetworkId.BaseSepolia
 
-  },
+  // },
   {
     address: '0x82738b0EBc1d667765cB9CDEB4A2a96dA6e6A77A',
     index: [1, 2],
