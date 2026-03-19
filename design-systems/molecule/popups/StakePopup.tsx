@@ -12,6 +12,7 @@ import { posix } from "node:path";
 import useGetBorrowSignedData from "@/hookes/api-hooks/useGetBorrowSignedData";
 import useApproveUsda from "@/hookes/contract-hooks/useApproveUsda";
 import {
+  borrowAssetsAddress,
   borrowCoreAddress,
   borrowDepositCoreAddress,
 } from "@/blockchain/contracts";
@@ -21,6 +22,8 @@ import useGetStakingGain from "@/hookes/api-hooks/useGetStakingGain";
 import { Label } from "@/design-systems/atoms/label";
 import { getIconMapping } from "@/utils/token-config";
 import Image from "next/image";
+import useFetchOptionFees from "@/hookes/api-hooks/useOptionFee";
+import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 
 type StakePopupProps = {
   isOpen: boolean;
@@ -174,6 +177,60 @@ export function StakePopup({
 
   const finalValue = (value1 / value2) * 100;
 
+  // Custom hook to fetch the Price of the selected asset
+  const {
+    isUsdValuePending,
+    usdValue: ethPrice,
+    assetPrice,
+    exchangeRate,
+    unformattedValue,
+  } = useGetUsdValue(
+    borrowAssetsAddress[
+      position.collateralType?.toLocaleLowerCase() === "krwq"
+        ? "ETH"
+        : (position.collateralType as keyof typeof borrowAssetsAddress)
+    ],
+    position.collateralType?.toLocaleLowerCase() === "krwq",
+    position.collateralType?.toLocaleLowerCase() === "eurc",
+  );
+
+  //getting option fees for selected amount
+  const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
+    String(1),
+    (position.collateralType === "krwq"
+      ? parseUnits(String(assetPrice), 8)
+      : position.collateralType === "EURC"
+        ? parseUnits(String(assetPrice), 6)
+        : assetPrice || 0) as number,
+    0.15,
+    position.collateralType === "cbBTC"
+      ? "BTC"
+      : position.collateralType === "krwq"
+        ? "krwq"
+        : position.collateralType === "EURC"
+          ? "EURC"
+          : "ETH",
+    Number(1),
+  );
+
+  const priceFormatted =
+    Number(position.ethPrice) / (position.collateralType == "EURC" ? 1e6 : 1e8);
+
+  const premiumPercentage = (
+    (Number(optionFees) / priceFormatted) *
+    100
+  ).toFixed(2);
+
+  console.log(
+    position.collateralType,
+    optionFees,
+    Number(stakingGain?.premium),
+    Number(position.ethPrice),
+    Number(position.ethPrice) / (position.collateralType == "EURC" ? 1e6 : 1e8),
+    ((Number(optionFees) / priceFormatted) * 100).toFixed(2),
+    "check",
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[98%] sm:max-w-[425px] dark:border-[1px] dark:border-grayLight bg-white dark:bg-[#0D0D0D] p-6 gap-0">
@@ -302,11 +359,17 @@ export function StakePopup({
               </Button>
             )}
             {position.status === BorrowStatus.STAKED && position.stakedTime && (
-              <div className="text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                <span className="font-medium">Staking Date:</span>{" "}
-                {new Date(
-                  Number(position.stakedTime) * 1000,
-                ).toLocaleDateString()}
+              <div className="text-sm flex justify-between items-center text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                <div>
+                  <span className="font-medium">Staking Date:</span>{" "}
+                  {new Date(
+                    Number(position.stakedTime) * 1000,
+                  ).toLocaleDateString()}
+                </div>
+                <div>
+                  <span className="font-medium">Daily Premium:</span>{" "}
+                  {premiumPercentage}%
+                </div>
               </div>
             )}
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
