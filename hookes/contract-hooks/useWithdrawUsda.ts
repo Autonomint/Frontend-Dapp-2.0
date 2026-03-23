@@ -1,6 +1,6 @@
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
-import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress } from "@/blockchain/contracts";
+import { borrowCoreAddress, borrowingContractAddress, borrowWithdrawCoreAddress, borrowingWithdrawContractAddress } from "@/blockchain/contracts";
 import { useAccount, useWriteContract } from "wagmi";
 
 const useWithdrawUsda = (mutation: any) => {
@@ -24,7 +24,7 @@ const useWithdrawUsda = (mutation: any) => {
     token: string,
     verifyParams: any,
   ) => {
-    const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+    const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowWithdrawCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress] : borrowingWithdrawContractAddress[chainId as keyof typeof borrowingWithdrawContractAddress]
     const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? borowCoreABI : borrowingContractAbi
     try {
       borrowWithdrawAsync({
