@@ -3,6 +3,7 @@ import WeETH from "@/app/assets/weETH-icoon.webp";
 import WsuperOETHIcon from "@/app/assets/Wrapped_Super_OETH.webp";
 import cbBTC from "@/app/assets/cbbtc.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
+import HYPELogo from "@/app/assets/hyperliquid-logo.png";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { assetNameForRewardDataBorrow } from "@/utils/constants";
@@ -41,6 +42,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["FX_IDC:KRWUSD|1D"];
       case "EURC":
         return ["COINBASE:EURCUSDC|1D"];
+      case "HYPE":
+        return ["COINBASE:HYPEUSD|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
@@ -229,6 +232,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return getIconMapping("dark", "KRWQ");
       case "EURC":
         return getIconMapping("dark", "EURC");
+      case "HYPE":
+        return HYPELogo;
       default:
         return cryptoEth;
     }

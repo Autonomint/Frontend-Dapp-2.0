@@ -2,6 +2,7 @@
 import modeIconNew from "@/app/assets/mode.svg";
 import opIconNew from "@/app/assets/op.svg";
 import riseChainLogo from "@/app/assets/rise-chain-logo.png";
+import hyperliquidLogo from "@/app/assets/hyperliquid-logo.png";
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
 import Spinner from "@/design-systems/atoms/Spinner";
@@ -113,6 +114,19 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
       ),
       loading: chainId != NetworkId.Rise && isPending,
     },
+    {
+      id: Number(NetworkId.Hyperliquid),
+      name: "Hyperliquid",
+      Icon: () => (
+        <Image
+          src={hyperliquidLogo}
+          alt="Hyperliquid Chain"
+          width={24}
+          height={24}
+        />
+      ),
+      loading: chainId != NetworkId.Hyperliquid && isPending,
+    },
   ];
 
   const MobileNavOption = () => {
@@ -153,6 +167,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                     <Image
                       src={riseChainLogo}
                       alt="Rise Chain"
+                      width={20}
+                      height={20}
+                    />
+                  ) : chainId == NetworkId.Hyperliquid ? (
+                    <Image
+                      src={hyperliquidLogo}
+                      alt="Hyperliquid Chain"
                       width={20}
                       height={20}
                     />
@@ -210,7 +231,15 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 <Typography variant="regular" size="subtitle"></Typography>$
                 {data?.formatted.slice(0, 8)}
                 <span className="text-[#7A7A7A] text-[14px]">
-                  {chainId === NetworkId.Optimism ? "OP " : "Base "}
+                  {chainId === NetworkId.Optimism
+                    ? "OP "
+                    : chainId === NetworkId.BaseSepolia
+                      ? "Base "
+                      : chainId === NetworkId.Hyperliquid
+                        ? "Hyperliquid "
+                        : chainId === NetworkId.Rise
+                          ? "Rise "
+                          : "Base "}
                 </span>
               </div>
             </div>
@@ -305,6 +334,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       width={20}
                       height={20}
                     />
+                  ) : chainId == NetworkId.Hyperliquid ? (
+                    <Image
+                      src={hyperliquidLogo}
+                      alt="Hyperliquid Chain"
+                      width={20}
+                      height={20}
+                    />
                   ) : (
                     <OptimismIcon
                       className=" fill-black  "
@@ -391,6 +427,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                         width={20}
                         height={20}
                       />
+                    ) : chainId == NetworkId.Hyperliquid ? (
+                      <Image
+                        src={hyperliquidLogo}
+                        alt="Hyperliquid Chain"
+                        width={20}
+                        height={20}
+                      />
                     ) : (
                       <OptimismIcon
                         className=" fill-black  "
@@ -456,7 +499,13 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 >
                   {Number(chainId) === Number(NetworkId.BaseSepolia)
                     ? "Base "
-                    : "OP "}
+                    : Number(chainId) === Number(NetworkId.Optimism)
+                      ? "OP "
+                      : Number(chainId) === Number(NetworkId.Hyperliquid)
+                        ? "Hyperliquid "
+                        : Number(chainId) === Number(NetworkId.Rise)
+                          ? "Rise "
+                          : "Base "}
                 </Typography>
               </div>
               <div className="flex mt-3 flex-row justify-start items-center">

@@ -41,7 +41,37 @@ export const riseMainnet = defineChain({
   testnet: false,
 });
 
-const chainList: AppKitNetwork[] = [base, optimism, mainnet, mode, riseMainnet];
+// Chain Configuration Hyperliquid Mainnet
+export const hyperliquidMainnet = defineChain({
+  id: 999,
+  name: "Hyperliquid Mainnet",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.hyperliquid.xyz/evm"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Hyperliquid Explorer",
+      url: "https://app.hyperliquid.xyz/explorer",
+    },
+  },
+  testnet: false,
+});
+
+const chainList: AppKitNetwork[] = [
+  base,
+  optimism,
+  mainnet,
+  mode,
+  riseMainnet,
+  hyperliquidMainnet,
+];
 
 export const opSepolia = defineChain({
   id: 11155420,
@@ -84,6 +114,7 @@ export const wagmiAdapter = new WagmiAdapter({
   transports: {
     [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
     [riseMainnet.id]: http(riseMainnet.rpcUrls.default.http[0]),
+    [hyperliquidMainnet.id]: http(hyperliquidMainnet.rpcUrls.default.http[0]),
   },
 });
 
@@ -94,7 +125,7 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [base, optimism, mainnet, mode, riseMainnet],
+  networks: [base, optimism, mainnet, mode, riseMainnet, hyperliquidMainnet],
   defaultNetwork: base,
   metadata: metadata,
   features: {

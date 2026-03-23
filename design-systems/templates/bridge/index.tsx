@@ -38,10 +38,10 @@ import { scanUrls } from "@/utils/urls";
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDA" | "TUSDT">("USDA");
   const [sendNetwork, setSendNetwork] = useState<
-    "Sepolia" | "Base" | "Mode" | "OP" | "Rise"
+    "Sepolia" | "Base" | "Mode" | "OP" | "Rise" | "Hyperliquid"
   >("Sepolia");
   const [receiveNetwork, setReceiveNetwork] = useState<
-    "Sepolia" | "Base" | "Mode" | "OP" | "Rise"
+    "Sepolia" | "Base" | "Mode" | "OP" | "Rise" | "Hyperliquid"
   >("Mode");
 
   const {
@@ -85,6 +85,9 @@ function BridgeTemplate() {
     if (chainId2 === NetworkId.Optimism) {
       setSendNetwork("OP");
     }
+    if (chainId2 === NetworkId.Hyperliquid) {
+      setSendNetwork("Hyperliquid");
+    }
   }, [chainId2]);
 
   // Option Fees to be added to the transaction parameters (200000)
@@ -114,6 +117,8 @@ function BridgeTemplate() {
       setSendNetwork("Sepolia");
     } else if (chainId === NetworkId.BaseSepolia) {
       setSendNetwork("Base");
+    } else if (chainId === NetworkId.Hyperliquid) {
+      setSendNetwork("Hyperliquid");
     }
   }, [chainId]);
 
@@ -125,7 +130,7 @@ function BridgeTemplate() {
       letamount = "0";
     } else {
       setCollateralAmountString(
-        Number(parseUnits(sendAmount.toString(), 6)).toString()
+        Number(parseUnits(sendAmount.toString(), 6)).toString(),
       );
     }
     let amount = 0n;
@@ -255,7 +260,9 @@ function BridgeTemplate() {
             linkText={
               chainId === NetworkId.BaseSepolia
                 ? "View On Basescan"
-                : "View On Optimismscan"
+                : chainId === NetworkId.Hyperliquid
+                  ? "View On Hyperliquid Explorer"
+                  : "View On Optimismscan"
             }
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
@@ -369,7 +376,7 @@ function BridgeTemplate() {
       // 4. Estimate the time for your transaction to be included in a block
       const transactionsPerBlock = 200; // Approximate number of transactions per block
       const estimatedBlocksToWait = Math.ceil(
-        pendingTransactions / transactionsPerBlock
+        pendingTransactions / transactionsPerBlock,
       );
       const estimatedTimeInSeconds = estimatedBlocksToWait * averageBlockTime;
       setEstimateTime(estimatedTimeInSeconds);
