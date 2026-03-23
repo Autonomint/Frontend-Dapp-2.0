@@ -1,5 +1,7 @@
 "use client";
 import opImage from "@/app/assets/op.svg";
+import riseChainLogo from "@/app/assets/rise-chain-logo.png";
+import hyperliquidLogo from "@/app/assets/hyperliquid-logo.png";
 import { Button } from "@/design-systems/atoms/button";
 import {
   Dialog,
@@ -45,7 +47,15 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
     if (
       (chainId &&
         !["/bridge"].includes(pathname) &&
-        ![NetworkId.BaseSepolia, NetworkId.Optimism].includes(chainId || 0) &&
+        ![
+          NetworkId.BaseSepolia,
+          NetworkId.Optimism,
+          NetworkId.Ethereum,
+          NetworkId.Rise,
+          NetworkId.Hyperliquid,
+        ].includes(chainId || 0) &&
+        isConnected &&
+        (chainId || 0) &&
         isConnected) ||
       !isConnected
     ) {
@@ -63,7 +73,13 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
       >
         {chainId &&
           !["/bridge"].includes(pathname) &&
-          ![NetworkId.BaseSepolia, NetworkId.Optimism].includes(chainId || 0) &&
+          ![
+            NetworkId.BaseSepolia,
+            NetworkId.Optimism,
+            NetworkId.Ethereum,
+            NetworkId.Rise,
+            NetworkId.Hyperliquid,
+          ].includes(chainId || 0) &&
           isConnected && (
             <div>
               <Typography size="h4" className="">
@@ -152,6 +168,32 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                       <div className="text-[16px]">Ethereum</div>
                     )}
                   </Button> */}
+
+                  <Button
+                    disabled={isPending}
+                    onClick={() => {
+                      switchChain({
+                        chainId: NetworkId.Hyperliquid,
+                      });
+                      setSwitchingChain(NetworkId.Hyperliquid);
+                    }}
+                    variant={"shadowOutline"}
+                    className="p-5 h-[110px] w-[110px] cursor-pointer border-[1px] text-lg gap-2 rounded-[10px] flex flex-col justify-center items-center  !border-grayLight shadow-none hover:text-black dark:hover:text-white text-[#7A7A7A]"
+                  >
+                    <Image
+                      src={hyperliquidLogo}
+                      alt="Hyperliquid Chain"
+                      width={50}
+                      height={50}
+                    />
+                    {isPending && switchingChain === NetworkId.Hyperliquid ? (
+                      <div className="h-[20px] mx-auto">
+                        <Spinner />
+                      </div>
+                    ) : (
+                      <div className="text-[16px]">Hyperliquid</div>
+                    )}
+                  </Button>
                 </div>
               </div>
             </div>

@@ -6,6 +6,8 @@ export enum NetworkId {
   BaseSepolia = 8453,
   Optimism = 10,
   Mode = 34443,
+  Rise = 4153,
+  Hyperliquid = 999,
 }
 
 // borrow status
@@ -51,7 +53,8 @@ export enum AssetName {
   WSUPER_OETH,
   cbBTC,
   KRWQ,
-  EURC
+  EURC,
+  HYPE
 }
 
 export const BorrowAssetsEnum = {
@@ -67,6 +70,7 @@ export const BorrowAssetsEnum = {
   krwq: AssetName.KRWQ,
   EURC: AssetName.EURC,
   eurc: AssetName.EURC,
+  HYPE: AssetName.HYPE,
 };
 
 export const RedeemAssets = {
@@ -89,12 +93,15 @@ export const eId = {
   Mode: eidModeSepolia,
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
+  Rise: 0, // Placeholder - Rise not supported for LayerZero bridging
+  Hyperliquid: 0, // Placeholder - Hyperliquid not supported for LayerZero bridging
 };
 export const eIdWithChainId = {
   [NetworkId.Optimism]: eidOpSepolia,
   [NetworkId.Mode]: eidModeSepolia,
   [NetworkId.Ethereum]: eidSepolia,
   [NetworkId.BaseSepolia]: eidBaseSepolia,
+  [NetworkId.Hyperliquid]: 0, // Placeholder - Hyperliquid not supported for LayerZero bridging
 };
 
 // enum for control cds and borrow pause unpause
@@ -138,6 +145,7 @@ export const assetNameForRewardDataBorrow = {
   wrsETH: "WrsETH",
   weETH: "WeETH",
   wsuperOETHb: "WSuperOethB",
+  HYPE: "HYPE",
 };
 
 // enum for borrow contract data 

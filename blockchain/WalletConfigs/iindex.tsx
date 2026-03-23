@@ -18,7 +18,60 @@ import { cookieStorage, createStorage } from "wagmi";
 
 if (!projectId) throw new Error("Project ID is not defined");
 
-const chainList: AppKitNetwork[] = [base, optimism, mainnet, mode];
+// Chain Configuration Rise Mainnet
+export const riseMainnet = defineChain({
+  id: 4153,
+  name: "RISE Mainnet",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.risechain.com?apikey=Autonomint-qA8Z7P9"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "RISE Explorer",
+      url: "https://explorer.risechain.com/",
+    },
+  },
+  testnet: false,
+});
+
+// Chain Configuration Hyperliquid Mainnet
+export const hyperliquidMainnet = defineChain({
+  id: 999,
+  name: "Hyperliquid Mainnet",
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.hyperliquid.xyz/evm"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Hyperliquid Explorer",
+      url: "https://app.hyperliquid.xyz/explorer",
+    },
+  },
+  testnet: false,
+});
+
+const chainList: AppKitNetwork[] = [
+  base,
+  optimism,
+  mainnet,
+  mode,
+  riseMainnet,
+  hyperliquidMainnet,
+];
 
 export const opSepolia = defineChain({
   id: 11155420,
@@ -58,6 +111,11 @@ export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
+  transports: {
+    [opSepolia.id]: http(opSepolia.rpcUrls.default.http[0]),
+    [riseMainnet.id]: http(riseMainnet.rpcUrls.default.http[0]),
+    [hyperliquidMainnet.id]: http(hyperliquidMainnet.rpcUrls.default.http[0]),
+  },
 });
 
 // Wagmi Config
@@ -67,7 +125,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [base, optimism, mainnet, mode],
+  networks: [base, optimism, mainnet, mode, riseMainnet, hyperliquidMainnet],
+  defaultNetwork: base,
   metadata: metadata,
   features: {
     email: false,

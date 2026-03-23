@@ -13,6 +13,7 @@ import KRWQ from "@/app/assets/krwq-logo.svg";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 import EURC from "@/app/assets/euro-coin-2.png";
+import HYPELogo from "@/app/assets/hyperliquid-logo.png";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
@@ -46,6 +47,7 @@ function MintEthListTemplate() {
   const { tvlValue: ltvWsuperOETH } = useGetTvl(AssetName.WSUPER_OETH);
   const { tvlValue: ltvKRWQ } = useGetTvl(AssetName.KRWQ);
   const { tvlValue: ltvEURC } = useGetTvl(AssetName.EURC);
+  const { tvlValue: ltvHYPE } = useGetTvl(AssetName.HYPE);
 
   // Calculate the downside protection amount
   const downsideProtectionEth = ltvETH?.LTV
@@ -68,6 +70,9 @@ function MintEthListTemplate() {
     : 0;
   const downsideProtectionEURC = ltvEURC?.LTV
     ? 100 - Number(ltvETH?.LTV || 0)
+    : 0;
+  const downsideProtectionHYPE = ltvHYPE?.LTV
+    ? 100 - Number(ltvHYPE?.LTV || 0)
     : 0;
 
   // getting current APR value
@@ -145,8 +150,10 @@ function MintEthListTemplate() {
             : 0,
         ),
     },
+  ];
 
-    {
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Hyperliquid) {
+    list.push({
       token: "weETH",
       tokenImage: WeETH,
       BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
@@ -180,10 +187,9 @@ function MintEthListTemplate() {
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0,
         ),
-    },
-  ];
-
-  if (chainId !== NetworkId.Ethereum) {
+    });
+  }
+  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Hyperliquid) {
     list.push({
       token: "wrsETH",
       tokenImage: WrsETH,
@@ -221,7 +227,7 @@ function MintEthListTemplate() {
     });
   }
 
-  if (chainId == NetworkId.BaseSepolia) {
+  if (chainId !== NetworkId.Hyperliquid && chainId == NetworkId.BaseSepolia) {
     list.push({
       token: "cbBTC",
       tokenImage: cbBTC,
@@ -364,6 +370,43 @@ function MintEthListTemplate() {
     });
   }
 
+  if (chainId === NetworkId.Hyperliquid) {
+    list.push({
+      token: "HYPE",
+      tokenImage: HYPELogo,
+      BorrowRate: `${Number(ltvHYPE?.APR || 0) / 10}%`,
+      DownsideProtectionGiven: `${downsideProtectionHYPE}%`,
+      ltv: `${ltvHYPE?.LTV || 0}%`,
+      isActive: !isFunctionPausedBorrow_Deposit,
+      InActiveHeading: "HYPE borrow is paused now",
+      pointsToBeGiven:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["HYPE"]?.pointsToBeGiven) ||
+        0,
+      minAmount:
+        (tokenRewardDetailList && tokenRewardDetailList?.["HYPE"]?.minAmount) ||
+        0,
+      link: STRATEGY_LINK,
+      boaster:
+        (tokenRewardDetailList &&
+          tokenRewardDetailList?.["HYPE"]?.assetBooster + luckBoaster) ||
+        0,
+      boasterTime:
+        tokenRewardDetailList &&
+        Math.max(
+          tokenRewardDetailList?.["HYPE"]?.assetBoosterValidity || 0,
+          farmLuckDetails?.deadLine5xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
+            : 0,
+          farmLuckDetails?.deadLine10xTimestamp
+            ? // convert date to timestamp
+              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
+            : 0,
+        ),
+    });
+  }
+
   const formattedaBorrowAssetList = useMemo(() => {
     if (list.length === 0) return [];
     const formattedList = [];
@@ -374,6 +417,7 @@ function MintEthListTemplate() {
     if (list[2]) formattedList.push(list[2]);
     if (list[4]) formattedList.push(list[4]);
     if (list[6]) formattedList.push(list[6]);
+    if (list[7]) formattedList.push(list[7]); // HYPE asset
     return formattedList;
   }, [list]);
 
