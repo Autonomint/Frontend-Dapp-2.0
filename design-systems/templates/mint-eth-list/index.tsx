@@ -25,6 +25,22 @@ import { useGetTokenReward } from "@/hookes/api-hooks/useGetTokenReward";
 import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useMemo } from "react";
+import { StaticImageData } from "next/image";
+
+interface TokenListItem {
+  token: string;
+  tokenImage: string | StaticImageData;
+  BorrowRate: string;
+  DownsideProtectionGiven: string;
+  ltv: string;
+  isActive: boolean;
+  InActiveHeading: string;
+  pointsToBeGiven: number;
+  minAmount: number;
+  link: string;
+  boaster: number;
+  boasterTime: number | undefined;
+}
 // Farm text animation variants
 const farmTextVariants = {
   hidden: { opacity: 0, y: 100, x: -100, rotate: -90 },
@@ -115,8 +131,10 @@ function MintEthListTemplate() {
           : 0;
 
   // List of tokens with their respective data
-  const list = [
-    {
+  const list: TokenListItem[] = [];
+
+  if (chainId !== NetworkId.Hyperliquid) {
+    list.push({
       token: "ETH",
       tokenImage: cryptoEth,
       BorrowRate: `${Number(ltvETH?.APR || 0) / 10}%`,
@@ -149,9 +167,8 @@ function MintEthListTemplate() {
               new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
             : 0,
         ),
-    },
-  ];
-
+    });
+  }
   if (
     chainId !== NetworkId.Ethereum &&
     chainId !== NetworkId.Rise &&
