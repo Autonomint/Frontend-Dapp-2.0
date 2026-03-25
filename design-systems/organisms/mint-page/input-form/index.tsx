@@ -180,8 +180,12 @@ function InputForm({ currency }: { currency: string }) {
 
   const { ratioValue } = useBorrowRatio(BigInt(0));
 
-  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
-    useGetOmniChainData();
+  const {
+    omniChainDataEth,
+    omniChainDataCbbtc,
+    omniChainDataKrwq,
+    omniChainDataEURC,
+  } = useGetOmniChainData();
 
   const omniChainDataMap = {
     ETH: omniChainDataEth,
@@ -190,6 +194,7 @@ function InputForm({ currency }: { currency: string }) {
     wsuperOETHb: omniChainDataEth,
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
+    EURC: omniChainDataEURC,
   };
 
   const maxMintAmount =
@@ -199,13 +204,11 @@ function InputForm({ currency }: { currency: string }) {
     ) /
     1e6 /
     0.2 /
-    (assetPrice / 1e2);
+    (assetPrice / (currency === "ETH" || currency === "cbBTC" ? 1e2 : 1));
 
   useEffect(() => {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
   }, [maxMintAmount]);
-
-
 
   // handle mint btn click
   const handleSubmit = async (
@@ -456,7 +459,6 @@ function InputForm({ currency }: { currency: string }) {
       select: (data) => Number(data || 0) / 100,
     },
   });
-
 
   // set the strike price percent to formik values
   useEffect(() => {
