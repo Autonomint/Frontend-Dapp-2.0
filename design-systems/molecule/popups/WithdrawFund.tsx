@@ -124,7 +124,7 @@ export function WithdrawFund({
   const priceDecimals =
     position.collateralType === "krwq"
       ? 1e8
-      : position.collateralType === "EURC"
+      : position.collateralType === "EURC" || position.collateralType === "HYPE"
         ? 1e6
         : 100;
 
@@ -226,7 +226,7 @@ export function WithdrawFund({
       position.collateralType as keyof typeof borrowAssetsAddress
     ],
     position.collateralType === "krwq",
-    position.collateralType === "EURC",
+    position.collateralType === "EURC" || position.collateralType === "HYPE",
   );
 
   const [amountProtected, setAmountProtected] = useState<number>(0);
@@ -374,7 +374,8 @@ export function WithdrawFund({
       : Number(position.ethPriceAtWithdraw) /
         (position.collateralType === "krwq"
           ? 1e8
-          : position.collateralType === "EURC"
+          : position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
             ? 1e6
             : 1e2);
 
@@ -388,7 +389,8 @@ export function WithdrawFund({
             (position?.ethPrice || 0) /
               (position.collateralType === "krwq"
                 ? 1e8
-                : position.collateralType === "EURC"
+                : position.collateralType === "EURC" ||
+                    position.collateralType === "HYPE"
                   ? 1e6
                   : position.collateralType === "cbBTC" ||
                       position.collateralType === "ETH"
@@ -399,7 +401,8 @@ export function WithdrawFund({
             (position?.ethPrice || 0) /
               (position.collateralType === "krwq"
                 ? 1e8
-                : position.collateralType === "EURC"
+                : position.collateralType === "EURC" ||
+                    position.collateralType === "HYPE"
                   ? 1e6
                   : 1e2),
           ) *
@@ -407,7 +410,8 @@ export function WithdrawFund({
           Number(
             currentEthPrice /
               (position.collateralType === "krwq" ||
-              position.collateralType === "EURC"
+              position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
                 ? 1
                 : 1e2),
           ) *
@@ -581,7 +585,8 @@ export function WithdrawFund({
           ((position.strikePrice || 0) - position.ethPrice)) /
         (position.collateralType === "krwq"
           ? 1e8
-          : position.collateralType === "EURC"
+          : position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
             ? 1e6
             : 100);
 
@@ -700,7 +705,8 @@ export function WithdrawFund({
             (1e2 *
               (position.collateralType === "krwq"
                 ? 1e8
-                : position.collateralType === "EURC"
+                : position.collateralType === "EURC" ||
+                    position.collateralType === "HYPE"
                   ? 1e6
                   : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2)
@@ -711,7 +717,8 @@ export function WithdrawFund({
             (1e2 *
               (position.collateralType === "krwq"
                 ? 1e8
-                : position.collateralType === "EURC"
+                : position.collateralType === "EURC" ||
+                    position.collateralType === "HYPE"
                   ? 1e6
                   : 1e2))
           ).toFixed(position.collateralType === "krwq" ? 8 : 2),
@@ -1060,7 +1067,8 @@ export function WithdrawFund({
               ? "cbBTC"
               : position.collateralType === "krwq"
                 ? "krwq"
-                : position.collateralType === "EURC"
+                : position.collateralType === "EURC" ||
+                    position.collateralType === "HYPE"
                   ? "EURC"
                   : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
@@ -1073,7 +1081,8 @@ export function WithdrawFund({
             repayAmount,
             position.collateralType === "cbBTC" ||
               position.collateralType === "krwq" ||
-              position.collateralType === "EURC"
+              position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
             borrowSignedData?.usdtFromOdos,
@@ -1288,7 +1297,8 @@ export function WithdrawFund({
       signedData,
       position.collateralType === "cbBTC" ||
         position.collateralType === "krwq" ||
-        position.collateralType === "EURC"
+        position.collateralType === "EURC" ||
+        position.collateralType === "HYPE"
         ? undefined
         : nativeFee?.nativeFee || BigInt(0n),
       position.collateralType,
@@ -1667,7 +1677,8 @@ export function WithdrawFund({
                   position.status == BorrowStatus.WITHDREW
                     ? position.status == BorrowStatus.WITHDREW &&
                       (position.collateralType === "cbBTC" ||
-                        position.collateralType === "EURC")
+                        position.collateralType === "EURC" ||
+                        position.collateralType === "HYPE")
                       ? "h-[130px]"
                       : "h-[150px]"
                     : "md:h-[80px] sm:h-[50px] h-[80px]"
@@ -1775,7 +1786,7 @@ export function WithdrawFund({
                             `Withdrawn ${parseFloat(
                               (
                                 Number(position.depositedAmount) /
-                                (position.collateralType === "cbBTC" ? 1 : 2)
+                                (position.collateralType === "ETH" ? 2 : 1)
                               ).toFixed(6),
                             )} ${position.collateralType}`
                           ) : (
@@ -2083,7 +2094,9 @@ export function WithdrawFund({
                             ? "krwq"
                             : position?.collateralType === "EURC"
                               ? "EURC"
-                              : "ETH"
+                              : position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"
                       } price at deposit`,
                       value: `$${
                         position.collateralType === "krwq"
@@ -2111,7 +2124,7 @@ export function WithdrawFund({
                       } price`,
                       value: `$${
                         position.collateralType === "krwq" ||
-                        position.collateralType === "EURC"
+                        position.collateralType === "EURC" ||  position?.collateralType === "EURC" 
                           ? Number(ethPrice)
                           : Number(formatUnits(BigInt(ethPrice), 2))
                       }`,

@@ -46,8 +46,8 @@ export const hyperliquidMainnet = defineChain({
   id: 999,
   name: "Hyperliquid Mainnet",
   nativeCurrency: {
-    name: "ETH",
-    symbol: "ETH",
+    name: "HYPE",
+    symbol: "HYPE",
     decimals: 18,
   },
   rpcUrls: {

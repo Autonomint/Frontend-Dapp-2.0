@@ -70,7 +70,7 @@ export const BorrowAssetsEnum = {
   krwq: AssetName.KRWQ,
   EURC: AssetName.EURC,
   eurc: AssetName.EURC,
-  HYPE: AssetName.HYPE,
+  HYPE: AssetName.ETH,
 };
 
 export const RedeemAssets = {
@@ -179,6 +179,7 @@ export const tokenFormatDecimal = {
   rsETH: 4,
   wsuperOETHb: 4,
   cbBTC: 6,
+  HYPE: 4,
 }
 export enum WithdrawType {
   FULL_WITHDRAW, WITHDRAW_YIELDS
