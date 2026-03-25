@@ -133,7 +133,8 @@ function InputForm({ currency }: { currency: string }) {
         : (currency as keyof typeof borrowAssetsAddress)
     ],
     currency.toLocaleLowerCase() === "krwq",
-    currency.toLocaleLowerCase() === "eurc",
+    currency.toLocaleLowerCase() === "eurc" ||
+      currency.toLocaleLowerCase() === "hype",
   );
 
   // Selected asset price
@@ -150,13 +151,19 @@ function InputForm({ currency }: { currency: string }) {
   const ethBalance = useBalance({
     address: address,
     token:
-      currency.toLocaleLowerCase() !== "eth"
+      currency.toLocaleLowerCase() !== "eth" &&
+      currency.toLocaleLowerCase() !== "hype"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
             chainId
           ]
         : undefined,
   });
 
+  console.log(
+    ethBalance,
+    borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][chainId],
+    "useBalance",
+  );
   // Formatted balance of the selected asset
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(
     tokenFormatDecimal[currency as keyof typeof tokenFormatDecimal],
@@ -269,7 +276,7 @@ function InputForm({ currency }: { currency: string }) {
         contract[chainId as keyof typeof contract] as `0x${string}`,
         currency === "cbBTC"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
-          : currency === "EURC"
+          : currency === "EURC" || currency === "HYPE"
             ? parseUnits(formik.values.collateralAmount.toString(), 6)
             : parseEther(formik.values.collateralAmount.toString()),
       );
@@ -451,7 +458,7 @@ function InputForm({ currency }: { currency: string }) {
     String(formik.values.collateralAmount),
     (currency === "KRWQ"
       ? parseUnits(String(assetPrice), 8)
-      : currency === "EURC"
+      : currency === "EURC" || currency === "HYPE"
         ? parseUnits(String(assetPrice), 6)
         : assetPrice || 0) as number,
     formik.values.strikePricePercent,
@@ -461,7 +468,9 @@ function InputForm({ currency }: { currency: string }) {
         ? "krwq"
         : currency === "EURC"
           ? "EURC"
-          : "ETH",
+          : currency === "HYPE"
+            ? "HYPE"
+            : "ETH",
     Number(formik.values.hedgeDuration),
   );
   console.log(assetPrice, "assetPrice");
@@ -563,7 +572,7 @@ function InputForm({ currency }: { currency: string }) {
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
-            : currency === "EURC"
+            : currency === "EURC" || currency === "HYPE"
               ? parseUnits(formik.values.collateralAmount.toString(), 6)
               : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
@@ -625,7 +634,9 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv?.LTV || 0)) /
-        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+          ? 100
+          : 10000);
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
       // set the usda to be minted
@@ -636,7 +647,9 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
-        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+          ? 100
+          : 10000);
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
@@ -648,7 +661,9 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           formik.values.strikePricePercent) /
-        (currency === "KRWQ" || currency === "EURC" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+          ? 100
+          : 10000);
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
     } catch (error) {}
@@ -819,7 +834,9 @@ function InputForm({ currency }: { currency: string }) {
   // calculate the liquidation price
   const LiquidationPrice = useMemo(() => {
     return (
-      ((Number(selectedAssetPrice) / (currency === "EURC" ? 1 : 100)) * 80) /
+      ((Number(selectedAssetPrice) /
+        (currency === "EURC" || currency === "HYPE" ? 1 : 100)) *
+        80) /
       100
     ).toFixed(currency === "KRWQ" ? 8 : 2);
   }, [selectedAssetPrice, currency]);
@@ -872,7 +889,9 @@ function InputForm({ currency }: { currency: string }) {
                   <span className="text-grayLight">{currency} Price: </span>{" "}
                   <span className=" dark:text-white text-textBlack font-semibold ml-1">
                     $
-                    {currency === "KRWQ" || currency === "EURC"
+                    {currency === "KRWQ" ||
+                    currency === "EURC" ||
+                    currency === "HYPE"
                       ? Number(selectedAssetPrice)
                       : Number(selectedAssetPrice) / 100 || 0}
                   </span>
@@ -1051,7 +1070,9 @@ function InputForm({ currency }: { currency: string }) {
         <InputMetics
           deposit={(
             (Number(selectedAssetPrice || 0) /
-              (currency === "KRWQ" || currency === "EURC" ? 1 : 100)) *
+              (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+                ? 1
+                : 100)) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={Number(optionFees).toFixed(2)}
