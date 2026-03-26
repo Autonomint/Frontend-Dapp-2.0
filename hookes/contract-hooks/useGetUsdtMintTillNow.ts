@@ -58,6 +58,19 @@ const useGetOmniChainData = () => {
     scopeKey: "getOmniChainData",
   });
 
+  const {
+    data: omniChainDataHype,
+    isPending: isOmniChainDataPendingHype,
+    error: omniChainDataErrorHype,
+  } = useReadContract({
+    abi: globalAbi,
+    address: globalAddress[chainId as keyof typeof globalAddress],
+    functionName: "getOmniChainData",
+    query: { staleTime: 10 * 1000 },
+    args: [AssetName.ETH],
+    scopeKey: "getOmniChainData",
+  });
+
 
 
   return {
@@ -73,6 +86,9 @@ const useGetOmniChainData = () => {
     omniChainDataEURC: omniChainDataEURC as Record<string, bigint>,
     isOmniChainDataPendingEURC,
     omniChainDataErrorEURC,
+    omniChainDataHype: omniChainDataHype as Record<string, bigint>,
+    isOmniChainDataPendingHype,
+    omniChainDataErrorHype,
   };
 };
 
