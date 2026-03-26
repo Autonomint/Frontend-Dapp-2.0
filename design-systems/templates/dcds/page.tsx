@@ -206,6 +206,12 @@ function DCDSTemplate() {
           hedgeAsset: "",
         });
       }
+      if (chainId === NetworkId.Hyperliquid) {
+        formik.setFieldValue("hedgeAsset", "HYPE");
+        formik.setErrors({
+          hedgeAsset: "",
+        });
+      }
     }
   }, [chainId, NetworkId]);
 
@@ -342,6 +348,7 @@ function DCDSTemplate() {
         formik.values.usdaFlag ||
         formik.values.usdtFlag ||
         formik.values.opFlag ||
+        formik.values.usdc ||
         formik.values.aeroFlag,
     },
   }) as any;
@@ -428,7 +435,9 @@ function DCDSTemplate() {
             ? "krwq"
             : formik.values.hedgeAsset === "EURC"
               ? "EURC"
-              : "ETH";
+              : formik.values.hedgeAsset === "HYPE"
+                ? "HYPE"
+                : "ETH";
       const cdsDepositSignedData = await refetchcdsDepositSignedData(token);
       let liqAmnt = 0;
       if (selectedTokens.length > 0 && getPrices?.length > 0) {
@@ -469,7 +478,8 @@ function DCDSTemplate() {
       if (
         formik.values.hedgeAsset === "cbBTC" ||
         formik.values.hedgeAsset === "KRWQ" ||
-        formik.values.hedgeAsset === "EURC"
+        formik.values.hedgeAsset === "EURC" ||
+        formik.values.hedgeAsset === "HYPE"
       ) {
         filteredTokenList = tokenList.filter(
           (token) => token.tokenName !== "BOLD",
@@ -517,7 +527,9 @@ function DCDSTemplate() {
                   ? AssetName.KRWQ
                   : formik.values.hedgeAsset === "EURC"
                     ? AssetName.EURC
-                    : undefined,
+                    : formik.values.hedgeAsset === "HYPE"
+                      ? AssetName.ETH
+                      : undefined,
             verifyParams: {
               excessProfitCumulativeValue:
                 cdsDepositSignedData?.excessProfitCumulativeValue,
@@ -536,7 +548,8 @@ function DCDSTemplate() {
         chainId === NetworkId.Ethereum ||
           formik.values.hedgeAsset === "cbBTC" ||
           formik.values.hedgeAsset === "KRWQ" ||
-          formik.values.hedgeAsset === "EURC"
+          formik.values.hedgeAsset === "EURC" ||
+          formik.values.hedgeAsset === "HYPE"
           ? undefined
           : nativeFee.nativeFee,
         formik.values.hedgeAsset,
