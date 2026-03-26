@@ -27,7 +27,7 @@ const useDcdsWithdrawGain = (mutation: any) => {
 
   const handleDcdsWithdrawGain = (args: any, token: string) => {
     const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? cdsCoreAddress : cdsAddress;
-    const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? cdsCoreABI : cdsAbi;
+    const abi = token === "cbBTC" || token === "krwq" || token === "EURC" || token === "HYPE" ? cdsCoreABI : cdsAbi;
     dcdsFundWithdrawGain({
       abi: chainId === NetworkId.Ethereum ? cdsAbiEthereum : abi,
       address: contract[chainId as keyof typeof contract] as `0x${string}`,

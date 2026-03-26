@@ -122,7 +122,9 @@ export function DcdsWithdrawModal({
           ? "cbBTC"
           : position?.collateralType === "krwq"
             ? "KRWQ"
-            : "ETH"
+            : position?.collateralType === "HYPE"
+              ? "HYPE"
+              : "ETH"
       } Price at Deposit`,
       value: "0",
       tooltip: false,
@@ -513,13 +515,16 @@ export function DcdsWithdrawModal({
             ? "KRWQ"
             : position?.collateralType === "EURC"
               ? "EURC"
-              : "ETH"
+              : position?.collateralType === "HYPE"
+                ? "HYPE"
+                : "ETH"
       } Price at Deposit`;
       updatedData[2].value = `$${
         Number(position.ethPriceAtDeposit) /
         (position.collateralType === "krwq"
           ? 1e8
-          : position.collateralType === "EURC"
+          : position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
             ? 1e6
             : 100)
       }`;
@@ -809,7 +814,9 @@ export function DcdsWithdrawModal({
                 ? "krwq"
                 : position.collateralType === "EURC"
                   ? "EURC"
-                  : "ETH";
+                  : position.collateralType === "HYPE"
+                    ? "HYPE"
+                    : "ETH";
           const res = await refetchBorrowWithDrawGainsSignedData(token);
           let params = [
             BigInt(position.index),
@@ -874,7 +881,9 @@ export function DcdsWithdrawModal({
               ? "krwq"
               : position.collateralType === "EURC"
                 ? "EURC"
-                : "ETH";
+                : position.collateralType === "HYPE"
+                  ? "HYPE"
+                  : "ETH";
         const res = await refetchBorrowWithDrawSignedData(token);
         let params: any = [
           [
@@ -917,7 +926,8 @@ export function DcdsWithdrawModal({
             params,
             position.collateralType === "cbBTC" ||
               position.collateralType === "krwq" ||
-              position.collateralType === "EURC"
+              position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
               ? undefined
               : nativeFeeAll,
             position.collateralType,
