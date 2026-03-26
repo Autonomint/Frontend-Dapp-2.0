@@ -1,7 +1,7 @@
 import { borrowCoreAddress, borrowDepositCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useWriteContract } from "wagmi";
-import { AssetName } from "@/utils/constants";
+import { AssetName, NetworkId } from "@/utils/constants";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 
 interface BorrowInputs {
@@ -39,7 +39,7 @@ const useDepositTokens = (mutation: any) => {
     verifyParams
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 || assetName === 13 || assetName === 14 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = assetName === 12 || assetName === 13 || assetName === 14 ? borowCoreABI : borrowingContractAbi
+    const abi = assetName === 12 || assetName === 13 || assetName === 14 || (assetName === 1 && chainId === NetworkId.Hyperliquid) ? borowCoreABI : borrowingContractAbi
 
     writeContract?.({
       abi: abi,

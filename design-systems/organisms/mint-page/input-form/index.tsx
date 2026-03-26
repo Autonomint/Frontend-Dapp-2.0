@@ -556,7 +556,10 @@ function InputForm({ currency }: { currency: string }) {
               : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
+          currency === "cbBTC" ||
+          currency === "KRWQ" ||
+          currency === "EURC" ||
+          currency === "HYPE"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
