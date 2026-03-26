@@ -185,8 +185,6 @@ function InputForm({ currency }: { currency: string }) {
     args: [address, contract[chainId as keyof typeof contract]],
   }) as { data: number | undefined };
 
-  const { ratioValue } = useBorrowRatio(BigInt(0));
-
   const {
     omniChainDataEth,
     omniChainDataCbbtc,
@@ -304,15 +302,25 @@ function InputForm({ currency }: { currency: string }) {
     onSubmit: handleSubmit,
   });
 
+  const { ratioValue, refetchRatio, ratioError } = useBorrowRatio(
+    BigInt(parseUnits(formik.values.collateralAmount.toString(), 8)),
+    currency as keyof typeof BorrowAssetsEnum,
+  );
+  console.log(
+    ratioValue,
+    parseUnits(formik.values.collateralAmount.toString(), 18),
+    ratioError,
+    "ratioValue",
+  );
   useEffect(() => {
     // set the balance of the selected asset to formik values
     formik.setFieldValue("balance", formattedBalance);
-  }, [formattedBalance]);
+  }, [formattedBalance, formik]);
 
   useEffect(() => {
     // set the collateral type to formik values
     formik.setFieldValue("collateral", currency);
-  }, [currency]);
+  }, [currency, formik]);
 
   // Create the options fee for the contract
   const options = Options.newOptions()
@@ -554,7 +562,7 @@ function InputForm({ currency }: { currency: string }) {
         depositingAmount:
           currency === "cbBTC"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
-            : currency === "EURC" || currency === "HYPE"
+            : currency === "EURC"
               ? parseUnits(formik.values.collateralAmount.toString(), 6)
               : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
@@ -569,7 +577,9 @@ function InputForm({ currency }: { currency: string }) {
               : currency.toLocaleLowerCase() == "eth"
                 ? parseEther(formik.values.collateralAmount.toString()) +
                   nativeFee.nativeFee
-                : nativeFee.nativeFee,
+                : currency === "HYPE"
+                  ? parseEther(formik.values.collateralAmount.toString())
+                  : nativeFee.nativeFee,
         hedgeDuration: BigInt(formik.values.hedgeDuration || 0),
         ethPrice: BigInt(borrowSignedData?.ethPrice || 0),
         verifyParams: borrowSignedData,

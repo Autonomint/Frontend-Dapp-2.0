@@ -34,7 +34,7 @@ import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
 import useLastCumulativeRate from "@/hookes/contract-hooks/useGetLastCumulativeRate";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useTokenDetails from "@/hookes/contract-hooks/useTokenDetails";
-import { eId, NetworkId } from "@/utils/constants";
+import { eId, NetworkId, BorrowAssetsEnum } from "@/utils/constants";
 import { WithdrawType } from "@/utils/constants";
 import {
   calculatePercentage,
@@ -86,7 +86,10 @@ export function DcdsWithdrawModal({
 
   const [showAPYTooltip, setShowAPYTooltip] = useState(false);
 
-  const { ratioValue } = useBorrowRatio(BigInt(0));
+  const { ratioValue } = useBorrowRatio(
+    BigInt(0),
+    (position.collateralType || "ETH") as keyof typeof BorrowAssetsEnum,
+  );
   const [halfWithdraw, setHalfWithdraw] = useState(false);
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
