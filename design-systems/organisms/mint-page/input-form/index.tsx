@@ -192,6 +192,7 @@ function InputForm({ currency }: { currency: string }) {
     omniChainDataCbbtc,
     omniChainDataKrwq,
     omniChainDataEURC,
+    omniChainDataHype,
   } = useGetOmniChainData();
 
   const omniChainDataMap = {
@@ -202,6 +203,7 @@ function InputForm({ currency }: { currency: string }) {
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
     EURC: omniChainDataEURC,
+    Hype: omniChainDataHype,
   };
 
   const maxMintAmount =
@@ -212,6 +214,7 @@ function InputForm({ currency }: { currency: string }) {
     1e6 /
     0.2 /
     (assetPrice / (currency === "ETH" || currency === "cbBTC" ? 1e2 : 1));
+  console.log(maxMintAmount, "maxMintAmount");
 
   useEffect(() => {
     formik.setFieldValue("maxMintAmount", maxMintAmount);
