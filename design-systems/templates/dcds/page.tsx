@@ -54,7 +54,13 @@ import { useGetTVLBothChain } from "@/hookes/contract-hooks/useGetTVLUSDA";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import useDeviceType from "@/hookes/useDeviceType";
-import { AssetName, AssetStatus, CdsData, NetworkId } from "@/utils/constants";
+import {
+  AssetName,
+  AssetStatus,
+  CdsData,
+  NetworkId,
+  BorrowAssetsEnum,
+} from "@/utils/constants";
 import {
   calculateRemainingTimeDate,
   formatNumber,
@@ -85,6 +91,7 @@ import { scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { useCalculateGainCDS } from "@/hookes/contract-hooks/useCalculateGainCDS";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
+import { cdsCoreABI } from "@/blockchain/abis/cdsCoreDeposit";
 
 // Form schema for the dcds template
 const createFormSchema = (tokenList: TokenDetails[]) => {
@@ -337,12 +344,26 @@ function DCDSTemplate() {
   const liquidationGains = formik.values.liquidationGains;
   const lockInPeriodLocal = formik.values.lockInPeriod;
 
+  const priceArgu =
+    chainId === NetworkId.Hyperliquid
+      ? [
+          BorrowAssetsEnum[
+            formik.values.hedgeAsset as keyof typeof BorrowAssetsEnum
+          ],
+          selectedTokens.map((token) => token.tokenAddress as `0x${string}`),
+        ]
+      : [selectedTokens.map((token) => token.tokenAddress as `0x${string}`)];
+  const getPriceAbi = chainId === NetworkId.Hyperliquid ? cdsCoreABI : cdsAbi;
   // fetching the prices from the contract of usda, usdt and native token from the blockchain
-  const { data: getPrices, refetch: refetchPrices } = useReadContract({
+  const {
+    data: getPrices,
+    refetch: refetchPrices,
+    error,
+  } = useReadContract({
     address: cdsAddress[chainId as keyof typeof cdsAddress] as `0x${string}`,
-    abi: cdsAbi,
+    abi: getPriceAbi,
     functionName: "getPrices",
-    args: [selectedTokens.map((token) => token.tokenAddress as `0x${string}`)],
+    args: priceArgu,
     query: {
       enabled:
         formik.values.usdaFlag ||
@@ -421,6 +442,7 @@ function DCDSTemplate() {
 
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
+    debugger;
     try {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
@@ -463,7 +485,11 @@ function DCDSTemplate() {
         );
       }
 
-      if (!nativeFee?.nativeFee && NetworkId.Ethereum !== chainId) {
+      if (
+        !nativeFee?.nativeFee &&
+        NetworkId.Ethereum !== chainId &&
+        NetworkId.Hyperliquid !== chainId
+      ) {
         toast.custom((t) => (
           <ToastNotificationError
             title="Transaction failed, Please try again"
