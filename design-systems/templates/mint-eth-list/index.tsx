@@ -399,9 +399,9 @@ function MintEthListTemplate() {
     list.push({
       token: "HYPE",
       tokenImage: HYPELogo,
-      BorrowRate: `${Number(ltvHYPE?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionHYPE}%`,
-      ltv: `${ltvHYPE?.LTV || 0}%`,
+      BorrowRate: `${Number(0)}%`,
+      DownsideProtectionGiven: `${20}%`,
+      ltv: `${80}%`,
       isActive: !isFunctionPausedBorrow_Deposit,
       InActiveHeading: "HYPE borrow is paused now",
       pointsToBeGiven:

@@ -118,7 +118,9 @@ export function WithdrawFund({
     position.index,
     position.collateralType,
     false,
-    isDialogOpen,
+    isDialogOpen &&
+      (position.collateralType === "krwq" ||
+        position.collateralType === "EURC"),
   );
 
   const priceDecimals =
@@ -954,6 +956,7 @@ export function WithdrawFund({
 
   const handleRepay = async (withdrawAmount: string) => {
     // check if repay amount is greater than or equal to repay amount
+    debugger;
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
       Number(position.noOfUSDaMinted)
@@ -1067,14 +1070,16 @@ export function WithdrawFund({
               ? "cbBTC"
               : position.collateralType === "krwq"
                 ? "krwq"
-                : position.collateralType === "EURC" ||
-                    position.collateralType === "HYPE"
+                : position.collateralType === "EURC"
                   ? "EURC"
-                  : "ETH";
+                  : position.collateralType === "HYPE"
+                    ? "HYPE"
+                    : "ETH";
           const borrowSignedData = await refetchBorrowWithDrawSignedData({
             token,
             repayPercent: repayAmount,
           });
+          debugger;
 
           withdrawUsda(
             position.index,
