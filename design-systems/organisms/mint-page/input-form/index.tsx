@@ -18,7 +18,7 @@ import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { formatUnits, parseEther, parseUnits } from "viem";
 
@@ -315,12 +315,12 @@ function InputForm({ currency }: { currency: string }) {
   useEffect(() => {
     // set the balance of the selected asset to formik values
     formik.setFieldValue("balance", formattedBalance);
-  }, [formattedBalance, formik]);
+  }, [formattedBalance]);
 
   useEffect(() => {
     // set the collateral type to formik values
     formik.setFieldValue("collateral", currency);
-  }, [currency, formik]);
+  }, [currency]);
 
   // Create the options fee for the contract
   const options = Options.newOptions()
@@ -544,7 +544,7 @@ function InputForm({ currency }: { currency: string }) {
   async function handleMint(values: any) {
     // get the strike percent
     const strikePercent = values.strikePricePercent;
-
+    debugger;
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData({
       token: currency === "KRWQ" ? "krwq" : currency,
@@ -567,10 +567,7 @@ function InputForm({ currency }: { currency: string }) {
               : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" ||
-          currency === "KRWQ" ||
-          currency === "EURC" ||
-          currency === "HYPE"
+          currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
