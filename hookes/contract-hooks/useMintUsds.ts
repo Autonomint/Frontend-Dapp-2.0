@@ -40,7 +40,6 @@ const useDepositTokens = (mutation: any) => {
   }: BorrowInputs) => {
     const contractAddress = assetName === 12 || assetName === 13 || assetName === 14 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
     const abi = assetName === 12 || assetName === 13 || assetName === 14 || (assetName === 1 && chainId === NetworkId.Hyperliquid) ? borowCoreABI : borrowingContractAbi
-    debugger
     writeContract?.({
       abi: abi,
       address: contractAddress as `0x${string}`,

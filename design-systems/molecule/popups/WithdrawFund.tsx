@@ -49,7 +49,7 @@ import displayNumberWithPrecision, {
   truncateDecimals,
 } from "@/utils/helpers";
 import { AssetDetailsInterface, PositionData } from "@/utils/interface";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { BACKEND_API_URL, explorerNames, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -918,11 +918,7 @@ export function WithdrawFund({
           <ToastNotification
             title="Repay Successful"
             message=""
-            linkText={
-              Number(chainId) === NetworkId.BaseSepolia
-                ? "View On Basescan"
-                : "View On Optimismscan"
-            }
+            linkText={explorerNames[Number(chainId)] || "View On Explorer"}
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
           />
@@ -956,7 +952,6 @@ export function WithdrawFund({
 
   const handleRepay = async (withdrawAmount: string) => {
     // check if repay amount is greater than or equal to repay amount
-    debugger;
     if (
       Number(truncateDecimals(Number(withdrawAmount || 0), 6)) >
       Number(position.noOfUSDaMinted)
@@ -1079,7 +1074,6 @@ export function WithdrawFund({
             token,
             repayPercent: repayAmount,
           });
-          debugger;
 
           withdrawUsda(
             position.index,
@@ -1151,11 +1145,7 @@ export function WithdrawFund({
         <ToastNotification
           title="Renew Successful"
           message=""
-          linkText={
-            Number(chainId) === NetworkId.BaseSepolia
-              ? "View On Basescan"
-              : "View On Optimismscan"
-          }
+          linkText={explorerNames[Number(chainId)] || "View On Explorer"}
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
         />

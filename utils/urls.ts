@@ -26,6 +26,15 @@ export const scanUrls = {
   999: "https://app.hyperliquid.xyz/explorer",
 } as Record<number, string>;
 
+export const explorerNames = {
+  [NetworkId.Mode]: "View On Modescan",
+  [NetworkId.Optimism]: "View On Optimismscan",
+  [NetworkId.Ethereum]: "View On Etherscan",
+  [NetworkId.BaseSepolia]: "View On Basescan",
+  [NetworkId.Rise]: "View On Risescan",
+  [NetworkId.Hyperliquid]: "View On Hyperliquid",
+} as Record<NetworkId | number, string>;
+
 // urls
 export const AUTONOMINT_DAPP_URL = "https://app.autonomint.com/";
 export const meetUrl = "https://meet.brevo.com/aks-autonomint";

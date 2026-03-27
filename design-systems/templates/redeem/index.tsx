@@ -50,7 +50,7 @@ import {
 } from "wagmi";
 import { mpoABI } from "@/blockchain/abis/mpo";
 import * as Yup from "yup";
-import { scanUrls } from "@/utils/urls";
+import { explorerNames, scanUrls } from "@/utils/urls";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 
@@ -256,11 +256,7 @@ const RedeemContainer = () => {
         <ToastNotification
           title="Redeem Successful"
           message=""
-          linkText={
-            Number(chainId) === NetworkId.BaseSepolia
-              ? "View On Basescan"
-              : "View On Optimismscan"
-          }
+          linkText={explorerNames[Number(chainId)] || "View On Explorer"}
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
         />
@@ -298,7 +294,7 @@ const RedeemContainer = () => {
     functionName: "getAbondYields",
     args: [
       accountAddress as `0x${string}`,
-      parseUnits((String(formik.values.collateralAmount || 0)).toString(), 18),
+      parseUnits(String(formik.values.collateralAmount || 0).toString(), 18),
     ],
   }) as {
     data: [bigint, bigint, bigint, bigint, bigint, bigint] | undefined;
@@ -328,7 +324,7 @@ const RedeemContainer = () => {
           // setting the output collateral amount
           formik.setFieldValue(
             "outputCollateralAmount",
-            Number(formatEther(outputData?.[0] || 0n) || 1)
+            Number(formatEther(outputData?.[0] || 0n) || 1),
           );
         }
       }
@@ -348,7 +344,7 @@ const RedeemContainer = () => {
         // setting the output collateral amount
         formik.setFieldValue(
           "outputCollateralAmount",
-          Number(formik.values.collateralAmount)
+          Number(formik.values.collateralAmount),
         );
       }
     } else {
@@ -449,7 +445,7 @@ const RedeemContainer = () => {
     if (values.inputCollateral === "amint") {
       setRedeemLoadingLocal(true);
       const redeemAmountUSDa = BigInt(
-        parseUnits(String(values.collateralAmount) || "0", 6)
+        parseUnits(String(values.collateralAmount) || "0", 6),
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceUSDa || 0) < redeemAmountUSDa) {
@@ -471,7 +467,7 @@ const RedeemContainer = () => {
       setRedeemLoadingLocal(true);
       // checking if the input collateral is abond
       const redeemAmountABond = BigInt(
-        parseUnits(String(values.collateralAmount) || "0", 18)
+        parseUnits(String(values.collateralAmount) || "0", 18),
       );
       // checking if the allowance is less than the redeem amount
       if ((allowanceABond || 0) < redeemAmountABond) {
@@ -526,10 +522,10 @@ const RedeemContainer = () => {
         formik.values.redeemTokenName === "USDT"
           ? testusdtAbiAddress[chainId as keyof typeof testusdtAbiAddress]
           : formik.values.redeemTokenName === "USDC"
-          ? usdcAddress[chainId as keyof typeof usdcAddress]
-          : formik.values.redeemTokenName === "sUSD"
-          ? sUSDAddress[chainId as keyof typeof sUSDAddress]
-          : zeroAddress,
+            ? usdcAddress[chainId as keyof typeof usdcAddress]
+            : formik.values.redeemTokenName === "sUSD"
+              ? sUSDAddress[chainId as keyof typeof sUSDAddress]
+              : zeroAddress,
       ],
       // value: nativeFee1.nativeFee,
     });
@@ -576,19 +572,19 @@ const RedeemContainer = () => {
 
   // Custom hook to fetch the Price of the selected asset
   const { assetPrice: rsEthPrice } = useGetUsdValue(
-    borrowAssetsAddress["wrsETH" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress["wrsETH" as keyof typeof borrowAssetsAddress],
   );
 
   const { assetPrice: wSuperEthPrice } = useGetUsdValue(
-    borrowAssetsAddress["wsuperOETHb" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress["wsuperOETHb" as keyof typeof borrowAssetsAddress],
   );
   // fetching the price of the weETH
   const { assetPrice: weEthPrice } = useGetUsdValue(
-    borrowAssetsAddress["weETH" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress["weETH" as keyof typeof borrowAssetsAddress],
   );
   // fetching the price of the eth
   const { assetPrice: ethPrice } = useGetUsdValue(
-    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress]
+    borrowAssetsAddress["ETH" as keyof typeof borrowAssetsAddress],
   );
 
   // fetching the usda+ prices
@@ -731,7 +727,7 @@ const RedeemContainer = () => {
                       "collateralAmount",
                       formik.values.inputCollateral == "amint"
                         ? usdabalance?.formatted || 0
-                        : abondbalance?.formatted || 0
+                        : abondbalance?.formatted || 0,
                     );
                   }}
                   className="flex text-[20px] justify-center cursor-pointer font-semibold px-2 items-center  border border-grayLight"
@@ -841,7 +837,7 @@ const RedeemContainer = () => {
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                  formatEther(outputData?.[4] || 0n)
+                                  formatEther(outputData?.[4] || 0n),
                                 ).toFixed(5)
                               : 0}{" "}
                             ETH
@@ -857,7 +853,7 @@ const RedeemContainer = () => {
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                  formatEther(outputData?.[1] || 0n)
+                                  formatEther(outputData?.[1] || 0n),
                                 ).toFixed(5)
                               : 0}{" "}
                             weETH
@@ -873,7 +869,7 @@ const RedeemContainer = () => {
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                  formatEther(outputData?.[2] || 0n)
+                                  formatEther(outputData?.[2] || 0n),
                                 ).toFixed(5)
                               : 0}{" "}
                             wrsETH
@@ -888,7 +884,7 @@ const RedeemContainer = () => {
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                  formatEther(outputData?.[3] || 0n)
+                                  formatEther(outputData?.[3] || 0n),
                                 ).toFixed(5)
                               : 0}{" "}
                             wsuperOETHb
@@ -903,7 +899,7 @@ const RedeemContainer = () => {
                           <div className="flex items-center p-1 text-xl  text-bold">
                             {outputData
                               ? Number(
-                                  formatUnits(outputData?.[5] || 0n, 6)
+                                  formatUnits(outputData?.[5] || 0n, 6),
                                 ).toFixed(2)
                               : 0}{" "}
                             USDA+
@@ -953,7 +949,8 @@ const RedeemContainer = () => {
                         (isFunctionPausedBorrow_Redeem &&
                           formik.values.inputCollateral === "abond") ||
                         (isFunctionPausedCDS_Redeem &&
-                          formik.values.inputCollateral === "amint") || !readyForNewTx
+                          formik.values.inputCollateral === "amint") ||
+                        !readyForNewTx
                       }
                       onClick={() => formik.handleSubmit()}
                       className="bg-textBlack w-full text-white h-full  md:text-[32px] text-[24px] font-bold  py-4 md:p-0 dark:bg-custom-gradient-to-top"

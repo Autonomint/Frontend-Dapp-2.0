@@ -11,6 +11,7 @@ import arrow from "@/app/assets/arrow-right-02.png";
 import ModeImage from "@/app/assets/op-blue.svg";
 import OptimismImage from "@/app/assets/optimism.png";
 import infinityImage from "@/app/assets/infinity.svg";
+import hypeLogo from "@/app/assets/hyperliquid-logo.png";
 import { useRouter } from "next/navigation";
 
 function TransferBetweeHoverElement() {
@@ -43,7 +44,16 @@ function TransferBetweeHoverElement() {
           </div>
           <div className="flex items-center pb-6 lg:pb-9  justify-center gap-3 bg-none">
             <RightArrowIcon className="w-7 h-7" />
+            <DotIcon className="w-2  h-2" />
 
+            <Image
+              src={hypeLogo}
+              alt="Hype Logo"
+              className=" w-[65px] h-[65px] lg:w-[100px] lg:h-[100px]  xl:w-[130px] xl:h-[130px]"
+              style={{
+                backgroundColor: theme == "dark" ? "unset !important" : "",
+              }}
+            />
             <DotIcon className="w-2  h-2" />
             <LeftArrowIcon
               className="w-7 h-7"
