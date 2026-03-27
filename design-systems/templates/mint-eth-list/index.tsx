@@ -464,7 +464,9 @@ function MintEthListTemplate() {
             animate="visible"
             variants={farmTextVariants}
           >
-            <div className="transform rotate-90  text-textBlack text-[42px] font-medium min-w-[600px] flex justify-center dark:text-white">
+            <div
+              className={`transform rotate-90  text-textBlack ${formattedaBorrowAssetList.length > 1 ? "text-[42px]" : "text-[24px]"} font-medium min-w-[600px] flex justify-center dark:text-white`}
+            >
               Farm Your Luck
             </div>
           </motion.div>
