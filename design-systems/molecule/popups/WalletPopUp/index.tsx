@@ -1,7 +1,7 @@
 "use client";
 import modeIconNew from "@/app/assets/mode.svg";
 import opIconNew from "@/app/assets/op.svg";
-import riseChainLogo from "@/app/assets/rise-chain-logo.png";
+// import riseChainLogo from "@/app/assets/rise-chain-logo.png";
 import hyperliquidLogo from "@/app/assets/hyperliquid-logo.png";
 import { usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
@@ -163,14 +163,15 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.Rise ? (
-                    <Image
-                      src={riseChainLogo}
-                      alt="Rise Chain"
-                      width={20}
-                      height={20}
-                    />
-                  ) : chainId == NetworkId.Hyperliquid ? (
+                  ) : //  : chainId == NetworkId.Rise ? (
+                  //   <Image
+                  //     src={riseChainLogo}
+                  //     alt="Rise Chain"
+                  //     width={20}
+                  //     height={20}
+                  //   />
+                  // )
+                  chainId == NetworkId.Hyperliquid ? (
                     <Image
                       src={hyperliquidLogo}
                       alt="Hyperliquid Chain"
@@ -327,14 +328,15 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       className=" stroke-black  "
                       style={{ width: "20px", height: "20px" }}
                     />
-                  ) : chainId == NetworkId.Rise ? (
-                    <Image
-                      src={riseChainLogo}
-                      alt="Rise Chain"
-                      width={20}
-                      height={20}
-                    />
-                  ) : chainId == NetworkId.Hyperliquid ? (
+                  ) : //  : chainId == NetworkId.Rise ? (
+                  //   <Image
+                  //     src={riseChainLogo}
+                  //     alt="Rise Chain"
+                  //     width={20}
+                  //     height={20}
+                  //   />
+                  // )
+                  chainId == NetworkId.Hyperliquid ? (
                     <Image
                       src={hyperliquidLogo}
                       alt="Hyperliquid Chain"
@@ -420,14 +422,15 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                         className=" stroke-black  "
                         style={{ width: "20px", height: "20px" }}
                       />
-                    ) : chainId == NetworkId.Rise ? (
-                      <Image
-                        src={riseChainLogo}
-                        alt="Rise Chain"
-                        width={20}
-                        height={20}
-                      />
-                    ) : chainId == NetworkId.Hyperliquid ? (
+                    ) : //  : chainId == NetworkId.Rise ? (
+                    //   <Image
+                    //     src={riseChainLogo}
+                    //     alt="Rise Chain"
+                    //     width={20}
+                    //     height={20}
+                    //   />
+                    // )
+                    chainId == NetworkId.Hyperliquid ? (
                       <Image
                         src={hyperliquidLogo}
                         alt="Hyperliquid Chain"
