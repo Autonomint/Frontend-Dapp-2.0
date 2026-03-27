@@ -311,7 +311,7 @@ function ChartComponent({ currency }: { currency: string }) {
             </div>
           )} */}
           <div className=" flex gap-4 items-center justify-end">
-            {(currency === "KRWQ" || currency === "EURC") && (
+            {Boolean(AssetBuyLink[currency as keyof typeof AssetBuyLink]) && (
               <Link
                 target="_blank"
                 href={AssetBuyLink[currency as keyof typeof AssetBuyLink]}
