@@ -39,37 +39,54 @@ export default function HomeTemplate() {
     omniChainDataCbbtc,
     omniChainDataKrwq,
     omniChainDataEURC,
+    omniChainDataHype,
   } = useGetUsdtAmountDepositedTillNow();
 
   // box option list for navigation
   const items = [
     {
       title: "Mint USDA+",
-      subtitle: `TVL - $${(
-        Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
-          1e20 +
-        Number(omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD || 0) /
-          1e26 +
-        Number(omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0) /
-          1e20 +
-        Number(omniChainDataEURC?.totalVolumeOfBorrowersAmountinUSD || 0) / 1e24
+      subtitle: `TVL - $${(chainId === 999
+        ? Number(omniChainDataHype?.totalVolumeOfBorrowersAmountinUSD || 0) /
+          1e24
+        : Number(GlobalContractData?.totalVolumeOfBorrowersAmountinUSD || 0) /
+            1e20 +
+          Number(omniChainDataKrwq?.totalVolumeOfBorrowersAmountinUSD || 0) /
+            1e26 +
+          Number(omniChainDataCbbtc?.totalVolumeOfBorrowersAmountinUSD || 0) /
+            1e20 +
+          Number(omniChainDataEURC?.totalVolumeOfBorrowersAmountinUSD || 0) /
+            1e24
       ).toFixed(2)}`,
     },
     {
       title: "Earn With dCDS",
       subtitle: `TVL - $${Number(
-        Number(
-          formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6),
-        ) +
-          Number(
-            formatUnits(omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n, 6),
-          ) +
-          Number(
-            formatUnits(omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n, 6),
-          ) +
-          Number(
-            formatUnits(omniChainDataEURC?.totalCdsDepositedAmount ?? 0n, 6),
-          ),
+        chainId === 999
+          ? Number(
+              formatUnits(omniChainDataHype?.totalCdsDepositedAmount ?? 0n, 6),
+            )
+          : Number(
+              formatUnits(GlobalContractData?.totalCdsDepositedAmount ?? 0n, 6),
+            ) +
+              Number(
+                formatUnits(
+                  omniChainDataKrwq?.totalCdsDepositedAmount ?? 0n,
+                  6,
+                ),
+              ) +
+              Number(
+                formatUnits(
+                  omniChainDataCbbtc?.totalCdsDepositedAmount ?? 0n,
+                  6,
+                ),
+              ) +
+              Number(
+                formatUnits(
+                  omniChainDataEURC?.totalCdsDepositedAmount ?? 0n,
+                  6,
+                ),
+              ),
       ).toFixed(2)}`,
     },
     { title: "Bridge", subtitle: "" },

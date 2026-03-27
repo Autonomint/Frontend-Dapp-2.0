@@ -87,7 +87,7 @@ import {
 } from "wagmi";
 import * as Yup from "yup";
 import { FormValues, TokenDetails } from "./interface";
-import { scanUrls } from "@/utils/urls";
+import { explorerNames, scanUrls } from "@/utils/urls";
 import { useLayerZeroMessages } from "@/hookes/contract-hooks/useLayerZeroMessages";
 import { useCalculateGainCDS } from "@/hookes/contract-hooks/useCalculateGainCDS";
 import useGetDcdsWithdrawSignedData from "@/hookes/api-hooks/useGetDcdsWithdrawSignedData";
@@ -442,7 +442,6 @@ function DCDSTemplate() {
 
   // function to call the deposit function in the contract
   const callDepositFnInContract = async () => {
-    debugger;
     try {
       setTimeout(() => {
         setDcdsDepositLoadingLocal(true);
@@ -711,11 +710,7 @@ function DCDSTemplate() {
         <ToastNotification
           title="Deposit Successful"
           message=""
-          linkText={
-            Number(chainId) === NetworkId.BaseSepolia
-              ? "View On Basescan"
-              : "View On Optimismscan"
-          }
+          linkText={explorerNames[Number(chainId)] || "View On Explorer"}
           linkUrl={link}
           onClose={() => toast.dismiss(t)}
         />

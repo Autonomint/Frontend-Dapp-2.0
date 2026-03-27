@@ -14,7 +14,7 @@ import displayNumberWithPrecision, {
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { BACKEND_API_URL, explorerNames, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
@@ -399,11 +399,7 @@ function InputForm({ currency }: { currency: string }) {
           <ToastNotification
             title="Mint Successful"
             message="New Deposit has been created"
-            linkText={
-              Number(chainId) === NetworkId.BaseSepolia
-                ? "View On Basescan"
-                : "View On Optimismscan"
-            }
+            linkText={explorerNames[Number(chainId)] || "View On Explorer"}
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
           />
@@ -544,7 +540,6 @@ function InputForm({ currency }: { currency: string }) {
   async function handleMint(values: any) {
     // get the strike percent
     const strikePercent = values.strikePricePercent;
-    debugger;
     // fetch the borrow signed data
     const borrowSignedData = await refetchBorrowSignedData({
       token: currency === "KRWQ" ? "krwq" : currency,

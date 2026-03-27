@@ -33,7 +33,7 @@ import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import WalletConnectButton from "@/design-systems/molecule/WalletConnectButton";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { eId, NetworkId } from "@/utils/constants";
-import { scanUrls } from "@/utils/urls";
+import { explorerNames, scanUrls } from "@/utils/urls";
 
 function BridgeTemplate() {
   const [sendToken, setSendToken] = useState<"USDA" | "TUSDT">("USDA");
@@ -257,13 +257,7 @@ function BridgeTemplate() {
           <ToastNotification
             title="Transaction Confirmed"
             message=""
-            linkText={
-              chainId === NetworkId.BaseSepolia
-                ? "View On Basescan"
-                : chainId === NetworkId.Hyperliquid
-                  ? "View On Hyperliquid Explorer"
-                  : "View On Optimismscan"
-            }
+            linkText={explorerNames[chainId] || "View On Explorer"}
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
           />

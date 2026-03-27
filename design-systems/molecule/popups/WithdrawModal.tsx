@@ -43,7 +43,7 @@ import {
   toPositiveDecimalString,
 } from "@/utils/helpers";
 import { dcdsDepositDetails } from "@/utils/interface";
-import { BACKEND_API_URL, scanUrls } from "@/utils/urls";
+import { BACKEND_API_URL, explorerNames, scanUrls } from "@/utils/urls";
 import { Options } from "@layerzerolabs/lz-v2-utilities";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -735,11 +735,7 @@ export function DcdsWithdrawModal({
           <ToastNotification
             title="Withdraw Successful"
             message=""
-            linkText={
-              Number(chainId) === NetworkId.BaseSepolia
-                ? "View On Basescan"
-                : "View On Optimismscan"
-            }
+            linkText={explorerNames[Number(chainId)] || "View On Explorer"}
             linkUrl={link}
             onClose={() => toast.dismiss(t)}
           />
