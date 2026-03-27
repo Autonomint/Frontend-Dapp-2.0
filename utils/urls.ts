@@ -32,8 +32,10 @@ export const meetUrl = "https://meet.brevo.com/aks-autonomint";
 
 export const krwqUrl = "https://aerodrome.finance/swap?from=0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&to=0x370923d39f139c64813f173a1bf0b4f9ba36a24f&chain0=8453&chain1=8453"
 export const eurcUrl = "https://aerodrome.finance/swap?from=0x833589fcd6edb6e08f4c7c32d4f71b54bda02913&to=0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42&chain0=8453&chain1=8453"
+export const hypeUrl = "https://www.prjx.com/?type=swap&fromToken=0xb88339CB7199b77E23DB6E890353E22632Ba630f&fromChain=999&toToken=0x0000000000000000000000000000000000000000&toChain=999"
 
 export const AssetBuyLink = {
   KRWQ: krwqUrl,
   EURC: eurcUrl,
+  HYPE: hypeUrl,
 } as Record<string, string>
