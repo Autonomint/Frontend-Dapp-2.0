@@ -2124,7 +2124,8 @@ export function WithdrawFund({
                       } price`,
                       value: `$${
                         position.collateralType === "krwq" ||
-                        position.collateralType === "EURC" ||  position?.collateralType === "EURC" 
+                        position.collateralType === "EURC" ||
+                        position?.collateralType === "EURC"
                           ? Number(ethPrice)
                           : Number(formatUnits(BigInt(ethPrice), 2))
                       }`,
