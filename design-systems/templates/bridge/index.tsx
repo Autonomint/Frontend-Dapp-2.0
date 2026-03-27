@@ -333,6 +333,17 @@ function BridgeTemplate() {
         />
       ));
     }
+
+    // Hyperliquid routing validation - can only send to Base
+    if (sendNetwork === "Hyperliquid" && receiveNetwork !== "Base") {
+      return toast.custom((t) => (
+        <ToastNotificationError
+          title={"Hyperliquid can only bridge to Base network"}
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    }
+
     if (accountAddress) {
       setTransferLoadingLocal(true);
       if (sendToken === "USDA") {
@@ -436,53 +447,84 @@ function BridgeTemplate() {
         setSendNetwork("Rise");
       },
     },
+    {
+      label: "Hyperliquid",
+      onClick: () => {
+        setSendAmount(0);
+        switchChain({ chainId: NetworkId.Hyperliquid });
+        setSendNetwork("Hyperliquid");
+      },
+    },
   ];
 
   // to network dropdown options
   const toNetworkOption = useMemo(() => {
     const option = [];
 
-    // if (sendNetwork !== "Sepolia") {
-    //   option.push({
-    //     label: "Sepolia",
-    //     onClick: () => {
-    //       setReceiveNetwork("Sepolia");
-    //     },
-    //   });
-    // }
-    if (sendNetwork !== "Base") {
+    // Hyperliquid can only send to Base
+    if (sendNetwork === "Hyperliquid") {
       option.push({
         label: "Base",
         onClick: () => {
           setReceiveNetwork("Base");
         },
       });
-    }
-    // if (sendNetwork !== "Mode") {
-    //   option.push({
-    //     label: "Mode",
-    //     onClick: () => {
-    //       setReceiveNetwork("Mode");
-    //     },
-    //   });
-    // }
-    if (sendNetwork !== "OP") {
+    } else {
+      // Other networks can send to any network except themselves
+      // if (sendNetwork !== "Sepolia") {
+      //   option.push({
+      //     label: "Sepolia",
+      //     onClick: () => {
+      //       setReceiveNetwork("Sepolia");
+      //     },
+      //   });
+      // }
+      if (sendNetwork !== "Base") {
+        option.push({
+          label: "Base",
+          onClick: () => {
+            setReceiveNetwork("Base");
+          },
+        });
+      }
+      // if (sendNetwork !== "Mode") {
+      //   option.push({
+      //     label: "Mode",
+      //     onClick: () => {
+      //       setReceiveNetwork("Mode");
+      //     },
+      //   });
+      // }
+      if (sendNetwork !== "OP") {
+        option.push({
+          label: "OP",
+          onClick: () => {
+            setReceiveNetwork("OP");
+          },
+        });
+      }
+      if (sendNetwork !== "Rise") {
+        option.push({
+          label: "Rise",
+          onClick: () => {
+            setReceiveNetwork("Rise");
+          },
+        });
+      }
+      // Add Hyperliquid as option for other networks
       option.push({
-        label: "OP",
+        label: "Hyperliquid",
         onClick: () => {
-          setReceiveNetwork("OP");
+          setReceiveNetwork("Hyperliquid");
         },
       });
     }
-    if (sendNetwork !== "Rise") {
-      option.push({
-        label: "Rise",
-        onClick: () => {
-          setReceiveNetwork("Rise");
-        },
-      });
+
+    // Set default receive network to first available option
+    if (option.length > 0) {
+      setReceiveNetwork(option[0].label as any);
     }
-    setReceiveNetwork(option[0].label as any);
+
     return option;
   }, [sendNetwork]);
 
@@ -513,6 +555,7 @@ function BridgeTemplate() {
           receiveAmount={receiveAmount}
           toNetworkOption={toNetworkOption}
           receiveNetwork={receiveNetwork}
+          sendNetwork={sendNetwork}
         />
         <div className="flex flex-wrap justify-between py-5 px-8 border  border-solid border-grayLight rounded-md h-full">
           {/* <BridgeMetricFields label={"Gas"} value={"-"} /> */}

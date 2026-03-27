@@ -8,6 +8,7 @@ function BridgeComponentRight({
   receiveAmount,
   toNetworkOption,
   receiveNetwork,
+  sendNetwork,
 }: {
   receiveAmount: number;
   heading: string;
@@ -19,6 +20,7 @@ function BridgeComponentRight({
     onClick: () => void;
   }[];
   receiveNetwork: string;
+  sendNetwork: string;
 }) {
   return (
     <div
@@ -66,6 +68,11 @@ function BridgeComponentRight({
           <div className="text-[42px] text-textBlack  mt-4 lg:mt-8 dark:text-white">
             ${receiveAmount.toFixed(2)}
           </div>
+          {sendNetwork === "Hyperliquid" && (
+            <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-sm text-blue-600 dark:text-blue-400">
+              ⚠️ Hyperliquid can only bridge to Base network
+            </div>
+          )}
         </div>
       </div>
     </div>
