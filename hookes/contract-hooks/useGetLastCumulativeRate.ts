@@ -11,8 +11,8 @@ import { useAccount, useReadContract } from "wagmi";
  */
 const useLastCumulativeRate = (token: string) => {
   const { address, chainId } = useAccount();
-  const tokenEnum = token === "cbBTC" ? [AssetName.cbBTC] : token === "krwq" ? [AssetName.KRWQ] : token === "EURC" ? [AssetName.EURC] : undefined;
-  const abi = token === "cbBTC" || token === "krwq" || token === "EURC" ? borowCoreABI : borrowingContractAbi;
+  const tokenEnum = token === "cbBTC" ? [AssetName.cbBTC] : token === "krwq" ? [AssetName.KRWQ] : token === "EURC" ? [AssetName.EURC] : token === "HYPE" ? [AssetName.ETH] : undefined;
+  const abi = token === "cbBTC" || token === "krwq" || token === "EURC" || token === "HYPE" ? borowCoreABI : borrowingContractAbi;
   const contract = token === "cbBTC" || token === "krwq" || token === "EURC" ? borrowCoreAddress : borrowingContractAddress;
   const { data: lastCumulativeRate, isPending: isLastCumulativeRatePending, error } =
     useReadContract({
