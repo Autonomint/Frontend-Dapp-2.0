@@ -2103,7 +2103,8 @@ export function WithdrawFund({
                           ? Number(
                               formatUnits(BigInt(position?.ethPrice || 0), 8),
                             )
-                          : position.collateralType === "EURC"
+                          : position.collateralType === "EURC" ||
+                              position.collateralType === "HYPE"
                             ? Number(
                                 formatUnits(BigInt(position?.ethPrice || 0), 6),
                               )
@@ -2120,12 +2121,14 @@ export function WithdrawFund({
                             ? "krwq"
                             : position?.collateralType === "EURC"
                               ? "EURC"
-                              : "ETH"
+                              : position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"
                       } price`,
                       value: `$${
                         position.collateralType === "krwq" ||
                         position.collateralType === "EURC" ||
-                        position?.collateralType === "EURC"
+                        position?.collateralType === "HYPE"
                           ? Number(ethPrice)
                           : Number(formatUnits(BigInt(ethPrice), 2))
                       }`,
@@ -2184,7 +2187,8 @@ export function WithdrawFund({
                             BigInt(position.ethPrice),
                             position.collateralType === "krwq"
                               ? 8
-                              : position.collateralType === "EURC"
+                              : position.collateralType === "EURC" ||
+                                  position.collateralType === "HYPE"
                                 ? 6
                                 : 2,
                           ),
