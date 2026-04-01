@@ -1,7 +1,8 @@
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import {
-  borrowingContractAddress
+  borrowingContractAddress,
+  borrowCoreAddress
 } from "@/blockchain/contracts";
 import { formatUnits } from "ethers";
 import { useAccount, useReadContract } from "wagmi";
@@ -18,7 +19,8 @@ type BorrowAssetKey = keyof typeof BorrowAssetsEnum;
 const useBorrowRatio = (amount: bigint, currency: BorrowAssetKey) => {
   const { address, chainId } = useAccount();
   const abi = currency === "ETH" ? borrowingContractAbi : borowCoreABI
-  const args = currency === "ETH" ? [amount] : [amount, BorrowAssetsEnum[currency]]
+  const args = currency === "ETH" ? [amount] : [BorrowAssetsEnum[currency], amount]
+  const contract = currency === "ETH" ? borrowingContractAddress[chainId as keyof typeof borrowingContractAddress] : borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
   const {
     isPending: isRatioPending,
     data: ratioValue,
@@ -26,7 +28,7 @@ const useBorrowRatio = (amount: bigint, currency: BorrowAssetKey) => {
     refetch: refetchRatio,
   } = useReadContract({
     abi: abi,
-    address: borrowingContractAddress[chainId as keyof typeof borrowingContractAddress],
+    address: contract as `0x${string}`,
     functionName: "viewCurrentRatio",
     args: args,
     query: { enabled: !!address },

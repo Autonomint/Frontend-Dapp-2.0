@@ -90,6 +90,7 @@ export function DcdsWithdrawModal({
     BigInt(0),
     (position.collateralType || "ETH") as keyof typeof BorrowAssetsEnum,
   );
+
   const [halfWithdraw, setHalfWithdraw] = useState(false);
 
   const { data: indexPoint, isLoading: isIndexPointLoading } = useQuery({
@@ -854,13 +855,14 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
+    debugger;
     try {
       setDcdsFundWithdrawLoadingLocal(true);
       if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
         toast.custom(
           (t) => (
             <ToastNotificationError
-              title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ETH price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime."
+              title={`The current (dCDS liquidity / Total ${position.collateralType} hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ${position.collateralType} price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime.`}
               onClose={() => toast.dismiss(t)}
               // width="!w-[500px]"
             />

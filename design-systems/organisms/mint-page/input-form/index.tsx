@@ -246,16 +246,16 @@ function InputForm({ currency }: { currency: string }) {
       return;
     }
 
-    // if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
-    //   toast.custom((t) => (
-    //     <ToastNotificationError
-    //       title="The current (dCDS liquidity / Total ETH hedged) ratio is below 0.2. Once the ratio moves above 0.2 — due to new dCDS deposits, a rise in ETH price, or the expiry of active ETH hedges — users will be able to mint USDA+ and receive the ETH hedge."
-    //       onClose={() => toast.dismiss(t)}
-    //       width="!w-[500px]"
-    //     />
-    //   ));
-    //   return;
-    // }
+    if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title={`The current (dCDS liquidity / Total ${currency} hedged) ratio is below 0.2. Once the ratio moves above 0.2 — due to new dCDS deposits, a rise in ${currency} price, or the expiry of active ${currency} hedges — users will be able to mint USDA+ and receive the ${currency} hedge.`}
+          onClose={() => toast.dismiss(t)}
+          width="!w-[500px]"
+        />
+      ));
+      return;
+    }
     // set the loading state to true
     setMintBtnLoading(true);
 
@@ -303,7 +303,7 @@ function InputForm({ currency }: { currency: string }) {
   });
 
   const { ratioValue, refetchRatio, ratioError } = useBorrowRatio(
-    BigInt(parseUnits(formik.values.collateralAmount.toString(), 8)),
+    BigInt(parseUnits(formik.values.collateralAmount.toString(), 18)),
     currency as keyof typeof BorrowAssetsEnum,
   );
   console.log(
