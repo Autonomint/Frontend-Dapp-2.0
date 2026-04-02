@@ -124,6 +124,7 @@ function BridgeTemplate() {
 
   // setting the collateral amount string for the contract
   useEffect(() => {
+    debugger
     let letamount = (sendAmount || 0).toString();
     if (!sendAmount) {
       setCollateralAmountString("0");
@@ -455,8 +456,17 @@ function BridgeTemplate() {
   const toNetworkOption = useMemo(() => {
     const option = [];
 
-    // Hyperliquid can only send to Base
+    // Handle special routing for Hyperliquid and Rise
     if (sendNetwork === "Hyperliquid") {
+      // Hyperliquid can only send to Base
+      option.push({
+        label: "Base",
+        onClick: () => {
+          setReceiveNetwork("Base");
+        },
+      });
+    } else if (sendNetwork === "Rise") {
+      // Rise can only send to Base
       option.push({
         label: "Base",
         onClick: () => {
@@ -464,16 +474,16 @@ function BridgeTemplate() {
         },
       });
     } else {
-      // Other networks can send to any network except themselves
-      // if (sendNetwork !== "Sepolia") {
-      //   option.push({
-      //     label: "Sepolia",
-      //     onClick: () => {
-      //       setReceiveNetwork("Sepolia");
-      //     },
-      //   });
-      // }
-      if (sendNetwork !== "Base") {
+      // Other networks (Base, OP, etc.) routing
+      const currentNetwork = sendNetwork as
+        | "Sepolia"
+        | "Base"
+        | "Mode"
+        | "OP"
+        | "Rise"
+        | "Hyperliquid";
+
+      if (currentNetwork !== "Base") {
         option.push({
           label: "Base",
           onClick: () => {
@@ -481,15 +491,8 @@ function BridgeTemplate() {
           },
         });
       }
-      // if (sendNetwork !== "Mode") {
-      //   option.push({
-      //     label: "Mode",
-      //     onClick: () => {
-      //       setReceiveNetwork("Mode");
-      //     },
-      //   });
-      // }
-      if (sendNetwork !== "OP") {
+
+      if (currentNetwork !== "OP") {
         option.push({
           label: "OP",
           onClick: () => {
@@ -497,7 +500,8 @@ function BridgeTemplate() {
           },
         });
       }
-      if (sendNetwork !== "Rise") {
+
+      if (currentNetwork !== "Rise") {
         option.push({
           label: "Rise",
           onClick: () => {
@@ -505,13 +509,16 @@ function BridgeTemplate() {
           },
         });
       }
-      // Add Hyperliquid as option for other networks
-      option.push({
-        label: "Hyperliquid",
-        onClick: () => {
-          setReceiveNetwork("Hyperliquid");
-        },
-      });
+
+      // Only Base can send to Hyperliquid and Rise
+      if (currentNetwork === "Base") {
+        option.push({
+          label: "Hyperliquid",
+          onClick: () => {
+            setReceiveNetwork("Hyperliquid");
+          },
+        });
+      }
     }
 
     // Set default receive network to first available option
