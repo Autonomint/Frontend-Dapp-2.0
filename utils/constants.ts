@@ -87,6 +87,7 @@ export const eidOpSepolia = 30111; // Optimism Mainnet
 export const eidModeSepolia = 30260; // Mode Mainnet
 export const eidSepolia = 30101; // Ethereum Mainnet
 export const eidBaseSepolia = 30184; // Base Mainnet
+export const eidHyper = 30367; // Hyperliquid Mainnet
 
 export const eId = {
   OP: eidOpSepolia,
@@ -94,14 +95,14 @@ export const eId = {
   Sepolia: eidSepolia,
   Base: eidBaseSepolia,
   Rise: 0, // Placeholder - Rise not supported for LayerZero bridging
-  Hyperliquid: 0, // Placeholder - Hyperliquid not supported for LayerZero bridging
+  Hyperliquid: eidHyper,
 };
 export const eIdWithChainId = {
   [NetworkId.Optimism]: eidOpSepolia,
   [NetworkId.Mode]: eidModeSepolia,
   [NetworkId.Ethereum]: eidSepolia,
   [NetworkId.BaseSepolia]: eidBaseSepolia,
-  [NetworkId.Hyperliquid]: 0, // Placeholder - Hyperliquid not supported for LayerZero bridging
+  [NetworkId.Hyperliquid]: eidHyper,
 };
 
 // enum for control cds and borrow pause unpause

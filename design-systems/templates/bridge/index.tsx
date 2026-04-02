@@ -169,7 +169,7 @@ function BridgeTemplate() {
     composeMsg: `0x${"".padEnd(64, "0")}`,
     oftCmd: `0x${"".padEnd(64, "0")}`,
   };
-
+  console.log(transactionParams, "transactionParams");
   // Get the native fee for the transaction
   const { nativeFee1, refetchnativeFee1 } =
     useGetBridgeFeeUsda(transactionParams);
