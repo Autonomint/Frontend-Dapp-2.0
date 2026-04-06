@@ -16,6 +16,8 @@ import {
   TooltipTrigger,
 } from "@/design-systems/atoms/tooltip";
 import YieldComparison from "./YieldComparison";
+import { useAccount } from "wagmi";
+import { NetworkId } from "@/utils/constants";
 interface FeeDetail {
   orgName: string;
   amount: React.ReactNode;
@@ -27,6 +29,7 @@ interface FeeDetail {
 }
 function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
   const router = useRouter();
+  const { chainId } = useAccount();
   return (
     <div
       onClick={() => {
@@ -60,14 +63,18 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
       <div className="flex flex-row align-top xl:gap-20 gap-6 md:gap-12 sm:ml-4 lg:ml-0">
         <div>
           <div className="ml-2 text-[14px]  sm:text-[20px] lg:text-[24px] text-textBlack font-medium dark:text-white bg-none">
-            Potential Yields per ETH{" "}
+            Potential Yields per{" "}
+            {chainId === NetworkId.Hyperliquid ? "HYPE" : "ETH"}{" "}
           </div>
 
           <YieldComparison />
         </div>
         <div>
           <div className="ml-2 text-[14px] sm:text-[20px] lg:text-[24px] text-textBlack font-medium dark:text-white bg-none">
-            Hedging fees per ETH{" "}
+            Hedging fees{" "}
+            {chainId === NetworkId.Hyperliquid
+              ? "HYPE per day"
+              : "per ETH"}{" "}
           </div>
 
           <div className=" flex  lg:flex-wrap gap-2 sm:gap-3 lg:gap-3 lg:justify-start  2xl:gap-8 xl:ml-6   bg-none">

@@ -2,7 +2,10 @@
 import darkboat from "@/app/assets/home-banner-dark.svg";
 import boat from "@/app/assets/home-banner.svg";
 import { optionABI } from "@/blockchain/abis/option";
-import { optionContractAddress } from "@/blockchain/contracts";
+import {
+  borrowAssetsAddress,
+  optionContractAddress,
+} from "@/blockchain/contracts";
 import { LeftArrowIcon } from "@/design-systems/atoms/SvgIcons";
 import ScrollDownArrow from "@/design-systems/molecule/scroll-down-button";
 import DCDSHoverElement from "@/design-systems/organisms/home-page/DCDSHoverElement";
@@ -14,7 +17,7 @@ import { useTrackUserData } from "@/hookes/api-hooks/useTrackUser";
 import useGetUsdtAmountDepositedTillNow from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDeviceType from "@/hookes/useDeviceType";
-import { BorrowAssetsEnum } from "@/utils/constants";
+import { BorrowAssetsEnum, NetworkId } from "@/utils/constants";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -96,7 +99,11 @@ export default function HomeTemplate() {
   ];
 
   // getting eth price from blockchain
-  const { usdValue: ethPrice } = useGetUsdValue();
+  const { usdValue: ethPrice } = useGetUsdValue(
+    chainId === NetworkId.Hyperliquid
+      ? borrowAssetsAddress["HYPE" as keyof typeof borrowAssetsAddress]
+      : undefined,
+  );
 
   // getting current strike price percent limit from the contract
   const { data: currentStrikePricePercentLimit, refetch: refetchCurrentData } =
@@ -105,8 +112,8 @@ export default function HomeTemplate() {
       address: optionContractAddress[
         chainId as keyof typeof optionContractAddress
       ] as `0x${string}`,
-      functionName: "strikePricePercentLimits",
-      args: [BorrowAssetsEnum["ETH" as keyof typeof BorrowAssetsEnum]],
+      functionName: "strikePricePercentLimits_",
+      args: [BorrowAssetsEnum["ETH" as keyof typeof BorrowAssetsEnum], 1],
       query: {
         select: (data) => Number(data || 0),
       },
@@ -117,7 +124,8 @@ export default function HomeTemplate() {
     "1",
     (ethPrice || 0) as number,
     currentStrikePricePercentLimit as number,
-    "ETH",
+    chainId === NetworkId.Hyperliquid ? "HYPE" : "ETH",
+    1,
   );
 
   // fee list for showing in borrow hover box
@@ -129,7 +137,9 @@ export default function HomeTemplate() {
           <span className="hidden sm:block">
             {Number(oneEthOptionFees).toFixed(2)}
           </span>
-          <span className="text-[14px] hidden sm:block">per month</span>
+          <span className="text-[14px] hidden sm:block">
+            per {chainId === NetworkId.Hyperliquid ? "Day" : "Month"}
+          </span>
           <span className="text-[14px] sm:hidden">
             {Number(oneEthOptionFees).toFixed(2)}/m
           </span>

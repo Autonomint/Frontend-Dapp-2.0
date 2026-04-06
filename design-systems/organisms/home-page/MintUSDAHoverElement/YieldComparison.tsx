@@ -1,5 +1,7 @@
+import { NetworkId } from "@/utils/constants";
 import { useTheme } from "next-themes";
 import React, { useState } from "react";
+import { useAccount } from "wagmi";
 
 const gradientMap: { [key: string]: string } = {
   Autonomint: "linear-gradient(to right, #FFFFFF, #CCFFEB)",
@@ -9,8 +11,9 @@ const gradientMap: { [key: string]: string } = {
 
 function YieldComparison() {
   const orgName = "Source";
+  const { chainId } = useAccount();
 
-  const tag = "ETH price hedge";
+  const tag = `${chainId === NetworkId.Hyperliquid ? "HYPE" : "ETH"} price hedge`;
   const tagColor = "#D6A100";
   const tagBg = "#FFF7E0";
   const textColor = "#D6A100";
@@ -20,9 +23,8 @@ function YieldComparison() {
   const [isHover, setIsHover] = useState(false);
   const { theme } = useTheme();
   const prefersDarkMode = window.matchMedia(
-    "(prefers-color-scheme: dark)"
+    "(prefers-color-scheme: dark)",
   ).matches;
-
 
   return (
     <div
@@ -37,10 +39,10 @@ function YieldComparison() {
           ? theme == "dark"
             ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
             : theme == "light"
-            ? gradientBackground
-            : prefersDarkMode
-            ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
-            : gradientBackground
+              ? gradientBackground
+              : prefersDarkMode
+                ? "linear-gradient(101.79deg, #0F2027 -0.5%, #203A43 50.34%, #2C5364 102.21%)"
+                : gradientBackground
           : "none",
         transition: "background 0.3s ease-in-out",
       }}
@@ -50,8 +52,8 @@ function YieldComparison() {
           theme == "dark"
             ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
             : prefersDarkMode
-            ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
-            : gradientBackground;
+              ? "linear-gradient(135deg, #0F2027,#203A43,#2C5364)"
+              : gradientBackground;
       }}
       onMouseLeave={(e) => {
         setIsHover(false);
@@ -83,12 +85,12 @@ function YieldComparison() {
                 ? tagColor
                 : tagColor
               : theme == "dark"
-              ? "white"
-              : theme == "light"
-              ? "black"
-              : prefersDarkMode
-              ? "white"
-              : "black",
+                ? "white"
+                : theme == "light"
+                  ? "black"
+                  : prefersDarkMode
+                    ? "white"
+                    : "black",
           }}
           className={` text-textBlack  text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
@@ -101,12 +103,12 @@ function YieldComparison() {
                 ? tagColor
                 : tagColor
               : theme == "dark"
-              ? "white"
-              : theme == "light"
-              ? "black"
-              : prefersDarkMode
-              ? "white"
-              : "black",
+                ? "white"
+                : theme == "light"
+                  ? "black"
+                  : prefersDarkMode
+                    ? "white"
+                    : "black",
           }}
           className={` text-[12px] sm:text-[14px] lg:text-[18px] 2xl:text-[20px]`}
         >
