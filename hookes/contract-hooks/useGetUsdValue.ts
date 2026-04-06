@@ -47,15 +47,6 @@ const useGetUsdValue = (assetAddress?: ValueOf<typeof borrowAssetsAddress>, isKR
 
   const { krwqPrice, error } = useGetKrwqPrice(Boolean(isKRWQ))
 
-  console.log(
-    usdValue,
-    isKRWQ,
-    isEURC,
-    Math.floor(
-      Number(formatUnits(BigInt(Number(usdValue?.[1] || 0)), 18)),
-    ),
-    "assetAddress",
-  );
   return {
     isUsdValuePending, // Indicates if the USD value query is still loading
     usdValue: usdValue?.[1] || 0, // Second item is typically the asset amount in smallest units (like wei)
