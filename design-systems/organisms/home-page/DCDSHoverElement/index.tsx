@@ -13,10 +13,13 @@ import { Button } from "@/design-systems/atoms/button";
 import { useRouter } from "next/navigation";
 import { getIconMapping } from "@/utils/token-config";
 import { useTheme } from "next-themes";
+import { NetworkId } from "@/utils/constants";
+import { useAccount } from "wagmi";
 
 function DCDSHoverElement() {
   const router = useRouter();
   const { theme } = useTheme();
+  const { chainId } = useAccount();
   return (
     <div
       onClick={() => {
@@ -77,55 +80,77 @@ function DCDSHoverElement() {
                   </TooltipContent>
                 </Tooltip>
               </div>
+              {chainId === NetworkId.Hyperliquid && (
+                <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Image
+                        className="w-full h-full"
+                        src={getIconMapping(theme as string, "usdc")}
+                        alt="usdt"
+                        loading="eager"
+                        priority
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                      <p>USDC</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              )}
 
-              <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Image
-                      className="w-full h-full"
-                      src={getIconMapping(theme as string, "usdt")}
-                      alt="usdt"
-                      loading="eager"
-                      priority
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                    <p>USDT</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[30%] flex-col items-center justify-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Image
-                      className="w-full h-full"
-                      src={getIconMapping(theme as string, "aero")}
-                      alt="usdt"
-                      loading="eager"
-                      priority
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                    <p>AERO</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[40%] flex-col items-center justify-center gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Image
-                      className="w-full h-full"
-                      src={getIconMapping(theme as string, "op")}
-                      alt="usdt"
-                      loading="eager"
-                      priority
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                    <p>OP</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
+              {chainId !== NetworkId.Hyperliquid && (
+                <>
+                  <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[15%] flex-col items-center justify-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Image
+                          className="w-full h-full"
+                          src={getIconMapping(theme as string, "usdt")}
+                          alt="usdt"
+                          loading="eager"
+                          priority
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                        <p>USDT</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[30%] flex-col items-center justify-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Image
+                          className="w-full h-full"
+                          src={getIconMapping(theme as string, "aero")}
+                          alt="usdt"
+                          loading="eager"
+                          priority
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                        <p>AERO</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[40%] flex-col items-center justify-center gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Image
+                          className="w-full h-full"
+                          src={getIconMapping(theme as string, "op")}
+                          alt="usdt"
+                          loading="eager"
+                          priority
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                        <p>OP</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>{" "}
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1542,7 +1542,9 @@ function DCDSTemplate() {
                   className="text-[#FF0000] dark:text-[#FF1A1A] justify-center items-center !text-[14px] 2xl:!text-[18px] flex gap-1 font-medium"
                   variant="regular"
                 >
-                  dCDS will be exposed to ETH volatility risks.
+                  dCDS will be exposed to{" "}
+                  {chainId === NetworkId.Hyperliquid ? "HYPE" : "ETH"}{" "}
+                  volatility risks.
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Info width={16} height={16} className="" />
@@ -1556,10 +1558,13 @@ function DCDSTemplate() {
                       </p>
                       <p className="mt-1">
                         {" "}
-                        If the ratio of dCDS Liquidity / Total ETH Value Hedged
-                        drops below 0.2, user withdrawals from dCDS will be
-                        temporarily paused until the ratio recovers above that
-                        threshold.
+                        If the ratio of dCDS Liquidity / Total{" "}
+                        {chainId === NetworkId.Hyperliquid
+                          ? "HYPE"
+                          : "ETH"}{" "}
+                        Value Hedged drops below 0.2, user withdrawals from dCDS
+                        will be temporarily paused until the ratio recovers
+                        above that threshold.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -1776,8 +1781,12 @@ function DCDSTemplate() {
                   </TooltipTrigger>
                   <TooltipContent className="dark:text-white bg-white text-black dark:bg-black w-[400px] ">
                     <p>
-                      Get discounted ETH, cbBTC, KRWQ and earn USDA+ by backing
-                      liquidations when USDA+ borrowers default
+                      Get discounted{" "}
+                      {chainId === NetworkId.Hyperliquid
+                        ? "HYPE"
+                        : "ETH, cbBTC, KRWQ"}{" "}
+                      and earn USDA+ by backing liquidations when USDA+
+                      borrowers default
                     </p>
                   </TooltipContent>
                 </Tooltip>

@@ -191,8 +191,7 @@ export function DcdsWithdrawModal({
       titleColor: "!text-green-600 dark:!text-green-500",
       valueColor: "!text-green-600 dark:!text-green-500",
       tooltip: true,
-      tooltipText:
-        "If you’ve opted into liquidations, you’ll receive a share of the liquidation gains from users who get liquidated and you will get their ETH at a discounted price. You can claim this ETH once you close your dCDS position.",
+      tooltipText: `If you’ve opted into liquidations, you’ll receive a share of the liquidation gains from users who get liquidated and you will get their ${position?.collateralType === "HYPE" ? "HYPE" : "ETH"} at a discounted price. You can claim this ${position?.collateralType === "HYPE" ? "HYPE" : "ETH"} once you close your dCDS position.`,
     },
   ];
 
@@ -855,7 +854,6 @@ export function DcdsWithdrawModal({
 
   // handle withdrawing funds
   const handleWithdrawFund = async (isHalfWithdraw?: boolean) => {
-    debugger;
     try {
       setDcdsFundWithdrawLoadingLocal(true);
       if (Number(formatUnits(BigInt(ratioValue || 0), 5)) < 0.2) {
@@ -1306,12 +1304,26 @@ export function DcdsWithdrawModal({
                         </TooltipTrigger>
                         <TooltipContent className="bg-white dark:bg-black w-[300px]">
                           <p>
-                            These are 3% ETH price gains taken from each USDA+
-                            borrower if ETH rises after they mint. The gains are
-                            shared proportionally across all dCDS users.
-                            However, they’re impermanent—if ETH price drops, the
-                            gains shrink and can even turn negative if ETH falls
-                            below the borrower’s entry price.
+                            These are 3%{" "}
+                            {position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"}{" "}
+                            price gains taken from each USDA+ borrower if{" "}
+                            {position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"}{" "}
+                            rises after they mint. The gains are shared
+                            proportionally across all dCDS users. However,
+                            they’re impermanent—if{" "}
+                            {position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"}{" "}
+                            price drops, the gains shrink and can even turn
+                            negative if{" "}
+                            {position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"}{" "}
+                            falls below the borrower’s entry price.
                           </p>
                         </TooltipContent>
                       </Tooltip>

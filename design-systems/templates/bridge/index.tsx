@@ -124,7 +124,6 @@ function BridgeTemplate() {
 
   // setting the collateral amount string for the contract
   useEffect(() => {
-    debugger
     let letamount = (sendAmount || 0).toString();
     if (!sendAmount) {
       setCollateralAmountString("0");

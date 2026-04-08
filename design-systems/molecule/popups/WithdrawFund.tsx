@@ -1792,12 +1792,16 @@ export function WithdrawFund({
                               (Final{" "}
                               {position.collateralType === "cbBTC"
                                 ? "cbBTC"
-                                : "ETH"}{" "}
+                                : position.collateralType === "HYPE"
+                                  ? "HYPE"
+                                  : "ETH"}{" "}
                               amount may be lower due to option fees, 5% price
                               upside share, and conversion based on current{" "}
                               {position.collateralType === "cbBTC"
                                 ? "cbBTC"
-                                : "ETH"}
+                                : position.collateralType === "HYPE"
+                                  ? "HYPE"
+                                  : "ETH"}
                               /USD value)
                             </div>
                           )}
