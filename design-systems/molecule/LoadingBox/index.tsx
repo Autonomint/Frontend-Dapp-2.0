@@ -2,7 +2,7 @@ import { CheckIcon, RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import Image from "next/image";
 import Spinner from "@/app/assets/Spinner@1x-1.0s-200px-200px (2).svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const LoadingBox = ({
   isLoading,
@@ -24,42 +24,58 @@ const LoadingBox = ({
   const start = isLoading;
   const [end, setEnd] = useState<boolean>(false);
 
+  // Store timeout refs to prevent memory leaks
+  const timeoutRefs = useRef<NodeJS.Timeout[]>([]);
+
+  // Cleanup function for all timeouts
+  const clearAllTimeouts = () => {
+    timeoutRefs.current.forEach(clearTimeout);
+    timeoutRefs.current = [];
+  };
+
   useEffect(() => {
-    if ((isSuccess && !isLoading) || isFailure) {
+    const shouldEnd = (isSuccess && !isLoading) || isFailure;
+    if (shouldEnd) {
       setEnd(true);
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setEnd(false);
       }, 500);
+      timeoutRefs.current.push(timeout);
     }
-  }, [isSuccess, !isLoading, isFailure]);
+  }, [isSuccess, isLoading, isFailure]);
 
   useEffect(() => {
     if (end) {
       if (isSuccess && !isLoading) {
         setShowSuccess(true);
       }
-      setTimeout(() => {
+      const timeout1 = setTimeout(() => {
         setShowBox(false);
         setShowSuccess(false);
-        // setSuccessLoading?.(false);
       }, 400);
-      setTimeout(() => {
-        setSuccessLoading?.(false);
+      const timeout2 = setTimeout(() => {
+        setSuccessLoading(false);
       }, 1000);
+      timeoutRefs.current.push(timeout1, timeout2);
     }
     if (start) {
       setShowBox(true);
-      // setSuccessLoading(true);
     }
-  }, [end, start, isSuccess, isLoading]);
+  }, [end, start, isSuccess, isLoading, setSuccessLoading]);
 
   useEffect(() => {
     if (!isLoading) {
-      setTimeout(() => {
-        setSuccessLoading?.(false);
+      const timeout = setTimeout(() => {
+        setSuccessLoading(false);
       }, 1000);
+      timeoutRefs.current.push(timeout);
     }
-  }, [isLoading]);
+  }, [isLoading, setSuccessLoading]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return clearAllTimeouts;
+  }, []);
 
   return (
     <div className={`relative  ${showBox && "h-full"}  w-full overflow-hidden`}>

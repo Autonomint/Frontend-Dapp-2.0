@@ -2,12 +2,14 @@
   "name": "frontenddapp2.0",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "dev:turbo": "NODE_OPTIONS='--max-old-space-size=4096' next dev --turbopack",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-memory": "node scripts/optimize-timeouts.js"
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.758.0",
