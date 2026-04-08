@@ -8,7 +8,9 @@ import {
   NEXT_PUBLIC_LINK_TELEGRAM,
   NEXT_PUBLIC_LINK_TWITTER,
 } from "@/utils/constants";
+import { getIconMapping } from "@/utils/token-config";
 import { StickyNote } from "lucide-react";
+import { useTheme } from "next-themes";
 import Image from "next/image";
 import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
@@ -18,6 +20,7 @@ export default function Footer() {
   const docsUrl = NEXT_PUBLIC_LINK_DOCS || "#";
   const twitterUrl = NEXT_PUBLIC_LINK_TWITTER || "#";
   const telegramUrl = NEXT_PUBLIC_LINK_TELEGRAM || "#";
+  const { systemTheme, theme, setTheme } = useTheme();
 
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">
@@ -25,8 +28,8 @@ export default function Footer() {
         <div className="flex w-full justify-center  text-sm rounded-md">
           <div className="flex w-full justify-between  ">
             <div className="  items-center hidden lg:flex  gap-4">
-              <div className="text-xl hidden lg:block w-[16rem] tracking-tighter text-[#020202]">
-                <div
+              <div className="text-xl hidden lg:flex w-[24rem]  tracking-tighter text-[#020202]">
+                {/* <div
                   className=" dark:block hidden w-full  shrink-0"
 
                   // style={{ filter: "brightness(0) invert(1)" }}
@@ -111,7 +114,28 @@ export default function Footer() {
                   className=" dark:hidden w-full flex shrink-0"
                   src={autonomintTxtImage}
                   alt="light-mode-image"
-                />
+                /> */}
+                <div className="w-[3rem] h-[3rem] mt-2 ">
+                  <Image
+                    src={getIconMapping(theme || "dark", "usda")}
+                    alt="autonomint-dapp"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flexShrink: 0,
+                    }}
+                  />
+                </div>
+                <div className=" ml-3">
+                  <div className="dark:text-white text-black text-[20px] sm:text-[24px] md:text-[28px] tracking-widest leading-tight">
+                    NONDOLLAR
+                    <span className="dark:text-white text-black">.LIFE</span>
+                  </div>
+                  <div className="dark:text-[#FFFFFF80] text-grayLight text-[10px] sm:text-[11px] md:text-[12px] tracking-widest">
+                    YIELD PROTOCOL
+                  </div>
+                </div>
               </div>
             </div>
             <div className="lg:w-[20%] w-full flex gap-6 justify-center lg:justify-end mr-4">

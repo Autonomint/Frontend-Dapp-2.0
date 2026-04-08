@@ -10,6 +10,7 @@ import cryptoEth from "@/app/assets/eth.png";
 import WeETH from "@/app/assets/weETH-icoon.webp";
 import WrsETH from "@/app/assets/WrsETH-icon.png";
 import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
+import HYPE from "@/app/assets/hyperliquid-logo.png";
 import {
   Tooltip,
   TooltipContent,
@@ -112,71 +113,91 @@ function MintUSDAHoverElement({ feesList }: { feesList: FeeDetail[] }) {
           Assets Accepted
         </p>
         <div className="flex relative mt-2 items-center justify-start pr-20 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 ">
-          <div className="flex absolute z-[10] left-0 w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Image
-                  className="w-full h-full"
-                  src={cryptoEth}
-                  alt="usdt"
-                  loading="eager"
-                  priority
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                <p>ETH</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[13%] flex-col items-center justify-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Image
-                  className="w-full h-full"
-                  src={WeETH}
-                  alt="usdt"
-                  loading="eager"
-                  priority
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                <p>weETH</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[24%] flex-col items-center justify-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Image
-                  className="w-full h-full"
-                  src={WrsETH}
-                  alt="usdt"
-                  loading="eager"
-                  priority
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                <p>wrsETH</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[35%] flex-col items-center justify-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Image
-                  className="w-full h-full"
-                  src={WsuperOETH}
-                  alt="usdt"
-                  loading="eager"
-                  priority
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
-                <p>wsuperOETHb</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          {chainId === NetworkId.Hyperliquid ? (
+            <div className="flex absolute z-[10] left-0 w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Image
+                    className="w-full h-full"
+                    src={HYPE}
+                    alt="usdt"
+                    loading="eager"
+                    priority
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                  <p>HYPE</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          ) : (
+            <>
+              <div className="flex absolute z-[10] left-0 w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-full h-full"
+                      src={cryptoEth}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>ETH</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex absolute z-[9] w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] left-[13%] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-full h-full"
+                      src={WeETH}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>weETH</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[8] left-[24%] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-full h-full"
+                      src={WrsETH}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>wrsETH</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex absolute w-[20px] h-[20px] sm:w-[25px] sm:h-[25px] xl:w-[35px] xl:h-[35px] z-[7] left-[35%] flex-col items-center justify-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Image
+                      className="w-full h-full"
+                      src={WsuperOETH}
+                      alt="usdt"
+                      loading="eager"
+                      priority
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white border-grayLight rounded-[8px] text-black dark:bg-black dark:text-white">
+                    <p>wsuperOETHb</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <Button className="absolute px-2 lg:px-6 bottom-0 left-0 w-full lg:mt-13 bg-textBlack text-white text-[20px] lg:text-[32px] flex justify-between  h-[60px] md:h-[80px] xl:h-[102px] hover:bg-textBlack dark:bg-home-btn-bg">

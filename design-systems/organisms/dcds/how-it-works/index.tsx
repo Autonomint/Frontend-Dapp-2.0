@@ -3,7 +3,7 @@ import { Typography } from "@/design-systems/atoms/Typography";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
-import { AssetName } from "@/utils/constants";
+import { AssetName, NetworkId } from "@/utils/constants";
 
 interface HowItWorks {
   //   twitter: string; // Path to the twitter icon image
@@ -20,6 +20,7 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
+  const { chainId } = useAccount();
 
   const { isTvlPending, tvlValue: ltv } = useGetTvl(AssetName.ETH);
 
@@ -44,10 +45,12 @@ const HowItWorksPopUp: React.FC<HowItWorks> = ({
             </div>
             <div className=" text-textBlack text-center  text-[16px] md:text-[20px] font-normal mt-4 dark:text-white">
               Deposit into dCDS to earn option premiums while offering downside
-              protection of up to {downsideProtection}% on ETH or cbBTC. Profits
-              and losses from ETH or cbBTC price changes are allocated across
-              dCDS participants based on the ratio of total borrower collateral
-              to dCDS pool funds.
+              protection of up to {downsideProtection}% on{" "}
+              {chainId === NetworkId.Hyperliquid ? "Hype" : "ETH or cbBTC"}.
+              Profits and losses from{" "}
+              {chainId === NetworkId.Hyperliquid ? "Hype" : "ETH or cbBTC"}{" "}
+              price changes are allocated across dCDS participants based on the
+              ratio of total borrower collateral to dCDS pool funds.
             </div>
             <ol className="list-decimal list-outside pl-4 mt-8 text-grayLight">
               <li className="mb-3 text-[14px] md:text-lg">
