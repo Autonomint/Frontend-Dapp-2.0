@@ -3,7 +3,7 @@ import modeIconNew from "@/app/assets/mode.svg";
 import opIconNew from "@/app/assets/op.svg";
 import riseChainLogo from "@/app/assets/rise-chain-logo.png";
 import hyperliquidLogo from "@/app/assets/hyperliquid-logo.png";
-import { usDaAddress } from "@/blockchain/contracts";
+import { borrowingContractAddress, usDaAddress } from "@/blockchain/contracts";
 import Popup from "@/design-systems/atoms/PopUp";
 import Spinner from "@/design-systems/atoms/Spinner";
 import {
@@ -23,7 +23,10 @@ import {
 } from "@/design-systems/atoms/popover";
 import NotificationContainer from "@/design-systems/molecule/notifiaction-card";
 import { NetworkId } from "@/utils/constants";
-import { sortWalletAddress } from "@/utils/helpers";
+import {
+  getBaseScanAdvancedFilterUrl,
+  sortWalletAddress,
+} from "@/utils/helpers";
 import { scanUrls } from "@/utils/urls";
 import {
   useAppKit,
@@ -39,6 +42,7 @@ import React, { useState } from "react";
 import { useBalance, useSwitchChain } from "wagmi";
 import ethIconNew from "@/app/assets/eth-icon.svg";
 import baseIconNew from "@/app/assets/op-blue.svg";
+import { zeroAddress } from "viem";
 
 interface WalletPopupProps {
   //   twitter: string; // Path to the twitter icon image
@@ -528,7 +532,14 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
               <div className="flex mt-8 flex-row justify-between items-center">
                 <a
                   href={`${
-                    scanUrls[Number(chainId || NetworkId.BaseSepolia)]
+                    chainId === NetworkId.BaseSepolia
+                      ? getBaseScanAdvancedFilterUrl(
+                          borrowingContractAddress[
+                            chainId as keyof typeof borrowingContractAddress
+                          ],
+                          address || zeroAddress,
+                        )
+                      : scanUrls[Number(chainId || NetworkId.BaseSepolia)]
                   }/address/${address}`}
                   target="__blank"
                 >

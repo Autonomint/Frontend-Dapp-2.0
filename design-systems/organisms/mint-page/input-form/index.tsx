@@ -7,10 +7,10 @@ import LoadingBox from "@/design-systems/molecule/LoadingBox";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import useGetGlobalQuote from "@/hookes/contract-hooks/useGetGlobalQuote";
-import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
 import useDepositTokens from "@/hookes/contract-hooks/useMintUsds";
 import displayNumberWithPrecision, {
+  getBaseScanAdvancedFilterUrl,
   handleWheel,
   toLocalISOString,
 } from "@/utils/helpers";
@@ -20,14 +20,23 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { formatUnits, parseEther, parseUnits } from "viem";
+import {
+  formatEther,
+  formatUnits,
+  parseEther,
+  parseUnits,
+  zeroAddress,
+} from "viem";
+import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 
 import * as Yup from "yup";
 
 import { wrsETHABI } from "@/blockchain/abis/wrsETH";
 import {
   borrowAssetsAddress,
+  borrowCoreAddress,
   borrowDepositCoreAddress,
+  borrowingContractAddress,
   borrowingDepositContractAddress,
   optionContractAddress,
 } from "@/blockchain/contracts";
@@ -426,6 +435,16 @@ function InputForm({ currency }: { currency: string }) {
           />
         );
       });
+      // const assetName =
+      //   BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum];
+      // const contractAddress =
+      //   assetName === 12 || assetName === 13
+      //     ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      //     : borrowingContractAddress[
+      //         chainId as keyof typeof borrowingContractAddress
+      //       ];
+
+      // getBaseScanAdvancedFilterUrl(contractAddress, address || zeroAddress);
       setMintLoading(false);
 
       handleResetPage();

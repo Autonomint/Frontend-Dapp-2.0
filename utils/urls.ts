@@ -18,12 +18,12 @@ export const BRAND_ICON_URL =
   "https://avatars.githubusercontent.com/u/37784886";
 
 export const scanUrls = {
-  919: "https://explorer.mode.network/",
-  10: "https://optimistic.etherscan.io/",
-  1: `https://etherscan.io/`,
-  8453: `https://basescan.org/`,
-  4153: "https://explorer.riselabs.xyz/",
-  999: "https://app.hyperliquid.xyz/explorer",
+  [NetworkId.Mode]: "https://explorer.mode.network",
+  [NetworkId.Optimism]: "https://optimistic.etherscan.io",
+  [NetworkId.Ethereum]: `https://etherscan.io`,
+  [NetworkId.BaseSepolia]: `https://basescan.org`,
+  [NetworkId.Rise]: "https://explorer.riselabs.xyz",
+  [NetworkId.Hyperliquid]: "https://app.hyperliquid.xyz/explorer",
 } as Record<number, string>;
 
 export const explorerNames = {

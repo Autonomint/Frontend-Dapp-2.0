@@ -520,3 +520,21 @@ export function getCompletedDays(timestamp: number, isMilliseconds: boolean = tr
 
   return Math.ceil(days);
 }
+
+function isValidAddress(addr: string): boolean {
+  return /^0x[a-fA-F0-9]{40}$/.test(addr);
+}
+
+export function getBaseScanAdvancedFilterUrl(tadd: string, fadd: string): string {
+  if (!isValidAddress(tadd) || !isValidAddress(fadd)) {
+    throw new Error("Invalid address");
+  }
+
+  const params = new URLSearchParams({
+    tadd,
+    fadd,
+    qt: "1",
+  });
+
+  return `https://basescan.org/advanced-filter?${params.toString()}`;
+}

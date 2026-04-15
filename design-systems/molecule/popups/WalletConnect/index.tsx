@@ -85,10 +85,10 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
               <Typography size="h4" className="">
                 Switch Chain
               </Typography>
-              <div className="flex flex-col justify-center py-10  w-[60%] rounded-lg overflow-hidden mx-auto ">
+              <div className="flex flex-col justify-center py-10   rounded-lg overflow-hidden mx-auto ">
                 <div className="text-[18px]  text-center ">Select Chain</div>
 
-                <div className="flex gap-4 justify-center mt-4">
+                <div className="flex gap-4 flex-wrap justify-center mt-4">
                   <Button
                     disabled={isPending}
                     onClick={() => {

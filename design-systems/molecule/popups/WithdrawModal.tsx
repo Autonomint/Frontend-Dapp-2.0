@@ -66,6 +66,7 @@ import { formatUnits, padHex } from "viem";
 import useBorrowRatio from "@/hookes/contract-hooks/useBorrowRatio";
 import { cdsAbi } from "@/blockchain/abis/dcds";
 import { cdsDepositABI } from "@/blockchain/abis/cds-deposit";
+import useWithdrewFixedYields from "@/hookes/api-hooks/useWithdrewFixedYields";
 
 export function DcdsWithdrawModal({
   position,
@@ -489,6 +490,9 @@ export function DcdsWithdrawModal({
     position.index,
     position?.collateralType,
   );
+  const { isLoadingWithdrewFixedYields, withdrewFixedYields } =
+    useWithdrewFixedYields(position.index, position?.collateralType);
+  console.log(withdrewFixedYields, "withdrewFixedYields");
   // Post api function for calculate withdraw amount
   const { calculateBackendWithdraw, withdrawdata } =
     useCalculateWithdrawAmount();
@@ -1153,85 +1157,89 @@ export function DcdsWithdrawModal({
                     );
                   })}
               </div>
-              <div className="flex w-full mt-4  border-solid  border-[1px]  justify-between border-gray-200 rounded-[12px] bg-gray-100 dark:border-[rgb(51,51,51)] dark:bg-[#121212] flex-col sm:flex-row">
-                <div className="flex-1 relative flex flex-col justify-start items-start  gap- border-r-0    py-2 px-4">
-                  <div className="flex flex-col w-full  items-start justify-between">
-                    <div className="flex items-center justify-between gap-3">
-                      <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
-                        $
-                        {Number(
-                          apy == undefined
-                            ? 0
-                            : position.status !== "DEPOSITED"
-                              ? calculatePercentage(
-                                  position?.apys?.amountAccured || 0,
-                                  60,
-                                )
-                              : calculatePercentage(apy[1] || 0, 60),
-                        ).toFixed(4)}
-                      </Label>
-                      {!(position.status == "WITHDREW") && (
-                        <Button
-                          onClick={() => {
-                            handleWithdrawFund(true);
-                            setHalfWithdraw(true);
-                          }}
-                          disabled={
-                            (position.status === "WITHDREW_GAINS"
-                              ? true
-                              : false) ||
-                            isWithdrawPause ||
-                            !readyForNewTx ||
-                            dcdsFundWithdrawLoadingLocal ||
-                            blockAddressAndIndex.some(
-                              (item: {
-                                address: string;
-                                index: number[];
-                                chainId: number;
-                              }) =>
-                                item.address.toLowerCase() ===
-                                  address?.toLowerCase() &&
-                                item.index.includes(Number(position?.index)) &&
-                                item.chainId === chainId,
-                            )
-                          }
-                          className=" py-0 px-2 h-[32px] bg-black text-white font-normal text-[12px] text-center rounded-2xl"
-                        >
-                          {dcdsFundWithdrawLoadingLocal && halfWithdraw
-                            ? "Withdrawing..."
-                            : "Withdraw Yields"}
-                        </Button>
-                      )}
+              <div className=" w-full mt-4  border-solid  border-[1px]  justify-between border-gray-200 rounded-[12px] bg-gray-100 dark:border-[rgb(51,51,51)] dark:bg-[#121212] ">
+                <div className="flex flex-col sm:flex-row ">
+                  <div className="flex-1 relative flex flex-col justify-start items-start  gap- border-r-0    py-2 px-4">
+                    <div className="flex flex-col w-full  items-start justify-between">
+                      <div className="flex items-center justify-between gap-3">
+                        <Label className=" text-[22px] font-bold  md:text-[26px] text-green-600 dark:text-green-500  ">
+                          $
+                          {Number(
+                            apy == undefined
+                              ? 0
+                              : position.status !== "DEPOSITED"
+                                ? calculatePercentage(
+                                    position?.apys?.amountAccured || 0,
+                                    60,
+                                  )
+                                : calculatePercentage(apy[1] || 0, 60),
+                          ).toFixed(4)}
+                        </Label>
+                        {!(position.status == "WITHDREW") && (
+                          <Button
+                            onClick={() => {
+                              handleWithdrawFund(true);
+                              setHalfWithdraw(true);
+                            }}
+                            disabled={
+                              (position.status === "WITHDREW_GAINS"
+                                ? true
+                                : false) ||
+                              isWithdrawPause ||
+                              !readyForNewTx ||
+                              dcdsFundWithdrawLoadingLocal ||
+                              blockAddressAndIndex.some(
+                                (item: {
+                                  address: string;
+                                  index: number[];
+                                  chainId: number;
+                                }) =>
+                                  item.address.toLowerCase() ===
+                                    address?.toLowerCase() &&
+                                  item.index.includes(
+                                    Number(position?.index),
+                                  ) &&
+                                  item.chainId === chainId,
+                              )
+                            }
+                            className=" py-0 px-2 h-[32px] bg-black text-white font-normal text-[12px] text-center rounded-2xl"
+                          >
+                            {dcdsFundWithdrawLoadingLocal && halfWithdraw
+                              ? "Withdrawing..."
+                              : "Withdraw Yields"}
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="flex gap-1">
+                        <Label className="text-[14px] font-normal text-[#777777]">
+                          Option Fee
+                        </Label>
+                        <Tooltip delayDuration={100}>
+                          <TooltipTrigger asChild>
+                            <Info width={18} height={18} className="ml-2" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                            <p>
+                              These are option fee yields paid by USDA+
+                              borrowers for acting as a risk underwriter and
+                              essentially providing price hedge to borrowers.
+                              These are upfront yields which are immediately
+                              received after deductions from their USDA+
+                              borrowed amount.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
                     </div>
 
-                    <div className="flex gap-1">
-                      <Label className="text-[14px] font-normal text-[#777777]">
-                        Option Fee
-                      </Label>
-                      <Tooltip delayDuration={100}>
-                        <TooltipTrigger asChild>
-                          <Info width={18} height={18} className="ml-2" />
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
-                          <p>
-                            These are option fee yields paid by USDA+ borrowers
-                            for acting as a risk underwriter and essentially
-                            providing price hedge to borrowers. These are
-                            upfront yields which are immediately received after
-                            deductions from their USDA+ borrowed amount.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="flex w-full relative items-center justify-between">
-                    <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
-                    <div className="flex gap-1 ml-8">
-                      <Label className=" text-[14px] font-normal text-[#777777]">
-                        Fixed Yields
-                      </Label>
-                      {/* <div className="flex gap-1">
+                    <div className="flex w-full relative items-center justify-between">
+                      <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
+                      <div className="flex gap-1 ml-8">
+                        <Label className=" text-[14px] font-normal text-[#777777]">
+                          Fixed Yields
+                        </Label>
+                        {/* <div className="flex gap-1">
                         <Image
                           src={baseIconNew}
                           alt="eth"
@@ -1245,112 +1253,122 @@ export function DcdsWithdrawModal({
                           height={18}
                         />
                       </div> */}
+                      </div>
+                      <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
+                        {`${Number(
+                          apy == undefined
+                            ? 0
+                            : position.status !== "DEPOSITED"
+                              ? calculatePercentage(
+                                  position?.apys?.currentTimeAPYTillNow,
+                                  60,
+                                ) || 0
+                              : calculatePercentage(apy[5], 60) || 0,
+                        ).toFixed(2)}%`}
+                      </Label>
                     </div>
-                    <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {`${Number(
-                        apy == undefined
-                          ? 0
-                          : position.status !== "DEPOSITED"
-                            ? calculatePercentage(
-                                position?.apys?.currentTimeAPYTillNow,
-                                60,
-                              ) || 0
-                            : calculatePercentage(apy[5], 60) || 0,
-                      ).toFixed(2)}%`}
-                    </Label>
+                  </div>
+                  <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1  py-2 px-4 font-medium">
+                    <div className="flex flex-col w-full items-start justify-between">
+                      <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
+                        $
+                        {hideYieldsAddressAndIndex.some(
+                          (item: {
+                            address: string;
+                            index: number[];
+                            chainId: number;
+                          }) =>
+                            item.address.toLowerCase() ===
+                              address?.toLowerCase() &&
+                            item.index.includes(Number(position?.index)) &&
+                            item.chainId === chainId,
+                        )
+                          ? "NaN"
+                          : toPositiveDecimalString(
+                              Number(
+                                apy == undefined
+                                  ? 0
+                                  : position.status !== "DEPOSITED"
+                                    ? Number(position?.apys?.priceChangePL) < 0
+                                      ? position?.apys?.priceChangePL
+                                      : calculatePercentage(
+                                          position?.apys?.priceChangePL || 0,
+                                          60,
+                                        ) || 0
+                                    : apy[2] < 0
+                                      ? apy[2]
+                                      : calculatePercentage(apy[2], 60) || 0,
+                              ).toFixed(4),
+                            )}
+                      </Label>
+
+                      <div className="flex">
+                        <Label className="text-[14px]  font-normal text-[#777777]">
+                          Price Gains
+                        </Label>
+                        <Tooltip delayDuration={100}>
+                          <TooltipTrigger asChild>
+                            <Info width={18} height={18} className="ml-2" />
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white dark:bg-black w-[300px]">
+                            <p>
+                              These are 3%{" "}
+                              {position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"}{" "}
+                              price gains taken from each USDA+ borrower if{" "}
+                              {position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"}{" "}
+                              rises after they mint. The gains are shared
+                              proportionally across all dCDS users. However,
+                              they’re impermanent—if{" "}
+                              {position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"}{" "}
+                              price drops, the gains shrink and can even turn
+                              negative if{" "}
+                              {position?.collateralType === "HYPE"
+                                ? "HYPE"
+                                : "ETH"}{" "}
+                              falls below the borrower’s entry price.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
+                    <div className="flex w-full relative  items-center justify-between">
+                      <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
+                      <Label className="text-[14px] font-normal text-[#777777] ml-8">
+                        Variable Yields
+                      </Label>
+                      <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
+                        {hideYieldsAddressAndIndex.some(
+                          (item: {
+                            address: string;
+                            index: number[];
+                            chainId: number;
+                          }) =>
+                            item.address.toLowerCase() ===
+                              address?.toLowerCase() &&
+                            item.index.includes(Number(position?.index)) &&
+                            item.chainId === chainId,
+                        )
+                          ? "NaN"
+                          : Number(variableYieldsCheck).toFixed(2)}
+                        %
+                      </Label>
+                    </div>
                   </div>
                 </div>
-                <div className="flex-1 w-full flex flex-col justify-center items-start  gap-1  py-2 px-4 font-medium">
-                  <div className="flex flex-col w-full items-start justify-between">
-                    <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
-                      $
-                      {hideYieldsAddressAndIndex.some(
-                        (item: {
-                          address: string;
-                          index: number[];
-                          chainId: number;
-                        }) =>
-                          item.address.toLowerCase() ===
-                            address?.toLowerCase() &&
-                          item.index.includes(Number(position?.index)) &&
-                          item.chainId === chainId,
-                      )
-                        ? "NaN"
-                        : toPositiveDecimalString(
-                            Number(
-                              apy == undefined
-                                ? 0
-                                : position.status !== "DEPOSITED"
-                                  ? Number(position?.apys?.priceChangePL) < 0
-                                    ? position?.apys?.priceChangePL
-                                    : calculatePercentage(
-                                        position?.apys?.priceChangePL || 0,
-                                        60,
-                                      ) || 0
-                                  : apy[2] < 0
-                                    ? apy[2]
-                                    : calculatePercentage(apy[2], 60) || 0,
-                            ).toFixed(4),
-                          )}
-                    </Label>
 
-                    <div className="flex">
-                      <Label className="text-[14px]  font-normal text-[#777777]">
-                        Price Gains
-                      </Label>
-                      <Tooltip delayDuration={100}>
-                        <TooltipTrigger asChild>
-                          <Info width={18} height={18} className="ml-2" />
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-white dark:bg-black w-[300px]">
-                          <p>
-                            These are 3%{" "}
-                            {position?.collateralType === "HYPE"
-                              ? "HYPE"
-                              : "ETH"}{" "}
-                            price gains taken from each USDA+ borrower if{" "}
-                            {position?.collateralType === "HYPE"
-                              ? "HYPE"
-                              : "ETH"}{" "}
-                            rises after they mint. The gains are shared
-                            proportionally across all dCDS users. However,
-                            they’re impermanent—if{" "}
-                            {position?.collateralType === "HYPE"
-                              ? "HYPE"
-                              : "ETH"}{" "}
-                            price drops, the gains shrink and can even turn
-                            negative if{" "}
-                            {position?.collateralType === "HYPE"
-                              ? "HYPE"
-                              : "ETH"}{" "}
-                            falls below the borrower’s entry price.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </div>
-                  <div className="flex w-full relative  items-center justify-between">
-                    <CornerDownRight className="absolute left-0 top-[-1px] stroke-black dark:stroke-white" />
-                    <Label className="text-[14px] font-normal text-[#777777] ml-8">
-                      Variable Yields
-                    </Label>
-                    <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
-                      {hideYieldsAddressAndIndex.some(
-                        (item: {
-                          address: string;
-                          index: number[];
-                          chainId: number;
-                        }) =>
-                          item.address.toLowerCase() ===
-                            address?.toLowerCase() &&
-                          item.index.includes(Number(position?.index)) &&
-                          item.chainId === chainId,
-                      )
-                        ? "NaN"
-                        : variableYieldsCheck}
-                      %
-                    </Label>
-                  </div>
+                <div className="my-1 mx-4 flex  items-center gap-2">
+                  <Label className=" text-[14px] font-normal text-[#777777]">
+                    Withdrawn Fixed Yields till now :
+                  </Label>
+                  <Label className="text-[18px] md:text-[20px] font-medium dark:text-white">
+                    ${Number(withdrewFixedYields || 0).toFixed(2)}
+                  </Label>
                 </div>
               </div>
               <Typography
