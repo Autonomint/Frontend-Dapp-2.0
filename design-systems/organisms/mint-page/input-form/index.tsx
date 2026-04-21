@@ -1044,7 +1044,9 @@ function InputForm({ currency }: { currency: string }) {
               <TooltipTrigger asChild>
                 <div className="h-full">
                   <Button
-                    disabled={isFunctionPausedBorrow_Deposit}
+                    disabled={
+                      isFunctionPausedBorrow_Deposit || currency === "wrsETH"
+                    }
                     type="submit"
                     className={`
                     bg-black dark:bg-custom-gradient-to-top py-6
@@ -1052,7 +1054,9 @@ function InputForm({ currency }: { currency: string }) {
                   >
                     {!mintBtnLoading ? "Mint USDA+" : <Spinner color="#fff" />}
                     <span className="text-base">
-                      {isFunctionPausedBorrow_Deposit && "(Paused)"}
+                      {(isFunctionPausedBorrow_Deposit ||
+                        currency === "wrsETH") &&
+                        "(Paused)"}
                     </span>
                   </Button>
                   {/* 
@@ -1080,7 +1084,7 @@ function InputForm({ currency }: { currency: string }) {
                   )} */}
                 </div>
               </TooltipTrigger>
-              {isFunctionPausedBorrow_Deposit && (
+              {(isFunctionPausedBorrow_Deposit || currency === "wrsETH") && (
                 <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
                   <p>{"Borrow is paused now"}</p>
                 </TooltipContent>
