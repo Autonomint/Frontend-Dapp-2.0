@@ -982,7 +982,10 @@ export function WithdrawFund({
       ) -
       Number(stakingRealisedReward || 0) -
       Number(downsideProtection) -
-      Number(position?.optionFees);
+      (position.collateralType?.toLocaleLowerCase() === "krwq" ||
+      position.collateralType?.toLocaleLowerCase() === "eurc"
+        ? 0
+        : Number(position?.optionFees));
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
