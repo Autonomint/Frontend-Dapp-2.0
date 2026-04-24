@@ -520,11 +520,13 @@ export function WithdrawFund({
     position.status == BorrowStatus.UNSTAKED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
         Number(downsideProtection) -
-        Number(stakingRealisedReward || 0)
+        Number(stakingRealisedReward || 0) -
+        Number(position?.optionFees)
       : // (Number(downsideProtection) + Number(position?.optionFees))
         Number(position.totalDebtAmount) -
         Number(downsideProtection) -
-        Number(stakingRealisedReward || 0);
+        Number(stakingRealisedReward || 0) -
+        Number(position?.optionFees);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
   // getting current APR value
@@ -977,7 +979,10 @@ export function WithdrawFund({
     const repayAmountFormated =
       Number(
         truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
-      ) - Number(stakingRealisedReward || 0);
+      ) -
+      Number(stakingRealisedReward || 0) -
+      Number(downsideProtection) -
+      Number(position?.optionFees);
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
