@@ -1,7 +1,7 @@
 import BridgeTemplate from "@/design-systems/templates/bridge";
 
 function page() {
-  return <BridgeTemplate />;
+  return <div></div>;
 }
 
 export default page;

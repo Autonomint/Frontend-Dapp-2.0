@@ -2,7 +2,7 @@ import FarmYourLuckTemplate from "@/design-systems/templates/farmyourluck/page";
 import "../../styles/farmyourluckstyles.css";
 
 function Page() {
-  return <FarmYourLuckTemplate />;
+  return <div></div>;
 }
 
 export default Page;
