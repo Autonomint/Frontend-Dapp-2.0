@@ -4,6 +4,7 @@ import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import SingleListItem from "@/design-systems/organisms/mint-eth-list/SingleListItem";
 import CoveredCallsNavbar from "@/design-systems/organisms/CoveredCallsNavbar";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
+import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
 import useDeviceType from "@/hookes/useDeviceType";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -61,6 +62,22 @@ function MintEthListTemplate() {
   const { tvlValue: ltvKRWQ } = useGetTvl(AssetName.KRWQ);
   const { tvlValue: ltvEURC } = useGetTvl(AssetName.EURC);
   const { tvlValue: ltvHYPE } = useGetTvl(AssetName.HYPE);
+
+  // Custom hooks to fetch real-time spot prices for covered call assets
+  const { price: spotPriceNVDA, isLoading: isLoadingNVDA } =
+    useGetSpotPrice("NVDA");
+  const { price: spotPriceTSLA, isLoading: isLoadingTSLA } =
+    useGetSpotPrice("TSLA");
+  const { price: spotPriceSMR, isLoading: isLoadingSMR } =
+    useGetSpotPrice("SMR");
+  const { price: spotPricePLTR, isLoading: isLoadingPLTR } =
+    useGetSpotPrice("PLTR");
+  const { price: spotPriceCOIN, isLoading: isLoadingCOIN } =
+    useGetSpotPrice("COIN");
+  const { price: spotPriceMSTR, isLoading: isLoadingMSTR } =
+    useGetSpotPrice("MSTR");
+  const { price: spotPriceAAPL, isLoading: isLoadingAAPL } =
+    useGetSpotPrice("AAPL");
 
   // Calculate the downside protection amount
   const downsideProtectionEth = ltvETH?.LTV
@@ -134,8 +151,70 @@ function MintEthListTemplate() {
   }));
 
   const formattedaBorrowAssetList = useMemo(() => {
-    return list;
-  }, [list]);
+    return list.map((asset: any) => {
+      let realTimePrice: number | null | undefined = undefined;
+      let isLoading = false;
+
+      // Get real-time price based on ticker
+      switch (asset.ticker) {
+        case "NVDA":
+          realTimePrice = spotPriceNVDA;
+          isLoading = isLoadingNVDA;
+          break;
+        case "TSLA":
+          realTimePrice = spotPriceTSLA;
+          isLoading = isLoadingTSLA;
+          break;
+        case "SMR":
+          realTimePrice = spotPriceSMR;
+          isLoading = isLoadingSMR;
+          break;
+        case "PLTR":
+          realTimePrice = spotPricePLTR;
+          isLoading = isLoadingPLTR;
+          break;
+        case "COIN":
+          realTimePrice = spotPriceCOIN;
+          isLoading = isLoadingCOIN;
+          break;
+        case "MSTR":
+          realTimePrice = spotPriceMSTR;
+          isLoading = isLoadingMSTR;
+          break;
+        case "AAPL":
+          realTimePrice = spotPriceAAPL;
+          isLoading = isLoadingAAPL;
+          break;
+        default:
+          break;
+      }
+
+      return {
+        ...asset,
+        spotPrice: isLoading
+          ? "Loading..."
+          : typeof realTimePrice === "number" && realTimePrice >= 0
+            ? `${realTimePrice.toFixed(2)}`
+            : asset?.spotPrice || "0.00", // Fallback to static price or default
+      };
+    });
+  }, [
+    list,
+    spotPriceNVDA,
+    spotPriceTSLA,
+    spotPriceSMR,
+    spotPricePLTR,
+    spotPriceCOIN,
+    spotPriceMSTR,
+    spotPriceAAPL,
+    isLoadingNVDA,
+    isLoadingTSLA,
+    isLoadingSMR,
+    isLoadingPLTR,
+    isLoadingCOIN,
+    isLoadingMSTR,
+    isLoadingAAPL,
+  ]);
 
   // Custom hook to detect device type
   const deviceType = useDeviceType();

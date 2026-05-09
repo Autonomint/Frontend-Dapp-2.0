@@ -10,6 +10,8 @@ import { ChevronDown } from "lucide-react";
 import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
 import useGetExpiries from "@/hookes/api-hooks/useGetExpiries";
 import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
+import { coveredCallAssets } from "@/utils/token-config";
+import Spinner from "@/design-systems/atoms/Spinner";
 
 interface PriceOption {
   price: string;
@@ -51,7 +53,7 @@ const CoveredCallTemplate = ({
   const action = searchParams.get("action") || "put";
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
-  const [selectedAction, setSelectedAction] = useState(action);
+  const [selectedAction, setSelectedAction] = useState("Covered Call");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
   const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
@@ -60,6 +62,12 @@ const CoveredCallTemplate = ({
 
   const tickers = ["NVDA", "UETH", "BTC"];
   const actions = ["Cash secured put", "Covered Call"];
+
+  // Helper function to get logo URL for ticker
+  const getTickerLogo = (ticker: string) => {
+    const asset = coveredCallAssets.find((asset) => asset.ticker === ticker);
+    return asset?.logo || null;
+  };
 
   const { price: spotPrice, isLoading: priceLoading } =
     useGetSpotPrice(selectedTicker);
@@ -128,14 +136,30 @@ const CoveredCallTemplate = ({
                   onClick={() => setIsTickerDropdownOpen(!isTickerDropdownOpen)}
                   className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-[8px]  dark:hover:bg-black/20"
                 >
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                    style={{
-                      backgroundColor: "#3b82f6",
-                    }}
-                  >
-                    {selectedTicker.charAt(0)}
-                  </div>
+                  {(() => {
+                    const logoUrl = getTickerLogo(selectedTicker);
+                    return logoUrl ? (
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                        <Image
+                          src={logoUrl}
+                          alt={`${selectedTicker} logo`}
+                          width={24}
+                          height={24}
+                          className="object-contain"
+                          unoptimized // For SVG files
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                        style={{
+                          backgroundColor: "#3b82f6",
+                        }}
+                      >
+                        {selectedTicker.charAt(0)}
+                      </div>
+                    );
+                  })()}
                   <span className="text-lg text-textBlack dark:text-white font-medium font-plex-grotesk">
                     {selectedTicker}
                   </span>
@@ -148,18 +172,42 @@ const CoveredCallTemplate = ({
                 {/* Ticker Dropdown Menu */}
                 {isTickerDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
-                    {tickers.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setSelectedTicker(t);
-                          setIsTickerDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        {t}
-                      </button>
-                    ))}
+                    {tickers.map((t) => {
+                      const logoUrl = getTickerLogo(t);
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => {
+                            setSelectedTicker(t);
+                            setIsTickerDropdownOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center space-x-3"
+                        >
+                          {logoUrl ? (
+                            <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-100 p-0.5 flex items-center justify-center">
+                              <Image
+                                src={logoUrl}
+                                alt={`${t} logo`}
+                                width={18}
+                                height={18}
+                                className="object-contain"
+                                unoptimized // For SVG files
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs bg-blue-500"
+                              style={{
+                                backgroundColor: "#3b82f6",
+                              }}
+                            >
+                              {t.charAt(0)}
+                            </div>
+                          )}
+                          <span>{t}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -240,13 +288,15 @@ const CoveredCallTemplate = ({
             {/* Right Section - Price and Cap */}
             <div className="flex items-center space-x-6 border-l border-r border-grayLight px-6">
               {/* Price */}
-              <span className="text-xl text-textBlack dark:text-white font-bold font-plex-grotesk">
-                {priceLoading
-                  ? "Loading..."
-                  : spotPrice
-                    ? `$${spotPrice.toFixed(2)}`
-                    : "$2,356.76"}
-              </span>
+              <div className="flex items-center space-x-2">
+                {priceLoading ? (
+                  <Spinner size={20} color="gray" />
+                ) : (
+                  <span className="text-xl text-textBlack dark:text-white font-bold font-plex-grotesk">
+                    {spotPrice ? `$${spotPrice.toFixed(2)}` : "$2,356.76"}
+                  </span>
+                )}
+              </div>
 
               {/* Cap Progress */}
               {/* <div className="flex items-center space-x-2">
@@ -300,46 +350,61 @@ const CoveredCallTemplate = ({
 
             {/* Price List */}
             <div className="flex justify-center items-center space-x-8 flex-wrap">
-              {priceOptions.map((item, index) => (
-                <div key={index} className="relative group mb-8">
-                  {/* APR Badge */}
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
-                    <div
-                      className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
-                    >
-                      APR {item.apr}
-                    </div>
-                  </div>
-
-                  {/* Price Card */}
-                  <button
-                    onClick={() => handlePriceSelection(item)}
-                    className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${
-                      selectedPrice?.price === item.price
-                        ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
-                        : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
-                    } ${item.bg}`}
-                  >
-                    {/* Glow Effect */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`}
-                    />
-
-                    {/* Price */}
-                    <span className="relative text-lg font-bold text-textBlack dark:text-white font-plex-grotesk">
-                      {item.price}
-                    </span>
-
-                    {/* Decorative Elements */}
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-
-                    {/* Bottom Accent Line */}
-                    <div
-                      className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${item.color} transition-all duration-300 group-hover:w-3/4`}
-                    />
-                  </button>
+              {bidsLoading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Spinner size={32} color="blue" />
+                  <p className="mt-4 text-grayLight dark:text-gray-400 font-plex-grotesk">
+                    Loading strike prices...
+                  </p>
                 </div>
-              ))}
+              ) : priceOptions.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-grayLight dark:text-gray-400 font-plex-grotesk">
+                    No strike prices available
+                  </p>
+                </div>
+              ) : (
+                priceOptions.map((item, index) => (
+                  <div key={index} className="relative group mb-8">
+                    {/* APR Badge */}
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
+                      <div
+                        className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
+                      >
+                        APR {item.apr}
+                      </div>
+                    </div>
+
+                    {/* Price Card */}
+                    <button
+                      onClick={() => handlePriceSelection(item)}
+                      className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${
+                        selectedPrice?.price === item.price
+                          ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
+                          : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
+                      } ${item.bg}`}
+                    >
+                      {/* Glow Effect */}
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`}
+                      />
+
+                      {/* Price */}
+                      <span className="relative text-lg font-bold text-textBlack dark:text-white font-plex-grotesk">
+                        {item.price}
+                      </span>
+
+                      {/* Decorative Elements */}
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+
+                      {/* Bottom Accent Line */}
+                      <div
+                        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${item.color} transition-all duration-300 group-hover:w-3/4`}
+                      />
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Input Section */}
@@ -403,14 +468,30 @@ const CoveredCallTemplate = ({
                   />
                   {/* Asset Icon and Name */}
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                      style={{
-                        backgroundColor: "#3b82f6",
-                      }}
-                    >
-                      {ticker.charAt(0)}
-                    </div>
+                    {(() => {
+                      const logoUrl = getTickerLogo(ticker);
+                      return logoUrl ? (
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                          <Image
+                            src={logoUrl}
+                            alt={`${ticker} logo`}
+                            width={24}
+                            height={24}
+                            className="object-contain"
+                            unoptimized // For SVG files
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                          style={{
+                            backgroundColor: "#3b82f6",
+                          }}
+                        >
+                          {ticker.charAt(0)}
+                        </div>
+                      );
+                    })()}
                     <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
                       {ticker}
                     </span>
@@ -452,14 +533,30 @@ const CoveredCallTemplate = ({
                         {getSelectedPriceData()?.price || "$0.00"}
                       </p>
                       <div className="mt-4 flex items-center space-x-2">
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                          style={{
-                            backgroundColor: "#3b82f6",
-                          }}
-                        >
-                          {ticker.charAt(0)}
-                        </div>
+                        {(() => {
+                          const logoUrl = getTickerLogo(ticker);
+                          return logoUrl ? (
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                              <Image
+                                src={logoUrl}
+                                alt={`${ticker} logo`}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                                unoptimized // For SVG files
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                              style={{
+                                backgroundColor: "#3b82f6",
+                              }}
+                            >
+                              {ticker.charAt(0)}
+                            </div>
+                          );
+                        })()}
                         <div className="text-lg font-medium dark:text-green-500 text-green-600">
                           Get 0.5 {ticker} back
                         </div>
@@ -478,14 +575,30 @@ const CoveredCallTemplate = ({
                           ).toFixed(2)}{" "}
                           USDT0
                         </div>
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                          style={{
-                            backgroundColor: "#3b82f6",
-                          }}
-                        >
-                          {ticker.charAt(0)}
-                        </div>
+                        {(() => {
+                          const logoUrl = getTickerLogo(ticker);
+                          return logoUrl ? (
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                              <Image
+                                src={logoUrl}
+                                alt={`${ticker} logo`}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                                unoptimized // For SVG files
+                              />
+                            </div>
+                          ) : (
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                              style={{
+                                backgroundColor: "#3b82f6",
+                              }}
+                            >
+                              {ticker.charAt(0)}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

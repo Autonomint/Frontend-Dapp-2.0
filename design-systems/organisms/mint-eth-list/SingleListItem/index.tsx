@@ -25,32 +25,46 @@ function SingleListItem({ item }: { item: any }) {
       label: "Ticker",
       value: (
         <div className="flex items-center gap-3">
-          {item.logo && (
-            <div
-              className={`w-12 h-12  rounded-full flex items-center justify-center text-white font-bold text-sm ${item.logo}`}
-              style={{
-                backgroundColor: item.logo.includes("green")
-                  ? "#10b981"
-                  : item.logo.includes("red")
-                    ? "#ef4444"
-                    : item.logo.includes("yellow")
-                      ? "#eab308"
-                      : item.logo.includes("blue")
-                        ? "#3b82f6"
-                        : item.logo.includes("orange")
-                          ? "#f97316"
-                          : item.logo.includes("purple")
-                            ? "#a855f7"
-                            : item.logo.includes("indigo")
-                              ? "#6366f1"
-                              : item.logo.includes("gray")
-                                ? "#1f2937"
-                                : "#6b7280",
-              }}
-            >
-              {item.ticker.charAt(0)}
-            </div>
-          )}
+          {item.logo &&
+            (item.logo.startsWith("http") ? (
+              // Real SVG logo from URL
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                <Image
+                  src={item.logo}
+                  alt={`${item.ticker} logo`}
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                  unoptimized // For SVG files
+                />
+              </div>
+            ) : (
+              // Fallback colored circle with ticker initial
+              <div
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${item.logo}`}
+                style={{
+                  backgroundColor: item.logo.includes("green")
+                    ? "#10b981"
+                    : item.logo.includes("red")
+                      ? "#ef4444"
+                      : item.logo.includes("yellow")
+                        ? "#eab308"
+                        : item.logo.includes("blue")
+                          ? "#3b82f6"
+                          : item.logo.includes("orange")
+                            ? "#f97316"
+                            : item.logo.includes("purple")
+                              ? "#a855f7"
+                              : item.logo.includes("indigo")
+                                ? "#6366f1"
+                                : item.logo.includes("gray")
+                                  ? "#1f2937"
+                                  : "#6b7280",
+                }}
+              >
+                {item.ticker.charAt(0)}
+              </div>
+            ))}
           <div className="flex flex-col">
             <span className="font-bold text-2xl">{item.ticker}</span>
             <span className="text-md text-gray-600 dark:text-gray-400">
@@ -84,11 +98,16 @@ function SingleListItem({ item }: { item: any }) {
     {
       label: "Open interest",
       value: (
-        <span className="text-2xl font-bold">
-          {item.openInterest || "5.2%"}
-        </span>
+        <div className="flex flex-col">
+          <span className="text-2xl font-bold">
+            {item.openInterestValue || "$184K"}
+          </span>
+          <span className="text-base text-gray-500 font-medium">
+            {item.openInterestContracts || "216 contracts"}
+          </span>
+        </div>
       ),
-      tooltipText: "Current interest rate",
+      tooltipText: "Current open interest value and contracts",
     },
   ];
 
