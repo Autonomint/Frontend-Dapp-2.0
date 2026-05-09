@@ -3,9 +3,11 @@ import OPIcon from "@/app/assets/optimism.png";
 import USDaIcon from "@/app/assets/logo.svg";
 import USDaIconGreen from "@/app/assets/brand-logo-small-green.svg";
 import UsdtIcon from "@/app/assets/cryptocurrency-color_usdt.svg";
-import boldIcon from "@/app/assets/bold-logo.svg";
+import cryptoEth from "@/app/assets/eth.png";
 import UsdcIcon from "@/app/assets/usdc.svg";
 import cbBTC from "@/app/assets/cbbtc.webp";
+import WeETH from "@/app/assets/weETH-icoon.webp";
+import boldIcon from "@/app/assets/bold-logo.svg";
 import wBLT from "@/app/assets/wBLT.svg";
 import KRWQ from "@/app/assets/krwq-logo.svg";
 import EURC from "@/app/assets/euro-coin-2.png";
@@ -21,6 +23,7 @@ import {
   wsuperOETHAddress,
 } from "@/blockchain/contracts";
 import { useMemo } from "react";
+import { StaticImageData } from "next/image";
 import { useAccount } from "wagmi";
 
 export interface TokenConfig {
@@ -32,6 +35,153 @@ export interface TokenConfig {
     // image: string;
   };
 }
+
+export interface CoveredCallAsset {
+  ticker: string;
+  name: string;
+  type: "covered call";
+  maxApr: number;
+  minApr: number;
+  multipliers: string[];
+  logo?: string | StaticImageData;
+  spotPrice?: string;
+  priceChange?: string;
+  openInterestValue?: string;
+  openInterestContracts?: string;
+}
+
+export const coveredCallAssets: CoveredCallAsset[] = [
+  {
+    ticker: "NVDA",
+    name: "Nvidia AI",
+    type: "covered call",
+    maxApr: 142.6,
+    minApr: 8.4,
+    multipliers: ["+2x Pyth", "+1x Base"],
+    logo: "bg-green-500", // Green circle for NVDA
+    spotPrice: "904.12",
+    priceChange: "+2.45%",
+    openInterestValue: "$184K",
+    openInterestContracts: "216 contracts"
+  },
+  {
+    ticker: "TSLA",
+    name: "Tesla EV",
+    type: "covered call",
+    maxApr: 128.1,
+    minApr: 6.9,
+    multipliers: ["+1x Pyth"],
+    logo: "bg-red-500", // Red circle for TSLA
+    spotPrice: "174.60",
+    priceChange: "-1.12%",
+    openInterestValue: "$142K",
+    openInterestContracts: "498 contracts"
+  },
+  {
+    ticker: "$SMR",
+    name: "NuScale nuclear",
+    type: "covered call",
+    maxApr: 186.3,
+    minApr: 11.2,
+    multipliers: ["+3x Energy", "+1x Pyth"],
+    logo: "bg-yellow-500", // Yellow circle for SMR
+    spotPrice: "5.42",
+    priceChange: "+5.67%",
+    openInterestValue: "$96K",
+    openInterestContracts: "1,987 contracts"
+  },
+  {
+    ticker: "PLTR",
+    name: "Palantir data",
+    type: "covered call",
+    maxApr: 104.8,
+    minApr: 5.7,
+    multipliers: ["+1x Pyth"],
+    logo: "bg-blue-500", // Blue circle for PLTR
+    spotPrice: "23.15",
+    priceChange: "+0.85%",
+    openInterestValue: "$71K",
+    openInterestContracts: "437 contracts"
+  },
+  {
+    ticker: "MSTR",
+    name: "MicroStrategy BTC proxy",
+    type: "covered call",
+    maxApr: 211.4,
+    minApr: 14.1,
+    multipliers: ["+2x Vol", "+1x Pyth"],
+    logo: "bg-orange-500", // Orange circle for MSTR
+    spotPrice: "1,520.10",
+    priceChange: "+3.21%",
+    openInterestValue: "$92K",
+    openInterestContracts: "58 contracts"
+  },
+  {
+    ticker: "AMD",
+    name: "Advanced Micro-semis",
+    type: "covered call",
+    maxApr: 97.5,
+    minApr: 5.1,
+    multipliers: ["+1x Pyth"],
+    logo: "bg-purple-500", // Purple circle for AMD
+    spotPrice: "162.67",
+    priceChange: "-2.15%",
+    openInterestValue: "$124K",
+    openInterestContracts: "312 contracts"
+  },
+  {
+    ticker: "COIN",
+    name: "Coinbase exchange",
+    type: "covered call",
+    maxApr: 156.8,
+    minApr: 9.3,
+    multipliers: ["+2x Crypto", "+1x Pyth"],
+    logo: "bg-indigo-500", // Indigo circle for COIN
+    spotPrice: "245.30",
+    priceChange: "+1.78%",
+    openInterestValue: "$58K",
+    openInterestContracts: "234 contracts"
+  },
+  {
+    ticker: "AAPL",
+    name: "Apple consumer tech",
+    type: "covered call",
+    maxApr: 42.7,
+    minApr: 2.8,
+    multipliers: ["+1x Pyth"],
+    logo: "bg-gray-800", // Dark gray circle for AAPL
+    spotPrice: "183.05",
+    priceChange: "-0.45%",
+    openInterestValue: "$203K",
+    openInterestContracts: "982 contracts"
+  },
+  {
+    ticker: "GOOGL",
+    name: "Alphabet Google",
+    type: "covered call",
+    maxApr: 89.2,
+    minApr: 4.5,
+    multipliers: ["+1x Tech", "+1x Pyth"],
+    logo: "bg-blue-600", // Dark blue circle for GOOGL
+    spotPrice: "167.24",
+    priceChange: "+0.92%",
+    openInterestValue: "$156K",
+    openInterestContracts: "445 contracts"
+  },
+  {
+    ticker: "MSFT",
+    name: "Microsoft Cloud",
+    type: "covered call",
+    maxApr: 67.8,
+    minApr: 3.2,
+    multipliers: ["+1x Tech", "+1x Pyth"],
+    logo: "bg-cyan-500", // Cyan circle for MSFT
+    spotPrice: "417.32",
+    priceChange: "+1.15%",
+    openInterestValue: "$312K",
+    openInterestContracts: "678 contracts"
+  }
+];
 /**
  * React hook to retrieve and manage token configuration for a given token name.
  *

@@ -305,7 +305,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                 className="py-[14px] h-full px-4 bg-[#ABFFDE]"
                 asChild
               >
-                <div className="relative flex items-center gap-1">
+                {/* <div className="relative flex items-center gap-1">
                   {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                     <Image
                       src={modeIconNew}
@@ -351,7 +351,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                   )}
 
                   <DownArrowIcon className="w-4 h-4 dark:stroke-black stroke-black  " />
-                </div>
+                </div> */}
               </PopoverTrigger>
               <PopoverContent
                 align="center"
@@ -399,7 +399,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
             <div className=" hidden lg:block">
               <Popover>
                 <PopoverTrigger className="py-[12px] px-4 bg-[#ABFFDE]" asChild>
-                  <div className="relative flex items-center gap-2">
+                  {/* <div className="relative flex items-center gap-2">
                     {chainId == NetworkId.Mode && pathName == "/bridge" ? (
                       <Image
                         src={modeIconNew}
@@ -444,7 +444,7 @@ const WalletPopup: React.FC<WalletPopupProps> = ({}) => {
                       />
                     )}
                     <DownArrowIcon className="w-4 h-4 stroke-black  " />
-                  </div>
+                  </div> */}
                 </PopoverTrigger>
                 <PopoverContent
                   align="center"

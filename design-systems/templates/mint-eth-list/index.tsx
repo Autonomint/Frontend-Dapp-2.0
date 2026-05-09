@@ -2,6 +2,7 @@
 
 import AppNavbar from "@/design-systems/organisms/AppNavbar";
 import SingleListItem from "@/design-systems/organisms/mint-eth-list/SingleListItem";
+import CoveredCallsNavbar from "@/design-systems/organisms/CoveredCallsNavbar";
 import useGetTvl from "@/hookes/contract-hooks/useGetLtv";
 import useDeviceType from "@/hookes/useDeviceType";
 import { motion } from "framer-motion";
@@ -26,20 +27,16 @@ import { useFarmLuckDetails } from "@/hookes/api-hooks/useFarmyourLuckDetails";
 import { calculateRemainingTimeDate } from "@/utils/helpers";
 import { useMemo } from "react";
 import { StaticImageData } from "next/image";
+import { coveredCallAssets } from "@/utils/token-config";
 
 interface TokenListItem {
-  token: string;
-  tokenImage: string | StaticImageData;
-  BorrowRate: string;
-  DownsideProtectionGiven: string;
-  ltv: string;
+  ticker: string;
+  name: string;
+  type: string;
+  maxApr: number;
+  minApr: number;
+  multipliers: string[];
   isActive: boolean;
-  InActiveHeading: string;
-  pointsToBeGiven: number;
-  minAmount: number;
-  link: string;
-  boaster: number;
-  boasterTime: number | undefined;
 }
 // Farm text animation variants
 const farmTextVariants = {
@@ -130,316 +127,14 @@ function MintEthListTemplate() {
           ? 10
           : 0;
 
-  // List of tokens with their respective data
-  const list: TokenListItem[] = [];
-
-  if (chainId !== NetworkId.Hyperliquid) {
-    list.push({
-      token: "ETH",
-      tokenImage: cryptoEth,
-      BorrowRate: `${Number(ltvETH?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionEth}%`,
-      ltv: `${ltvETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "ETH borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["ETH"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["ETH"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["ETH"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["ETH"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-  }
-  if (
-    chainId !== NetworkId.Ethereum &&
-    // chainId !== NetworkId.Rise &&
-    chainId !== NetworkId.Hyperliquid
-  ) {
-    list.push({
-      token: "weETH",
-      tokenImage: WeETH,
-      BorrowRate: `${Number(ltvWeETH?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionWeETH}%`,
-      ltv: `${ltvWeETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["weETH"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["weETH"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["weETH"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["weETH"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-  }
-  if (chainId !== NetworkId.Ethereum && chainId !== NetworkId.Hyperliquid) {
-    list.push({
-      token: "wrsETH",
-      tokenImage: WrsETH,
-      BorrowRate: `${Number(ltvWrsETH?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionWrsETH}%`,
-      ltv: `${ltvWrsETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wrsETH borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wrsETH"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["wrsETH"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-  }
-
-  if (chainId !== NetworkId.Hyperliquid && chainId == NetworkId.BaseSepolia) {
-    list.push({
-      token: "cbBTC",
-      tokenImage: cbBTC,
-      BorrowRate: `${Number(ltvCbBTC?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionCbBTC}%`,
-      ltv: `${ltvCbBTC?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "cbBTC borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["cbBTC"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["cbBTC"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["cbBTC"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["cbBTC"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-    list.push({
-      token: "wsuperOETHb",
-      tokenImage: WsuperOETH,
-      BorrowRate: `${Number(ltvWsuperOETH?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionWsuperOETH}%`,
-      ltv: `${ltvWsuperOETH?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "wsuperOETHb borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["wsuperOETHb"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-
-    list.push({
-      token: "KRWQ",
-      tokenImage: KRWQ,
-      BorrowRate: `${Number(ltvKRWQ?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionKRWQ}%`,
-      ltv: `${ltvKRWQ?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "KRWQ borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["krwq"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["krwq"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["krwq"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["krwq"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-
-    list.push({
-      token: "EURC",
-      tokenImage: EURC,
-      BorrowRate: `${Number(ltvEURC?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionEURC}%`,
-      ltv: `${ltvEURC?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "EURC borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["EURC"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["EURC"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["EURC"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["EURC"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-  }
-
-  if (chainId === NetworkId.Hyperliquid) {
-    list.push({
-      token: "HYPE",
-      tokenImage: HYPELogo,
-      BorrowRate: `${Number(0)}%`,
-      DownsideProtectionGiven: `${20}%`,
-      ltv: `${80}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "HYPE borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["HYPE"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["HYPE"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["HYPE"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["HYPE"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
-  }
+  // List of covered call assets
+  const list: TokenListItem[] = coveredCallAssets.map((asset) => ({
+    ...asset,
+    isActive: true, // All covered call assets are active
+  }));
 
   const formattedaBorrowAssetList = useMemo(() => {
-    if (list.length === 0) return [];
-    const formattedList = [];
-    if (list[0]) formattedList.push(list[0]);
-    if (list[3]) formattedList.push(list[3]);
-    if (list[5]) formattedList.push(list[5]);
-    if (list[1]) formattedList.push(list[1]);
-    if (list[2]) formattedList.push(list[2]);
-    if (list[4]) formattedList.push(list[4]);
-    if (list[6]) formattedList.push(list[6]);
-    if (list[7]) formattedList.push(list[7]); // HYPE asset
-    return formattedList;
+    return list;
   }, [list]);
 
   // Custom hook to detect device type
@@ -450,27 +145,28 @@ function MintEthListTemplate() {
 
   return (
     <div className="min-h-[86vh] xl:h-auto">
-      <AppNavbar activeBack={showBack} />
+      <div className="p-8 py-12 flex ">
+        <div className="text-[62px]  font-medium w-[40%] leading-[72px]">
+          Sell options on the stocks{" "}
+          <span className="text-[#abffde] italic">moving markets.</span>
+        </div>
+        <div className="flex flex-1 justify-end items-end">
+          <div className="text-sm uppercase text-right w-[30%] leading-md">
+            Markets open · <span className="text-grayLight">NYSE</span> 10{" "}
+            <span className="text-grayLight">live tickers</span> · $847K{" "}
+            <span className="text-grayLight">open interest</span> Spot prices
+            via Pyth & Chainlink
+          </div>
+        </div>
+      </div>
+      {/* <AppNavbar activeBack={showBack} /> */}
+      <CoveredCallsNavbar activeBack={false} />
       <div className="md:relative">
-        <motion.div className="flex flex-col lg:max-w-[93%]">
+        <motion.div className="flex flex-col ">
           {formattedaBorrowAssetList.map((item, index) => (
             <SingleListItem key={index} item={item} />
           ))}
         </motion.div>
-        <Link prefetch={true} href="/farmyourluck" className="">
-          <motion.div
-            className="absolute dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] right-0 top-0  h-full lg:max-w-[7%] border-x-0 border-y-0 border-b border-grayLight border-[1px]  hidden lg:flex items-center justify-center"
-            initial="hidden"
-            animate="visible"
-            variants={farmTextVariants}
-          >
-            <div
-              className={`transform rotate-90  text-textBlack ${formattedaBorrowAssetList.length > 1 ? "text-[42px]" : "text-[24px]"} font-medium min-w-[600px] flex justify-center dark:text-white`}
-            >
-              Farm Your Luck
-            </div>
-          </motion.div>
-        </Link>
       </div>
     </div>
   );

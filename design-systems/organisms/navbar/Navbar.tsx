@@ -150,7 +150,7 @@ function Navbar() {
   // const nextText = texts[(index + 1) % texts.length];
 
   return (
-    <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-10 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
+    <div className="flex justify-between items-center h-[95px] py-6  lg:py-8    bg-[#FFFFFF] dark:bg-[#0D0D0D]  z-50 border border-solid border-[#7A7A7A] border-t-0 border-r-0 border-l-0">
       <div className="ml-4 flex-row flex gap-2">
         <div
           onClick={toggleMenu}
@@ -295,19 +295,19 @@ function Navbar() {
               </div>
             </div>
           </div> */}
-          <div className="relative ">
-            <a
-              href="https://www.curve.finance/dex/base/pools/factory-stable-ng-325/deposit"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glow-button relative z-10 flex flex-col items-center text-black font-medium rounded-lg transition-all duration-300"
-            >
-              <div>Add Liquidity</div>
-              <div className="text-[10px] text-black text-right">
-                Earn 50% + USDC incentives
-              </div>
-            </a>
-          </div>
+          {/* <div className="relative ">
+              <a
+                href="https://www.curve.finance/dex/base/pools/factory-stable-ng-325/deposit"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glow-button relative z-10 flex flex-col items-center text-black font-medium rounded-lg transition-all duration-300"
+              >
+                <div>Add Liquidity</div>
+                <div className="text-[10px] text-black text-right">
+                  Earn 50% + USDC incentives
+                </div>
+              </a>
+            </div> */}
           <a
             href={meetUrl}
             target="_blank"

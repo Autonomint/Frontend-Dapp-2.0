@@ -31,11 +31,16 @@ export default {
           "0%": { left: "0%" },
           "100%": { left: "-100%" },
         },
+        rise: {
+          from: { opacity: '0', transform: 'translateY(14px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         spring: "spring 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
         slideIn: "slideIn 0.6s linear ",
         slideOut: "slideOut 0.6s linear ",
+        rise: "rise 0.7s cubic-bezier(.2,.7,.2,1) backwards",
       },
       backgroundImage: {
         "custom-gradient-to-top":
@@ -49,10 +54,23 @@ export default {
       fontFamily: {
         "plex-sans": ["IBM Plex Sans", "sans-serif"],
         "plex-grotesk": ["Space Grotesk", "sans-serif"],
+        serif: ['var(--font-fraunces)', 'serif'],
+        sans: ['var(--font-inter-tight)', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'monospace'],
       },
       colors: {
         grayLight: "#7A7A7A",
         textBlack: "#111111",
+        bg: '#f1f3f2',
+        panel: '#ffffff',
+        ink: {
+          DEFAULT: '#0a0a0a',
+          2: '#1a1a1a',
+        },
+        line: '#e5e5e3',
+        gold: '#c9a96a',
+        'green-deep': '#0d4f3c',
+        'red-deep': '#7a1a1a',
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -98,6 +116,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        card: '18px',
       },
       boxShadow: {
         outlined: "2px 2px 0px 0px  #000000",

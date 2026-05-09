@@ -1,0 +1,32 @@
+/* Card hover effect: zoom the bg image */
+.card-bg-zoom {
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform: scale(1.02);
+}
+.card:hover .card-bg-zoom {
+  transform: scale(1.06);
+}
+
+/* Cinematic gradient overlay applied on every mosaic card */
+.card-overlay {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.72) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15));
+}
+
+/* Animation delays for the staggered rise effect */
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.12s; }
+.delay-3 { animation-delay: 0.19s; }
+.delay-4 { animation-delay: 0.26s; }
+.delay-panel { animation-delay: 0.10s; }
+
+/* Animation keyframes */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-rise {
+  animation: rise 0.7s cubic-bezier(.2,.7,.2,1) backwards;
+}

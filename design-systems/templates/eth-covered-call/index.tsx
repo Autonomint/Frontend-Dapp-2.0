@@ -1,0 +1,512 @@
+"use client";
+
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Button } from "@/design-systems/atoms/button";
+import cryptoEth from "@/app/assets/eth.png";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
+import useGetExpiries from "@/hookes/api-hooks/useGetExpiries";
+import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
+
+interface PriceOption {
+  price: string;
+  apr: string;
+  strike: number;
+  premium: number;
+  color: string;
+  bg: string;
+}
+
+interface CoveredCallProps {
+  apr?: number;
+  upfrontPremium?: number;
+  expirationDate?: string;
+  strikePrice?: number;
+  ethAmount?: number;
+  usdtoAmount?: number;
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const CoveredCallTemplate = ({
+  apr = 33.91,
+  upfrontPremium = 25.02,
+  expirationDate = "May_29",
+  strikePrice = 2550,
+  ethAmount = 0.5,
+  usdtoAmount = 1275,
+}: CoveredCallProps) => {
+  const searchParams = useSearchParams();
+  const ticker = searchParams.get("ticker") || "NVDA";
+  const action = searchParams.get("action") || "put";
+
+  const [selectedTicker, setSelectedTicker] = useState(ticker);
+  const [selectedAction, setSelectedAction] = useState(action);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
+  const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
+  const [isActionDropdownOpen, setIsActionDropdownOpen] = useState(false);
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+
+  const tickers = ["NVDA", "UETH", "BTC"];
+  const actions = ["Cash secured put", "Covered Call"];
+
+  const { price: spotPrice, isLoading: priceLoading } =
+    useGetSpotPrice(selectedTicker);
+  const { expiries, isLoading: expiriesLoading } =
+    useGetExpiries(selectedTicker);
+  const { bids, isLoading: bidsLoading } = useGetOptionBids(
+    selectedTicker,
+    selectedDate,
+    expiries.length > 0,
+  );
+
+  const dates = expiries;
+
+  useEffect(() => {
+    if (expiries.length > 0) {
+      setSelectedDate(expiries[0]);
+    }
+  }, [expiries]);
+
+  const priceOptions = bids.map((bid) => {
+    // Calculate APR from premium and strike
+    const apr = (bid.nondollarPremium / bid.strike) * 100;
+    return {
+      price: `$${bid.strike.toFixed(2)}`,
+      apr: `${apr.toFixed(2)}%`,
+      strike: bid.strike,
+      premium: bid.nondollarPremium,
+      color:
+        apr > 30
+          ? "from-red-500 to-red-600 border-red-500"
+          : apr > 15
+            ? "from-yellow-500 to-yellow-600 border-yellow-500"
+            : "from-green-500 to-green-600 border-green-500",
+      bg:
+        apr > 30
+          ? "bg-red-50 dark:bg-red-900/20"
+          : apr > 15
+            ? "bg-yellow-50 dark:bg-yellow-900/20"
+            : "bg-green-50 dark:bg-green-900/20",
+    };
+  });
+
+  const handlePriceSelection = (priceOption: PriceOption) => {
+    setSelectedPrice(priceOption);
+  };
+
+  const getSelectedPriceData = () => {
+    if (selectedPrice) {
+      return selectedPrice;
+    }
+    // Return first option if none selected
+    return priceOptions.length > 0 ? priceOptions[0] : null;
+  };
+
+  return (
+    <div className="min-h-screen  dark:bg-[#0a0a0a] flex flex-col">
+      {/* App Bar */}
+      <div className="w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top border-b border-grayLight">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Left Section - Dropdowns */}
+            <div className="flex items-center space-x-6">
+              {/* UETH Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsTickerDropdownOpen(!isTickerDropdownOpen)}
+                  className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-[8px]  dark:hover:bg-black/20"
+                >
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                    style={{
+                      backgroundColor: "#3b82f6",
+                    }}
+                  >
+                    {selectedTicker.charAt(0)}
+                  </div>
+                  <span className="text-lg text-textBlack dark:text-white font-medium font-plex-grotesk">
+                    {selectedTicker}
+                  </span>
+
+                  <ChevronDown
+                    className={`w-6 h-6 text-grayLight transition-transform ${isTickerDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Ticker Dropdown Menu */}
+                {isTickerDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                    {tickers.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setSelectedTicker(t);
+                          setIsTickerDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Covered Call Dropdown */}
+              <div className="relative border-l border-grayLight pl-2">
+                <button
+                  onClick={() => setIsActionDropdownOpen(!isActionDropdownOpen)}
+                  className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
+                >
+                  <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
+                    {selectedAction}
+                  </span>
+
+                  <ChevronDown
+                    className={`w-6 h-6 text-grayLight transition-transform ${isActionDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Action Dropdown Menu */}
+                {isActionDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                    {actions.map((a) => (
+                      <button
+                        key={a}
+                        onClick={() => {
+                          setSelectedAction(a);
+                          setIsActionDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-2 text-left transition-colors ${
+                          selectedAction === a
+                            ? "bg-black text-white dark:bg-white dark:text-black"
+                            : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                        }`}
+                      >
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Date Dropdown */}
+              <div className="relative border-l border-grayLight pl-2">
+                <button
+                  onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
+                  className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
+                >
+                  <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
+                    {selectedDate}
+                  </span>
+
+                  <ChevronDown
+                    className={`w-6 h-6 text-grayLight transition-transform ${isDateDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Date Dropdown Menu */}
+                {isDateDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                    {dates.map((d) => (
+                      <button
+                        key={d}
+                        onClick={() => {
+                          setSelectedDate(d);
+                          setIsDateDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        {d}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Section - Price and Cap */}
+            <div className="flex items-center space-x-6 border-l border-r border-grayLight px-6">
+              {/* Price */}
+              <span className="text-xl text-textBlack dark:text-white font-bold font-plex-grotesk">
+                {priceLoading
+                  ? "Loading..."
+                  : spotPrice
+                    ? `$${spotPrice.toFixed(2)}`
+                    : "$2,356.76"}
+              </span>
+
+              {/* Cap Progress */}
+              {/* <div className="flex items-center space-x-2">
+                <div className="relative w-8 h-8">
+                  <svg
+                    className="w-full h-full transform -rotate-90"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      fill="none"
+                      className="stroke-grayLight"
+                      strokeWidth="2"
+                    />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      fill="none"
+                      className="stroke-[#ABFFDE]"
+                      strokeWidth="2"
+                      strokeDasharray={`${2 * Math.PI * 10 * 0.36} ${2 * Math.PI * 10}`}
+                    />
+                  </svg>
+                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-textBlack dark:text-white">
+                    36%
+                  </span>
+                </div>
+                <span className="text-sm text-grayLight font-plex-grotesk">
+                  of cap
+                </span>
+              </div> */}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area */}
+      <div className="w-[75%] mx-auto">
+        <div className="flex-1 flex items-center justify-center mt-8 px-4">
+          <div className="text-center">
+            {/* Heading */}
+            <div className="mb-14 px-8 py-6">
+              <p className="text-xl text-grayLight dark:text-gray-400 font-plex-grotesk  mx-auto">
+                Choose the price at which you are happy to sell {ticker} on May
+                29th, 2026 (23 days)
+              </p>
+            </div>
+
+            {/* Price List */}
+            <div className="flex justify-center items-center space-x-8 flex-wrap">
+              {priceOptions.map((item, index) => (
+                <div key={index} className="relative group mb-8">
+                  {/* APR Badge */}
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
+                    <div
+                      className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
+                    >
+                      APR {item.apr}
+                    </div>
+                  </div>
+
+                  {/* Price Card */}
+                  <button
+                    onClick={() => handlePriceSelection(item)}
+                    className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${
+                      selectedPrice?.price === item.price
+                        ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
+                        : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
+                    } ${item.bg}`}
+                  >
+                    {/* Glow Effect */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`}
+                    />
+
+                    {/* Price */}
+                    <span className="relative text-lg font-bold text-textBlack dark:text-white font-plex-grotesk">
+                      {item.price}
+                    </span>
+
+                    {/* Decorative Elements */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+
+                    {/* Bottom Accent Line */}
+                    <div
+                      className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${item.color} transition-all duration-300 group-hover:w-3/4`}
+                    />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Input Section */}
+            <div className="mt-8 w-full">
+              <div className="flex items-center border rounded-[8px] border-grayLight  bg-gray-50 dark:bg-transparent ">
+                {/* Left Side Controls */}
+                <div className="flex items-center h-full space-x-1">
+                  {/* Max Button */}
+                  <button className="h-12 px-3  text-xs font-medium text-textBlack dark:text-white border-r border-grayLight hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    MAX
+                  </button>
+
+                  {/* Plus/Minus Stack */}
+                  <div className="flex h-full px-3 py-2 flex-col border-r border-grayLight">
+                    {/* Plus Button */}
+                    <button className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-grayLight"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        />
+                      </svg>
+                    </button>
+
+                    {/* Minus Button */}
+                    <button className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                      <svg
+                        className="w-4 h-4 text-grayLight"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 12H4"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Input */}
+                <div className="flex-1 relative">
+                  <input
+                    type="number"
+                    placeholder={
+                      getSelectedPriceData()
+                        ? `Enter amount for ${getSelectedPriceData()?.price || "$0.00"} strike`
+                        : "amount to deposit"
+                    }
+                    className="w-full px-4 py-3 pr-16  bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200"
+                  />
+                  {/* Asset Icon and Name */}
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                      style={{
+                        backgroundColor: "#3b82f6",
+                      }}
+                    >
+                      {ticker.charAt(0)}
+                    </div>
+                    <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
+                      {ticker}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
+                Available: 1.000 {ticker}
+              </div>
+
+              {getSelectedPriceData() && (
+                <div className="mt-4 overflow-hidden border border-grayLight dark:border-grayLight rounded-[12px]">
+                  <div className="text-lg  bg-[#abffde] overflow-hidden  text-black border-b border-grayLight dark:border-grayLight font-medium text-center p-4 ">
+                    NOW
+                  </div>
+                  <div className="p-4 py-8">
+                    <div className="text-left text-4xl font-bold text-black dark:text-white">
+                      {bidsLoading
+                        ? "Loading..."
+                        : getSelectedPriceData()?.apr || "0%"}{" "}
+                      <span className="text-base text-grayLight dark:text-gray-400">
+                        APR
+                      </span>
+                    </div>
+                    <div className="text-sm text-left text-grayLight dark:text-gray-400">
+                      {bidsLoading
+                        ? "Loading..."
+                        : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} ${ticker} upfront`}
+                    </div>
+                  </div>
+                  <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
+                    On {selectedDate || "Loading..."}
+                  </div>
+
+                  <div className="p-4 py-8 flex ">
+                    <div className="w-1/2 border-r border-grayLight dark:border-grayLight ">
+                      <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                        If {ticker} BELOW $
+                        {getSelectedPriceData()?.price || "$0.00"}
+                      </p>
+                      <div className="mt-4 flex items-center space-x-2">
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                          style={{
+                            backgroundColor: "#3b82f6",
+                          }}
+                        >
+                          {ticker.charAt(0)}
+                        </div>
+                        <div className="text-lg font-medium dark:text-green-500 text-green-600">
+                          Get 0.5 {ticker} back
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-1/2 flex flex-col items-end justify-center">
+                      <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                        If {ticker} ABOVE $
+                        {getSelectedPriceData()?.price || "$0.00"}
+                      </p>
+                      <div className="mt-4 flex items-center space-x-2">
+                        <div className="text-lg  font-medium dark:text-green-500 text-green-600">
+                          Receive{" "}
+                          {(
+                            (getSelectedPriceData()?.strike || 0) * 0.5
+                          ).toFixed(2)}{" "}
+                          USDT0
+                        </div>
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                          style={{
+                            backgroundColor: "#3b82f6",
+                          }}
+                        >
+                          {ticker.charAt(0)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="m-8 flex justify-center">
+                <Button
+                  type="submit"
+                  className={`
+                bg-black dark:bg-custom-gradient-to-top py-6
+                text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] `}
+                >
+                  Earn upfront premium now
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CoveredCallTemplate;

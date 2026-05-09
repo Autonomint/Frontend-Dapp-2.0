@@ -22,162 +22,112 @@ const listItemVariants = {
 function SingleListItem({ item }: { item: any }) {
   const metrics = [
     {
-      label: "Borrow Rate",
-      value: item.BorrowRate,
-      tooltipText:
-        "The current yearly interest rate charged on stablecoin USDA+ loan",
-    },
-    {
-      label: "LTV",
-      value: item.ltv,
-      tooltipText: "USDA+ borrowing limit per unit of collateral",
-    },
-    {
-      label: "Downside Protection",
-      value: item.DownsideProtectionGiven,
-      tooltipText:
-        "Current %age of price fall protection provided on collaterals",
-    },
-    {
-      label: "Point",
+      label: "Ticker",
       value: (
-        <div className="flex items-center justify-center flex-row-reverse md:flex-col  gap-2 md:gap-1">
-          {!!item.boaster &&
-            calculateRemainingTimeDate(
-              toLocalISOString(new Date(item.boasterTime * 1000)),
-            ).minutes > 0 &&
-            item.boaster > 1 && (
-              <div className="badge mt-1 pulsate w-fit  text-nowrap text-[14px] flex justify-center items-center rounded-full border-[2px] border-green-500 font-bold text-green-600 dark:text-green-400 bg-[#22c55e96] px-1 py-[2px]">
-                {item.boaster}x Points
-              </div>
-            )}
-          <div className="flex items-baseline justify-center  text-nowrap flex-row gap-1">
-            <p>{item.pointsToBeGiven}</p>
-            <div className="text-base">{`per ${item.minAmount} ${
-              item.token.includes("ETH") ? "ETH" : item.token
-            }`}</div>
+        <div className="flex items-center gap-3">
+          {item.logo && (
+            <div
+              className={`w-12 h-12  rounded-full flex items-center justify-center text-white font-bold text-sm ${item.logo}`}
+              style={{
+                backgroundColor: item.logo.includes("green")
+                  ? "#10b981"
+                  : item.logo.includes("red")
+                    ? "#ef4444"
+                    : item.logo.includes("yellow")
+                      ? "#eab308"
+                      : item.logo.includes("blue")
+                        ? "#3b82f6"
+                        : item.logo.includes("orange")
+                          ? "#f97316"
+                          : item.logo.includes("purple")
+                            ? "#a855f7"
+                            : item.logo.includes("indigo")
+                              ? "#6366f1"
+                              : item.logo.includes("gray")
+                                ? "#1f2937"
+                                : "#6b7280",
+              }}
+            >
+              {item.ticker.charAt(0)}
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="font-bold text-2xl">{item.ticker}</span>
+            <span className="text-md text-gray-600 dark:text-gray-400">
+              {item.name}
+            </span>
           </div>
         </div>
       ),
-      tooltipText: "Points to be given for depositing the token",
+      tooltipText: "Asset ticker symbol",
     },
     {
-      label: "Yield",
-      value:
-        item.token === "KRWQ" ? (
-          <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
-            <p className="text-[14px] sm:block hidden">Upto 15% APR</p>
-            {/* <p className="text-[14px] sm:hidden block">Upto 16.17%/m</p> */}
-            {/* <div className="flex items-center text-[14px] lg:text-lg gap-2">
-              <Link href={item.link}>
-                <p>Strategies</p>
-              </Link>
-
-              <SquareArrowOutUpRight />
-            </div> */}
-          </div>
-        ) : (
-          <div className="flex flex-col mb-2 items-center cursor-pointer justify-center gap-2 text-lg">
-            <p className="text-[14px] sm:block hidden">
-              Max upto 16.17% per month
-            </p>
-            <p className="text-[14px] sm:hidden block">Upto 16.17%/m</p>
-            <div className="flex items-center text-[14px] lg:text-lg gap-2">
-              <Link href={item.link}>
-                <p>Strategies</p>
-              </Link>
-
-              <SquareArrowOutUpRight />
-            </div>
-          </div>
-        ),
+      label: "Spot",
+      value: (
+        <div className="flex flex-col">
+          <span className="text-2xl font-bold">
+            ${item.spotPrice || "2,550.00"}
+          </span>
+          <span
+            className={`text-base font-medium ${
+              item.priceChange?.startsWith("+")
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-rose-600 dark:text-rose-400"
+            }`}
+          >
+            {item.priceChange || "0.00%"}
+          </span>
+        </div>
+      ),
+      tooltipText: "Current spot price",
+    },
+    {
+      label: "Open interest",
+      value: (
+        <span className="text-2xl font-bold">
+          {item.openInterest || "5.2%"}
+        </span>
+      ),
+      tooltipText: "Current interest rate",
     },
   ];
 
   return (
     <div className="flex  lg:h-auto flex-col lg:flex-row w-full items-start border-b border-solid border-grayLight gap-6 relative">
       <motion.div
-        className="p-6 w-full pb-0 lg:pb-6"
+        className="p-8 w-full pb-2 lg:pb-10"
         initial="hidden"
         animate="visible"
         variants={listItemVariants}
       >
-        <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full">
-          <SingleListItemImage src={item.tokenImage} stakedToken={item.token} />
-          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-[211px] lg:h-[160px]">
+        <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full px-4 lg:px-6">
+          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-auto lg:h-28">
             {metrics.map((metric, index) => (
-              <div key={index} className="md:flex-1 h-full">
+              <div key={index} className="md:flex-1 px-2">
                 <ListItemMetric {...metric} />
               </div>
             ))}
           </div>
         </div>
-        <div className="hidden lg:block ">
-          {item.isActive ? (
+        <div className="lg:block">
+          <div className="absolute rounded-none md:right-0  md:top-0 bottom-0 flex flex-col justify-center items-center gap-1 p-2 w-32">
             <Link
               prefetch={true}
-              href={`/mintUSDaWithCollateral/${item.token}`}
-              className="absolute  rounded-none md:right-0 md:h-full md:top-0 bottom-0"
+              href={`/earn?ticker=${item.ticker}&action=call`}
+              className=""
             >
               <Button
                 disabled={!item.isActive}
-                className=" h-full bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
+                className={`
+                                bg-black dark:bg-custom-gradient-to-top py-6 px-6
+                                text-white  font-semibold text-[16px] rounded-md `}
               >
-                <Image src={arrow} width={42} height={42} alt="arrow" />
+                Sell Call
               </Button>
             </Link>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="absolute  rounded-none md:right-0 md:h-full md:top-0 bottom-0">
-                  <Button
-                    disabled={!item.isActive}
-                    className=" h-full bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-                  >
-                    <Image src={arrow} width={42} height={42} alt="arrow" />
-                  </Button>
-                </div>
-              </TooltipTrigger>
-              {!item.isActive && (
-                <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-                  <p>{item.InActiveHeading}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          )}
+          </div>
         </div>
       </motion.div>
-
-      {item.isActive ? (
-        <Link
-          className="w-full lg:hidden"
-          prefetch={true}
-          href={`/mintUSDaWithCollateral/${item.token}`}
-        >
-          <Button
-            disabled={!item.isActive}
-            className="  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-          >
-            <Image src={arrow} width={42} height={42} alt="arrow" />
-          </Button>
-        </Link>
-      ) : (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              disabled={!item.isActive}
-              className=" lg:hidden  rounded-none md:right-0 disabled:cursor-not-allowed w-full h-full md:top-0 bottom-0 bg-textBlack hover:bg-textBlack dark:bg-custom-gradient-to-bottom"
-            >
-              <Image src={arrow} width={42} height={42} alt="arrow" />
-            </Button>
-          </TooltipTrigger>
-          {!item.isActive && (
-            <TooltipContent className="bg-white text-black dark:text-white dark:bg-black">
-              <p>{item.InActiveHeading}</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-      )}
     </div>
   );
 }

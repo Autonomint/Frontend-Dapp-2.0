@@ -1,5 +1,5 @@
-import HomeTemplate from "@/design-systems/templates/home-page-template";
+import NewHomePageTemplate from "@/design-systems/templates/new-home-page";
 
 export default function Home() {
-  return <HomeTemplate />;
+  return <NewHomePageTemplate />;
 }
