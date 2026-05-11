@@ -469,12 +469,12 @@ const CoveredCallTemplate = ({
                   {/* Asset Icon and Name */}
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
                     {(() => {
-                      const logoUrl = getTickerLogo(ticker);
-                      return logoUrl ? (
+                      const solLogoUrl = getTickerLogo("SOL");
+                      return solLogoUrl ? (
                         <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
                           <Image
-                            src={logoUrl}
-                            alt={`${ticker} logo`}
+                            src={solLogoUrl}
+                            alt="SOL logo"
                             width={24}
                             height={24}
                             className="object-contain"
@@ -483,23 +483,23 @@ const CoveredCallTemplate = ({
                         </div>
                       ) : (
                         <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
                           style={{
-                            backgroundColor: "#3b82f6",
+                            backgroundColor: "#9945ff", // Solana brand color
                           }}
                         >
-                          {ticker.charAt(0)}
+                          S
                         </div>
                       );
                     })()}
                     <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                      {ticker}
+                      SOL
                     </span>
                   </div>
                 </div>
               </div>
               <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
-                Available: 1.000 {ticker}
+                Available: 1.000 SOL
               </div>
 
               {getSelectedPriceData() && (
@@ -519,7 +519,7 @@ const CoveredCallTemplate = ({
                     <div className="text-sm text-left text-grayLight dark:text-gray-400">
                       {bidsLoading
                         ? "Loading..."
-                        : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} ${ticker} upfront`}
+                        : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} USDC upfront`}
                     </div>
                   </div>
                   <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
