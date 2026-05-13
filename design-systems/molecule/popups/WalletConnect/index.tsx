@@ -45,19 +45,18 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
   useEffect(() => {
     // if the chainId is not undefined and the pathname is not "/bridge" or "/", then the user can set the isPopUpOpen to true
     if (
-      (chainId &&
-        !["/bridge"].includes(pathname) &&
-        ![
-          NetworkId.BaseSepolia,
-          NetworkId.Optimism,
-          NetworkId.Ethereum,
-          NetworkId.Rise,
-          NetworkId.Hyperliquid,
-        ].includes(chainId || 0) &&
-        isConnected &&
-        (chainId || 0) &&
-        isConnected) ||
-      !isConnected
+      chainId &&
+      !["/bridge"].includes(pathname) &&
+      ![
+        NetworkId.BaseSepolia,
+        NetworkId.Optimism,
+        NetworkId.Ethereum,
+        NetworkId.Rise,
+        NetworkId.Hyperliquid,
+      ].includes(chainId || 0) &&
+      isConnected &&
+      (chainId || 0) &&
+      isConnected
     ) {
       setIsPopUpOpen(true);
     } else {
