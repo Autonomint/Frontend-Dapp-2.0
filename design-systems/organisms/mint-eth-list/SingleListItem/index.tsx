@@ -19,7 +19,13 @@ const listItemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
 };
 
-function SingleListItem({ item }: { item: any }) {
+function SingleListItem({
+  item,
+  action = "sell",
+}: {
+  item: any;
+  action?: string;
+}) {
   const metrics = [
     {
       label: "Ticker",
@@ -132,7 +138,7 @@ function SingleListItem({ item }: { item: any }) {
           <div className="absolute rounded-none md:right-0  md:top-0 bottom-0 flex flex-col justify-center items-center gap-1 p-2 w-32">
             <Link
               prefetch={true}
-              href={`/earn?ticker=${item.ticker}&action=call`}
+              href={`/earn?ticker=${item.ticker}&action=${action}`}
               className=""
             >
               <Button
@@ -141,7 +147,7 @@ function SingleListItem({ item }: { item: any }) {
                                 bg-black dark:bg-custom-gradient-to-top py-6 px-6
                                 text-white  font-semibold text-[16px] rounded-md `}
               >
-                Sell Call
+                {action === "buy" ? "Buy Call" : "Sell Call"}
               </Button>
             </Link>
           </div>

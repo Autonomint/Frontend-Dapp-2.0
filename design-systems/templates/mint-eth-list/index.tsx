@@ -51,7 +51,7 @@ const farmTextVariants = {
   },
 };
 
-function MintEthListTemplate() {
+function MintEthListTemplate({ action = "sell" }: { action?: string }) {
   const { chainId, address } = useAccount();
   // Custom hook to fetch the LTV value
   const { tvlValue: ltvETH } = useGetTvl(AssetName.ETH);
@@ -226,8 +226,17 @@ function MintEthListTemplate() {
     <div className="min-h-[86vh] xl:h-auto">
       <div className="p-8 py-12 flex ">
         <div className="text-[62px]  font-medium w-[40%] leading-[72px]">
-          Sell options on the stocks{" "}
-          <span className="text-[#abffde] italic">moving markets.</span>
+          {action === "buy" ? (
+            <>
+              Buy options{" "}
+              <span className="text-[#abffde] italic">at a discount.</span>
+            </>
+          ) : (
+            <>
+              Sell options on the stocks{" "}
+              <span className="text-[#abffde] italic">moving markets.</span>
+            </>
+          )}
         </div>
         <div className="flex flex-1 justify-end items-end">
           <div className="text-sm uppercase text-right w-[30%] leading-md">
@@ -239,11 +248,11 @@ function MintEthListTemplate() {
         </div>
       </div>
       {/* <AppNavbar activeBack={showBack} /> */}
-      <CoveredCallsNavbar activeBack={false} />
+      <CoveredCallsNavbar activeBack={false} action={action} />
       <div className="md:relative">
         <motion.div className="flex flex-col ">
           {formattedaBorrowAssetList.map((item, index) => (
-            <SingleListItem key={index} item={item} />
+            <SingleListItem key={index} item={item} action={action} />
           ))}
         </motion.div>
       </div>

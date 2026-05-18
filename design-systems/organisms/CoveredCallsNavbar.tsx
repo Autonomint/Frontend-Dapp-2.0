@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/design-systems/atoms/button";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import arrowLeft from "@/app/assets/arrow-right-02 (1).png";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 
 interface CoveredCallsNavbarProps {
   activeBack?: boolean;
+  action?: string;
 }
 
 interface TabOption {
@@ -21,29 +22,38 @@ interface TabOption {
 
 const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
   activeBack = true,
+  action = "sell",
 }) => {
   const [activeTab, setActiveTab] = useState(0);
   const router = useRouter();
   const { theme } = useTheme();
+  const isBuyMode = action === "buy";
 
-  // Custom tab options for covered calls
-  const navList = [
-    {
-      nameA: "Covered Calls",
+  const navList = useMemo<TabOption[]>(() => {
+    const primaryTab: TabOption = {
+      nameA: isBuyMode ? "Buy Calls" : "Covered Calls",
       index: 0,
       isFeatureActive: true,
       InActiveHeading: "",
       isComingSoon: false,
       hasLiveChip: true,
-    },
-    {
-      nameA: "Cash-Secured Puts",
-      index: 1,
-      isFeatureActive: false,
-      InActiveHeading: "Coming Soon",
-      isComingSoon: true,
-    },
-  ];
+    };
+
+    if (isBuyMode) {
+      return [primaryTab];
+    }
+
+    return [
+      primaryTab,
+      {
+        nameA: "Cash-Secured Puts",
+        index: 1,
+        isFeatureActive: false,
+        InActiveHeading: "Coming Soon",
+        isComingSoon: true,
+      },
+    ];
+  }, [isBuyMode]);
 
   return (
     <div className="flex  border border-grayLight rounded-lg">

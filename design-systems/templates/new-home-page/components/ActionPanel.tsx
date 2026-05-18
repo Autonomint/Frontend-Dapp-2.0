@@ -20,9 +20,10 @@ export function ActionPanel() {
     setSubmitting(true);
 
     if (selected === "sell") {
-      router.push("/deposit");
+      router.push("/deposit?action=sell");
+    } else if (selected === "buy") {
+      router.push("/deposit?action=buy");
     } else {
-      // In production, replace this with router.push('/buyer')
       console.log(`Continue with path: ${selected}`);
       setSubmitting(false);
     }
@@ -75,19 +76,15 @@ export function ActionPanel() {
       <div className="flex flex-col gap-3 mb-[22px]">
         {pathOptions.map((path) => {
           const isActive = selected === path.id;
-          const isDisabled = path.id === "buy";
           return (
             <button
               key={path.id}
               type="button"
-              onClick={() => !isDisabled && setSelected(path.id)}
-              disabled={isDisabled}
+              onClick={() => setSelected(path.id)}
               className={`text-left w-full block font-sans text-ink dark:text-white rounded-[14px] p-5 px-[22px] transition-all duration-200 ${
-                isDisabled
-                  ? "border border-line dark:border-gray-700 bg-gray-100 dark:bg-[#2a2a2a] cursor-not-allowed opacity-60"
-                  : isActive
-                    ? "border border-ink dark:border-gray-500 bg-[#fafafa] dark:bg-[#2a2a2a] cursor-pointer"
-                    : "border border-line dark:border-gray-700 bg-white dark:bg-[#1a1a1a] cursor-pointer hover:border-ink dark:hover:border-gray-500 hover:-translate-y-px hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.18)]"
+                isActive
+                  ? "border border-ink dark:border-gray-500 bg-[#fafafa] dark:bg-[#2a2a2a] cursor-pointer"
+                  : "border border-line dark:border-gray-700 bg-white dark:bg-[#1a1a1a] cursor-pointer hover:border-ink dark:hover:border-gray-500 hover:-translate-y-px hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.18)]"
               }`}
             >
               <div className="flex justify-between items-start mb-1.5 gap-3">

@@ -12,6 +12,7 @@ import useGetExpiries from "@/hookes/api-hooks/useGetExpiries";
 import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
 import { coveredCallAssets } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
+import { Label } from "@/design-systems/atoms/label";
 
 interface PriceOption {
   price: string;
@@ -50,10 +51,19 @@ const CoveredCallTemplate = ({
 }: CoveredCallProps) => {
   const searchParams = useSearchParams();
   const ticker = searchParams.get("ticker") || "NVDA";
-  const action = searchParams.get("action") || "put";
+  const actionParam = searchParams.get("action");
+  const action =
+    actionParam === "buy" || actionParam === "call"
+      ? "buy"
+      : actionParam === "sell" || actionParam === "put"
+        ? "sell"
+        : "sell";
+  const isBuyMode = action === "buy";
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
-  const [selectedAction, setSelectedAction] = useState("Covered Call");
+  const [selectedAction, setSelectedAction] = useState(
+    isBuyMode ? "Buy Call" : "Covered Call",
+  );
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
   const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
@@ -61,7 +71,14 @@ const CoveredCallTemplate = ({
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 
   const tickers = ["NVDA", "UETH", "BTC"];
-  const actions = ["Cash secured put", "Covered Call"];
+  const actions = isBuyMode
+    ? ["Buy Call"]
+    : ["Cash secured put", "Covered Call"];
+
+  useEffect(() => {
+    setSelectedTicker(ticker);
+    setSelectedAction(isBuyMode ? "Buy Call" : "Covered Call");
+  }, [ticker, isBuyMode]);
 
   // Helper function to get logo URL for ticker
   const getTickerLogo = (ticker: string) => {
@@ -110,6 +127,9 @@ const CoveredCallTemplate = ({
     };
   });
 
+  const MAX_STRIKE_PRICE_OPTIONS = 6;
+  const displayPriceOptions = priceOptions.slice(0, MAX_STRIKE_PRICE_OPTIONS);
+
   const handlePriceSelection = (priceOption: PriceOption) => {
     setSelectedPrice(priceOption);
   };
@@ -119,7 +139,7 @@ const CoveredCallTemplate = ({
       return selectedPrice;
     }
     // Return first option if none selected
-    return priceOptions.length > 0 ? priceOptions[0] : null;
+    return displayPriceOptions.length > 0 ? displayPriceOptions[0] : null;
   };
 
   return (
@@ -357,15 +377,15 @@ const CoveredCallTemplate = ({
                     Loading strike prices...
                   </p>
                 </div>
-              ) : priceOptions.length === 0 ? (
+              ) : displayPriceOptions.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-grayLight dark:text-gray-400 font-plex-grotesk">
                     No strike prices available
                   </p>
                 </div>
               ) : (
-                priceOptions.map((item, index) => (
-                  <div key={index} className="relative group mb-8">
+                displayPriceOptions.map((item) => (
+                  <div key={item.strike} className="relative group mb-8">
                     {/* APR Badge */}
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
                       <div
@@ -409,18 +429,26 @@ const CoveredCallTemplate = ({
 
             {/* Input Section */}
             <div className="mt-8 w-full">
+              {isBuyMode && (
+                <Label className="mb-3 block text-left text-lg sm:text-xl font-semibold text-textBlack dark:text-white font-plex-grotesk">
+                  Contract amount
+                </Label>
+              )}
               <div className="flex items-center border rounded-[8px] border-grayLight  bg-gray-50 dark:bg-transparent ">
                 {/* Left Side Controls */}
                 <div className="flex items-center h-full space-x-1">
-                  {/* Max Button */}
-                  <button className="h-12 px-3  text-xs font-medium text-textBlack dark:text-white border-r border-grayLight hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    MAX
-                  </button>
+                  {!isBuyMode && (
+                    <button className="h-12 px-3 text-xs font-medium text-textBlack dark:text-white border-r border-grayLight hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                      MAX
+                    </button>
+                  )}
 
                   {/* Plus/Minus Stack */}
                   <div className="flex h-full px-3 py-2 flex-col border-r border-grayLight">
-                    {/* Plus Button */}
-                    <button className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button
+                      type="button"
+                      className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
                       <svg
                         className="w-4 h-4 text-grayLight"
                         fill="none"
@@ -436,8 +464,10 @@ const CoveredCallTemplate = ({
                       </svg>
                     </button>
 
-                    {/* Minus Button */}
-                    <button className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button
+                      type="button"
+                      className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
                       <svg
                         className="w-4 h-4 text-grayLight"
                         fill="none"
@@ -460,13 +490,18 @@ const CoveredCallTemplate = ({
                   <input
                     type="number"
                     placeholder={
-                      getSelectedPriceData()
-                        ? `Enter amount for ${getSelectedPriceData()?.price || "$0.00"} strike`
-                        : "amount to deposit"
+                      isBuyMode
+                        ? "Enter contract amount here"
+                        : getSelectedPriceData()
+                          ? `Enter amount for ${getSelectedPriceData()?.price || "$0.00"} strike`
+                          : "amount to deposit"
                     }
-                    className="w-full px-4 py-3 pr-16  bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200"
+                    className={`w-full px-4 py-3 bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200 ${
+                      isBuyMode ? "pr-4" : "pr-16"
+                    }`}
                   />
-                  {/* Asset Icon and Name */}
+                  {/* Asset icon — sell only */}
+                  {!isBuyMode && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
                     {(() => {
                       const solLogoUrl = getTickerLogo("SOL");
@@ -496,11 +531,14 @@ const CoveredCallTemplate = ({
                       SOL
                     </span>
                   </div>
+                  )}
                 </div>
               </div>
-              <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
-                Available: 1.000 SOL
-              </div>
+              {!isBuyMode && (
+                <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
+                  Available: 1.000 SOL
+                </div>
+              )}
 
               {getSelectedPriceData() && (
                 <div className="mt-4 overflow-hidden border border-grayLight dark:border-grayLight rounded-[12px]">
@@ -508,19 +546,30 @@ const CoveredCallTemplate = ({
                     NOW
                   </div>
                   <div className="p-4 py-8">
-                    <div className="text-left text-4xl font-bold text-black dark:text-white">
-                      {bidsLoading
-                        ? "Loading..."
-                        : getSelectedPriceData()?.apr || "0%"}{" "}
-                      <span className="text-base text-grayLight dark:text-gray-400">
-                        APR
-                      </span>
-                    </div>
-                    <div className="text-sm text-left text-grayLight dark:text-gray-400">
-                      {bidsLoading
-                        ? "Loading..."
-                        : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} USDC upfront`}
-                    </div>
+                    {isBuyMode ? (
+                      <div className="text-left text-4xl font-bold text-black dark:text-white">
+                        $5.13{" "}
+                        <span className="text-base text-grayLight dark:text-gray-400 font-normal">
+                          upfront Premium
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="text-left text-4xl font-bold text-black dark:text-white">
+                          {bidsLoading
+                            ? "Loading..."
+                            : getSelectedPriceData()?.apr || "0%"}{" "}
+                          <span className="text-base text-grayLight dark:text-gray-400">
+                            APR
+                          </span>
+                        </div>
+                        <div className="text-sm text-left text-grayLight dark:text-gray-400">
+                          {bidsLoading
+                            ? "Loading..."
+                            : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} USDC upfront`}
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
                     On {selectedDate || "Loading..."}
@@ -611,7 +660,7 @@ const CoveredCallTemplate = ({
                 bg-black dark:bg-custom-gradient-to-top py-6
                 text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] `}
                 >
-                  Earn upfront premium now
+                  {isBuyMode ? "Buy Contract" : "Earn upfront premium now"}
                 </Button>
               </div>
             </div>
