@@ -966,7 +966,7 @@ export function WithdrawFund({
       ));
       return;
     }
-
+    debugger;
     const percentageValue =
       Number(withdrawAmount) / Number(position.noOfUSDaMinted);
 
@@ -976,16 +976,19 @@ export function WithdrawFund({
 
     const extraAmount = Number(percentageValue) * interest;
 
+    const finalOptionFees =
+      (position.collateralType?.toLocaleLowerCase() === "krwq" ||
+      position.collateralType?.toLocaleLowerCase() === "eurc"
+        ? 0
+        : Number(position?.optionFees)) * Number(percentageValue);
+
     const repayAmountFormated =
       Number(
         truncateDecimals(Number(withdrawAmount || 0) + 0.01 + extraAmount, 6),
       ) -
       Number(stakingRealisedReward || 0) -
       Number(downsideProtection) -
-      (position.collateralType?.toLocaleLowerCase() === "krwq" ||
-      position.collateralType?.toLocaleLowerCase() === "eurc"
-        ? 0
-        : Number(position?.optionFees));
+      finalOptionFees;
 
     // check if balance is greater than or equal to repay amount
     if (balance < repayAmountFormated) {
