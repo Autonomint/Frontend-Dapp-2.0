@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
  * API returns only the price as a number
  */
 const fetchSpotPrice = async (symbol: string): Promise<number> => {
-  const response = await fetch(`${BACKEND_API_URL}/twap/spot-price/?symbol=${symbol}`);
+  const response = await fetch(`${BACKEND_API_URL}/stock-options/spot-price?symbol=${symbol}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch ${symbol} price`);
   }

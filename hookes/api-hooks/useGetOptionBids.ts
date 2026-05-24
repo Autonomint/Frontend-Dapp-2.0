@@ -18,7 +18,7 @@ export interface OptionBid {
  * API returns an array of option bid data
  */
 const fetchOptionBids = async (underlying: string, expiry: string): Promise<OptionBid[]> => {
-  const response = await fetch(`${BACKEND_API_URL}/twap/option-bids/?underlying=${underlying}&expiry=${expiry}`);
+  const response = await fetch(`${BACKEND_API_URL}/stock-options/option-bids/?underlying=${underlying}&expiry=${expiry}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch option bids for ${underlying} ${expiry}`);
   }

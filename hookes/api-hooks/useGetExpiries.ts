@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
  * API returns an array of expiry dates
  */
 const fetchExpiries = async (underlying: string): Promise<string[]> => {
-  const response = await fetch(`${BACKEND_API_URL}/twap/expiries?underlying=${underlying}`);
+  const response = await fetch(`${BACKEND_API_URL}/stock-options/expiries?underlying=${underlying}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch expiries for ${underlying}`);
   }

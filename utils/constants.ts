@@ -3,7 +3,7 @@ export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 // network id reference for app
 export enum NetworkId {
   Ethereum = 1,
-  BaseSepolia = 8453,
+  BaseSepolia = 84532,
   Optimism = 10,
   Mode = 34443,
   Rise = 4153,
@@ -56,6 +56,30 @@ export enum AssetName {
   EURC,
   HYPE
 }
+
+// Stock asset names for covered call options (uses prefix to avoid duplication with AssetName)
+export enum StockAssetName {
+  DUMMY,
+  USDC,
+  STOCK_NVDIA,
+  STOCK_TSTLA,
+  STOCK_SMR,
+  STOCK_PLTR,
+  STOCK_COIN,
+  STOCK_MSTR,
+  STOCK_AAPL
+}
+
+// Mapping from ticker symbol to StockAssetName enum
+export const tickerToStockAssetName: Record<string, StockAssetName> = {
+  NVDA: StockAssetName.STOCK_NVDIA,
+  TSLA: StockAssetName.STOCK_TSTLA,
+  SMR: StockAssetName.STOCK_SMR,
+  PLTR: StockAssetName.STOCK_PLTR,
+  COIN: StockAssetName.STOCK_COIN,
+  MSTR: StockAssetName.STOCK_MSTR,
+  AAPL: StockAssetName.STOCK_AAPL,
+};
 
 export const BorrowAssetsEnum = {
   ETH: AssetName.ETH,

@@ -7,7 +7,6 @@ import {
   optimismSepolia,
   sepolia,
   mainnet,
-  base,
   optimism,
   mode,
   AppKitNetwork,
@@ -65,12 +64,12 @@ export const hyperliquidMainnet = defineChain({
 });
 
 const chainList: AppKitNetwork[] = [
-  base,
-  optimism,
-  mainnet,
-  mode,
-  riseMainnet,
-  hyperliquidMainnet,
+  baseSepolia,
+  // optimism,
+  // mainnet,
+  // mode,
+  // riseMainnet,
+  // hyperliquidMainnet,
 ];
 
 export const opSepolia = defineChain({
@@ -125,8 +124,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [base, optimism, mainnet, mode, riseMainnet, hyperliquidMainnet],
-  defaultNetwork: base,
+  networks: [baseSepolia],
+  defaultNetwork: baseSepolia,
   metadata: metadata,
   features: {
     email: false,

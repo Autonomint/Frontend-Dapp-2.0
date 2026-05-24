@@ -138,7 +138,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                         <Spinner />
                       </div>
                     ) : (
-                      <div className="text-[16px]">Base</div>
+                      <div className="text-[16px]">Base Sepolia</div>
                     )}
                   </Button>
                   {/* <Button

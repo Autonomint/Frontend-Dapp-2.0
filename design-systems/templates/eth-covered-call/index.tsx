@@ -13,6 +13,23 @@ import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
 import { coveredCallAssets } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { Label } from "@/design-systems/atoms/label";
+import { useAccount } from "wagmi";
+import { parseUnits } from "viem";
+import { toast } from "sonner";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import useStockApproveUsdc from "@/hookes/stock-contracts/useStockApproveUsdc";
+import useStockDepositTokens from "@/hookes/stock-contracts/useStockDepositTokens";
+import useStockCdsDeposit from "@/hookes/stock-contracts/useStockCdsDeposit";
+import useGetStockSignedData from "@/hookes/stock-contracts/useGetStockSignedData";
+import {
+  stockBorrowDepositAddress,
+  stockCdsAddress,
+  stockUsdcAddress,
+} from "@/blockchain/contracts";
+import { tickerToStockAssetName } from "@/utils/constants";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { config } from "@/blockchain/WalletConfigs/iindex";
 
 interface PriceOption {
   price: string;
@@ -66,6 +83,8 @@ const CoveredCallTemplate = ({
   );
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+  const [isDepositing, setIsDepositing] = useState(false);
   const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
   const [isActionDropdownOpen, setIsActionDropdownOpen] = useState(false);
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
@@ -140,6 +159,222 @@ const CoveredCallTemplate = ({
     }
     // Return first option if none selected
     return displayPriceOptions.length > 0 ? displayPriceOptions[0] : null;
+  };
+
+  const { address, isConnected, chainId } = useAccount();
+
+  const {
+    isPendingStockUsdcApprove,
+    handleStockUsdcApprove,
+    stockUsdcApproveAsync,
+  } = useStockApproveUsdc();
+
+  const { stockDepositIsPending, handleStockDepositTokens } =
+    useStockDepositTokens();
+
+  const { stockSignedData, isPendingStockSignedData, refetchStockSignedData } =
+    useGetStockSignedData();
+
+  const { stockCdsDepositIsPending, handleStockCdsDeposit } =
+    useStockCdsDeposit();
+
+  const handleDeposit = async () => {
+    // Validate wallet connection
+    if (!isConnected || !address) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please connect your wallet first"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
+    // Parse and validate input amount
+    const parsedAmount = parseFloat(inputValue);
+    if (!inputValue || isNaN(parsedAmount) || parsedAmount <= 0) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please enter a valid amount"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
+    // Check if strike price is selected
+    const selectedPriceData = getSelectedPriceData();
+    if (!selectedPriceData) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please select a strike price first"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
+    setIsDepositing(true);
+    debugger;
+    try {
+      if (isBuyMode) {
+        // Buy mode: User buys call option contract
+        console.log("Buy Call:", {
+          ticker: selectedTicker,
+          inputValue: parsedAmount,
+          strikePrice: selectedPriceData.strike,
+          premium: selectedPriceData.premium,
+          expiry: selectedDate,
+          user: address,
+        });
+
+        // Calculate depositing amount = strike price * input value (in USDC decimals = 6)
+        const depositingAmount = parseUnits(
+          (selectedPriceData.strike * parsedAmount).toFixed(6),
+          6,
+        );
+
+        // Get CDS contract address as spender for USDC approval
+        const spenderAddress =
+          stockCdsAddress[chainId as keyof typeof stockCdsAddress];
+
+        // Step 1: Fire USDC approval (approve CDS contract to spend USDC)
+        const approveHash = await stockUsdcApproveAsync([
+          spenderAddress,
+          depositingAmount,
+        ]);
+
+        await waitForTransactionReceipt(config, {
+          hash: approveHash,
+        });
+
+        // Step 2: Calculate hedge validity
+        let hedgeValidity = BigInt(7776000);
+        if (selectedDate) {
+          const expiryTimestamp = Math.floor(
+            new Date(selectedDate).getTime() / 1000,
+          );
+          const nowTimestamp = Math.floor(Date.now() / 1000);
+          const diff = expiryTimestamp - nowTimestamp;
+          if (diff > 0) {
+            hedgeValidity = BigInt(diff);
+          }
+        }
+
+        // Step 3: Get stock asset name from ticker
+        const stockAssetName = tickerToStockAssetName[selectedTicker];
+
+        // Step 4: Fetch signed data from API
+        if (stockAssetName !== undefined) {
+          const signedData = await refetchStockSignedData({
+            underlying: selectedTicker,
+            hedgeDuration: Number(hedgeValidity),
+          });
+
+          if (signedData) {
+            // Step 5: Call CDS deposit with signed data
+            handleStockCdsDeposit({
+              user: address,
+              tokenAddresses: [
+                stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
+              ],
+              tokenAmounts: [depositingAmount],
+              lockingPeriod: hedgeValidity,
+              assetName: stockAssetName,
+              verifyParams: {
+                excessProfitCumulativeValue: BigInt(0),
+                ethPrice: BigInt(signedData.ethPrice),
+                odosAssembledData: "0x" as `0x${string}`,
+                deadline: BigInt(signedData.deadline),
+                signature: signedData.signature,
+              },
+            });
+          }
+        }
+      } else {
+        // Sell mode: Covered Call or Cash Secured Put
+        console.log("Sell -", selectedAction, ":", {
+          ticker: selectedTicker,
+          inputValue: parsedAmount,
+          strikePrice: selectedPriceData.strike,
+          premium: selectedPriceData.premium,
+          expiry: selectedDate,
+          user: address,
+        });
+        // Step 1: Calculate depositing amount = strike price * input value (in USDC decimals = 6)
+        const depositingAmount = parseUnits(
+          (selectedPriceData.strike * parsedAmount).toFixed(6),
+          6,
+        );
+
+        // Get the spender address (stock borrow deposit contract)
+        const spenderAddress =
+          stockBorrowDepositAddress[
+            chainId as keyof typeof stockBorrowDepositAddress
+          ];
+
+        // Step 1: Fire USDC approval - user confirms in wallet
+        const approveHash = await stockUsdcApproveAsync([
+          spenderAddress,
+          depositingAmount,
+        ]);
+
+        await waitForTransactionReceipt(config, {
+          hash: approveHash,
+        });
+
+        // Step 2: Calculate hedge validity (seconds between now and selected expiry)
+        let hedgeValidity = BigInt(7776000); // Default ~90 days
+        if (selectedDate) {
+          const expiryTimestamp = Math.floor(
+            new Date(selectedDate).getTime() / 1000,
+          );
+          const nowTimestamp = Math.floor(Date.now() / 1000);
+          const diff = expiryTimestamp - nowTimestamp;
+          if (diff > 0) {
+            hedgeValidity = BigInt(diff);
+          }
+        }
+
+        // Step 3: Get stock asset name from ticker
+        const stockAssetName = tickerToStockAssetName[selectedTicker];
+
+        // Step 4: Fetch signed data from API
+        if (stockAssetName !== undefined) {
+          const signedData = await refetchStockSignedData({
+            underlying: selectedTicker,
+            hedgeDuration: Number(hedgeValidity),
+          });
+
+          if (signedData) {
+            // Step 5: Call depositTokens with signed data
+            handleStockDepositTokens({
+              user: address,
+              assetName: stockAssetName,
+              depositingAmount,
+              hedgeValidity,
+              verifyParams: {
+                ethPrice: BigInt(signedData.ethPrice),
+                strikePrice: BigInt(signedData.strikePrice),
+                optionFees: BigInt(signedData.optionFees),
+                deadline: BigInt(signedData.deadline),
+                signature: signedData.signature,
+              },
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Deposit failed:", error);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed. Please try again."
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    } finally {
+      setIsDepositing(false);
+    }
   };
 
   return (
@@ -489,6 +724,8 @@ const CoveredCallTemplate = ({
                 <div className="flex-1 relative">
                   <input
                     type="number"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     placeholder={
                       isBuyMode
                         ? "Enter contract amount here"
@@ -502,35 +739,35 @@ const CoveredCallTemplate = ({
                   />
                   {/* Asset icon — sell only */}
                   {!isBuyMode && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-                    {(() => {
-                      const solLogoUrl = getTickerLogo("SOL");
-                      return solLogoUrl ? (
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
-                          <Image
-                            src={solLogoUrl}
-                            alt="SOL logo"
-                            width={24}
-                            height={24}
-                            className="object-contain"
-                            unoptimized // For SVG files
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                          style={{
-                            backgroundColor: "#9945ff", // Solana brand color
-                          }}
-                        >
-                          S
-                        </div>
-                      );
-                    })()}
-                    <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                      SOL
-                    </span>
-                  </div>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                      {(() => {
+                        const solLogoUrl = getTickerLogo("SOL");
+                        return solLogoUrl ? (
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                            <Image
+                              src={solLogoUrl}
+                              alt="SOL logo"
+                              width={24}
+                              height={24}
+                              className="object-contain"
+                              unoptimized // For SVG files
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                            style={{
+                              backgroundColor: "#9945ff", // Solana brand color
+                            }}
+                          >
+                            S
+                          </div>
+                        );
+                      })()}
+                      <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
+                        SOL
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -656,11 +893,23 @@ const CoveredCallTemplate = ({
               <div className="m-8 flex justify-center">
                 <Button
                   type="submit"
+                  onClick={handleDeposit}
+                  disabled={
+                    isDepositing ||
+                    isPendingStockUsdcApprove ||
+                    stockDepositIsPending
+                  }
                   className={`
                 bg-black dark:bg-custom-gradient-to-top py-6
-                text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] `}
+                text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {isBuyMode ? "Buy Contract" : "Earn upfront premium now"}
+                  {isDepositing ||
+                  isPendingStockUsdcApprove ||
+                  stockDepositIsPending
+                    ? "Processing..."
+                    : isBuyMode
+                      ? "Buy Contract"
+                      : "Earn upfront premium now"}
                 </Button>
               </div>
             </div>

@@ -154,7 +154,7 @@ function Navbar() {
       <div className="ml-4 flex-row flex gap-2">
         <div
           onClick={toggleMenu}
-          className="w-[44px] h-[44px]  lg:hidden cursor-pointer flex justify-center items-center border-[1px] dark:border-white border-solid border-black"
+          className="w-[44px] h-[44px]  lg:hidden cursor-pointer flex justify-center items-center border-[1px] dark:border-white border-solid border-black hidden"
         >
           {isOpen ? (
             <CloseIcon className="dark:stroke-white stroke-black" />
@@ -279,6 +279,24 @@ function Navbar() {
         </Link>
       </div>
 
+      {/* Desktop Navigation Menu */}
+      {!isPolicyPage && isClient && (
+        <nav className="hidden lg:flex items-center gap-6 ml-auto mr-4">
+          <Link href="/dashboard/portfolio">
+            <Button
+              variant={"shadowOutline"}
+              className={`h-fit text-xl font-medium p-[8px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] ${
+                pathName?.startsWith("/dashboard") 
+                  ? "dark:text-[#ABFFDE] text-[#00B66B]" 
+                  : "dark:text-white text-black"
+              }`}
+            >
+              Dashboard
+            </Button>
+          </Link>
+        </nav>
+      )}
+
       {!isPolicyPage && isClient && (
         <div className="flex items-center md:gap-6 sm:gap-2 mr-4">
           {/* <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
@@ -383,13 +401,13 @@ function Navbar() {
       {isOpen && (
         <div
           onClick={closeMenu}
-          className="fixed inset-0 top-[94px]  bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 top-[94px]  bg-black bg-opacity-50 z-40 lg:hidden hidden"
         ></div>
       )}
 
       {/* Menu Links */}
       <div
-        className={`w-[100%]      h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`w-[100%]      h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
         style={{ top: 94, left: 0 }}
