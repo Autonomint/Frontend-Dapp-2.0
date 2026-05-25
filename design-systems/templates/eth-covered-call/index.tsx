@@ -22,9 +22,11 @@ import useStockApproveUsdc from "@/hookes/stock-contracts/useStockApproveUsdc";
 import useStockDepositTokens from "@/hookes/stock-contracts/useStockDepositTokens";
 import useStockCdsDeposit from "@/hookes/stock-contracts/useStockCdsDeposit";
 import useGetStockSignedData from "@/hookes/stock-contracts/useGetStockSignedData";
+import useGetCDSWithdrawGainsSignedData from "@/hookes/stock-contracts/useGetCDSWithdrawGainsSignedData";
 import {
   stockBorrowDepositAddress,
   stockCdsAddress,
+  stockCdsDepositAddress,
   stockUsdcAddress,
 } from "@/blockchain/contracts";
 import { tickerToStockAssetName } from "@/utils/constants";
@@ -175,6 +177,9 @@ const CoveredCallTemplate = ({
   const { stockSignedData, isPendingStockSignedData, refetchStockSignedData } =
     useGetStockSignedData();
 
+  const { cdsWithdrawGainsSignedData, isPendingCDSWithdrawGainsSignedData, refetchCDSWithdrawGainsSignedData } =
+    useGetCDSWithdrawGainsSignedData();
+
   const { stockCdsDepositIsPending, handleStockCdsDeposit } =
     useStockCdsDeposit();
 
@@ -228,15 +233,12 @@ const CoveredCallTemplate = ({
           user: address,
         });
 
-        // Calculate depositing amount = strike price * input value (in USDC decimals = 6)
-        const depositingAmount = parseUnits(
-          (selectedPriceData.strike * parsedAmount).toFixed(6),
-          6,
-        );
+        // Calculate depositing amount = just the input value (in USDC decimals = 6)
+        const depositingAmount = parseUnits(parsedAmount.toFixed(6), 6);
 
         // Get CDS contract address as spender for USDC approval
         const spenderAddress =
-          stockCdsAddress[chainId as keyof typeof stockCdsAddress];
+          stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
 
         // Step 1: Fire USDC approval (approve CDS contract to spend USDC)
         const approveHash = await stockUsdcApproveAsync([
@@ -264,11 +266,12 @@ const CoveredCallTemplate = ({
         // Step 3: Get stock asset name from ticker
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
-        // Step 4: Fetch signed data from API
+        // Step 4: Fetch CDS withdraw gains signed data from API
         if (stockAssetName !== undefined) {
-          const signedData = await refetchStockSignedData({
-            underlying: selectedTicker,
-            hedgeDuration: Number(hedgeValidity),
+          const signedData = await refetchCDSWithdrawGainsSignedData({
+            collateralType: selectedTicker,
+            strikePrice: 0,
+            optionFees: "0",
           });
 
           if (signedData) {
@@ -282,11 +285,11 @@ const CoveredCallTemplate = ({
               lockingPeriod: hedgeValidity,
               assetName: stockAssetName,
               verifyParams: {
-                excessProfitCumulativeValue: BigInt(0),
-                ethPrice: BigInt(signedData.ethPrice),
-                odosAssembledData: "0x" as `0x${string}`,
-                deadline: BigInt(signedData.deadline),
-                signature: signedData.signature,
+                 excessProfitCumulativeValue: BigInt(signedData.excessProfitCumulativeValue),
+  ethPrice: BigInt(signedData.ethPrice),
+  odosAssembledData: signedData.odosAssembledData ,
+  deadline: BigInt(signedData.deadline),
+  signature: signedData.signature,
               },
             });
           }
@@ -303,7 +306,7 @@ const CoveredCallTemplate = ({
         });
         // Step 1: Calculate depositing amount = strike price * input value (in USDC decimals = 6)
         const depositingAmount = parseUnits(
-          (selectedPriceData.strike * parsedAmount).toFixed(6),
+          (selectedPriceData.premium * parsedAmount).toFixed(6),
           6,
         );
 
@@ -342,8 +345,9 @@ const CoveredCallTemplate = ({
         // Step 4: Fetch signed data from API
         if (stockAssetName !== undefined) {
           const signedData = await refetchStockSignedData({
-            underlying: selectedTicker,
-            hedgeDuration: Number(hedgeValidity),
+            collateralType: ticker, // Replace with actual collateral type
+            strikePrice: selectedPriceData.strike,
+            optionFees: depositingAmount.toString(), // Pass the depositing amount as option fees
           });
 
           if (signedData) {

@@ -1,7 +1,8 @@
-import { stockBorrowDepositAddress } from "@/blockchain/contracts";
+import { stockBorrowDepositAddress, stockBorrowingAddress } from "@/blockchain/contracts";
 import { borowCoreABI } from "@/blockchain/abis/borrow-core-abi";
 import { useAccount, useWriteContract } from "wagmi";
 import { StockAssetName } from "@/utils/constants";
+import { borrowStockOptionsABI } from "@/blockchain/abis/stock/borrow";
 
 interface StockEIP712VerifyParams {
   ethPrice: bigint;
@@ -38,10 +39,10 @@ const useStockDepositTokens = (mutation?: Record<string, any>) => {
     value?: bigint,
   ) => {
     const contractAddress =
-      stockBorrowDepositAddress[chainId as keyof typeof stockBorrowDepositAddress];
+      stockBorrowingAddress[chainId as keyof typeof stockBorrowDepositAddress];
 
     writeStockDeposit({
-      abi: borowCoreABI,
+      abi: borrowStockOptionsABI,
       address: contractAddress as `0x${string}`,
       functionName: "depositTokens",
       args: [depositParam],
