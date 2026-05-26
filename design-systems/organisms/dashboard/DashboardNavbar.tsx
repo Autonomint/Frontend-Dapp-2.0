@@ -19,13 +19,8 @@ function DashboardNavbar() {
       isActive: pathname === "/dashboard/leaderboard",
       isComingSoon: false,
     },
-    {
-      nameA: "Stats",
-      path: "/dashboard/stats",
-      isActive: pathname === "/dashboard/stats",
-      isComingSoon: true,
-    },
   ];
+
 
   const activeTab = navList.find((nav) => nav.isActive);
 

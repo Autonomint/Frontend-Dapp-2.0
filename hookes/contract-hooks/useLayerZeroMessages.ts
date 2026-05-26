@@ -168,8 +168,8 @@ export const useLayerZeroMessages = () => {
       queryFn: fetchMessages,
       retry: 1, // Retry once on failure
       refetchOnWindowFocus: true, // Refetch when window gains focus
-      enabled: !!otherChainContractAddress && !!eid,
-      // enabled: false, // Query is disabled (currently commented out)
+      // enabled: !!otherChainContractAddress && !!eid,
+      enabled: false, // Query is disabled
       staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
       refetchInterval: 5000, // Refetch every 5 seconds
     });

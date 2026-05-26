@@ -76,6 +76,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({
         ]
       : tabOptions;
 
+
+
   const activeTab = navList?.find((nav) => nav.isActive);
 
   return (

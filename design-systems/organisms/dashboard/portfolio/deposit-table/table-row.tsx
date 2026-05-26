@@ -199,45 +199,15 @@ const DepositTableRow = ({
           display: tabPosition === "Borrowed" ? "block" : "none",
         }}
       >
-        {position.status !== BorrowStatus.STAKED && (
-          <span
-            onClick={() => {
-              setRenewRepay(true);
-              handleRowClick();
-            }}
-            className="font-bold cursor-pointer text-[20px] underline "
-          >
-            {position.status == BorrowStatus.WITHDREW
-              ? "Repaid"
-              : position.status == BorrowStatus.LIQUIDATED
-                ? "Liquidated"
-                : "Repay/Renew"}
-          </span>
-        )}
-        {(position.collateralType === "krwq" ||
-          position.collateralType === "EURC") &&
-          position.status !== "UNSTAKED" &&
-          position.status !== "LIQUIDATED" &&
-          position.status !== "WITHDREW" && (
-            <span
-              onClick={() => {
-                setStakePopUpOpen?.(true);
-                handleRowClick();
-              }}
-              className="font-bold cursor-pointer text-[20px] underline "
-            >
-              {position.status == BorrowStatus.STAKED ? "Unstake" : "Stake"}
-            </span>
-          )}
-        {/* <spans
-            onClick={() => {
-              setViewPosition(true);
-              handleRowClick();
-            }}
-            className="font-bold cursor-pointer text-[20px] underline   md:inline"
-          >
-            View
-          </spans> */}
+        <button
+          onClick={() => {
+            setRenewRepay(true);
+            handleRowClick();
+          }}
+          className="font-bold cursor-pointer text-[20px] underline bg-transparent border-none"
+        >
+          Close Position
+        </button>
       </td>
 
       <td

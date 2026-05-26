@@ -15,7 +15,7 @@ function getDeposits(
   chainId: number
 ): Promise<DcdsDetailsResponse> {
   return fetch(
-    `${BACKEND_API_URL}/cds/totalDeposits/${chainId}/${address}`
+    `${BACKEND_API_URL}/stock-options/cds/totalDeposits/${chainId}/${address}`
   ).then((response) => response.json());
 }
 

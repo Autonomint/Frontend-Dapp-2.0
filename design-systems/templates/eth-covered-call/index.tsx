@@ -22,7 +22,7 @@ import useStockApproveUsdc from "@/hookes/stock-contracts/useStockApproveUsdc";
 import useStockDepositTokens from "@/hookes/stock-contracts/useStockDepositTokens";
 import useStockCdsDeposit from "@/hookes/stock-contracts/useStockCdsDeposit";
 import useGetStockSignedData from "@/hookes/stock-contracts/useGetStockSignedData";
-import useGetCDSWithdrawGainsSignedData from "@/hookes/stock-contracts/useGetCDSWithdrawGainsSignedData";
+import useGetCDSWithdrawSignedData from "@/hookes/stock-contracts/useGetCDSWithdrawSignedData";
 import {
   stockBorrowDepositAddress,
   stockCdsAddress,
@@ -177,8 +177,11 @@ const CoveredCallTemplate = ({
   const { stockSignedData, isPendingStockSignedData, refetchStockSignedData } =
     useGetStockSignedData();
 
-  const { cdsWithdrawGainsSignedData, isPendingCDSWithdrawGainsSignedData, refetchCDSWithdrawGainsSignedData } =
-    useGetCDSWithdrawGainsSignedData();
+  const {
+    cdsWithdrawSignedData,
+    isPendingCDSWithdrawSignedData,
+    refetchCDSWithdrawSignedData,
+  } = useGetCDSWithdrawSignedData();
 
   const { stockCdsDepositIsPending, handleStockCdsDeposit } =
     useStockCdsDeposit();
@@ -222,9 +225,9 @@ const CoveredCallTemplate = ({
     setIsDepositing(true);
     debugger;
     try {
-      if (isBuyMode) {
-        // Buy mode: User buys call option contract
-        console.log("Buy Call:", {
+      if (!isBuyMode) {
+        // Sell mode: Covered Call or Cash Secured Put
+        console.log("Sell -", selectedAction, ":", {
           ticker: selectedTicker,
           inputValue: parsedAmount,
           strikePrice: selectedPriceData.strike,
@@ -268,7 +271,7 @@ const CoveredCallTemplate = ({
 
         // Step 4: Fetch CDS withdraw gains signed data from API
         if (stockAssetName !== undefined) {
-          const signedData = await refetchCDSWithdrawGainsSignedData({
+          const signedData = await refetchCDSWithdrawSignedData({
             collateralType: selectedTicker,
             strikePrice: 0,
             optionFees: "0",
@@ -285,18 +288,20 @@ const CoveredCallTemplate = ({
               lockingPeriod: hedgeValidity,
               assetName: stockAssetName,
               verifyParams: {
-                 excessProfitCumulativeValue: BigInt(signedData.excessProfitCumulativeValue),
-  ethPrice: BigInt(signedData.ethPrice),
-  odosAssembledData: signedData.odosAssembledData ,
-  deadline: BigInt(signedData.deadline),
-  signature: signedData.signature,
+                excessProfitCumulativeValue: BigInt(
+                  signedData.excessProfitCumulativeValue,
+                ),
+                ethPrice: BigInt(signedData.ethPrice),
+                odosAssembledData: signedData.odosAssembledData,
+                deadline: BigInt(signedData.deadline),
+                signature: signedData.signature,
               },
             });
           }
         }
       } else {
-        // Sell mode: Covered Call or Cash Secured Put
-        console.log("Sell -", selectedAction, ":", {
+        // Buy mode: User buys call option contract
+        console.log("Buy -", selectedAction, ":", {
           ticker: selectedTicker,
           inputValue: parsedAmount,
           strikePrice: selectedPriceData.strike,
@@ -313,7 +318,7 @@ const CoveredCallTemplate = ({
         // Get the spender address (stock borrow deposit contract)
         const spenderAddress =
           stockBorrowDepositAddress[
-            chainId as keyof typeof stockBorrowDepositAddress
+          chainId as keyof typeof stockBorrowDepositAddress
           ];
 
         // Step 1: Fire USDC approval - user confirms in wallet
@@ -355,7 +360,7 @@ const CoveredCallTemplate = ({
             handleStockDepositTokens({
               user: address,
               assetName: stockAssetName,
-              depositingAmount,
+              depositingAmount: BigInt(parsedAmount),
               hedgeValidity,
               verifyParams: {
                 ethPrice: BigInt(signedData.ethPrice),
@@ -496,11 +501,10 @@ const CoveredCallTemplate = ({
                           setSelectedAction(a);
                           setIsActionDropdownOpen(false);
                         }}
-                        className={`w-full px-4 py-2 text-left transition-colors ${
-                          selectedAction === a
-                            ? "bg-black text-white dark:bg-white dark:text-black"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
-                        }`}
+                        className={`w-full px-4 py-2 text-left transition-colors ${selectedAction === a
+                          ? "bg-black text-white dark:bg-white dark:text-black"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                          }`}
                       >
                         {a}
                       </button>
@@ -637,11 +641,10 @@ const CoveredCallTemplate = ({
                     {/* Price Card */}
                     <button
                       onClick={() => handlePriceSelection(item)}
-                      className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${
-                        selectedPrice?.price === item.price
-                          ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
-                          : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
-                      } ${item.bg}`}
+                      className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${selectedPrice?.price === item.price
+                        ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
+                        : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
+                        } ${item.bg}`}
                     >
                       {/* Glow Effect */}
                       <div
@@ -729,7 +732,29 @@ const CoveredCallTemplate = ({
                   <input
                     type="number"
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => {
+                      const rawValue = e.target.value;
+                      // For buy mode, prevent decimal values
+                      if (isBuyMode) {
+                        // Only allow integer values (no decimals)
+                        const sanitized = rawValue.replace(/[.,]/g, '');
+                        if (sanitized === '' || /^\d+$/.test(sanitized)) {
+                          setInputValue(sanitized);
+                        }
+                      } else {
+                        setInputValue(rawValue);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // For buy mode, block decimal point key presses
+                      if (isBuyMode && (e.key === '.' || e.key === ',')) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onWheel={(e) => {
+                      // Disable mouse scroll on the input for both modes
+                      (e.target as HTMLInputElement).blur();
+                    }}
                     placeholder={
                       isBuyMode
                         ? "Enter contract amount here"
@@ -737,9 +762,8 @@ const CoveredCallTemplate = ({
                           ? `Enter amount for ${getSelectedPriceData()?.price || "$0.00"} strike`
                           : "amount to deposit"
                     }
-                    className={`w-full px-4 py-3 bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200 ${
-                      isBuyMode ? "pr-4" : "pr-16"
-                    }`}
+                    className={`w-full px-4 py-3 bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200 ${isBuyMode ? "pr-4" : "pr-16"
+                      }`}
                   />
                   {/* Asset icon — sell only */}
                   {!isBuyMode && (
@@ -789,7 +813,7 @@ const CoveredCallTemplate = ({
                   <div className="p-4 py-8">
                     {isBuyMode ? (
                       <div className="text-left text-4xl font-bold text-black dark:text-white">
-                        $5.13{" "}
+                        ${(selectedPrice?.premium)?.toFixed(2)}{" "}
                         <span className="text-base text-grayLight dark:text-gray-400 font-normal">
                           upfront Premium
                         </span>
@@ -819,7 +843,7 @@ const CoveredCallTemplate = ({
                   <div className="p-4 py-8 flex ">
                     <div className="w-1/2 border-r border-grayLight dark:border-grayLight ">
                       <p className="text-sm text-left text-grayLight dark:text-gray-400">
-                        If {ticker} BELOW $
+                        If {ticker} BELOW {" "}
                         {getSelectedPriceData()?.price || "$0.00"}
                       </p>
                       <div className="mt-4 flex items-center space-x-2">
@@ -848,20 +872,20 @@ const CoveredCallTemplate = ({
                           );
                         })()}
                         <div className="text-lg font-medium dark:text-green-500 text-green-600">
-                          Get 0.5 {ticker} back
+                          Get {inputValue || "0"} {ticker} back
                         </div>
                       </div>
                     </div>
                     <div className="w-1/2 flex flex-col items-end justify-center">
                       <p className="text-sm text-left text-grayLight dark:text-gray-400">
-                        If {ticker} ABOVE $
+                        If {ticker} ABOVE {" "}
                         {getSelectedPriceData()?.price || "$0.00"}
                       </p>
                       <div className="mt-4 flex items-center space-x-2">
                         <div className="text-lg  font-medium dark:text-green-500 text-green-600">
                           Receive{" "}
                           {(
-                            (getSelectedPriceData()?.strike || 0) * 0.5
+                            (getSelectedPriceData()?.strike || 0) * parseFloat(inputValue || "0")
                           ).toFixed(2)}{" "}
                           USDT0
                         </div>
@@ -908,8 +932,8 @@ const CoveredCallTemplate = ({
                 text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {isDepositing ||
-                  isPendingStockUsdcApprove ||
-                  stockDepositIsPending
+                    isPendingStockUsdcApprove ||
+                    stockDepositIsPending
                     ? "Processing..."
                     : isBuyMode
                       ? "Buy Contract"

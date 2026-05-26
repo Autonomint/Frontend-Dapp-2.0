@@ -176,7 +176,7 @@ function DepositTable({
           >
             <tr>
               <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
-                ID
+                Asset
               </th>
               <th
                 onClick={() => {
@@ -186,7 +186,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal w-4/5 lg:w-auto"
               >
                 <div className="flex gap-2 items-center">
-                  <span>Asset Deposited </span>
+                  <span>Type </span>
                   <span>
                     {sortAsc && sortBy === "amount" ? (
                       <ChevronDown
@@ -216,7 +216,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>USDA+ Minted </span>
+                  <span>Maturity </span>
                   <span>
                     {sortAsc && sortBy === "usda" ? (
                       <ChevronDown
@@ -246,7 +246,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>Amount Protected</span>
+                  <span>Size (contracts)</span>
                   <span>
                     {sortAsc && sortBy === "protected" ? (
                       <ChevronDown
@@ -276,7 +276,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>ABond Minted</span>
+                  <span>Strike Price</span>
                   <span>
                     {sortAsc && sortBy === "abond" ? (
                       <ChevronDown
@@ -306,7 +306,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>Liquidation</span>
+                  <span>PnL</span>
                   <span>
                     {sortAsc && sortBy === "liquidation" ? (
                       <ChevronDown
@@ -329,7 +329,7 @@ function DepositTable({
                 </div>
               </th>
               <th className="pr-5 whitespace-nowrap font-normal lg:w-auto text-right">
-                Action
+                Close Position
               </th>
             </tr>
           </thead>

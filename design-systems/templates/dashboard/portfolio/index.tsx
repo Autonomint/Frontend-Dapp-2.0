@@ -124,7 +124,7 @@ function PortfolioTemplate() {
   // refresh borrowed table data for backend data refetch from blockchain
   const RefreshTableData = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/borrows/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/stock-options/borrows/refresh/${chainId}/${address}`,
       {
         method: "POST",
       },
@@ -136,7 +136,7 @@ function PortfolioTemplate() {
   // refresh cds table data for backend data refetch from blockchain
   const RefreshTableDataCds = async () => {
     const res = await fetch(
-      `${BACKEND_API_URL}/cds/refresh/${chainId}/${address}`,
+      `${BACKEND_API_URL}/stock-options/cds/refresh/${chainId}/${address}`,
       {
         method: "POST",
       },
@@ -225,42 +225,7 @@ function PortfolioTemplate() {
 
   return (
     <div className="flex sm:px-4 flex-col">
-      <div className="grid lg:grid-cols-4 grid-cols-2">
-        <div className="col-span-1">
-          <PortfolioMetrics
-            subHeading="Total Borrowed (All Chain)"
-            value={`${userTotalBorrowAmount} USDA+`}
-          />
-        </div>
-        <div className="col-span-1">
-          <PortfolioMetrics
-            subHeading="Total Deposited (All Chain)"
-            value={`$${formatNumber(totalUserDeposit)}`}
-          />
-        </div>
-        <div className="col-span-1">
-          <PortfolioMetrics
-            subHeading="Yield Earned (All Chain)"
-            value={`$${formatNumber(Number(userGainsTotal))}`}
-            isLoading={userGainsFetching}
-            isShow={showYield}
-            showHeading="Show Yield"
-            onShowClick={() => setShowYield(!showYield)}
-          />
-        </div>
-        <div className="col-span-1">
-          <PortfolioMetrics
-            subHeading={`Points (All Chain)`}
-            value={formatNumber(
-              Number(referralPoints || 0) +
-                Number(points || 0) +
-                Number(stakingPoints || 0),
-            )}
-            hasLiquidityLandPoints={hasLiquidityLandPoints}
-            isOG={isOG}
-          />
-        </div>
-      </div>
+     
       <div
         id="dashboard-nav"
         className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
@@ -280,7 +245,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          USDA+ Positions
+          Buy Option Positions
         </div>
         <div
           onClick={() => {
@@ -295,7 +260,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          dCDS Positions
+          Sell Call Positions
         </div>
         <div
           onClick={handleRefresh}
