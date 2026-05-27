@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/design-systems/atoms/button";
 import cryptoEth from "@/app/assets/eth.png";
-import { useState, useEffect } from "react";
+import usdcIcon from "@/app/assets/usdc.svg";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
@@ -30,6 +31,7 @@ import {
   stockUsdcAddress,
 } from "@/blockchain/contracts";
 import { tickerToStockAssetName } from "@/utils/constants";
+import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 
@@ -163,6 +165,13 @@ const CoveredCallTemplate = ({
     return displayPriceOptions.length > 0 ? displayPriceOptions[0] : null;
   };
 
+  // Lock end date: 30 days from today
+  const lockEndDate = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return formatDate(date.toISOString());
+  }, []);
+
   const { address, isConnected, chainId } = useAccount();
 
   const {
@@ -236,14 +245,11 @@ const CoveredCallTemplate = ({
           user: address,
         });
 
-        // Calculate depositing amount = just the input value (in USDC decimals = 6)
         const depositingAmount = parseUnits(parsedAmount.toFixed(6), 6);
 
-        // Get CDS contract address as spender for USDC approval
         const spenderAddress =
           stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
 
-        // Step 1: Fire USDC approval (approve CDS contract to spend USDC)
         const approveHash = await stockUsdcApproveAsync([
           spenderAddress,
           depositingAmount,
@@ -253,7 +259,6 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        // Step 2: Calculate hedge validity
         let hedgeValidity = BigInt(7776000);
         if (selectedDate) {
           const expiryTimestamp = Math.floor(
@@ -266,10 +271,8 @@ const CoveredCallTemplate = ({
           }
         }
 
-        // Step 3: Get stock asset name from ticker
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
-        // Step 4: Fetch CDS withdraw gains signed data from API
         if (stockAssetName !== undefined) {
           const signedData = await refetchCDSWithdrawSignedData({
             collateralType: selectedTicker,
@@ -278,7 +281,6 @@ const CoveredCallTemplate = ({
           });
 
           if (signedData) {
-            // Step 5: Call CDS deposit with signed data
             handleStockCdsDeposit({
               user: address,
               tokenAddresses: [
@@ -300,7 +302,6 @@ const CoveredCallTemplate = ({
           }
         }
       } else {
-        // Buy mode: User buys call option contract
         console.log("Buy -", selectedAction, ":", {
           ticker: selectedTicker,
           inputValue: parsedAmount,
@@ -309,19 +310,16 @@ const CoveredCallTemplate = ({
           expiry: selectedDate,
           user: address,
         });
-        // Step 1: Calculate depositing amount = strike price * input value (in USDC decimals = 6)
         const depositingAmount = parseUnits(
           (selectedPriceData.premium * parsedAmount).toFixed(6),
           6,
         );
 
-        // Get the spender address (stock borrow deposit contract)
         const spenderAddress =
           stockBorrowDepositAddress[
           chainId as keyof typeof stockBorrowDepositAddress
           ];
 
-        // Step 1: Fire USDC approval - user confirms in wallet
         const approveHash = await stockUsdcApproveAsync([
           spenderAddress,
           depositingAmount,
@@ -331,8 +329,7 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        // Step 2: Calculate hedge validity (seconds between now and selected expiry)
-        let hedgeValidity = BigInt(7776000); // Default ~90 days
+        let hedgeValidity = BigInt(7776000);
         if (selectedDate) {
           const expiryTimestamp = Math.floor(
             new Date(selectedDate).getTime() / 1000,
@@ -344,19 +341,16 @@ const CoveredCallTemplate = ({
           }
         }
 
-        // Step 3: Get stock asset name from ticker
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
-        // Step 4: Fetch signed data from API
         if (stockAssetName !== undefined) {
           const signedData = await refetchStockSignedData({
-            collateralType: ticker, // Replace with actual collateral type
+            collateralType: ticker,
             strikePrice: selectedPriceData.strike,
-            optionFees: depositingAmount.toString(), // Pass the depositing amount as option fees
+            optionFees: depositingAmount.toString(),
           });
 
           if (signedData) {
-            // Step 5: Call depositTokens with signed data
             handleStockDepositTokens({
               user: address,
               assetName: stockAssetName,
@@ -410,7 +404,7 @@ const CoveredCallTemplate = ({
                           width={24}
                           height={24}
                           className="object-contain"
-                          unoptimized // For SVG files
+                          unoptimized
                         />
                       </div>
                     ) : (
@@ -427,13 +421,11 @@ const CoveredCallTemplate = ({
                   <span className="text-lg text-textBlack dark:text-white font-medium font-plex-grotesk">
                     {selectedTicker}
                   </span>
-
                   <ChevronDown
                     className={`w-6 h-6 text-grayLight transition-transform ${isTickerDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
-                {/* Ticker Dropdown Menu */}
                 {isTickerDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
                     {tickers.map((t) => {
@@ -455,7 +447,7 @@ const CoveredCallTemplate = ({
                                 width={18}
                                 height={18}
                                 className="object-contain"
-                                unoptimized // For SVG files
+                                unoptimized
                               />
                             </div>
                           ) : (
@@ -485,13 +477,11 @@ const CoveredCallTemplate = ({
                   <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
                     {selectedAction}
                   </span>
-
                   <ChevronDown
                     className={`w-6 h-6 text-grayLight transition-transform ${isActionDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
-                {/* Action Dropdown Menu */}
                 {isActionDropdownOpen && (
                   <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
                     {actions.map((a) => (
@@ -514,43 +504,42 @@ const CoveredCallTemplate = ({
               </div>
 
               {/* Date Dropdown */}
-              <div className="relative border-l border-grayLight pl-2">
-                <button
-                  onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                  className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
-                >
-                  <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
-                    {selectedDate}
-                  </span>
+              {isBuyMode && (
+                <div className="relative border-l border-grayLight pl-2">
+                  <button
+                    onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
+                    className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
+                  >
+                    <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
+                      {selectedDate ? formatDateShort(selectedDate) : "Select date"}
+                    </span>
+                    <ChevronDown
+                      className={`w-6 h-6 text-grayLight transition-transform ${isDateDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
 
-                  <ChevronDown
-                    className={`w-6 h-6 text-grayLight transition-transform ${isDateDropdownOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {/* Date Dropdown Menu */}
-                {isDateDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
-                    {dates.map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => {
-                          setSelectedDate(d);
-                          setIsDateDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        {d}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  {isDateDropdownOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                      {dates.map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => {
+                            setSelectedDate(d);
+                            setIsDateDropdownOpen(false);
+                          }}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        >
+                          {formatDateShort(d)}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Right Section - Price and Cap */}
             <div className="flex items-center space-x-6 border-l border-r border-grayLight px-6">
-              {/* Price */}
               <div className="flex items-center space-x-2">
                 {priceLoading ? (
                   <Spinner size={20} color="gray" />
@@ -560,114 +549,127 @@ const CoveredCallTemplate = ({
                   </span>
                 )}
               </div>
-
-              {/* Cap Progress */}
-              {/* <div className="flex items-center space-x-2">
-                <div className="relative w-8 h-8">
-                  <svg
-                    className="w-full h-full transform -rotate-90"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      fill="none"
-                      className="stroke-grayLight"
-                      strokeWidth="2"
-                    />
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      fill="none"
-                      className="stroke-[#ABFFDE]"
-                      strokeWidth="2"
-                      strokeDasharray={`${2 * Math.PI * 10 * 0.36} ${2 * Math.PI * 10}`}
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-textBlack dark:text-white">
-                    36%
-                  </span>
-                </div>
-                <span className="text-sm text-grayLight font-plex-grotesk">
-                  of cap
-                </span>
-              </div> */}
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="w-[75%] mx-auto">
-        <div className="flex-1 flex items-center justify-center mt-8 px-4">
-          <div className="text-center">
-            {/* Heading */}
-            <div className="mb-14 px-8 py-6">
-              <p className="text-xl text-grayLight dark:text-gray-400 font-plex-grotesk  mx-auto">
-                Choose the price at which you are happy to sell {ticker} on May
-                29th, 2026 (23 days)
-              </p>
-            </div>
+      <div className="max-w-[900px] mx-auto">
+        <div className="flex-1 flex items-center justify-center mt-8 px-4 ">
+          <div className="text-center w-full">
+            {/* Heading - Buy mode */}
+            {isBuyMode && (
+              <div className="mb-14 px-8 py-6">
+                <p className="text-xl text-grayLight dark:text-gray-400 font-plex-grotesk  mx-auto">
+                  Choose the price at which you are happy to sell {ticker} on {selectedDate ? formatDate(selectedDate) : "..."} ({selectedDate ? getDaysRemaining(selectedDate) : "..."} days)
+                </p>
+              </div>
+            )}
 
-            {/* Price List */}
-            <div className="flex justify-center items-center space-x-8 flex-wrap">
-              {bidsLoading ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <Spinner size={32} color="blue" />
-                  <p className="mt-4 text-grayLight dark:text-gray-400 font-plex-grotesk">
-                    Loading strike prices...
-                  </p>
-                </div>
-              ) : displayPriceOptions.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-grayLight dark:text-gray-400 font-plex-grotesk">
-                    No strike prices available
-                  </p>
-                </div>
-              ) : (
-                displayPriceOptions.map((item) => (
-                  <div key={item.strike} className="relative group mb-8">
-                    {/* APR Badge */}
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
-                      <div
-                        className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
-                      >
-                        APR {item.apr}
-                      </div>
-                    </div>
-
-                    {/* Price Card */}
-                    <button
-                      onClick={() => handlePriceSelection(item)}
-                      className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${selectedPrice?.price === item.price
-                        ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
-                        : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
-                        } ${item.bg}`}
-                    >
-                      {/* Glow Effect */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`}
-                      />
-
-                      {/* Price */}
-                      <span className="relative text-lg font-bold text-textBlack dark:text-white font-plex-grotesk">
-                        {item.price}
-                      </span>
-
-                      {/* Decorative Elements */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-
-                      {/* Bottom Accent Line */}
-                      <div
-                        className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${item.color} transition-all duration-300 group-hover:w-3/4`}
-                      />
-                    </button>
+            {/* Price List - Buy mode */}
+            {isBuyMode && (
+              <div className="flex justify-center items-center space-x-8 flex-wrap">
+                {bidsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-12">
+                    <Spinner size={32} color="blue" />
+                    <p className="mt-4 text-grayLight dark:text-gray-400 font-plex-grotesk">
+                      Loading strike prices...
+                    </p>
                   </div>
-                ))
-              )}
-            </div>
+                ) : displayPriceOptions.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-grayLight dark:text-gray-400 font-plex-grotesk">
+                      No strike prices available
+                    </p>
+                  </div>
+                ) : (
+                  displayPriceOptions.map((item) => (
+                    <div key={item.strike} className="relative group mb-8">
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
+                        <div
+                          className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
+                        >
+                          APR {item.apr}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handlePriceSelection(item)}
+                        className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${selectedPrice?.price === item.price
+                          ? "border-blue-500 shadow-lg ring-2 ring-blue-200 dark:ring-blue-400"
+                          : "border-gray-200 dark:border-gray-700 hover:shadow-xl"
+                          } ${item.bg}`}
+                      >
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-300`}
+                        />
+                        <span className="relative text-lg font-bold text-textBlack dark:text-white font-plex-grotesk">
+                          {item.price}
+                        </span>
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+                        <div
+                          className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r ${item.color} transition-all duration-300 group-hover:w-3/4`}
+                        />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* Sell Mode Heading - Pool Covered Calls */}
+            {!isBuyMode && (
+              <div className="mb-8 text-left">
+                <div className="text-xs uppercase tracking-[0.22em] text-[#5fb88a] font-plex-grotesk mb-2 inline-flex items-center gap-2 before:content-[''] before:w-4 before:h-px before:bg-[#5fb88a]">
+                  Pool · Covered Calls
+                </div>
+                <h1 className="text-[32px] sm:text-[38px] font-serif font-normal leading-[1.1] tracking-[-0.025em] text-textBlack dark:text-white max-w-[24ch]">
+                  Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from calls written against the pool
+                </h1>
+
+              </div>
+            )}
+
+            {/* Config Grid - Sell mode only */}
+            {!isBuyMode && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[14px] mb-6 text-left">
+                {/* Field 1: Asset to write calls on */}
+                <div className="bg-white dark:bg-[#161616] border border-[#e5e5e3] dark:border-[#1c2e2a] rounded-[14px] p-4 focus-within:border-[#5fb88a] transition-colors">
+                  <div className="font-plex-grotesk text-[9.5px] uppercase tracking-[0.18em] text-grayLight dark:text-gray-400 mb-2.5">
+                    Asset to write calls on
+                  </div>
+                  <div className="flex items-center justify-between gap-2.5">
+                    <span className="flex items-center gap-2.5 text-lg font-medium text-textBlack dark:text-white">
+                      <span className="w-[26px] h-[26px] rounded-full bg-gradient-to-br from-[#1d4d2c] to-[#76b049] text-white flex items-center justify-center font-serif font-medium text-xs">
+                        {selectedTicker.charAt(0)}
+                      </span>
+                      {selectedTicker}
+                    </span>
+                    <span className="text-grayLight dark:text-gray-400 text-[10px]">▼</span>
+                  </div>
+                  <div className="font-plex-grotesk text-[10.5px] text-grayLight dark:text-gray-400 mt-2.5 leading-relaxed">
+                    Premium from all {selectedTicker} call buyers flows to this pool.
+                  </div>
+                </div>
+
+                {/* Field 2: Lock-in for premium accrual */}
+                <div className="bg-white dark:bg-[#161616] border border-[#e5e5e3] dark:border-[#1c2e2a] rounded-[14px] p-4 focus-within:border-[#5fb88a] transition-colors">
+
+                  <div className="font-plex-grotesk text-[9.5px] uppercase tracking-[0.18em] text-grayLight dark:text-gray-400 mb-2.5">
+                    Lock-in for premium accrual
+                  </div>
+                  <div className="flex items-center justify-between gap-2.5">
+                    <span className="text-lg font-medium text-textBlack dark:text-white">
+                      30 days
+                    </span>
+                    <span className="text-grayLight dark:text-gray-400 text-[10px]">▼</span>
+                  </div>
+                  <div className="font-plex-grotesk text-[10.5px] text-grayLight dark:text-gray-400 mt-2.5 leading-relaxed">
+                    Your deposit is locked until <strong className="text-[#5fb88a] font-medium">{lockEndDate}</strong>. Every call sold in this window earns you a share.
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Input Section */}
             <div className="mt-8 w-full">
@@ -685,7 +687,6 @@ const CoveredCallTemplate = ({
                     </button>
                   )}
 
-                  {/* Plus/Minus Stack */}
                   <div className="flex h-full px-3 py-2 flex-col border-r border-grayLight">
                     <button
                       type="button"
@@ -705,7 +706,6 @@ const CoveredCallTemplate = ({
                         />
                       </svg>
                     </button>
-
                     <button
                       type="button"
                       className="w-4 h-4 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -727,16 +727,13 @@ const CoveredCallTemplate = ({
                   </div>
                 </div>
 
-                {/* Input */}
                 <div className="flex-1 relative">
                   <input
                     type="number"
                     value={inputValue}
                     onChange={(e) => {
                       const rawValue = e.target.value;
-                      // For buy mode, prevent decimal values
                       if (isBuyMode) {
-                        // Only allow integer values (no decimals)
                         const sanitized = rawValue.replace(/[.,]/g, '');
                         if (sanitized === '' || /^\d+$/.test(sanitized)) {
                           setInputValue(sanitized);
@@ -746,13 +743,11 @@ const CoveredCallTemplate = ({
                       }
                     }}
                     onKeyDown={(e) => {
-                      // For buy mode, block decimal point key presses
                       if (isBuyMode && (e.key === '.' || e.key === ',')) {
                         e.preventDefault();
                       }
                     }}
                     onWheel={(e) => {
-                      // Disable mouse scroll on the input for both modes
                       (e.target as HTMLInputElement).blur();
                     }}
                     placeholder={
@@ -765,35 +760,18 @@ const CoveredCallTemplate = ({
                     className={`w-full px-4 py-3 bg-transparent text-textBlack dark:text-white font-plex-grotesk focus:outline-none focus:border-none transition-all duration-200 ${isBuyMode ? "pr-4" : "pr-16"
                       }`}
                   />
-                  {/* Asset icon — sell only */}
                   {!isBuyMode && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-                      {(() => {
-                        const solLogoUrl = getTickerLogo("SOL");
-                        return solLogoUrl ? (
-                          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
-                            <Image
-                              src={solLogoUrl}
-                              alt="SOL logo"
-                              width={24}
-                              height={24}
-                              className="object-contain"
-                              unoptimized // For SVG files
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                            style={{
-                              backgroundColor: "#9945ff", // Solana brand color
-                            }}
-                          >
-                            S
-                          </div>
-                        );
-                      })()}
+                      <Image
+                        src={usdcIcon}
+                        alt="USDC"
+                        width={24}
+                        height={24}
+                        className="object-contain"
+                        unoptimized
+                      />
                       <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                        SOL
+                        USDC
                       </span>
                     </div>
                   )}
@@ -801,15 +779,16 @@ const CoveredCallTemplate = ({
               </div>
               {!isBuyMode && (
                 <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
-                  Available: 1.000 SOL
+                  Available: 1,000 USDC
                 </div>
               )}
 
               {getSelectedPriceData() && (
                 <div className="mt-4 overflow-hidden border border-grayLight dark:border-grayLight rounded-[12px]">
-                  <div className="text-lg  bg-[#abffde] overflow-hidden  text-black border-b border-grayLight dark:border-grayLight font-medium text-center p-4 ">
-                    NOW
+                  <div className="bg-[#97f0bc] text-[#051911] px-[22px] py-[11px] font-['JetBrains_Mono',monospace] text-[11px] font-semibold tracking-[0.18em] uppercase text-center border-b border-grayLight dark:border-grayLight">
+                    {isBuyMode ? "NOW" : "Projected premium · proportional share"}
                   </div>
+
                   <div className="p-4 py-8">
                     {isBuyMode ? (
                       <div className="text-left text-4xl font-bold text-black dark:text-white">
@@ -820,24 +799,48 @@ const CoveredCallTemplate = ({
                       </div>
                     ) : (
                       <>
-                        <div className="text-left text-4xl font-bold text-black dark:text-white">
-                          {bidsLoading
-                            ? "Loading..."
-                            : getSelectedPriceData()?.apr || "0%"}{" "}
-                          <span className="text-base text-grayLight dark:text-gray-400">
-                            APR
-                          </span>
+                        {/* Premium hero section */}
+                        <div className="flex justify-between items-start gap-[18px] mb-[22px]">
+                          <div className="flex flex-col gap-[2px]">
+                            <div className="font-['Fraunces',serif] text-[52px] font-medium tracking-[-0.035em] leading-none text-black dark:text-white">
+                              ~${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"}
+                              <span className="text-[22px] text-grayLight dark:text-gray-400 ml-1 font-normal">
+                                {" "}USDC
+                              </span>
+                            </div>
+                            <div className="font-['JetBrains_Mono',monospace] text-[11px] text-grayLight dark:text-gray-400 mt-[6px]">
+                              <strong className="font-medium text-black dark:text-white">
+                                {bidsLoading ? "..." : getSelectedPriceData()?.apr || "0%"} APR
+                              </strong>{" "}
+                              · based on last-30-day pool activity
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[6px] items-end">
+                            <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
+                              Your share <span className="font-medium text-black dark:text-white">12.4%</span>
+                            </div>
+                            <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
+                              Lock until <span className="font-medium text-black dark:text-white">{lockEndDate}</span>
+                            </div>
+                            <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
+                              Paid in <span className="font-medium text-black dark:text-white">USDC</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-left text-grayLight dark:text-gray-400">
-                          {bidsLoading
-                            ? "Loading..."
-                            : `${getSelectedPriceData()?.premium?.toFixed(2) || "0.00"} USDC upfront`}
+                        {/* Explain box */}
+                        <div className="bg-[#f0f4f3] dark:bg-[#161616] border border-grayLight dark:border-grayLight rounded-[10px] p-[14px_16px] font-['JetBrains_Mono',monospace] text-[11.5px] leading-[1.6] text-grayLight dark:text-gray-400">
+
+                          Premium is paid by everyone buying {ticker} calls written against this pool, split{" "}
+                          <span className="font-medium text-[#5fb88a]">proportionally</span> by each depositor's share.{" "}
+                          <strong className="font-medium text-black dark:text-white">The more calls bought during your 30 days, the higher your premium.</strong>{" "}
+                          Numbers above are estimates from past activity; actuals depend on real buy flow.
                         </div>
                       </>
                     )}
+
                   </div>
                   <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
-                    On {selectedDate || "Loading..."}
+                    On {selectedDate ? formatDate(selectedDate) : "Loading..."}
                   </div>
 
                   <div className="p-4 py-8 flex ">
@@ -857,7 +860,7 @@ const CoveredCallTemplate = ({
                                 width={24}
                                 height={24}
                                 className="object-contain"
-                                unoptimized // For SVG files
+                                unoptimized
                               />
                             </div>
                           ) : (
@@ -887,7 +890,7 @@ const CoveredCallTemplate = ({
                           {(
                             (getSelectedPriceData()?.strike || 0) * parseFloat(inputValue || "0")
                           ).toFixed(2)}{" "}
-                          USDT0
+                          USDT
                         </div>
                         {(() => {
                           const logoUrl = getTickerLogo(ticker);
@@ -899,7 +902,7 @@ const CoveredCallTemplate = ({
                                 width={24}
                                 height={24}
                                 className="object-contain"
-                                unoptimized // For SVG files
+                                unoptimized
                               />
                             </div>
                           ) : (
@@ -918,7 +921,46 @@ const CoveredCallTemplate = ({
                   </div>
                 </div>
               )}
+
+              {/* Loss Card - Sell mode only */}
+              {!isBuyMode && (
+                <div className="bg-white dark:bg-[#161616] border border-[#e5e5e3] dark:border-[#1c2e2a] rounded-[14px] p-[22px_24px] mb-[28px] mt-4 text-left">
+
+                  <div className="flex items-center gap-[10px] mb-[14px]">
+                    <span className="w-[22px] h-[22px] rounded-full bg-[rgba(212,160,96,0.12)] border border-[rgba(212,160,96,0.3)] text-[#d4a060] inline-flex items-center justify-center font-['JetBrains_Mono',monospace] font-semibold text-[11px]">
+                      !
+                    </span>
+                    <span className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.2em] uppercase text-[#d4a060] font-medium">
+                      How losses work
+                    </span>
+                  </div>
+                  <div className="font-['Inter_Tight',sans-serif] text-[14px] leading-[1.65] text-black dark:text-white mb-[18px]">
+                    If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the USDC you deposited.
+                  </div>
+                  <div className="grid grid-cols-2 gap-[12px] pt-[16px] border-t border-dashed border-[#e5e5e3] dark:border-[#1c2e2a]">
+
+                    <div>
+                      <div className="font-['JetBrains_Mono',monospace] text-[9.5px] tracking-[0.16em] uppercase text-grayLight dark:text-gray-400 mb-[4px]">
+                        Your max exposure
+                      </div>
+                      <div className="font-['JetBrains_Mono',monospace] text-[13px] text-black dark:text-white font-medium text-[#d4a060]">
+                        Up to {inputValue || "0"} USDC
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-['JetBrains_Mono',monospace] text-[9.5px] tracking-[0.16em] uppercase text-grayLight dark:text-gray-400 mb-[4px]">
+                        Loss allocation
+                      </div>
+                      <div className="font-['JetBrains_Mono',monospace] text-[13px] text-black dark:text-white font-medium">
+                        Proportional to share
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="m-8 flex justify-center">
+
                 <Button
                   type="submit"
                   onClick={handleDeposit}

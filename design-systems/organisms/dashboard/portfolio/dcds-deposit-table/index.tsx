@@ -92,25 +92,21 @@ function DcdsDepositTable({
   const sortedPositionList = useMemo(() => {
     return positionList.sort((a, b) => {
       if (sortBy === "deposit") {
-        const depositB =
-          Number(b.depositedAmounts.usda) +
-          Number(b.depositedAmounts.usdt) +
-          Number(b.depositedAmounts.nativeToken) *
-            Number(b.nativeTokenPriceAtDeposit);
-        const depositA =
-          Number(a.depositedAmounts.usda) +
-          Number(a.depositedAmounts.usdt) +
-          Number(a.depositedAmounts.nativeToken) *
-            Number(a.nativeTokenPriceAtDeposit);
-        return sortAsc ? depositB - depositA : depositA - depositB;
+        return sortAsc
+          ? Number(b.totalDepositedAmount) - Number(a.totalDepositedAmount)
+          : Number(a.totalDepositedAmount) - Number(b.totalDepositedAmount);
       } else if (sortBy === "time") {
         return sortAsc
           ? Number(b.depositedTime) - Number(a.depositedTime)
           : Number(a.depositedTime) - Number(b.depositedTime);
-      } else if (sortBy === "hedge") {
+      } else if (sortBy === "asset") {
         return sortAsc
-          ? Number(b.collateralType) - Number(a.collateralType)
-          : Number(a.collateralType) - Number(b.collateralType);
+          ? (b.collateralType || "").localeCompare(a.collateralType || "")
+          : (a.collateralType || "").localeCompare(b.collateralType || "");
+      } else if (sortBy === "stockPrice") {
+        return sortAsc
+          ? Number(b.stockPriceAtDeposit) - Number(a.stockPriceAtDeposit)
+          : Number(a.stockPriceAtDeposit) - Number(b.stockPriceAtDeposit);
       }
 
       return 0;
@@ -135,7 +131,37 @@ function DcdsDepositTable({
           >
             <tr>
               <th className="pl-5 whitespace-nowrap font-normal py-3 2xl:py-5 ">
-                ID
+                #
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("asset");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 cursor-pointer whitespace-nowrap font-normal "
+              >
+                <div className="flex gap-2 items-center">
+                  <span> Asset </span>
+                  <span>
+                    {sortAsc && sortBy === "asset" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "asset"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "asset"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
               </th>
               <th
                 onClick={() => {
@@ -169,18 +195,18 @@ function DcdsDepositTable({
               </th>
               <th
                 onClick={() => {
-                  setSortBy("hedge");
+                  setSortBy("stockPrice");
                   setSortAsc(!sortAsc);
                 }}
                 className="pl-5 cursor-pointer whitespace-nowrap font-normal "
               >
                 <div className="flex gap-2 items-center">
-                  <span> Hedge Asset </span>
+                  <span> Stock Price at Deposit </span>
                   <span>
-                    {sortAsc && sortBy === "hedge" ? (
+                    {sortAsc && sortBy === "stockPrice" ? (
                       <ChevronDown
                         className={
-                          sortBy === "hedge"
+                          sortBy === "stockPrice"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -188,7 +214,7 @@ function DcdsDepositTable({
                     ) : (
                       <ChevronUp
                         className={
-                          sortBy === "hedge"
+                          sortBy === "stockPrice"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -229,6 +255,9 @@ function DcdsDepositTable({
               </th>
               <th className="pl-5 whitespace-nowrap  font-normal">
                 Lock In period
+              </th>
+              <th className="pl-5 whitespace-nowrap  font-normal">
+                Status
               </th>
               <th className="pl-5 whitespace-nowrap text-right pr-5  font-normal">
                 Action

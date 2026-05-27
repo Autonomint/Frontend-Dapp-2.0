@@ -6,44 +6,22 @@ export interface dcdsDepositDetails {
   collateralType: string;
   chainId: number;
   index: number;
-  depositedAmint: string;
-  depositedUsdt: string;
+  depositedAmounts: {
+    usdc: string;
+  };
   totalDepositedAmount: string;
   depositedTime: string;
-  ethPriceAtDeposit: string;
-  aprAtDeposit: string;
+  stockPriceAtDeposit: string;
+  usdcPriceAtDeposit: string;
   lockingPeriod: string;
-  ethPriceAtWithdraw: string | null;
-  initialLiquidationAmount: string;
-  liquidationAmount: string;
-  liquidationIndex: string | null;
-  optedForLiquidation: boolean;
-  depositVal: string;
+  stockPriceAtWithdraw: string | null;
   withdrawTime: string | null;
   withdrawAmount: string | null;
-  withdrawEthAmount: string | null;
-  withdrawWeEthAmount: string | null;
-  withdrawRsEthAmount: string | null;
   fees: string | null;
   status: string;
-  usdcPriceAtDeposit: string;
-  wmUSDPriceAtDeposit: string;
-  depositedAmounts: {
-    usda: string;
-    usdt: string;
-    nativeToken: string;
-    boldToken: string;
-    usdc: string;
-    wmUSD: string;
-    wblt: string;
-  };
-  wbltPriceAtDeposit: number;
-  nativeTokenPriceAtDeposit: number;
-  usdtPriceAtDeposit: number;
-  boldPriceAtDeposit: number;
-  liquidationPrice: number;
-  apys: CdsWithdrawAPYs;
-  liquidatedAmount: string | number;
+  liquidatedAmount: string | null;
+  excessProfitCumulativeValueAtDeposit: string;
+  apys: CdsWithdrawAPYs | null;
 }
 
 export interface CdsWithdrawAPYs {
@@ -60,8 +38,9 @@ export interface DcdsDetailsResponse {
   address: string;
   chainId: number;
   totalIndex: number;
-  totalDepositedAmint: string;
-  totalDepositedUsdt: string;
+  depositedAmounts: {
+    usdc: string;
+  };
   totalDepositedAmount: string;
   totalFees: string | null;
   totalFeesWithdrawn: string | null;
@@ -71,41 +50,25 @@ export interface DcdsDetailsResponse {
 }
 
 export interface PositionData {
-  lastOptedValidity: number;
-  totalOptionFees: number;
-  ethPriceAtWithdraw: number;
-  depositedAmountInETH?: string;
-  exchangeRateAtDeposit?: string | number;
-  noOfUSDaMinted: number;
-  validTill: number;
   id: string;
   address: string;
+  chainId: number;
   index: number;
   collateralType: string;
+  depositedAmountInETH: string;
   depositedAmount: string;
-  depositedTime: number;
-  ethPriceDeposit: number;
-  downsideProtectionStatus: boolean;
-  ethPrice: number;
-  noOfAmintMinted: string;
-  strikePrice: number;
-  strikePricePercent: string;
-  downsideProtectionPercentage: number;
-  aprAtDeposit: number;
-  optionFees: number;
-  withdrawTime1: string;
-  withdrawTime2: string;
-  withdrawAmount1: string;
-  withdrawAmount2: string;
-  normalizedAmount: string;
-  amountYetToWithdraw: string;
-  noOfAbondMinted: string;
+  depositedTime: string;
+  stockPrice: string;
+  exchangeRateAtDeposit: string | null;
+  strikePrice: string;
+  optionFees: string;
+  isExpired: boolean;
+  validTill: string;
+  stockPriceAtWithdraw: string | null;
+  withdrawTime: string | null;
+  profit: string | null;
   status: "DEPOSITED" | "WITHDREW" | "LIQUIDATED" | "STAKED" | "UNSTAKED";
-  totalDebtAmount: string;
-  liquidationEthPrice: number;
   hedgeValidity: number;
-  totalInterest: string;
-  stakedTime: number;
 }
 
 export interface LeaderboardDetails {

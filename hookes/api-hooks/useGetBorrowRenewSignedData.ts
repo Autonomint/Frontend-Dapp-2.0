@@ -28,7 +28,7 @@ async function signedDataForBorrowRenewDeposit(
   index: number,
   token: string
 ): Promise<SignedDataReturn> {
-  return fetch(`${BACKEND_API_URL}/borrows/signedDataForBorrowRenew`, {
+  return fetch(`${BACKEND_API_URL}/stock-options/borrows/signedDataForBorrowRenew`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

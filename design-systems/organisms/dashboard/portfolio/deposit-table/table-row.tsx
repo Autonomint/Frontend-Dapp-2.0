@@ -1,11 +1,6 @@
-import { borrowAssetsAddress } from "@/blockchain/contracts";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import { BorrowStatus } from "@/utils/constants";
-import displayNumberWithPrecision, {
-  calculateRemainingDays,
-} from "@/utils/helpers";
+import { calculateRemainingDays } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
-import { useEffect, useState } from "react";
+import { formatUnits } from "viem";
 
 const DepositTableRow = ({
   position,
@@ -34,127 +29,13 @@ const DepositTableRow = ({
   setSelectedPosition: (position: PositionData) => void;
   setStakePopUpOpen: (isOpen: boolean) => void;
 }) => {
-  const depositDetails = [
-    {
-      headline: "Eth Deposited",
-      value: "0",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "ETH Price at Deposit",
-      value: "0",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Amint Amount minted",
-      value: "0",
-      tooltip: true,
-      tooltipText: "80% of the total deposited amount",
-    },
-    {
-      headline: "Total Amount (Amint minted + Interest Amount returned)",
-      value: "-",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "APR at Deposit",
-      value: "0",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Downside percentage at Deposit",
-      value: "0",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Liquidated?",
-      value: "No",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Interest rate gained",
-      value: "0",
-      tooltip: false,
-      tooltipText: "",
-    },
-    {
-      headline: "Abond Minted",
-      value: "-",
-      tooltip: false,
-      tooltipText: "",
-    },
-  ];
-  const [depositData, setDepositData] = useState(depositDetails);
-  const [amountProtected, setAmountProtected] = useState(0);
-  const { assetPrice: ethPrice } = useGetUsdValue(
-    borrowAssetsAddress[
-      position.collateralType as keyof typeof borrowAssetsAddress
-    ],
-    position.collateralType === "krwq",
-    position.collateralType === "EURC",
-  );
-  const [openChart, setOpenChart] = useState(false);
-
-  // calculating protect amount
-  const amountProtectedFunction = () => {
-    if (ethPrice === undefined) {
-      setAmountProtected(0);
-      return;
-    }
-    if (parseFloat(ethPrice.toString()) > position.ethPrice) {
-      setAmountProtected(0);
-    } else if (
-      parseFloat(ethPrice.toString()) <
-      position.ethPrice /
-        (position.collateralType === "krwq"
-          ? 1e8
-          : position.collateralType === "EURC"
-            ? 1e6
-            : 1e2)
-    ) {
-      const amountProt =
-        parseFloat(position.depositedAmount) *
-        (position.ethPrice /
-          (position.collateralType === "krwq"
-            ? 1e8
-            : position.collateralType === "EURC"
-              ? 1e6
-              : 1e2) -
-          parseFloat(
-            (
-              ethPrice /
-              (position.collateralType === "krwq" ||
-              position.collateralType === "EURC"
-                ? 1
-                : 1e2)
-            ).toString(),
-          ));
-      const amountProtPrecision = parseFloat(
-        String(amountProt.toFixed(position.collateralType === "krwq" ? 8 : 2)),
-      );
-
-      setAmountProtected(amountProtPrecision);
-    }
-  };
-
-  // setting protected amount, setting 0 while unmount
-  useEffect(() => {
-    amountProtectedFunction();
-    return () => {
-      setAmountProtected(0);
-    };
-  }, [position, ethPrice]);
-
   // selecting position
   const handleRowClick = () => {
     setSelectedPosition(position);
   };
+
+  const remainingDays = calculateRemainingDays(Number(position.validTill));
+  const isExpired = remainingDays <= 0 || position.isExpired;
 
   return (
     <tr
@@ -166,30 +47,26 @@ const DepositTableRow = ({
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
       <td className="px-5 py-4 2xl:py-6">
-        {position.collateralType === "cbBTC"
-          ? parseFloat(Number(position.depositedAmount).toFixed(5))
-          : parseFloat(Number(position.depositedAmount).toFixed(4))}{" "}
         {position.collateralType}
       </td>
       <td className="px-5 py-4 2xl:py-6">
-        ${Number(position.noOfUSDaMinted).toFixed(2)}
+        {position.depositedAmount}
       </td>
-      <td className="px-5 py-4 2xl:py-6  ">
-        {calculateRemainingDays(Number(position.validTill)) <= 0
-          ? "-"
-          : position.status == "DEPOSITED"
-            ? `$${amountProtected}`
-            : "-"}
+      <td className="px-5 py-4 2xl:py-6">
+        ${formatUnits(BigInt(position.strikePrice), 2)}
       </td>
-      <td className="px-5 py-4 2xl:py-6  ">
-        {" "}
-        {position.noOfAbondMinted === null
-          ? "-"
-          : `${parseFloat(position.noOfAbondMinted).toFixed(4)}`}
+      <td className="px-5 py-4 2xl:py-6">
+        ${formatUnits(BigInt(position.stockPrice), 2)}
       </td>
-
-      <td className="px-5 py-4 2xl:py-6  ">
-        {position.status === "LIQUIDATED" ? "Yes" : "No"}
+      <td className="px-5 py-4 2xl:py-6">
+        {isExpired ? "Expired" : `${remainingDays} days`}
+      </td>
+      <td className="px-5 py-4 2xl:py-6">
+        {position.status === "LIQUIDATED"
+          ? "Liquidated"
+          : isExpired
+            ? "Expired"
+            : "Active"}
       </td>
       <td
         className={`px-5 py-4 2xl:py-6 ${

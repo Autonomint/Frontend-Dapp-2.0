@@ -38,7 +38,7 @@ async function signedDataForBorrowWithDrawDeposit(
   token: string,
   repayPercent: number | undefined = undefined
 ): Promise<SignedDataReturn> {
-  return fetch(`${BACKEND_API_URL}/borrows/signedDataForBorrowWithdraw`, {
+  return fetch(`${BACKEND_API_URL}/stock-options/borrows/signedDataForBorrowWithdraw`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

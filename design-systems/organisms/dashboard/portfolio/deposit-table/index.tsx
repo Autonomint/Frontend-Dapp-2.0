@@ -7,9 +7,7 @@ import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import useGetUsdValue from "@/hookes/contract-hooks/useGetUsdValue";
-import displayNumberWithPrecision from "@/utils/helpers";
-import useDeviceType from "@/hookes/useDeviceType";
+import { calculateRemainingDays } from "@/utils/helpers";
 
 function DepositTable({
   tabPosition,
@@ -61,8 +59,6 @@ function DepositTable({
   const scrollRef = useRef<HTMLDivElement>(null);
   // scroll state for scroll table after deposit
   const { isScroll, setIsScroll } = useScroll();
-  // get eth price
-  const { usdValue: ethPrice } = useGetUsdValue();
 
   // handle scroll to bottom of table after deposit
   const scrollToElement = () => {
@@ -98,53 +94,30 @@ function DepositTable({
     }
   }, [positionList, totalPages]);
 
-  // calculate position down side protection for every position for sorting in down side protection column
-  const positionListDP = positionList.map((position) => {
-    let dp = 0;
-    if (ethPrice === undefined) {
-      dp = 0;
-    }
-    if (parseFloat(ethPrice.toString()) > position.ethPrice) {
-      dp = 0;
-    } else if (parseFloat(ethPrice.toString()) < position.ethPrice) {
-      // calculate down side protection by multiplying deposited amount with the difference between eth price and current eth price
-      const amountProt =
-        parseFloat(position.depositedAmount) *
-        (position.ethPrice - parseFloat(ethPrice.toString()));
-      const amountProtPrecision = parseFloat(
-        displayNumberWithPrecision((amountProt / 100).toFixed(8)),
-      );
-      dp = amountProtPrecision;
-    }
-    return {
-      ...position,
-      dp,
-    };
-  });
-
   // sort position list based on sortBy and sortAsc and selected column
   const sortedPositionList = useMemo(() => {
-    return positionListDP.sort((a, b) => {
-      if (sortBy === "usda") {
-        return sortAsc
-          ? b.noOfUSDaMinted - a.noOfUSDaMinted
-          : a.noOfUSDaMinted - b.noOfUSDaMinted;
-      } else if (sortBy === "Date") {
-        return (
-          new Date(b.depositedTime).getTime() -
-          new Date(a.depositedTime).getTime()
-        );
-      } else if (sortBy === "amount") {
+    return [...positionList].sort((a, b) => {
+      if (sortBy === "amount") {
         return sortAsc
           ? Number(b.depositedAmount) - Number(a.depositedAmount)
           : Number(a.depositedAmount) - Number(b.depositedAmount);
-      } else if (sortBy === "protected") {
-        return sortAsc ? b.dp - a.dp : a.dp - b.dp;
-      } else if (sortBy === "abond") {
+      } else if (sortBy === "Date") {
         return sortAsc
-          ? Number(b.noOfAbondMinted) - Number(a.noOfAbondMinted)
-          : Number(a.noOfAbondMinted) - Number(b.noOfAbondMinted);
-      } else if (sortBy === "liquidation") {
+          ? Number(b.depositedTime) - Number(a.depositedTime)
+          : Number(a.depositedTime) - Number(b.depositedTime);
+      } else if (sortBy === "strike") {
+        return sortAsc
+          ? Number(b.strikePrice) - Number(a.strikePrice)
+          : Number(a.strikePrice) - Number(b.strikePrice);
+      } else if (sortBy === "stockPrice") {
+        return sortAsc
+          ? Number(b.stockPrice) - Number(a.stockPrice)
+          : Number(a.stockPrice) - Number(b.stockPrice);
+      } else if (sortBy === "expiry") {
+        return sortAsc
+          ? Number(b.validTill) - Number(a.validTill)
+          : Number(a.validTill) - Number(b.validTill);
+      } else if (sortBy === "status") {
         return sortAsc
           ? b.status === "LIQUIDATED"
             ? -1
@@ -176,6 +149,9 @@ function DepositTable({
           >
             <tr>
               <th className="pl-5 whitespace-nowrap  font-normal py-3 2xl:py-5 w-1/5 lg:w-auto">
+                #
+              </th>
+              <th className="pl-5 whitespace-nowrap font-normal w-4/5 lg:w-auto">
                 Asset
               </th>
               <th
@@ -183,10 +159,10 @@ function DepositTable({
                   setSortBy("amount");
                   setSortAsc(!sortAsc);
                 }}
-                className="pl-5 whitespace-nowrap cursor-pointer font-normal w-4/5 lg:w-auto"
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>Type </span>
+                  <span>Size (Contracts)</span>
                   <span>
                     {sortAsc && sortBy === "amount" ? (
                       <ChevronDown
@@ -210,67 +186,7 @@ function DepositTable({
               </th>
               <th
                 onClick={() => {
-                  setSortBy("usda");
-                  setSortAsc(!sortAsc);
-                }}
-                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-              >
-                <div className="flex gap-2 items-center">
-                  <span>Maturity </span>
-                  <span>
-                    {sortAsc && sortBy === "usda" ? (
-                      <ChevronDown
-                        className={
-                          sortBy === "usda"
-                            ? "stroke-black dark:stroke-white"
-                            : ""
-                        }
-                      />
-                    ) : (
-                      <ChevronUp
-                        className={
-                          sortBy === "usda"
-                            ? "stroke-black dark:stroke-white"
-                            : ""
-                        }
-                      />
-                    )}
-                  </span>
-                </div>
-              </th>
-              <th
-                onClick={() => {
-                  setSortBy("protected");
-                  setSortAsc(!sortAsc);
-                }}
-                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
-              >
-                <div className="flex gap-2 items-center">
-                  <span>Size (contracts)</span>
-                  <span>
-                    {sortAsc && sortBy === "protected" ? (
-                      <ChevronDown
-                        className={
-                          sortBy === "protected"
-                            ? "stroke-black dark:stroke-white"
-                            : ""
-                        }
-                      />
-                    ) : (
-                      <ChevronUp
-                        className={
-                          sortBy === "protected"
-                            ? "stroke-black dark:stroke-white"
-                            : ""
-                        }
-                      />
-                    )}
-                  </span>
-                </div>
-              </th>
-              <th
-                onClick={() => {
-                  setSortBy("abond");
+                  setSortBy("strike");
                   setSortAsc(!sortAsc);
                 }}
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
@@ -278,10 +194,10 @@ function DepositTable({
                 <div className="flex gap-2 items-center">
                   <span>Strike Price</span>
                   <span>
-                    {sortAsc && sortBy === "abond" ? (
+                    {sortAsc && sortBy === "strike" ? (
                       <ChevronDown
                         className={
-                          sortBy === "abond"
+                          sortBy === "strike"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -289,7 +205,7 @@ function DepositTable({
                     ) : (
                       <ChevronUp
                         className={
-                          sortBy === "abond"
+                          sortBy === "strike"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -300,18 +216,18 @@ function DepositTable({
               </th>
               <th
                 onClick={() => {
-                  setSortBy("liquidation");
+                  setSortBy("stockPrice");
                   setSortAsc(!sortAsc);
                 }}
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>PnL</span>
+                  <span>Stock Price</span>
                   <span>
-                    {sortAsc && sortBy === "liquidation" ? (
+                    {sortAsc && sortBy === "stockPrice" ? (
                       <ChevronDown
                         className={
-                          sortBy === "liquidation"
+                          sortBy === "stockPrice"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -319,7 +235,67 @@ function DepositTable({
                     ) : (
                       <ChevronUp
                         className={
-                          sortBy === "liquidation"
+                          sortBy === "stockPrice"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("expiry");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>Maturity</span>
+                  <span>
+                    {sortAsc && sortBy === "expiry" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "expiry"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "expiry"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => {
+                  setSortBy("status");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>Status</span>
+                  <span>
+                    {sortAsc && sortBy === "status" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "status"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "status"
                             ? "stroke-black dark:stroke-white"
                             : ""
                         }
@@ -339,7 +315,6 @@ function DepositTable({
                 <DepositTableRow
                   key={key}
                   idx={key + 1 + (currentPage - 1) * pageSize}
-                  // idx={position.index}
                   position={position}
                   tabPosition={tabPosition}
                   setSelectedPosition={setSelectedPosition}

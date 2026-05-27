@@ -520,3 +520,39 @@ export function getCompletedDays(timestamp: number, isMilliseconds: boolean = tr
 
   return Math.ceil(days);
 }
+
+// Date formatting helpers for stock options
+export function getOrdinalSuffix(day: number): string {
+  if (day > 3 && day < 21) return "th";
+  switch (day % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
+export function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+  return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+}
+
+export function formatDateShort(dateStr: string): string {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  return `${day}${getOrdinalSuffix(day)} ${month}`;
+}
+
+export function getDaysRemaining(dateStr: string): number {
+  if (!dateStr) return 0;
+  const expiry = new Date(dateStr).getTime();
+  const now = Date.now();
+  const diff = expiry - now;
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}

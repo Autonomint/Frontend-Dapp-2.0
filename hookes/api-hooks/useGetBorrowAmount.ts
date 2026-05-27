@@ -10,7 +10,7 @@ const fetchDepositor = async (
 ): Promise<any> => {
   if (!address) throw new Error("Address is undefined");
   const response = await fetch(
-    `${BACKEND_API_URL}/borrows/totalDeposits/${chainId}/${address}`
+    `${BACKEND_API_URL}/stock-options/borrows/totalDeposits/${chainId}/${address}`
   );
   if (!response.ok) {
     throw new Error(`HTTP error! Status: ${response.status}`);
