@@ -1,29 +1,25 @@
 "use client";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
-import { WithdrawFund } from "@/design-systems/molecule/popups/WithdrawFund";
-import { DcdsWithdrawModal } from "@/design-systems/molecule/popups/WithdrawModal";
+
+
 import DcdsDepositTable from "@/design-systems/organisms/dashboard/portfolio/dcds-deposit-table";
 import DepositTable from "@/design-systems/organisms/dashboard/portfolio/deposit-table";
-import PortfolioMetrics from "@/design-systems/organisms/dashboard/portfolio/portfolio-metrics";
 import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
 import useGetDcdsDepositList from "@/hookes/api-hooks/useGetDcdsDetails";
 import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
+import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
+import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
-import useGetOmniChainData from "@/hookes/contract-hooks/useGetUsdtMintTillNow";
 import useUserGains from "@/hookes/contract-hooks/useUserGains";
-import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
-import { formatNumber } from "@/utils/helpers";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
-import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
-import { StakePopup } from "@/design-systems/molecule/popups/StakePopup";
+
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
 
@@ -225,12 +221,11 @@ function PortfolioTemplate() {
 
   return (
     <div className="flex sm:px-4 flex-col">
-     
+
       <div
         id="dashboard-nav"
-        className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${
-          isSticky ? "sticky top-0 " : ""
-        }`}
+        className={`flex lg:flex-wrap  bg-white dark:bg-black sm:mt-5 ${isSticky ? "sticky top-0 " : ""
+          }`}
       >
         <div
           onClick={() => {
@@ -238,10 +233,9 @@ function PortfolioTemplate() {
           }}
           className={
             "xl:w-[24%] w-1/2 xl:flex-1 lg:px-5 lg:py-3 p-3 text-center xl:text-left  2xl:text-[32px] text-[18px] font-medium md:text-[24px] border-grayLight border border-r-0 border-solid hover:cursor-pointer" +
-            `${
-              tabPosition == "Borrowed"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
-                : ""
+            `${tabPosition == "Borrowed"
+              ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+              : ""
             }`
           }
         >
@@ -253,10 +247,9 @@ function PortfolioTemplate() {
           }}
           className={
             "xl:w-[24%] w-1/2 xl:flex-1 text-center xl:text-left  lg:px-5 lg:py-3 p-2 sm:p-3   2xl:text-[32px] text-[18px] md:text-[24px] font-medium border xl:border-r-0 border-grayLight border-r  border-solid hover:cursor-pointer flex items-center justify-center" +
-            `${
-              tabPosition == "Deposited"
-                ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
-                : ""
+            `${tabPosition == "Deposited"
+              ? " bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-bottom"
+              : ""
             }`
           }
         >
@@ -264,9 +257,8 @@ function PortfolioTemplate() {
         </div>
         <div
           onClick={handleRefresh}
-          className={`w-1/2  xl:w-[15%] text-center xl:text-left   justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid ${
-            isConnected ? "cursor-pointer " : "opacity-50 cursor-not-allowed"
-          }`}
+          className={`w-1/2  xl:w-[15%] text-center xl:text-left   justify-center hidden px-5 py-3 lg:flex gap-3 flex-row items-center 2xl:text-[32px] text-[24px] font-medium border-grayLight border  border-r-0 border-solid ${isConnected ? "cursor-pointer " : "opacity-50 cursor-not-allowed"
+            }`}
         >
           Refresh
           <div className={`${refreshLoading ? "animate-spin-Refresh" : ""}`}>
@@ -334,7 +326,7 @@ function PortfolioTemplate() {
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
       {/* CDS withdraw modal */}
-      <DcdsWithdrawModal
+      {/* <DcdsWithdrawModal
         position={(selectedDcdsPosition || []) as dcdsDepositDetails}
         isDialogOpen={isWithdrawDialogOpen}
         setIsDialogOpen={() => {
@@ -342,9 +334,9 @@ function PortfolioTemplate() {
           // setSelectedDcdsPosition(null);
         }}
         dcdsPositionListRefetch={dcdsPositionListRefetch}
-      />
+      /> */}
       {/* Borrow repay renew modal */}
-      <WithdrawFund
+      {/* <WithdrawFund
         setSelectedPosition={setSelectedPosition}
         positionListRefetech={positionListRefetch}
         position={(selectedPosition || []) as PositionData}
@@ -353,14 +345,14 @@ function PortfolioTemplate() {
           setRenewRepay(false);
           // setSelectedPosition(null);
         }}
-      />
-      <StakePopup
+      /> */}
+      {/* <StakePopup
         isOpen={isStakePopUpOpen}
         onClose={() => setStakePopUpOpen(false)}
         isLoading={false}
         position={(selectedPosition || []) as PositionData}
         refetchData={positionListRefetch}
-      />
+      /> */}
     </div>
   );
 }

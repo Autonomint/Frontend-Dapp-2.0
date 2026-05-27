@@ -30,7 +30,7 @@ type StakePopupProps = {
   onClose: () => void;
   isLoading?: boolean;
   mintedAmount?: number;
-  position: PositionData;
+  position: any;
   refetchData?: () => void;
 };
 
@@ -147,7 +147,7 @@ export function StakePopup({
         await approveUsdaDynamic(
           parseUnits(String(amount || 0), 6),
           borrowDepositCoreAddress[
-            chainId as keyof typeof borrowDepositCoreAddress
+          chainId as keyof typeof borrowDepositCoreAddress
           ] as `0x${string}`,
         );
 
@@ -159,7 +159,7 @@ export function StakePopup({
           assetName: 12,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   function popUpresetter() {
@@ -186,9 +186,9 @@ export function StakePopup({
     unformattedValue,
   } = useGetUsdValue(
     borrowAssetsAddress[
-      position.collateralType?.toLocaleLowerCase() === "krwq"
-        ? "ETH"
-        : (position.collateralType as keyof typeof borrowAssetsAddress)
+    position.collateralType?.toLocaleLowerCase() === "krwq"
+      ? "ETH"
+      : (position.collateralType as keyof typeof borrowAssetsAddress)
     ],
     position.collateralType?.toLocaleLowerCase() === "krwq",
     position.collateralType?.toLocaleLowerCase() === "eurc",
@@ -324,12 +324,12 @@ export function StakePopup({
                 onClick={() => handleStake("0")}
                 variant="default"
                 className="w-full py-6 text-xl font-medium"
-                //   disabled={isLoading || !formik.isValid || !formik.dirty}
+              //   disabled={isLoading || !formik.isValid || !formik.dirty}
               >
                 {isLoading ||
-                isWithdrawUnStakeLoading ||
-                isWithdrawStakeLoading ||
-                usdaApproveLoading
+                  isWithdrawUnStakeLoading ||
+                  isWithdrawStakeLoading ||
+                  usdaApproveLoading
                   ? usdaApproveLoading
                     ? "Approving..."
                     : isWithdrawStakeLoading
@@ -344,12 +344,12 @@ export function StakePopup({
                 type="submit"
                 variant="default"
                 className="w-full py-6 text-xl font-medium"
-                //   disabled={isLoading || !formik.isValid || !formik.dirty}
+              //   disabled={isLoading || !formik.isValid || !formik.dirty}
               >
                 {isLoading ||
-                isWithdrawUnStakeLoading ||
-                isWithdrawStakeLoading ||
-                usdaApproveLoading
+                  isWithdrawUnStakeLoading ||
+                  isWithdrawStakeLoading ||
+                  usdaApproveLoading
                   ? usdaApproveLoading
                     ? "Approving..."
                     : isWithdrawStakeLoading

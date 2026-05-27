@@ -73,7 +73,7 @@ export function DcdsWithdrawModal({
   setIsDialogOpen,
   dcdsPositionListRefetch,
 }: {
-  position: dcdsDepositDetails;
+  position: any;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
   dcdsPositionListRefetch: () => void;
@@ -121,15 +121,14 @@ export function DcdsWithdrawModal({
       tooltipText: "",
     },
     {
-      headline: `${
-        position?.collateralType === "cbBTC"
-          ? "cbBTC"
-          : position?.collateralType === "krwq"
-            ? "KRWQ"
-            : position?.collateralType === "HYPE"
-              ? "HYPE"
-              : "ETH"
-      } Price at Deposit`,
+      headline: `${position?.collateralType === "cbBTC"
+        ? "cbBTC"
+        : position?.collateralType === "krwq"
+          ? "KRWQ"
+          : position?.collateralType === "HYPE"
+            ? "HYPE"
+            : "ETH"
+        } Price at Deposit`,
       value: "0",
       tooltip: false,
       tooltipText: "",
@@ -290,14 +289,13 @@ export function DcdsWithdrawModal({
   const NewDetails = [
     {
       // Token deposited
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Tokens deposited`,
+      headline: `${Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
+        } Tokens deposited`,
       value: Number(position?.depositedAmounts?.nativeToken)
         ? `${Number(position?.depositedAmounts?.nativeToken).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.nativeToken) *
-            Number(position?.nativeTokenPriceAtDeposit)
-          ).toFixed(2)})`
+          Number(position?.depositedAmounts?.nativeToken) *
+          Number(position?.nativeTokenPriceAtDeposit)
+        ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
@@ -305,16 +303,15 @@ export function DcdsWithdrawModal({
     },
     {
       // Adjusted Deposit Value (Discounted by 30%)
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Adjusted Deposit Value (Discounted by 30%)`,
+      headline: `${Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
+        } Adjusted Deposit Value (Discounted by 30%)`,
       value: Number(position?.depositedAmounts?.nativeToken)
         ? `$${(
-            (Number(position?.depositedAmounts?.nativeToken) *
-              Number(position?.nativeTokenPriceAtDeposit) *
-              70) /
-            100
-          ).toFixed(2)}`
+          (Number(position?.depositedAmounts?.nativeToken) *
+            Number(position?.nativeTokenPriceAtDeposit) *
+            70) /
+          100
+        ).toFixed(2)}`
         : null,
       tooltip: true,
       tooltipText:
@@ -322,9 +319,8 @@ export function DcdsWithdrawModal({
     },
     {
       // Token Price at Deposit
-      headline: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Token Price at Deposit`,
+      headline: `${Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
+        } Token Price at Deposit`,
       value: Number(position?.nativeTokenPriceAtDeposit)
         ? Number(position?.nativeTokenPriceAtDeposit).toFixed(4)
         : null,
@@ -336,11 +332,11 @@ export function DcdsWithdrawModal({
       headline: `Bold Tokens deposited`,
       value: Number(position?.depositedAmounts?.boldToken || 0)
         ? `${Number(position?.depositedAmounts?.boldToken || 0).toFixed(
-            2,
-          )} ($${(
-            Number(position?.depositedAmounts?.boldToken || 0) *
-            Number(position?.boldPriceAtDeposit)
-          ).toFixed(2)})`
+          2,
+        )} ($${(
+          Number(position?.depositedAmounts?.boldToken || 0) *
+          Number(position?.boldPriceAtDeposit)
+        ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
@@ -360,9 +356,9 @@ export function DcdsWithdrawModal({
       headline: `USDC Tokens deposited`,
       value: Number(position?.depositedAmounts?.usdc || 0)
         ? `${Number(position?.depositedAmounts?.usdc || 0).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.usdc || 0) *
-            Number(position?.usdcPriceAtDeposit)
-          ).toFixed(2)})`
+          Number(position?.depositedAmounts?.usdc || 0) *
+          Number(position?.usdcPriceAtDeposit)
+        ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
@@ -382,9 +378,9 @@ export function DcdsWithdrawModal({
       headline: `wmUSD Tokens deposited`,
       value: Number(position?.depositedAmounts?.wmUSD || 0)
         ? `${Number(position?.depositedAmounts?.wmUSD || 0).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.wmUSD || 0) *
-            Number(position?.wmUSDPriceAtDeposit)
-          ).toFixed(2)})`
+          Number(position?.depositedAmounts?.wmUSD || 0) *
+          Number(position?.wmUSDPriceAtDeposit)
+        ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
@@ -395,9 +391,9 @@ export function DcdsWithdrawModal({
       headline: `wBLT Tokens deposited`,
       value: Number(position?.depositedAmounts?.wblt || 0)
         ? `${Number(position?.depositedAmounts?.wblt || 0).toFixed(2)} ($${(
-            Number(position?.depositedAmounts?.wblt || 0) *
-            Number(position?.wbltPriceAtDeposit)
-          ).toFixed(2)})`
+          Number(position?.depositedAmounts?.wblt || 0) *
+          Number(position?.wbltPriceAtDeposit)
+        ).toFixed(2)})`
         : null,
       tooltip: false,
       tooltipText: "",
@@ -449,9 +445,8 @@ export function DcdsWithdrawModal({
       headline: `Change in Value`,
       value: "0",
       tooltip: false,
-      tooltipText: `${
-        Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
-      } Status`,
+      tooltipText: `${Number(NetworkId.BaseSepolia) == chainId ? "AERO" : "OP"
+        } Status`,
     },
   ];
 
@@ -502,7 +497,7 @@ export function DcdsWithdrawModal({
       const updatedData = [...depositData];
       updatedData[0].value =
         position.depositedAmint == "undefined" ||
-        position.depositedAmint == "NaN"
+          position.depositedAmint == "NaN"
           ? 0
           : position.depositedAmounts.usda;
       // Update deposited USDA+ value
@@ -511,26 +506,24 @@ export function DcdsWithdrawModal({
           ? 0
           : position.depositedAmounts.usdt;
       // Update deposited ETH
-      updatedData[2].headline = `${
-        position?.collateralType === "cbBTC"
-          ? "cbBTC"
-          : position?.collateralType === "krwq"
-            ? "KRWQ"
-            : position?.collateralType === "EURC"
-              ? "EURC"
-              : position?.collateralType === "HYPE"
-                ? "HYPE"
-                : "ETH"
-      } Price at Deposit`;
-      updatedData[2].value = `$${
-        Number(position.ethPriceAtDeposit) /
+      updatedData[2].headline = `${position?.collateralType === "cbBTC"
+        ? "cbBTC"
+        : position?.collateralType === "krwq"
+          ? "KRWQ"
+          : position?.collateralType === "EURC"
+            ? "EURC"
+            : position?.collateralType === "HYPE"
+              ? "HYPE"
+              : "ETH"
+        } Price at Deposit`;
+      updatedData[2].value = `$${Number(position.ethPriceAtDeposit) /
         (position.collateralType === "krwq"
           ? 1e8
           : position.collateralType === "EURC" ||
-              position.collateralType === "HYPE"
+            position.collateralType === "HYPE"
             ? 1e6
             : 100)
-      }`;
+        }`;
       // Update points earned till now
       updatedData[3].value = `${Math.floor(indexPoint?.[1]) || "0"}`;
       // Update ethPriceAtDeposit value
@@ -538,11 +531,10 @@ export function DcdsWithdrawModal({
         Number(position.depositedTime) * 1000,
       ).toLocaleString();
       // Update depositedTime value and format time in 'DD/MM/YYYY'
-      updatedData[5].value = `${
-        String(position.lockingPeriod).length > 8
-          ? Number(position.lockingPeriod) / 86400000
-          : Number(position.lockingPeriod) / 86400
-      } days`;
+      updatedData[5].value = `${String(position.lockingPeriod).length > 8
+        ? Number(position.lockingPeriod) / 86400000
+        : Number(position.lockingPeriod) / 86400
+        } days`;
       // Update lockingPeriod value
       updatedData[6].value = calculateTimeDifference(
         position.depositedTime + "000",
@@ -578,15 +570,14 @@ export function DcdsWithdrawModal({
           : position.status !== "DEPOSITED"
             ? position?.apys?.liquidatedCollateralInETH
             : apy[3],
-      ).toFixed(2)} ${
-        position.collateralType ? position.collateralType : "ETH"
-      } (${Number(
-        apy == undefined
-          ? 0
-          : position.status !== "DEPOSITED"
-            ? position?.apys?.liquidatedETHValue
-            : apy[4],
-      ).toFixed(2)}$)`;
+      ).toFixed(2)} ${position.collateralType ? position.collateralType : "ETH"
+        } (${Number(
+          apy == undefined
+            ? 0
+            : position.status !== "DEPOSITED"
+              ? position?.apys?.liquidatedETHValue
+              : apy[4],
+        ).toFixed(2)}$)`;
       // Update optedForLiquidation value
       setDepositData(updatedData);
       // Update the depositData state with updatedData
@@ -633,7 +624,7 @@ export function DcdsWithdrawModal({
           : eId.Base,
     to: padHex(
       treasuryAddress[
-        (chainId || NetworkId.BaseSepolia) as keyof typeof treasuryAddress
+      (chainId || NetworkId.BaseSepolia) as keyof typeof treasuryAddress
       ],
       {
         size: 32,
@@ -728,9 +719,8 @@ export function DcdsWithdrawModal({
         setWithdrawGainLoading(false);
       }, 800);
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          cdsWithdrawGainReceipt.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${cdsWithdrawGainReceipt.transactionHash
+          } `;
         return (
           <ToastNotification
             title="Withdraw Successful"
@@ -862,7 +852,7 @@ export function DcdsWithdrawModal({
             <ToastNotificationError
               title={`The current (dCDS liquidity / Total ${position.collateralType} hedged) ratio is below 0.2. Once this ratio rises above 0.2 — through new dCDS deposits, an increase in ${position.collateralType} price, or inactive hedges — users will be able to withdraw their dCDS positions along with the accrued yields. Points will continue to accumulate in the meantime.`}
               onClose={() => toast.dismiss(t)}
-              // width="!w-[500px]"
+            // width="!w-[500px]"
             />
           ),
           {
@@ -977,23 +967,23 @@ export function DcdsWithdrawModal({
         ? 0
         : position.status !== "DEPOSITED"
           ? (Number(
-              isNaN(position?.apys?.priceChangePL)
+            isNaN(position?.apys?.priceChangePL)
+              ? 0
+              : position?.apys?.priceChangePL,
+          ) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
                 ? 0
-                : position?.apys?.priceChangePL,
-            ) /
-              Number(
-                isNaN(Number(position?.totalDepositedAmount))
-                  ? 0
-                  : position?.totalDepositedAmount,
-              )) *
-            100
+                : position?.totalDepositedAmount,
+            )) *
+          100
           : (Number(isNaN(apy[2]) ? 0 : apy[2]) /
-              Number(
-                isNaN(Number(position?.totalDepositedAmount))
-                  ? 0
-                  : position?.totalDepositedAmount,
-              )) *
-            100,
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount,
+            )) *
+          100,
     ).toFixed(2),
   );
 
@@ -1125,9 +1115,8 @@ export function DcdsWithdrawModal({
                         className="flex relative justify-between mb-2"
                       >
                         <span
-                          className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${
-                            dcdsWidthDrawMetricsObj?.titleColor || ""
-                          }`}
+                          className={`text-[16px] md:text-[18px] flex items-center  font-medium text-grayLight ${dcdsWidthDrawMetricsObj?.titleColor || ""
+                            }`}
                         >
                           {" "}
                           {dcdsWidthDrawMetricsObj.headline}
@@ -1143,9 +1132,8 @@ export function DcdsWithdrawModal({
                           )}
                         </span>
                         <span
-                          className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${
-                            dcdsWidthDrawMetricsObj?.valueColor || ""
-                          } `}
+                          className={`text-[16px] md:text-[18px] dark:text-white font-medium text-textBlack ${dcdsWidthDrawMetricsObj?.valueColor || ""
+                            } `}
                         >
                           {dcdsWidthDrawMetricsObj.value}
                         </span>
@@ -1164,9 +1152,9 @@ export function DcdsWithdrawModal({
                             ? 0
                             : position.status !== "DEPOSITED"
                               ? calculatePercentage(
-                                  position?.apys?.amountAccured || 0,
-                                  60,
-                                )
+                                position?.apys?.amountAccured || 0,
+                                60,
+                              )
                               : calculatePercentage(apy[1] || 0, 60),
                         ).toFixed(4)}
                       </Label>
@@ -1190,7 +1178,7 @@ export function DcdsWithdrawModal({
                                 chainId: number;
                               }) =>
                                 item.address.toLowerCase() ===
-                                  address?.toLowerCase() &&
+                                address?.toLowerCase() &&
                                 item.index.includes(Number(position?.index)) &&
                                 item.chainId === chainId,
                             )
@@ -1252,9 +1240,9 @@ export function DcdsWithdrawModal({
                           ? 0
                           : position.status !== "DEPOSITED"
                             ? calculatePercentage(
-                                position?.apys?.currentTimeAPYTillNow,
-                                60,
-                              ) || 0
+                              position?.apys?.currentTimeAPYTillNow,
+                              60,
+                            ) || 0
                             : calculatePercentage(apy[5], 60) || 0,
                       ).toFixed(2)}%`}
                     </Label>
@@ -1271,27 +1259,27 @@ export function DcdsWithdrawModal({
                           chainId: number;
                         }) =>
                           item.address.toLowerCase() ===
-                            address?.toLowerCase() &&
+                          address?.toLowerCase() &&
                           item.index.includes(Number(position?.index)) &&
                           item.chainId === chainId,
                       )
                         ? "NaN"
                         : toPositiveDecimalString(
-                            Number(
-                              apy == undefined
-                                ? 0
-                                : position.status !== "DEPOSITED"
-                                  ? Number(position?.apys?.priceChangePL) < 0
-                                    ? position?.apys?.priceChangePL
-                                    : calculatePercentage(
-                                        position?.apys?.priceChangePL || 0,
-                                        60,
-                                      ) || 0
-                                  : apy[2] < 0
-                                    ? apy[2]
-                                    : calculatePercentage(apy[2], 60) || 0,
-                            ).toFixed(4),
-                          )}
+                          Number(
+                            apy == undefined
+                              ? 0
+                              : position.status !== "DEPOSITED"
+                                ? Number(position?.apys?.priceChangePL) < 0
+                                  ? position?.apys?.priceChangePL
+                                  : calculatePercentage(
+                                    position?.apys?.priceChangePL || 0,
+                                    60,
+                                  ) || 0
+                                : apy[2] < 0
+                                  ? apy[2]
+                                  : calculatePercentage(apy[2], 60) || 0,
+                          ).toFixed(4),
+                        )}
                     </Label>
 
                     <div className="flex">
@@ -1342,7 +1330,7 @@ export function DcdsWithdrawModal({
                           chainId: number;
                         }) =>
                           item.address.toLowerCase() ===
-                            address?.toLowerCase() &&
+                          address?.toLowerCase() &&
                           item.index.includes(Number(position?.index)) &&
                           item.chainId === chainId,
                       )
@@ -1388,7 +1376,7 @@ export function DcdsWithdrawModal({
                                 chainId: number;
                               }) =>
                                 item.address.toLowerCase() ===
-                                  address?.toLowerCase() &&
+                                address?.toLowerCase() &&
                                 item.index.includes(Number(position?.index)) &&
                                 item.chainId === chainId,
                             )

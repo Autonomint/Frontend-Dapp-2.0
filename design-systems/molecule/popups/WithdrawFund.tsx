@@ -82,7 +82,7 @@ export function WithdrawFund({
   setSelectedPosition,
 }: {
   positionListRefetech: () => void;
-  position: PositionData;
+  position: any;
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
   setSelectedPosition: (position: PositionData) => void;
@@ -119,8 +119,8 @@ export function WithdrawFund({
     position.collateralType,
     false,
     isDialogOpen &&
-      (position.collateralType === "krwq" ||
-        position.collateralType === "EURC"),
+    (position.collateralType === "krwq" ||
+      position.collateralType === "EURC"),
   );
 
   const priceDecimals =
@@ -225,7 +225,7 @@ export function WithdrawFund({
     usdValue,
   } = useGetUsdValue(
     borrowAssetsAddress[
-      position.collateralType as keyof typeof borrowAssetsAddress
+    position.collateralType as keyof typeof borrowAssetsAddress
     ],
     position.collateralType === "krwq",
     position.collateralType === "EURC" || position.collateralType === "HYPE",
@@ -320,7 +320,7 @@ export function WithdrawFund({
     functionName: "optionsFeesTimeLimits",
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     abi: borrowingContractAbi,
   }) as { data: number[]; isLoading: boolean };
@@ -351,8 +351,8 @@ export function WithdrawFund({
 
   const contract =
     position.collateralType === "cbBTC" ||
-    position.collateralType === "krwq" ||
-    position.collateralType === "EURC"
+      position.collateralType === "krwq" ||
+      position.collateralType === "EURC"
       ? borrowCoreAddress
       : borrowingContractAddress;
   // getting token details
@@ -361,7 +361,7 @@ export function WithdrawFund({
     address: contract[chainId as keyof typeof contract] as `0x${string}`,
     args: [
       BorrowAssetsEnum[
-        position?.collateralType as keyof typeof BorrowAssetsEnum
+      position?.collateralType as keyof typeof BorrowAssetsEnum
       ],
     ],
     functionName: "getAssetDetails",
@@ -371,53 +371,53 @@ export function WithdrawFund({
   // current eth price
   const currentEthPrice =
     position.status == BorrowStatus.DEPOSITED ||
-    position.status == BorrowStatus.UNSTAKED
+      position.status == BorrowStatus.UNSTAKED
       ? ethPrice || 0
       : Number(position.ethPriceAtWithdraw) /
-        (position.collateralType === "krwq"
-          ? 1e8
-          : position.collateralType === "EURC" ||
-              position.collateralType === "HYPE"
-            ? 1e6
-            : 1e2);
+      (position.collateralType === "krwq"
+        ? 1e8
+        : position.collateralType === "EURC" ||
+          position.collateralType === "HYPE"
+          ? 1e6
+          : 1e2);
 
   // if current eth price is greater than deposit time eth price dp will be zero
   const downsideProtection =
     position.status == BorrowStatus.LIQUIDATED ||
-    calculateRemainingDays(Number(position.validTill)) <= 0
+      calculateRemainingDays(Number(position.validTill)) <= 0
       ? 0
       : (currentEthPrice || 0) <
-          Number(
-            (position?.ethPrice || 0) /
-              (position.collateralType === "krwq"
-                ? 1e8
-                : position.collateralType === "EURC" ||
-                    position.collateralType === "HYPE"
-                  ? 1e6
-                  : position.collateralType === "cbBTC" ||
-                      position.collateralType === "ETH"
-                    ? 1
-                    : 1e2),
-          )
-        ? Number(
-            (position?.ethPrice || 0) /
-              (position.collateralType === "krwq"
-                ? 1e8
-                : position.collateralType === "EURC" ||
-                    position.collateralType === "HYPE"
-                  ? 1e6
-                  : 1e2),
-          ) *
-            Number(position?.depositedAmountInETH) -
-          Number(
-            currentEthPrice /
-              (position.collateralType === "krwq" ||
-              position.collateralType === "EURC" ||
+        Number(
+          (position?.ethPrice || 0) /
+          (position.collateralType === "krwq"
+            ? 1e8
+            : position.collateralType === "EURC" ||
               position.collateralType === "HYPE"
+              ? 1e6
+              : position.collateralType === "cbBTC" ||
+                position.collateralType === "ETH"
                 ? 1
                 : 1e2),
-          ) *
-            Number(position?.depositedAmountInETH)
+        )
+        ? Number(
+          (position?.ethPrice || 0) /
+          (position.collateralType === "krwq"
+            ? 1e8
+            : position.collateralType === "EURC" ||
+              position.collateralType === "HYPE"
+              ? 1e6
+              : 1e2),
+        ) *
+        Number(position?.depositedAmountInETH) -
+        Number(
+          currentEthPrice /
+          (position.collateralType === "krwq" ||
+            position.collateralType === "EURC" ||
+            position.collateralType === "HYPE"
+            ? 1
+            : 1e2),
+        ) *
+        Number(position?.depositedAmountInETH)
         : 0;
 
   console.log(
@@ -426,14 +426,14 @@ export function WithdrawFund({
     currentEthPrice,
     position?.ethPrice,
     (currentEthPrice || 0) <
-      Number(
-        (position?.ethPrice || 0) /
-          (position.collateralType === "krwq"
-            ? 1e8
-            : position.collateralType === "EURC"
-              ? 1e6
-              : 1e2),
-      ),
+    Number(
+      (position?.ethPrice || 0) /
+      (position.collateralType === "krwq"
+        ? 1e8
+        : position.collateralType === "EURC"
+          ? 1e6
+          : 1e2),
+    ),
     position.status,
   );
 
@@ -449,7 +449,7 @@ export function WithdrawFund({
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
@@ -464,7 +464,7 @@ export function WithdrawFund({
       functionName: "strikePricePercentLimits_",
       args: [
         BorrowAssetsEnum[
-          position.collateralType as keyof typeof BorrowAssetsEnum
+        position.collateralType as keyof typeof BorrowAssetsEnum
         ],
         Number(position.hedgeValidity),
       ],
@@ -485,7 +485,7 @@ export function WithdrawFund({
     args: [
       address || zeroAddress,
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     ],
   }) as { data: number | undefined; isLoading: boolean; refetch: () => void };
@@ -494,19 +494,19 @@ export function WithdrawFund({
     lastCumulativeRate === undefined
       ? parseUnits(position?.normalizedAmount?.toString() || "0", 6)
       : BigInt(
-          BigInt(
-            Math.round(
-              position.normalizedAmount
-                ? Number(
-                    parseUnits(
-                      position?.normalizedAmount?.toString() || "0",
-                      6,
-                    ),
-                  )
-                : 0,
-            ),
-          ) * BigInt(lastCumulativeRate || 0),
-        ) / BigInt(10 ** 27);
+        BigInt(
+          Math.round(
+            position.normalizedAmount
+              ? Number(
+                parseUnits(
+                  position?.normalizedAmount?.toString() || "0",
+                  6,
+                ),
+              )
+              : 0,
+          ),
+        ) * BigInt(lastCumulativeRate || 0),
+      ) / BigInt(10 ** 27);
 
   // const totalUsdaAmntWithCumulativeRate = BigInt(
   //   position.normalizedAmount
@@ -517,16 +517,16 @@ export function WithdrawFund({
   // updating repay amount according to status
   const repayAmount =
     position.status == BorrowStatus.DEPOSITED ||
-    position.status == BorrowStatus.UNSTAKED
+      position.status == BorrowStatus.UNSTAKED
       ? Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) -
-        Number(downsideProtection) -
-        Number(stakingRealisedReward || 0) -
-        Number(position?.optionFees)
+      Number(downsideProtection) -
+      Number(stakingRealisedReward || 0) -
+      Number(position?.optionFees)
       : // (Number(downsideProtection) + Number(position?.optionFees))
-        Number(position.totalDebtAmount) -
-        Number(downsideProtection) -
-        Number(stakingRealisedReward || 0) -
-        Number(position?.optionFees);
+      Number(position.totalDebtAmount) -
+      Number(downsideProtection) -
+      Number(stakingRealisedReward || 0) -
+      Number(position?.optionFees);
   // (Number(downsideProtection) + Number(position?.optionFees));
 
   // getting current APR value
@@ -534,7 +534,7 @@ export function WithdrawFund({
     abi: borrowingContractAbi,
     address:
       borrowingContractAddress[
-        chainId as keyof typeof borrowingContractAddress
+      chainId as keyof typeof borrowingContractAddress
       ],
     args: [BorrowData.ratePerSec],
     functionName: "getBorrowData",
@@ -548,11 +548,10 @@ export function WithdrawFund({
       const updatedData = [...depositData];
       updatedData[0].headline = `${position.collateralType} Deposited`;
       // set deposited amount
-      updatedData[0].value = `${
-        position.collateralType === "cbBTC"
-          ? Number(position.depositedAmount).toFixed(5)
-          : Number(position.depositedAmount).toFixed(4)
-      } ${position.collateralType}`;
+      updatedData[0].value = `${position.collateralType === "cbBTC"
+        ? Number(position.depositedAmount).toFixed(5)
+        : Number(position.depositedAmount).toFixed(4)
+        } ${position.collateralType}`;
       updatedData[1].headline = `${position.collateralType} Price at Deposit`;
       // set eth price at deposit
       const ethPriceAtDep =
@@ -579,7 +578,7 @@ export function WithdrawFund({
       // current price of eth
       const currentPrice =
         position.status == BorrowStatus.DEPOSITED ||
-        position.status == BorrowStatus.UNSTAKED
+          position.status == BorrowStatus.UNSTAKED
           ? ethPrice
           : position.ethPriceAtWithdraw;
 
@@ -590,7 +589,7 @@ export function WithdrawFund({
         (position.collateralType === "krwq"
           ? 1e8
           : position.collateralType === "EURC" ||
-              position.collateralType === "HYPE"
+            position.collateralType === "HYPE"
             ? 1e6
             : 100);
 
@@ -601,8 +600,8 @@ export function WithdrawFund({
         // else set 0
         Number(ethPriceAtDep) < Number(currentPrice) / priceDecimals
           ? Number(position.depositedAmountInETH) *
-              (Number(currentPrice) / priceDecimals) -
-            Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
+          (Number(currentPrice) / priceDecimals) -
+          Number(position.depositedAmountInETH) * Number(ethPriceAtDep)
           : 0;
 
       // if upside is more than 5% so showing 5% max upside or else showing calculated amount that
@@ -664,21 +663,20 @@ export function WithdrawFund({
     },
     {
       headline: "Total Interest",
-      value: `$${
-        Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) <
-          Number(position.noOfUSDaMinted) ||
+      value: `$${Number(formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6)) <
+        Number(position.noOfUSDaMinted) ||
         position.status === BorrowStatus.LIQUIDATED
-          ? 0
-          : position.status === BorrowStatus.DEPOSITED ||
-              position.status === BorrowStatus.UNSTAKED
-            ? // if position withdrawn using totalDebtAmount else total usda with cumulative
-              (
-                Number(
-                  formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
-                ) - Number(position.noOfUSDaMinted)
-              ).toFixed(5)
-            : Number(position.totalInterest || 0).toFixed(5)
-      }`,
+        ? 0
+        : position.status === BorrowStatus.DEPOSITED ||
+          position.status === BorrowStatus.UNSTAKED
+          ? // if position withdrawn using totalDebtAmount else total usda with cumulative
+          (
+            Number(
+              formatUnits(BigInt(totalUsdaAmntWithCumulativeRate), 6),
+            ) - Number(position.noOfUSDaMinted)
+          ).toFixed(5)
+          : Number(position.totalInterest || 0).toFixed(5)
+        }`,
       tooltip: false,
       tooltipText: "",
     },
@@ -703,29 +701,29 @@ export function WithdrawFund({
       // )}`,
       value: position?.downsideProtectionStatus
         ? (
-            (Number(position?.ethPrice || 0) *
-              Number(position?.exchangeRateAtDeposit || 0) *
-              Number(assetDetails?.LTV || 0)) /
-            (1e2 *
-              (position.collateralType === "krwq"
-                ? 1e8
-                : position.collateralType === "EURC" ||
-                    position.collateralType === "HYPE"
-                  ? 1e6
-                  : 1e2))
-          ).toFixed(position.collateralType === "krwq" ? 8 : 2)
+          (Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            Number(assetDetails?.LTV || 0)) /
+          (1e2 *
+            (position.collateralType === "krwq"
+              ? 1e8
+              : position.collateralType === "EURC" ||
+                position.collateralType === "HYPE"
+                ? 1e6
+                : 1e2))
+        ).toFixed(position.collateralType === "krwq" ? 8 : 2)
         : (
-            (Number(position?.ethPrice || 0) *
-              Number(position?.exchangeRateAtDeposit || 0) *
-              Number(assetDetails?.optionsExpiredLTV || 0)) /
-            (1e2 *
-              (position.collateralType === "krwq"
-                ? 1e8
-                : position.collateralType === "EURC" ||
-                    position.collateralType === "HYPE"
-                  ? 1e6
-                  : 1e2))
-          ).toFixed(position.collateralType === "krwq" ? 8 : 2),
+          (Number(position?.ethPrice || 0) *
+            Number(position?.exchangeRateAtDeposit || 0) *
+            Number(assetDetails?.optionsExpiredLTV || 0)) /
+          (1e2 *
+            (position.collateralType === "krwq"
+              ? 1e8
+              : position.collateralType === "EURC" ||
+                position.collateralType === "HYPE"
+                ? 1e6
+                : 1e2))
+        ).toFixed(position.collateralType === "krwq" ? 8 : 2),
 
       tooltip: false,
       tooltipText: "",
@@ -913,9 +911,8 @@ export function WithdrawFund({
     if (isSuccessWithdrawReceipt) {
       // setSelectedPosition({ ...position, status: BorrowStatus.WITHDREW });
       toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-          withdrawReceipt.transactionHash
-        } `;
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${withdrawReceipt.transactionHash
+          } `;
         return (
           <ToastNotification
             title="Repay Successful"
@@ -983,7 +980,7 @@ export function WithdrawFund({
       Number(stakingRealisedReward || 0) -
       Number(downsideProtection) -
       (position.collateralType?.toLocaleLowerCase() === "krwq" ||
-      position.collateralType?.toLocaleLowerCase() === "eurc"
+        position.collateralType?.toLocaleLowerCase() === "eurc"
         ? 0
         : Number(position?.optionFees));
 
@@ -1130,7 +1127,7 @@ export function WithdrawFund({
     })();
   }, [usdaHashData, usdtHashData, usdaHashError, usdtHashError]);
 
-  const check = () => {};
+  const check = () => { };
 
   const {
     isLoading: isLoadingRenewReceipt,
@@ -1145,9 +1142,8 @@ export function WithdrawFund({
 
   useEffect(() => {
     if (isSuccessRenewReceipt) {
-      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${
-        renewReceipt.transactionHash
-      } `;
+      const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${renewReceipt.transactionHash
+        } `;
 
       toast.custom((t) => (
         <ToastNotification
@@ -1235,7 +1231,7 @@ export function WithdrawFund({
       Math.round(
         Number(
           Number(payableOptionFees || 0) /
-            Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0,
+          Number(formatUnits(BigInt(getOraclePrice[0] || 0), 18)) || 0,
         ),
       ) + 1e6,
     );
@@ -1261,11 +1257,11 @@ export function WithdrawFund({
       setRenewApproveLoading(true);
       const contract =
         position.collateralType === "cbBTC" ||
-        position.collateralType === "EURC"
+          position.collateralType === "EURC"
           ? borrowCoreAddress[chainId as keyof typeof borrowWithdrawCoreAddress]
           : borrowingContractAddress[
-              chainId as keyof typeof borrowingContractAddress
-            ];
+          chainId as keyof typeof borrowingContractAddress
+          ];
       handleUsdtApprove([contract as `0x${string}`, renewAmount]);
       refetchAllowance();
     } else {
@@ -1355,7 +1351,7 @@ export function WithdrawFund({
   const isRenewActive =
     Number(
       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-        getCompletedDays(position.depositedTime, false, true),
+      getCompletedDays(position.depositedTime, false, true),
     ) > 0;
 
   const hedgeDurationOption = useMemo(() => {
@@ -1368,21 +1364,21 @@ export function WithdrawFund({
       },
       ...(Number(currentValidity) == 7
         ? [
-            {
-              label: "1 Week",
-              value: "7",
-              onClick: () => renewFormik.setFieldValue("hedgeDuration", "7"),
-            },
-          ]
+          {
+            label: "1 Week",
+            value: "7",
+            onClick: () => renewFormik.setFieldValue("hedgeDuration", "7"),
+          },
+        ]
         : []),
       ...(Number(currentValidity) == 30
         ? [
-            {
-              label: "1 Month",
-              value: "30",
-              onClick: () => renewFormik.setFieldValue("hedgeDuration", "30"),
-            },
-          ]
+          {
+            label: "1 Month",
+            value: "30",
+            onClick: () => renewFormik.setFieldValue("hedgeDuration", "30"),
+          },
+        ]
         : []),
     ].filter(Boolean);
   }, [updatedHedgeValidity, renewFormik, position]);
@@ -1506,9 +1502,8 @@ export function WithdrawFund({
                             style={{
                               width: `${percentage}%`,
                             }}
-                            className={` ${
-                              index == 1 && "mr-1"
-                            } relative h-full flex flex-col justify-end truncate`}
+                            className={` ${index == 1 && "mr-1"
+                              } relative h-full flex flex-col justify-end truncate`}
                           >
                             {index == 1 && (
                               <div
@@ -1622,11 +1617,10 @@ export function WithdrawFund({
                 </div>
               </div>
               <div
-                className={` space-y-3 mt-2  ${
-                  position.status == BorrowStatus.WITHDREW
-                    ? "h-[265px]"
-                    : "h-[350px]"
-                } overflow-auto no-scrollbar`}
+                className={` space-y-3 mt-2  ${position.status == BorrowStatus.WITHDREW
+                  ? "h-[265px]"
+                  : "h-[350px]"
+                  } overflow-auto no-scrollbar`}
               >
                 {depositData.map((item) => (
                   <div
@@ -1676,16 +1670,15 @@ export function WithdrawFund({
                 ))}
               </div>
               <div
-                className={`  ${
-                  position.status == BorrowStatus.WITHDREW
-                    ? position.status == BorrowStatus.WITHDREW &&
-                      (position.collateralType === "cbBTC" ||
-                        position.collateralType === "EURC" ||
-                        position.collateralType === "HYPE")
-                      ? "h-[130px]"
-                      : "h-[150px]"
-                    : "md:h-[80px] sm:h-[50px] h-[80px]"
-                } mt-4 md:mt-4 overflow-hidden`}
+                className={`  ${position.status == BorrowStatus.WITHDREW
+                  ? position.status == BorrowStatus.WITHDREW &&
+                    (position.collateralType === "cbBTC" ||
+                      position.collateralType === "EURC" ||
+                      position.collateralType === "HYPE")
+                    ? "h-[130px]"
+                    : "h-[150px]"
+                  : "md:h-[80px] sm:h-[50px] h-[80px]"
+                  } mt-4 md:mt-4 overflow-hidden`}
               >
                 {position.status == BorrowStatus.WITHDREW &&
                   position.collateralType !== "cbBTC" && (
@@ -1699,11 +1692,10 @@ export function WithdrawFund({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div
-                        className={`flex items-center justify-center  gap-2 w-full  ${
-                          position.status == BorrowStatus.WITHDREW
-                            ? "mt-4"
-                            : "h-full"
-                        }`}
+                        className={`flex items-center justify-center  gap-2 w-full  ${position.status == BorrowStatus.WITHDREW
+                          ? "mt-4"
+                          : "h-full"
+                          }`}
                       >
                         {position.status !== BorrowStatus.WITHDREW &&
                           position.status !== BorrowStatus.LIQUIDATED && (
@@ -1715,12 +1707,11 @@ export function WithdrawFund({
                                   type="number"
                                   min="0"
                                   step="any"
-                                  className={`flex h-full w-full rounded-md border ${
-                                    formik.touched.withdrawAmount &&
+                                  className={`flex h-full w-full rounded-md border ${formik.touched.withdrawAmount &&
                                     formik.errors.withdrawAmount
-                                      ? "border-red-500"
-                                      : "border-grayLight"
-                                  } bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-grayLight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm`}
+                                    ? "border-red-500"
+                                    : "border-grayLight"
+                                    } bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-grayLight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm`}
                                   placeholder="Enter amount"
                                   value={formik.values.withdrawAmount}
                                   onChange={formik.handleChange}
@@ -1750,7 +1741,7 @@ export function WithdrawFund({
                                 </div>
                               </div>
                               {formik.touched.withdrawAmount &&
-                              formik.errors.withdrawAmount ? (
+                                formik.errors.withdrawAmount ? (
                                 <div className="absolute left-0 text-red-500 text-xs mt-">
                                   {formik.errors.withdrawAmount}
                                 </div>
@@ -1766,13 +1757,12 @@ export function WithdrawFund({
                             !readyForNewTx
                           }
                           onClick={() => formik.handleSubmit()}
-                          className={`  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px]  ${
-                            position.status == BorrowStatus.WITHDREW
+                          className={`  gap-0 flex flex-col justify-center  py-6 md:p-12 bg-black text-white text-[18px] md:text-[24px]  ${position.status == BorrowStatus.WITHDREW
+                            ? "md:p-4 h-auto w-full"
+                            : position.status == BorrowStatus.LIQUIDATED
                               ? "md:p-4 h-auto w-full"
-                              : position.status == BorrowStatus.LIQUIDATED
-                                ? "md:p-4 h-auto w-full"
-                                : "md:p-4 h-[50px] w-[30%]"
-                          }`}
+                              : "md:p-4 h-[50px] w-[30%]"
+                            }`}
                         >
                           {repayLoading ? (
                             <div className="flex flex-col items-center gap-2">
@@ -1815,9 +1805,8 @@ export function WithdrawFund({
                           )}
                           {!hasFiveMinutesPassed(position?.depositedTime) && (
                             <div className="text-sm">
-                              {`(Repay will active in ${
-                                5 - getMinutesPassed(position?.depositedTime)
-                              } min)`}
+                              {`(Repay will active in ${5 - getMinutesPassed(position?.depositedTime)
+                                } min)`}
                             </div>
                           )}
                           <span className="text-base">
@@ -1874,40 +1863,40 @@ export function WithdrawFund({
                           value: Number(
                             isRenewActive
                               ? calculateRemainingDays(
-                                  Number(position.validTill),
+                                Number(position.validTill),
+                              ) -
+                              Number(
+                                Number(
+                                  currentOptionFeeTimeLimit?.minTimeLimit ||
+                                  0,
                                 ) -
-                                  Number(
-                                    Number(
-                                      currentOptionFeeTimeLimit?.minTimeLimit ||
-                                        0,
-                                    ) -
-                                      (Number(updatedHedgeValidity || 0) -
-                                        (calculateRemainingDays(
-                                          position.validTill,
-                                        ) || 0)),
-                                  )
+                                (Number(updatedHedgeValidity || 0) -
+                                  (calculateRemainingDays(
+                                    position.validTill,
+                                  ) || 0)),
+                              )
                               : calculateRemainingDays(
-                                  Number(position.validTill),
-                                ),
+                                Number(position.validTill),
+                              ),
                           ),
                           days: Number(
                             isRenewActive
                               ? calculateRemainingDays(
-                                  Number(position.validTill),
+                                Number(position.validTill),
+                              ) -
+                              Number(
+                                Number(
+                                  currentOptionFeeTimeLimit?.minTimeLimit ||
+                                  0,
                                 ) -
-                                  Number(
-                                    Number(
-                                      currentOptionFeeTimeLimit?.minTimeLimit ||
-                                        0,
-                                    ) -
-                                      (Number(updatedHedgeValidity || 0) -
-                                        (calculateRemainingDays(
-                                          position.validTill,
-                                        ) || 0)),
-                                  )
+                                (Number(updatedHedgeValidity || 0) -
+                                  (calculateRemainingDays(
+                                    position.validTill,
+                                  ) || 0)),
+                              )
                               : calculateRemainingDays(
-                                  Number(position.validTill),
-                                ),
+                                Number(position.validTill),
+                              ),
                           ),
 
                           gradient:
@@ -1920,14 +1909,14 @@ export function WithdrawFund({
                           label: "Renew",
                           value: isRenewActive
                             ? Number(
-                                Number(
-                                  currentOptionFeeTimeLimit?.minTimeLimit || 0,
-                                ) -
-                                  (Number(updatedHedgeValidity || 0) -
-                                    (calculateRemainingDays(
-                                      position.validTill,
-                                    ) || 0)),
-                              )
+                              Number(
+                                currentOptionFeeTimeLimit?.minTimeLimit || 0,
+                              ) -
+                              (Number(updatedHedgeValidity || 0) -
+                                (calculateRemainingDays(
+                                  position.validTill,
+                                ) || 0)),
+                            )
                             : 0,
                           gradient:
                             "linear-gradient(to right, #386fe86e,#FF527000)",
@@ -1942,9 +1931,9 @@ export function WithdrawFund({
                           value: isRenewActive
                             ? 0
                             : Number(updatedHedgeValidity || 0) -
-                              Number(
-                                calculateRemainingDays(position.validTill) || 0,
-                              ),
+                            Number(
+                              calculateRemainingDays(position.validTill) || 0,
+                            ),
                           gradient:
                             "linear-gradient(to right, #7a7a7a94, #FF527000)",
                           gradientText: "#7a7a7a",
@@ -1961,9 +1950,8 @@ export function WithdrawFund({
                             style={{
                               width: `${percentage}%`,
                             }}
-                            className={` ${
-                              index == 1 && "mr-1"
-                            } relative h-full flex flex-col justify-end truncate`}
+                            className={` ${index == 1 && "mr-1"
+                              } relative h-full flex flex-col justify-end truncate`}
                           >
                             {index == 1 && (
                               <div
@@ -2020,14 +2008,14 @@ export function WithdrawFund({
                     value: Number(
                       isRenewActive
                         ? calculateRemainingDays(Number(position.validTill)) -
-                            Number(
-                              Number(
-                                currentOptionFeeTimeLimit?.minTimeLimit || 0,
-                              ) -
-                                (Number(updatedHedgeValidity || 0) -
-                                  (calculateRemainingDays(position.validTill) ||
-                                    0)),
-                            )
+                        Number(
+                          Number(
+                            currentOptionFeeTimeLimit?.minTimeLimit || 0,
+                          ) -
+                          (Number(updatedHedgeValidity || 0) -
+                            (calculateRemainingDays(position.validTill) ||
+                              0)),
+                        )
                         : calculateRemainingDays(Number(position.validTill)),
                     ),
 
@@ -2037,8 +2025,8 @@ export function WithdrawFund({
                     label: "repay",
                     value: Number(
                       Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                        (Number(updatedHedgeValidity || 0) -
-                          (calculateRemainingDays(position.validTill) || 0)),
+                      (Number(updatedHedgeValidity || 0) -
+                        (calculateRemainingDays(position.validTill) || 0)),
                     ),
                     color: isRenewActive ? "#2563eb" : "#05a552",
                   },
@@ -2073,72 +2061,68 @@ export function WithdrawFund({
                 </div>
                 {Number(
                   Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                    (Number(updatedHedgeValidity || 0) -
-                      (calculateRemainingDays(position.validTill) + 1 || 0)),
+                  (Number(updatedHedgeValidity || 0) -
+                    (calculateRemainingDays(position.validTill) + 1 || 0)),
                 ) > 0 && (
-                  <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
-                    <span className="block w-3 h-3 bg-blue-600"></span>
-                    {isRenewActive
-                      ? Number(
+                    <div className="flex mt-2 items-center gap-2 text-[14px] text-grayLight font-medium">
+                      <span className="block w-3 h-3 bg-blue-600"></span>
+                      {isRenewActive
+                        ? Number(
                           Number(currentOptionFeeTimeLimit?.minTimeLimit || 0) -
-                            (Number(updatedHedgeValidity || 0) -
-                              (calculateRemainingDays(position.validTill) ||
-                                0)),
+                          (Number(updatedHedgeValidity || 0) -
+                            (calculateRemainingDays(position.validTill) ||
+                              0)),
                         )
-                      : 0}{" "}
-                    Days remaining to activate renew
-                  </div>
-                )}
+                        : 0}{" "}
+                      Days remaining to activate renew
+                    </div>
+                  )}
               </div>
               <div className="max-h-[280px] overflow-auto no-scrollbar">
                 <div className="space-y-2 mt-4">
                   {[
                     {
-                      heading: `${
-                        position?.collateralType === "cbBTC"
-                          ? "cbBTC"
-                          : position?.collateralType === "krwq"
-                            ? "krwq"
-                            : position?.collateralType === "EURC"
-                              ? "EURC"
-                              : position?.collateralType === "HYPE"
-                                ? "HYPE"
-                                : "ETH"
-                      } price at deposit`,
-                      value: `$${
-                        position.collateralType === "krwq"
+                      heading: `${position?.collateralType === "cbBTC"
+                        ? "cbBTC"
+                        : position?.collateralType === "krwq"
+                          ? "krwq"
+                          : position?.collateralType === "EURC"
+                            ? "EURC"
+                            : position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"
+                        } price at deposit`,
+                      value: `$${position.collateralType === "krwq"
+                        ? Number(
+                          formatUnits(BigInt(position?.ethPrice || 0), 8),
+                        )
+                        : position.collateralType === "EURC" ||
+                          position.collateralType === "HYPE"
                           ? Number(
-                              formatUnits(BigInt(position?.ethPrice || 0), 8),
-                            )
-                          : position.collateralType === "EURC" ||
-                              position.collateralType === "HYPE"
-                            ? Number(
-                                formatUnits(BigInt(position?.ethPrice || 0), 6),
-                              )
-                            : Number(
-                                formatUnits(BigInt(position?.ethPrice || 0), 2),
-                              )
-                      }`,
+                            formatUnits(BigInt(position?.ethPrice || 0), 6),
+                          )
+                          : Number(
+                            formatUnits(BigInt(position?.ethPrice || 0), 2),
+                          )
+                        }`,
                     },
                     {
-                      heading: `Current ${
-                        position?.collateralType === "cbBTC"
-                          ? "cbBTC"
-                          : position?.collateralType === "krwq"
-                            ? "krwq"
-                            : position?.collateralType === "EURC"
-                              ? "EURC"
-                              : position?.collateralType === "HYPE"
-                                ? "HYPE"
-                                : "ETH"
-                      } price`,
-                      value: `$${
-                        position.collateralType === "krwq" ||
+                      heading: `Current ${position?.collateralType === "cbBTC"
+                        ? "cbBTC"
+                        : position?.collateralType === "krwq"
+                          ? "krwq"
+                          : position?.collateralType === "EURC"
+                            ? "EURC"
+                            : position?.collateralType === "HYPE"
+                              ? "HYPE"
+                              : "ETH"
+                        } price`,
+                      value: `$${position.collateralType === "krwq" ||
                         position.collateralType === "EURC" ||
                         position?.collateralType === "HYPE"
-                          ? Number(ethPrice)
-                          : Number(formatUnits(BigInt(ethPrice), 2))
-                      }`,
+                        ? Number(ethPrice)
+                        : Number(formatUnits(BigInt(ethPrice), 2))
+                        }`,
                     },
                     {
                       heading: "Downside Protection till now",
@@ -2195,7 +2179,7 @@ export function WithdrawFund({
                             position.collateralType === "krwq"
                               ? 8
                               : position.collateralType === "EURC" ||
-                                  position.collateralType === "HYPE"
+                                position.collateralType === "HYPE"
                                 ? 6
                                 : 2,
                           ),
@@ -2231,12 +2215,11 @@ export function WithdrawFund({
                             : "Hedge Duration"
                         }
                         items={hedgeDurationOption}
-                        className={`w-full h-[44px] md:h-[64px] text-[20px] 2xl:text-[20px] border ${
-                          renewFormik.touched.hedgeDuration &&
+                        className={`w-full h-[44px] md:h-[64px] text-[20px] 2xl:text-[20px] border ${renewFormik.touched.hedgeDuration &&
                           renewFormik.errors.hedgeDuration
-                            ? "border-red-500"
-                            : "border-grayLight"
-                        }`}
+                          ? "border-red-500"
+                          : "border-grayLight"
+                          }`}
                         iconWrapBg="bg-white dark:bg-black"
                         onBlur={() =>
                           renewFormik.setFieldTouched("hedgeDuration", true)
@@ -2270,8 +2253,8 @@ export function WithdrawFund({
                               className="w-full   p-8 bg-black text-white text-[32px]"
                             >
                               {position.status !== BorrowStatus.WITHDREW &&
-                              position.status !== BorrowStatus.LIQUIDATED &&
-                              !readyForNewTx ? (
+                                position.status !== BorrowStatus.LIQUIDATED &&
+                                !readyForNewTx ? (
                                 <div className="flex flex-col items-center gap-2">
                                   <Spinner color="#fff" />
                                   {readyForNewTx && (
