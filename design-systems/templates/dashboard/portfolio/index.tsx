@@ -1,7 +1,6 @@
 "use client";
 import { usePortfolioTab } from "@/contexts/portfolio-tab";
 
-
 import DcdsDepositTable from "@/design-systems/organisms/dashboard/portfolio/dcds-deposit-table";
 import DepositTable from "@/design-systems/organisms/dashboard/portfolio/deposit-table";
 import useGetTotalBorrow from "@/hookes/api-hooks/useGetBorrowAmount";
@@ -10,6 +9,8 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
+import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
+import useStockWithdraw from "@/hookes/stock-contracts/useStockWithdraw";
 import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
@@ -17,8 +18,13 @@ import useUserGains from "@/hookes/contract-hooks/useUserGains";
 import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
+import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
+import { scanUrls, explorerNames } from "@/utils/urls";
+import { DcdsWithdrawModal } from "@/design-systems/molecule/popups/WithdrawModal";
 
 function PortfolioTemplate() {
   const { address, chainId, isConnected } = useAccount();
@@ -219,6 +225,115 @@ function PortfolioTemplate() {
     ?.map((address) => address.toLowerCase())
     .includes(address?.toLowerCase() || "");
 
+  // ---- Stock Borrow Withdraw Integration ----
+
+  // Signed data hook for borrow withdraw
+  const {
+    BorrowWithdrawSignedData,
+    refetchBorrowWithDrawSignedData,
+  } = useGetBorrowWithdrawSignedData(selectedPosition?.index || 0);
+
+  // Stock withdraw contract hook
+  const {
+    stockWithdrawHash,
+    stockWithdrawError,
+    stockWithdrawIsPending,
+    handleStockWithdraw,
+    resetStockWithdraw,
+  } = useStockWithdraw();
+
+  // Wait for withdraw transaction receipt
+  const {
+    isSuccess: isWithdrawSuccess,
+    isError: isWithdrawError,
+  } = useWaitForTransactionReceipt({
+    hash: stockWithdrawHash,
+    confirmations: 2,
+  });
+
+  // Handle withdraw success
+  useEffect(() => {
+    if (isWithdrawSuccess) {
+      toast.custom((t) => {
+        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${stockWithdrawHash}`;
+        return (
+          <ToastNotification
+            title="Position Closed Successfully"
+            message=""
+            linkText={explorerNames[Number(chainId)] || "View On Explorer"}
+            linkUrl={link}
+            onClose={() => toast.dismiss(t)}
+          />
+        );
+      });
+      positionListRefetch();
+      resetStockWithdraw();
+      setSelectedPosition(null);
+    }
+  }, [isWithdrawSuccess]);
+
+  // Handle withdraw error
+  useEffect(() => {
+    if (isWithdrawError || stockWithdrawError) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Transaction failed, Please try again"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      resetStockWithdraw();
+    }
+  }, [isWithdrawError, stockWithdrawError]);
+
+  // Handle close position
+  const handleClosePosition = useCallback(async (position: PositionData) => {
+    try {
+      debugger;
+      if (!address || !chainId) return;
+
+      setSelectedPosition(position);
+
+      // Fetch signed data from backend
+      const signedData = await refetchBorrowWithDrawSignedData({
+        token: position.collateralType,
+      });
+
+      if (!signedData) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Failed to get signed data"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        return;
+      }
+
+      // Construct the withdraw params
+      const params = {
+        user: address,
+        index: BigInt(position.index),
+        verifyParams: {
+          ethPrice: BigInt(signedData.ethPrice),
+          strikePrice: BigInt(position.strikePrice),
+          optionFees: BigInt(position.optionFees),
+          deadline: BigInt(signedData.deadline),
+          signature: signedData.signature as `0x${string}`,
+        },
+      };
+
+      // Call the withdraw function
+      await handleStockWithdraw(params);
+    } catch (error) {
+      console.error("Close position error:", error);
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Failed to close position"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+    }
+  }, [address, chainId, refetchBorrowWithDrawSignedData, handleStockWithdraw]);
+
   return (
     <div className="flex sm:px-4 flex-col">
 
@@ -297,6 +412,8 @@ function PortfolioTemplate() {
           setCurrentPage={setCurrentPage}
           isHightlightTab={portfolioTab == "Borrowed"}
           setStakePopUpOpen={setStakePopUpOpen}
+          onClosePosition={handleClosePosition}
+          isClosingPosition={stockWithdrawIsPending}
         />
       ) : (
         <DcdsDepositTable
@@ -326,15 +443,15 @@ function PortfolioTemplate() {
         setIsDialogOpen={() => setIsRebalanceDialogOpen(false)}
       /> */}
       {/* CDS withdraw modal */}
-      {/* <DcdsWithdrawModal
-        position={(selectedDcdsPosition || []) as dcdsDepositDetails}
+      <DcdsWithdrawModal
+        position={selectedDcdsPosition}
         isDialogOpen={isWithdrawDialogOpen}
         setIsDialogOpen={() => {
           setIsWithdrawDialogOpen(false);
-          // setSelectedDcdsPosition(null);
+          setSelectedDcdsPosition(null);
         }}
         dcdsPositionListRefetch={dcdsPositionListRefetch}
-      /> */}
+      />
       {/* Borrow repay renew modal */}
       {/* <WithdrawFund
         setSelectedPosition={setSelectedPosition}

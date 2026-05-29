@@ -16,7 +16,7 @@ async function getAPY(
   index: number,
   token: string
 ): Promise<any> {
-  return fetch(`${BACKEND_API_URL}/cds/getAPY`, {
+  return fetch(`${BACKEND_API_URL}/stock-options/cds/getAPY`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

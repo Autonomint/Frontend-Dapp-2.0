@@ -34,11 +34,10 @@ const DcdsPositionTableRow = ({
 
   return (
     <tr
-      className={`border ${
-        highlight
+      className={`border ${highlight
           ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
           : ""
-      } border-solid border-grayLight `}
+        } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6 ">{position.index}</td>
       <td className="px-5 py-4 whitespace-nowrap 2xl:py-6 ">
@@ -57,24 +56,23 @@ const DcdsPositionTableRow = ({
       </td>
 
       <td className="px-5 py-4 2xl:py-6 ">
-        30 days
+        {`${Math.ceil(Number(position.lockingPeriod) / 86400)} days`}
       </td>
 
       <td className="px-5 py-4 2xl:py-6 ">
         <span
-          className={`font-medium ${
-            position.status === "WITHDREW_GAINS"
+          className={`font-medium ${position.status === "WITHDREW_GAINS"
               ? "text-green-500"
               : position.status === "LIQUIDATED"
-              ? "text-red-500"
-              : "text-yellow-500"
-          }`}
+                ? "text-red-500"
+                : "text-yellow-500"
+            }`}
         >
           {position.status === "WITHDREW_GAINS"
             ? "Withdrawn"
             : position.status === "LIQUIDATED"
-            ? "Liquidated"
-            : "Active"}
+              ? "Liquidated"
+              : "Active"}
         </span>
       </td>
 
