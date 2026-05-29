@@ -1089,7 +1089,7 @@ export function WithdrawFund({
               position.collateralType === "HYPE"
               ? undefined
               : nativeFee?.nativeFee || BigInt(0n),
-            borrowSignedData?.usdtFromOdos,
+            "ox",
             position.collateralType,
             borrowSignedData,
           );

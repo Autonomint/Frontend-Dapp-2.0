@@ -314,8 +314,8 @@ function PortfolioTemplate() {
         index: BigInt(position.index),
         verifyParams: {
           ethPrice: BigInt(signedData.ethPrice),
-          strikePrice: BigInt(position.strikePrice),
-          optionFees: BigInt(position.optionFees),
+          strikePrice: BigInt(signedData.strikePrice),
+          optionFees: BigInt(signedData.optionFees),
           deadline: BigInt(signedData.deadline),
           signature: signedData.signature as `0x${string}`,
         },

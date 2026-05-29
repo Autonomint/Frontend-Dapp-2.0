@@ -17,9 +17,7 @@ import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import LoadingBox from "../LoadingBox";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import ToastNotification from "../toasts/ToastNotification";
 import ToastNotificationError from "../toasts/ToastNotificationError";
-import { explorerNames, scanUrls } from "@/utils/urls";
 import { Label } from "@/design-systems/atoms/label";
 import { hideYieldsAddressAndIndex } from "@/utils/constants";
 import useGetAPY from "@/hookes/api-hooks/useGetAPY";
@@ -100,22 +98,10 @@ export function DcdsWithdrawModal({
   // Handle gains success
   useEffect(() => {
     if (isGainsSuccess && step === "gains") {
-      toast.custom((t) => {
-        const link = `${scanUrls[chainId as keyof typeof scanUrls]}tx/${stockCdsWithdrawGainsHash}`;
-        return (
-          <ToastNotification
-            title="Withdraw Successful"
-            message=""
-            linkText={explorerNames[Number(chainId)] || "View On Explorer"}
-            linkUrl={link}
-            onClose={() => toast.dismiss(t)}
-          />
-        );
-      });
       dcdsPositionListRefetch();
       handleCloseDialog();
     }
-  }, [isGainsSuccess, step, chainId, stockCdsWithdrawGainsHash, dcdsPositionListRefetch, handleCloseDialog]);
+  }, [isGainsSuccess, step, dcdsPositionListRefetch, handleCloseDialog]);
 
   // Handle errors
   useEffect(() => {
@@ -145,7 +131,7 @@ export function DcdsWithdrawModal({
     if (!position || !address) return;
     try {
       setStep("withdrawing");
-
+      debugger
       // Fetch signed data
       const signedData = await refetchCDSWithdrawSignedData({
         collateralType: position.collateralType,
@@ -220,18 +206,18 @@ export function DcdsWithdrawModal({
   )
     ? "NaN"
     : toPositiveDecimalString(
-        Number(
-          apy == undefined
-            ? 0
-            : position?.status !== "DEPOSITED"
-              ? Number(position?.apys?.priceChangePL) < 0
-                ? position?.apys?.priceChangePL
-                : calculatePercentage(position?.apys?.priceChangePL || 0, 60) || 0
-              : apy[2] < 0
-                ? apy[2]
-                : calculatePercentage(apy[2], 60) || 0,
-        ).toFixed(4),
-      );
+      Number(
+        apy == undefined
+          ? 0
+          : position?.status !== "DEPOSITED"
+            ? Number(position?.apys?.priceChangePL) < 0
+              ? position?.apys?.priceChangePL
+              : calculatePercentage(position?.apys?.priceChangePL || 0, 60) || 0
+            : apy[2] < 0
+              ? apy[2]
+              : calculatePercentage(apy[2], 60) || 0,
+      ).toFixed(4),
+    );
 
   const variableYields = toPositiveDecimalString(
     Number(
@@ -239,23 +225,23 @@ export function DcdsWithdrawModal({
         ? 0
         : position?.status !== "DEPOSITED"
           ? (Number(
-              isNaN(position?.apys?.priceChangePL || 0)
+            isNaN(position?.apys?.priceChangePL || 0)
+              ? 0
+              : position?.apys?.priceChangePL || 0,
+          ) /
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
                 ? 0
-                : position?.apys?.priceChangePL || 0,
-            ) /
-              Number(
-                isNaN(Number(position?.totalDepositedAmount))
-                  ? 0
-                  : position?.totalDepositedAmount,
-              )) *
-            100
+                : position?.totalDepositedAmount,
+            )) *
+          100
           : (Number(isNaN(apy[2]) ? 0 : apy[2]) /
-              Number(
-                isNaN(Number(position?.totalDepositedAmount))
-                  ? 0
-                  : position?.totalDepositedAmount,
-              )) *
-            100,
+            Number(
+              isNaN(Number(position?.totalDepositedAmount))
+                ? 0
+                : position?.totalDepositedAmount,
+            )) *
+          100,
     ).toFixed(2),
   );
 
@@ -280,9 +266,9 @@ export function DcdsWithdrawModal({
       headline: "USDC Deposited",
       value: position.depositedAmounts?.usdc
         ? `${formatNumber(Number(position.depositedAmounts.usdc))} ($${(
-            Number(position.depositedAmounts.usdc) *
-            Number(position.usdcPriceAtDeposit || 1)
-          ).toFixed(2)})`
+          Number(position.depositedAmounts.usdc) *
+          Number(position.usdcPriceAtDeposit || 1)
+        ).toFixed(2)})`
         : "-",
       tooltip: false,
       tooltipText: "",
@@ -521,7 +507,7 @@ export function DcdsWithdrawModal({
                   isLoading={step === "withdrawing"}
                   isFailure={false}
                   isSuccess={isWithdrawSuccess}
-                  setSuccessLoading={() => {}}
+                  setSuccessLoading={() => { }}
                   heading="Closing Position"
                   loadingCount="1/2"
                 />

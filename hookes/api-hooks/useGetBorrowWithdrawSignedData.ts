@@ -11,16 +11,13 @@ const toNumber = (value: unknown): number => {
 };
 
 export interface SignedDataReturn {
-  volatility: number;
-  odosAssembledData: string;
-  oneInchSwapData: string;
-  signature: string;
-  nonce: number;
+  ethPrice: number;
+  strikePrice: number;
+  optionFees: string;
+  user: string;
+  index: number;
   deadline: number;
-  usdtFromOdos: string;
-  expiredETHAmount: bigint;
-  plFromExpired: bigint;
-  ethPrice: bigint;
+  signature: string;
 }
 
 /**
