@@ -1,3 +1,4 @@
+import { BorrowStatus } from "@/utils/constants";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useScroll } from "@/contexts/scroll";
@@ -30,6 +31,8 @@ function DepositTable({
   isSticky,
   isHightlightTab,
   setStakePopUpOpen,
+  onClosePosition,
+  isClosingPosition,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -51,6 +54,8 @@ function DepositTable({
   isSticky: boolean;
   isHightlightTab: boolean;
   setStakePopUpOpen: (isOpen: boolean) => void;
+  onClosePosition?: (position: PositionData) => void;
+  isClosingPosition?: boolean;
 }) {
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -118,13 +123,20 @@ function DepositTable({
           ? Number(b.validTill) - Number(a.validTill)
           : Number(a.validTill) - Number(b.validTill);
       } else if (sortBy === "status") {
-        return sortAsc
-          ? b.status === "LIQUIDATED"
-            ? -1
-            : 1
-          : a.status === "LIQUIDATED"
-            ? 1
-            : -1;
+        const statusOrder = [
+          BorrowStatus.LIQUIDATED,
+          BorrowStatus.WITHDREW,
+          BorrowStatus.STAKED,
+          BorrowStatus.UNSTAKED,
+          BorrowStatus.DEPOSITED,
+        ];
+        const aOrder = statusOrder.indexOf(a.status as keyof typeof BorrowStatus);
+        const bOrder = statusOrder.indexOf(b.status as keyof typeof BorrowStatus);
+        return sortAsc ? bOrder - aOrder : aOrder - bOrder;
+      } else if (sortBy === "profit") {
+        const aProfit = Number(a.profit || 0);
+        const bProfit = Number(b.profit || 0);
+        return sortAsc ? bProfit - aProfit : aProfit - bProfit;
       }
       return 0;
     });
@@ -304,6 +316,36 @@ function DepositTable({
                   </span>
                 </div>
               </th>
+              <th
+                onClick={() => {
+                  setSortBy("profit");
+                  setSortAsc(!sortAsc);
+                }}
+                className="pl-5 whitespace-nowrap cursor-pointer font-normal"
+              >
+                <div className="flex gap-2 items-center">
+                  <span>PnL</span>
+                  <span>
+                    {sortAsc && sortBy === "profit" ? (
+                      <ChevronDown
+                        className={
+                          sortBy === "profit"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    ) : (
+                      <ChevronUp
+                        className={
+                          sortBy === "profit"
+                            ? "stroke-black dark:stroke-white"
+                            : ""
+                        }
+                      />
+                    )}
+                  </span>
+                </div>
+              </th>
               <th className="pr-5 whitespace-nowrap font-normal lg:w-auto text-right">
                 Close Position
               </th>
@@ -316,21 +358,15 @@ function DepositTable({
                   key={key}
                   idx={key + 1 + (currentPage - 1) * pageSize}
                   position={position}
-                  tabPosition={tabPosition}
                   setSelectedPosition={setSelectedPosition}
-                  setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}
-                  setIsWithdrawDialogOpen={setIsWithdrawDialogOpen}
-                  isViewPositionOpen={isViewPositionOpen}
-                  setViewPosition={setViewPosition}
-                  isLast={key === positionList.length - 1}
-                  setRenewRepay={setRenewRepay}
                   highlight={
                     key + 1 === positionList.length &&
                     isScroll &&
                     totalPages == currentPage &&
                     isHightlightTab
                   }
-                  setStakePopUpOpen={setStakePopUpOpen}
+                  onClosePosition={onClosePosition}
+                  isClosingPosition={isClosingPosition}
                 />
               );
             })}

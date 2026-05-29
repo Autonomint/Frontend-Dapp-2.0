@@ -1,37 +1,29 @@
+import { BorrowStatus } from "@/utils/constants";
 import { calculateRemainingDays } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
+import Spinner from "@/design-systems/atoms/Spinner";
 import { formatUnits } from "viem";
 
 const DepositTableRow = ({
   position,
-  tabPosition,
   idx,
   setSelectedPosition,
-  setIsRebalanceDialogOpen,
-  setIsWithdrawDialogOpen,
-  isViewPositionOpen,
-  setViewPosition,
-  isLast,
-  setRenewRepay,
+  onClosePosition,
+  isClosingPosition,
   highlight = false,
-  setStakePopUpOpen,
 }: {
   highlight: boolean;
-  isViewPositionOpen: boolean;
-  setViewPosition: (isOpen: boolean) => void;
-  isLast: boolean;
-  setRenewRepay: (isOpen: boolean) => void;
-  setIsRebalanceDialogOpen: (isOpen: boolean) => void;
-  setIsWithdrawDialogOpen: (isOpen: boolean) => void;
   position: PositionData;
-  tabPosition: "Borrowed" | "Deposited";
   idx: number;
   setSelectedPosition: (position: PositionData) => void;
-  setStakePopUpOpen: (isOpen: boolean) => void;
+  onClosePosition?: (position: PositionData) => void;
+  isClosingPosition?: boolean;
 }) => {
-  // selecting position
-  const handleRowClick = () => {
+  const handleClosePosition = () => {
     setSelectedPosition(position);
+    if (onClosePosition) {
+      onClosePosition(position);
+    }
   };
 
   const remainingDays = calculateRemainingDays(Number(position.validTill));
@@ -62,51 +54,45 @@ const DepositTableRow = ({
         {isExpired ? "Expired" : `${remainingDays} days`}
       </td>
       <td className="px-5 py-4 2xl:py-6">
-        {position.status === "LIQUIDATED"
+        {position.status === BorrowStatus.LIQUIDATED
           ? "Liquidated"
-          : isExpired
-            ? "Expired"
-            : "Active"}
+          : position.status === BorrowStatus.WITHDREW
+            ? "Withdrawn"
+            : isExpired
+              ? "Expired"
+              : "Active"}
       </td>
-      <td
-        className={`px-5 py-4 2xl:py-6 ${
-          tabPosition === "Borrowed" ? "block" : "none"
-        } md:text-right  md:space-x-12`}
-        style={{
-          display: tabPosition === "Borrowed" ? "block" : "none",
-        }}
-      >
+      <td className="px-5 py-4 2xl:py-6">
+        <span
+          className={`font-medium ${
+            Number(position.profit || 0) >= 0
+              ? "text-green-600 dark:text-green-500"
+              : "text-red-600 dark:text-red-500"
+          }`}
+        >
+          {position.profit !== null && position.profit !== undefined
+            ? `${Number(position.profit) >= 0 ? "+" : ""}$${Number(position.profit).toFixed(2)}`
+            : "-"}
+        </span>
+      </td>
+      <td className="px-5 py-4 2xl:py-6 md:text-right md:space-x-12">
         <button
-          onClick={() => {
-            setRenewRepay(true);
-            handleRowClick();
-          }}
-          className="font-bold cursor-pointer text-[20px] underline bg-transparent border-none"
+          onClick={handleClosePosition}
+          disabled={
+            position.status === BorrowStatus.LIQUIDATED ||
+            position.status === BorrowStatus.WITHDREW ||
+            isClosingPosition
+          }
+          className="font-bold cursor-pointer text-[20px] underline bg-transparent border-none disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Close Position
+          {position.status === BorrowStatus.LIQUIDATED
+            ? "Liquidated"
+            : position.status === BorrowStatus.WITHDREW
+              ? "Closed"
+              : isClosingPosition
+                ? <Spinner size={20} color="currentColor" />
+                : "Close Position"}
         </button>
-      </td>
-
-      <td
-        className={`px-5 py-4 2xl:py-6 ${
-          tabPosition === "Deposited" ? "block" : "none"
-        } md:text-right  md:space-x-12`}
-        style={{
-          display: tabPosition === "Deposited" ? "block" : "none",
-        }}
-      >
-        <span
-          onClick={handleRowClick}
-          className="font-bold cursor-pointer text-[20px] underline "
-        >
-          Withdraw
-        </span>
-        <span
-          onClick={handleRowClick}
-          className="font-bold cursor-pointer text-[20px] underline  "
-        >
-          Rebalance
-        </span>
       </td>
     </tr>
   );
