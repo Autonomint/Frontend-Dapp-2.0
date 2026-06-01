@@ -18,6 +18,7 @@ const useStockCdsWithdrawGains = (mutation?: Record<string, any>) => {
     isError: stockCdsWithdrawGainsError,
     isPending: stockCdsWithdrawGainsIsPending,
     writeContract: writeStockCdsWithdrawGains,
+    writeContractAsync: writeStockCdsWithdrawGainsAsync,
     reset: resetStockCdsWithdrawGains,
     error: stockCdsWithdrawGainsErrorData,
   } = useWriteContract({
@@ -76,12 +77,30 @@ const useStockCdsWithdrawGains = (mutation?: Record<string, any>) => {
     });
   };
 
+  const handleStockCdsWithdrawGainsAsync = async (
+    index: bigint,
+    withdrawType: StockWithdrawType,
+    value?: bigint,
+  ): Promise<`0x${string}` | undefined> => {
+    const contractAddress =
+      stockCdsAddress[chainId as keyof typeof stockCdsAddress];
+
+    return writeStockCdsWithdrawGainsAsync({
+      abi: cdsStockOptionsABI,
+      address: contractAddress as `0x${string}`,
+      functionName: "withdrawGains",
+      args: [index, withdrawType],
+      value,
+    });
+  };
+
   return {
     stockCdsWithdrawGainsHash,
     stockCdsWithdrawGainsError,
     stockCdsWithdrawGainsIsPending,
     stockCdsWithdrawGainsErrorData,
     handleStockCdsWithdrawGains,
+    handleStockCdsWithdrawGainsAsync,
     resetStockCdsWithdrawGains,
   };
 };

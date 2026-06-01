@@ -14,6 +14,8 @@ import useGetCDSWithdrawSignedData from "@/hookes/stock-contracts/useGetCDSWithd
 import useStockCdsWithdraw, { StockWithdrawType } from "@/hookes/stock-contracts/useStockCdsWithdraw";
 import useStockCdsWithdrawGains from "@/hookes/stock-contracts/useStockCdsWithdrawGains";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
+import { waitForTransactionReceipt } from "@wagmi/core";
+import { config } from "@/blockchain/WalletConfigs/iindex";
 import LoadingBox from "../LoadingBox";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -45,6 +47,7 @@ export function DcdsWithdrawModal({
     stockCdsWithdrawError,
     stockCdsWithdrawIsPending,
     handleStockCdsWithdraw,
+    handleStockCdsWithdrawAsync,
     resetStockCdsWithdraw,
   } = useStockCdsWithdraw();
 
@@ -59,49 +62,20 @@ export function DcdsWithdrawModal({
 
   // Step 2: withdrawGains
   const {
-    stockCdsWithdrawGainsHash,
-    stockCdsWithdrawGainsError,
-    stockCdsWithdrawGainsIsPending,
     handleStockCdsWithdrawGains,
+    handleStockCdsWithdrawGainsAsync,
     resetStockCdsWithdrawGains,
   } = useStockCdsWithdrawGains();
 
-  // Wait for Step 2 tx receipt
-  const {
-    isSuccess: isGainsSuccess,
-    isError: isGainsError,
-  } = useWaitForTransactionReceipt({
-    hash: stockCdsWithdrawGainsHash,
-    confirmations: 2,
-  });
+  const [isGainsCompleted, setIsGainsCompleted] = useState(false);
 
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
     setStep("idle");
+    setIsGainsCompleted(false);
     resetStockCdsWithdraw();
     resetStockCdsWithdrawGains();
   }, [setIsDialogOpen, resetStockCdsWithdraw, resetStockCdsWithdrawGains]);
-
-  // Handle withdraw success → trigger gains
-  useEffect(() => {
-    if (isWithdrawSuccess && step === "withdrawing") {
-      setStep("gains");
-      setTimeout(() => {
-        handleStockCdsWithdrawGains(
-          BigInt(position?.index || 0),
-          StockWithdrawType.FULL_WITHDRAW,
-        );
-      }, 1000);
-    }
-  }, [isWithdrawSuccess, step, position?.index, handleStockCdsWithdrawGains]);
-
-  // Handle gains success
-  useEffect(() => {
-    if (isGainsSuccess && step === "gains") {
-      dcdsPositionListRefetch();
-      handleCloseDialog();
-    }
-  }, [isGainsSuccess, step, dcdsPositionListRefetch, handleCloseDialog]);
 
   // Handle errors
   useEffect(() => {
@@ -115,7 +89,33 @@ export function DcdsWithdrawModal({
       setStep("idle");
       resetStockCdsWithdraw();
     }
-    if (isGainsError || stockCdsWithdrawGainsError) {
+  }, [isWithdrawError, stockCdsWithdrawError, resetStockCdsWithdraw]);
+
+  // Dedicated function to handle withdrawGains with loading state and inline tx wait
+  const handleWithdrawGains = useCallback(async () => {
+    if (!position) return;
+    try {
+      setStep("gains");
+      const gainsHash = await handleStockCdsWithdrawGainsAsync(
+        BigInt(position.index),
+        StockWithdrawType.FULL_WITHDRAW,
+      );
+      if (!gainsHash) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Withdraw gains transaction failed"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        setStep("idle");
+        return;
+      }
+      await waitForTransactionReceipt(config, { hash: gainsHash, confirmations: 2 });
+      setIsGainsCompleted(true);
+      dcdsPositionListRefetch();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Withdraw gains error:", error);
       toast.custom((t) => (
         <ToastNotificationError
           title="Withdraw gains transaction failed, Please try again"
@@ -125,13 +125,18 @@ export function DcdsWithdrawModal({
       setStep("idle");
       resetStockCdsWithdrawGains();
     }
-  }, [isWithdrawError, stockCdsWithdrawError, isGainsError, stockCdsWithdrawGainsError, resetStockCdsWithdraw, resetStockCdsWithdrawGains]);
+  }, [position, handleStockCdsWithdrawGainsAsync, dcdsPositionListRefetch, handleCloseDialog]);
 
   const handleWithdrawFund = async () => {
     if (!position || !address) return;
     try {
+      // If position is already withdrawn, only call withdrawGains
+      if (position.status === "WITHDREW") {
+        handleWithdrawGains();
+        return;
+      }
+
       setStep("withdrawing");
-      debugger
       // Fetch signed data
       const signedData = await refetchCDSWithdrawSignedData({
         collateralType: position.collateralType,
@@ -150,8 +155,8 @@ export function DcdsWithdrawModal({
         return;
       }
 
-      // Call withdraw
-      handleStockCdsWithdraw({
+      // Call withdraw (Step 1) using writeContractAsync to get the tx hash
+      const withdrawHash = await handleStockCdsWithdrawAsync({
         user: address,
         index: BigInt(position.index),
         withdrawType: StockWithdrawType.FULL_WITHDRAW,
@@ -163,6 +168,23 @@ export function DcdsWithdrawModal({
           signature: signedData.signature,
         },
       });
+
+      if (!withdrawHash) {
+        toast.custom((t) => (
+          <ToastNotificationError
+            title="Withdraw transaction failed"
+            onClose={() => toast.dismiss(t)}
+          />
+        ));
+        setStep("idle");
+        return;
+      }
+
+      // Wait for Step 1 tx to be confirmed (2 confirmations)
+      await waitForTransactionReceipt(config, { hash: withdrawHash, confirmations: 2 });
+
+      // Step 1 confirmed, now trigger Step 2 (withdrawGains) via the dedicated function
+      handleWithdrawGains();
     } catch (error) {
       console.error("Withdraw error:", error);
       toast.custom((t) => (
@@ -353,7 +375,7 @@ export function DcdsWithdrawModal({
 
   const isProcessing = step !== "idle";
   const isPopupLoading = isLoadingAPY;
-
+  console.log("position", position);
   return (
     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="max-w-[98%] sm:max-w-[610px] bg-white dark:border-[1px] dark:border-grayLight dark:bg-[#0D0D0D]">
@@ -496,12 +518,28 @@ export function DcdsWithdrawModal({
                 {position.status === "WITHDREW_GAINS"
                   ? "Withdrawn"
                   : position.status === "WITHDREW"
-                    ? "Withdraw"
+                    ? "Withdraw Gains"
                     : "Close Position"}
               </Button>
             )}
 
-            {isProcessing && (
+            {isProcessing && position.status === "WITHDREW" && (
+              <div className="h-[50px] overflow-hidden md:h-[86px]">
+                <LoadingBox
+                  isLoading={step === "gains"}
+                  isFailure={false}
+                  isSuccess={isGainsCompleted}
+                  setSuccessLoading={() => {
+                    setStep("idle");
+                  }}
+                  heading="Withdrawing Gains"
+                  loadingCount="1/1"
+                />
+              </div>
+            )}
+
+            {isProcessing && position.status !== "WITHDREW" && (
+
               <div className="h-[50px] overflow-hidden md:h-[86px]">
                 <LoadingBox
                   isLoading={step === "withdrawing"}
@@ -514,7 +552,7 @@ export function DcdsWithdrawModal({
                 <LoadingBox
                   isLoading={step === "gains"}
                   isFailure={false}
-                  isSuccess={isGainsSuccess}
+                  isSuccess={isGainsCompleted}
                   setSuccessLoading={() => {
                     setStep("idle");
                   }}

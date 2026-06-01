@@ -1,7 +1,7 @@
 import { stockCdsAddress } from "@/blockchain/contracts";
 import { cdsStockOptionsABI } from "@/blockchain/abis/stock/cds";
 import { useAccount, useWriteContract } from "wagmi";
-import { toast } from "sonner";
+ import { toast } from "sonner";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import { waitForTransactionReceipt } from "@wagmi/core";
@@ -37,6 +37,7 @@ const useStockCdsWithdraw = (mutation?: Record<string, any>) => {
     isError: stockCdsWithdrawError,
     isPending: stockCdsWithdrawIsPending,
     writeContract: writeStockCdsWithdraw,
+    writeContractAsync: writeStockCdsWithdrawAsync,
     reset: resetStockCdsWithdraw,
     error: stockCdsWithdrawErrorData,
   } = useWriteContract({
@@ -94,12 +95,29 @@ const useStockCdsWithdraw = (mutation?: Record<string, any>) => {
     });
   };
 
+  const handleStockCdsWithdrawAsync = async (
+    params: StockCdsWithdrawUserParams,
+    value?: bigint,
+  ): Promise<`0x${string}` | undefined> => {
+    const contractAddress =
+      stockCdsAddress[chainId as keyof typeof stockCdsAddress];
+
+    return writeStockCdsWithdrawAsync({
+      abi: cdsStockOptionsABI,
+      address: contractAddress as `0x${string}`,
+      functionName: "withdraw",
+      args: [params],
+      value,
+    });
+  };
+
   return {
     stockCdsWithdrawHash,
     stockCdsWithdrawError,
     stockCdsWithdrawIsPending,
     stockCdsWithdrawErrorData,
     handleStockCdsWithdraw,
+    handleStockCdsWithdrawAsync,
     resetStockCdsWithdraw,
   };
 };

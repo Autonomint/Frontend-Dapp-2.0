@@ -256,9 +256,6 @@ function DcdsDepositTable({
               <th className="pl-5 whitespace-nowrap  font-normal">
                 Lock In period
               </th>
-              <th className="pl-5 whitespace-nowrap  font-normal">
-                Status
-              </th>
               <th className="pl-5 whitespace-nowrap text-right pr-5  font-normal">
                 Action
               </th>

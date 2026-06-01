@@ -59,23 +59,6 @@ const DcdsPositionTableRow = ({
         {`${Math.ceil(Number(position.lockingPeriod) / 86400)} days`}
       </td>
 
-      <td className="px-5 py-4 2xl:py-6 ">
-        <span
-          className={`font-medium ${position.status === "WITHDREW_GAINS"
-              ? "text-green-500"
-              : position.status === "LIQUIDATED"
-                ? "text-red-500"
-                : "text-yellow-500"
-            }`}
-        >
-          {position.status === "WITHDREW_GAINS"
-            ? "Withdrawn"
-            : position.status === "LIQUIDATED"
-              ? "Liquidated"
-              : "Active"}
-        </span>
-      </td>
-
       <td className={`px-5 py-4 2xl:py-6  md:text-right md:space-x-12`}>
         <span
           onClick={handleRowClick}
