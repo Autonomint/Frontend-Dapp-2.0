@@ -162,7 +162,7 @@ export interface AssetDetails {
 export const NEXT_PUBLIC_LINK_DOCS =
   "https://docs.autonomint.com/autonomint/autonomint-1";
 export const NEXT_PUBLIC_LINK_DISCORD = "https://discord.com/invite/4QFaUTwjkU";
-export const NEXT_PUBLIC_LINK_TWITTER = "https://x.com/autonomint";
+export const NEXT_PUBLIC_LINK_TWITTER = "https://x.com/nondollar_life";
 export const NEXT_PUBLIC_LINK_TELEGRAM = "https://t.me/+lBgFePSf6982ZDA9";
 
 export const assetNameForRewardDataBorrow = {

@@ -14,7 +14,6 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import Navbar from "@/design-systems/organisms/navbar/Navbar";
 import Footer from "@/design-systems/organisms/Footer";
 import SwitchChainPopup from "@/design-systems/molecule/popups/WalletConnect";
-import Ticker from "@/design-systems/molecule/Ticker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,7 +50,6 @@ export default function RootLayout({
             <QueryProvider>
               <Provider>
                 <ThemeProvider attribute="class">
-                  <Ticker />
                   <Navbar />
                   <div
                     id={"body-scroll-container"}

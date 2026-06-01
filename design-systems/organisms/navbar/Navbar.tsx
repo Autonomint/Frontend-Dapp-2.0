@@ -19,8 +19,6 @@ import { useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
 import { meetUrl } from "@/utils/urls";
-import ReferPopup from "@/design-systems/molecule/popups/ReferPopUp";
-import ReferPopupMobile from "@/design-systems/molecule/popups/ReferPopUpMobile";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -54,7 +52,7 @@ function Navbar() {
           data.address &&
           currentAddress != null &&
           currentAddress?.toLocaleLowerCase() !=
-            data.address.toLocaleLowerCase()
+          data.address.toLocaleLowerCase()
         ) {
           localStorage.removeItem("verified");
           disconnect();
@@ -154,7 +152,7 @@ function Navbar() {
       <div className="ml-4 flex-row flex gap-2">
         <div
           onClick={toggleMenu}
-          className="w-[44px] h-[44px]  lg:hidden cursor-pointer flex justify-center items-center border-[1px] dark:border-white border-solid border-black hidden"
+          className="w-[44px] h-[44px]  lg:hidden cursor-pointer flex justify-center items-center border-[1px] dark:border-white border-solid border-black"
         >
           {isOpen ? (
             <CloseIcon className="dark:stroke-white stroke-black" />
@@ -285,11 +283,10 @@ function Navbar() {
           <Link href="/dashboard/portfolio">
             <Button
               variant={"shadowOutline"}
-              className={`h-fit text-xl font-medium p-[8px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] ${
-                pathName?.startsWith("/dashboard") 
-                  ? "dark:text-[#ABFFDE] text-[#00B66B]" 
-                  : "dark:text-white text-black"
-              }`}
+              className={`h-fit text-xl font-medium p-[8px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] ${pathName?.startsWith("/dashboard")
+                ? "dark:text-[#ABFFDE] text-[#00B66B]"
+                : "dark:text-white text-black"
+                }`}
             >
               Dashboard
             </Button>
@@ -366,7 +363,6 @@ function Navbar() {
           </Button>
 
           <NotificationPopup wrapperClassName={"hidden lg:block"} />
-          <ReferPopup wrapperClassName={"hidden lg:block"} />
 
           {/* <Button
             onClick={() =>
@@ -401,15 +397,13 @@ function Navbar() {
       {isOpen && (
         <div
           onClick={closeMenu}
-          className="fixed inset-0 top-[94px]  bg-black bg-opacity-50 z-40 lg:hidden hidden"
+          className="fixed inset-0 top-[94px] bg-black bg-opacity-50 z-40 lg:hidden"
         ></div>
       )}
 
       {/* Menu Links */}
       <div
-        className={`w-[100%]      h-[calc(100vh-95px)]  lg:hidden  border-grayLight border-[1px] border-x  border-y  fixed lg:static  flex flex-col items-center  bg-white dark:bg-black  z-50 transform transition-transform duration-300 ease-in-out hidden ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`w-[100%] h-[calc(100vh-95px)] lg:hidden border-grayLight border-[1px] border-x border-y fixed lg:static flex flex-col items-center bg-white dark:bg-black z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
         style={{ top: 94, left: 0 }}
       >
         <ul className="  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
@@ -528,7 +522,6 @@ function Navbar() {
             </svg>{" "}
             Share
           </Button> */}
-          <ReferPopupMobile />
           {/* <Button
             onClick={() => shareOnTwitter("")}
             variant={"shadowOutline"}

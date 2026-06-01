@@ -1,15 +1,11 @@
 "use client";
 import autonomintTxtImage from "@/app/assets/brand-logo-white.svg";
-import autonomintTxtImageDark from "@/app/assets/Company Name (1).svg";
-import logo from "@/app/assets/logo.svg";
 import { Button } from "@/design-systems/atoms/button";
 import {
-  NEXT_PUBLIC_LINK_DOCS,
   NEXT_PUBLIC_LINK_TELEGRAM,
   NEXT_PUBLIC_LINK_TWITTER,
 } from "@/utils/constants";
 import { getIconMapping } from "@/utils/token-config";
-import { StickyNote } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { BsTwitterX } from "react-icons/bs";
@@ -17,10 +13,9 @@ import { PiTelegramLogo } from "react-icons/pi";
 
 export default function Footer() {
   // Define fallback URLs in case environment variables are not set
-  const docsUrl = NEXT_PUBLIC_LINK_DOCS || "#";
   const twitterUrl = NEXT_PUBLIC_LINK_TWITTER || "#";
   const telegramUrl = NEXT_PUBLIC_LINK_TELEGRAM || "#";
-  const { systemTheme, theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">
@@ -139,15 +134,6 @@ export default function Footer() {
               </div>
             </div>
             <div className="lg:w-[20%] w-full flex gap-6 justify-center lg:justify-end mr-4">
-              {/* Docs Link */}
-              <Button
-                variant={"shadowOutline"}
-                className=" lg:p-[10px] w-[44px] h-[44px]"
-              >
-                <a href={docsUrl} target="_blank" rel="noreferrer">
-                  <StickyNote style={{ width: "24px", height: "24px" }} />
-                </a>
-              </Button>
               {/* Twitter/X Link */}
               <Button
                 variant={"shadowOutline"}
