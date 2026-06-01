@@ -259,17 +259,17 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        let hedgeValidity = BigInt(7776000);
-        if (selectedDate) {
-          const expiryTimestamp = Math.floor(
-            new Date(selectedDate).getTime() / 1000,
-          );
-          const nowTimestamp = Math.floor(Date.now() / 1000);
-          const diff = expiryTimestamp - nowTimestamp;
-          if (diff > 0) {
-            hedgeValidity = BigInt(diff);
-          }
-        }
+        // let hedgeValidity = BigInt(7776000);
+        // if (selectedDate) {
+        //   const expiryTimestamp = Math.floor(
+        //     new Date(selectedDate).getTime() / 1000,
+        //   );
+        //   const nowTimestamp = Math.floor(Date.now() / 1000);
+        //   const diff = expiryTimestamp - nowTimestamp;
+        //   if (diff > 0) {
+        //     hedgeValidity = BigInt(diff);
+        //   }
+        // }
 
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
@@ -287,7 +287,7 @@ const CoveredCallTemplate = ({
                 stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
               ],
               tokenAmounts: [depositingAmount],
-              lockingPeriod: hedgeValidity,
+              lockingPeriod: BigInt(0),
               assetName: stockAssetName,
               verifyParams: {
                 excessProfitCumulativeValue: BigInt(
