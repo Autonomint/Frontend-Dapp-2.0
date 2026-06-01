@@ -791,11 +791,16 @@ const CoveredCallTemplate = ({
 
                   <div className="p-4 py-8">
                     {isBuyMode ? (
-                      <div className="text-left text-4xl font-bold text-black dark:text-white">
-                        ${(selectedPrice?.premium)?.toFixed(2)}{" "}
-                        <span className="text-base text-grayLight dark:text-gray-400 font-normal">
-                          upfront Premium
-                        </span>
+                      <div className="text-left">
+                        <div className="text-4xl font-bold text-black dark:text-white">
+                          ${(selectedPrice?.premium)?.toFixed(2)}{" "}
+                          <span className="text-base text-grayLight dark:text-gray-400 font-normal">
+                            upfront Premium
+                          </span>
+                        </div>
+                        <div className="text-sm text-grayLight dark:text-gray-400 mt-2 font-plex-grotesk">
+                          Total Premium: ${((selectedPrice?.premium || 0) * (parseInt(inputValue || "0") || 0)).toFixed(2)} ({(selectedPrice?.premium || 0).toFixed(2)} × {parseInt(inputValue || "0") || 0} contracts)
+                        </div>
                       </div>
                     ) : (
                       <>
@@ -875,7 +880,7 @@ const CoveredCallTemplate = ({
                           );
                         })()}
                         <div className="text-lg font-medium dark:text-green-500 text-green-600">
-                          Get {inputValue || "0"} {ticker} back
+                          Get 0 {ticker} back
                         </div>
                       </div>
                     </div>
