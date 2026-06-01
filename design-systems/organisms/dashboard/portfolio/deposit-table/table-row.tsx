@@ -30,12 +30,12 @@ const DepositTableRow = ({
 
   const remainingDays = calculateRemainingDays(Number(position.validTill));
   const isExpired = remainingDays <= 0 || position.isExpired;
-
+  console.log(remainingDays, 'remainingDays')
   return (
     <tr
       className={`border ${highlight
-          ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
-          : ""
+        ? "dark:bg-custom-gradient-to-top bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+        : ""
         } border-solid border-grayLight `}
     >
       <td className="px-5 py-4 2xl:py-6">{idx}</td>
@@ -66,8 +66,8 @@ const DepositTableRow = ({
       <td className="px-5 py-4 2xl:py-6">
         <span
           className={`font-medium ${Number(position.profit || 0) >= 0
-              ? "text-green-600 dark:text-green-500"
-              : "text-red-600 dark:text-red-500"
+            ? "text-green-600 dark:text-green-500"
+            : "text-red-600 dark:text-red-500"
             }`}
         >
           {position.profit !== null && position.profit !== undefined
