@@ -113,6 +113,7 @@ export function DcdsWithdrawModal({
       // Toast is handled in the hook's onError - only reset state here
       setStep("idle");
       resetStockCdsWithdrawGains();
+      dcdsPositionListRefetch();
     }
   }, [position, handleStockCdsWithdrawGainsAsync, dcdsPositionListRefetch, handleCloseDialog]);
 
@@ -178,6 +179,7 @@ export function DcdsWithdrawModal({
       console.error("Withdraw error:", error);
       // Toast is handled in the hook's onError - only reset state here
       setStep("idle");
+      dcdsPositionListRefetch();
     }
   };
 
