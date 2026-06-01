@@ -280,6 +280,13 @@ function Navbar() {
       {/* Desktop Navigation Menu */}
       {!isPolicyPage && isClient && (
         <nav className="hidden lg:flex items-center gap-6 ml-auto mr-4">
+          <Link
+            href="/trick"
+            className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#97f0bc] text-[#051911] no-underline text-[14px] font-semibold tracking-tight shadow-[0_6px_18px_-6px_rgba(95,184,138,0.45)]"
+          >
+            <span>Pay $0 in premium. Here's the trick</span>
+            <span style={{ fontFamily: "JetBrains Mono", fontSize: 13 }}>→</span>
+          </Link>
           <Link href="/dashboard/portfolio">
             <Button
               variant={"shadowOutline"}
@@ -296,33 +303,8 @@ function Navbar() {
 
       {!isPolicyPage && isClient && (
         <div className="flex items-center md:gap-6 sm:gap-2 mr-4">
-          {/* <div className="w-[164px] h-[40px] overflow-hidden rounded-[24px] border border-black dark:border-white bg-gradient-to-r from-[#00E07C] to-[#46CDAE] px-5 font-bold text-white flex items-center shadow-[0_0_10px_#00E07C]">
-            <div
-              ref={containerRef}
-              className="flex flex-col pt-[40px]"
-              style={{ transform: "translateY(0)" }}
-            >
-              <div className="h-[40px] text-center flex items-center w-full">
-                {texts[index]}
-              </div>
-              <div className="h-[40px] text-center flex items-center w-full">
-                {nextText}
-              </div>
-            </div>
-          </div> */}
-          {/* <div className="relative ">
-              <a
-                href="https://www.curve.finance/dex/base/pools/factory-stable-ng-325/deposit"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glow-button relative z-10 flex flex-col items-center text-black font-medium rounded-lg transition-all duration-300"
-              >
-                <div>Add Liquidity</div>
-                <div className="text-[10px] text-black text-right">
-                  Earn 50% + USDC incentives
-                </div>
-              </a>
-            </div> */}
+
+
           <a
             href={meetUrl}
             target="_blank"
