@@ -844,82 +844,86 @@ const CoveredCallTemplate = ({
                     )}
 
                   </div>
-                  <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
-                    On {selectedDate ? formatDate(selectedDate) : "Loading..."}
-                  </div>
+                  {isBuyMode && (
+                    <>
+                      <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
+                        On {selectedDate ? formatDate(selectedDate) : "Loading..."}
+                      </div>
 
-                  <div className="p-4 py-8 flex ">
-                    <div className="w-1/2 border-r border-grayLight dark:border-grayLight ">
-                      <p className="text-sm text-left text-grayLight dark:text-gray-400">
-                        If {ticker} BELOW {" "}
-                        {getSelectedPriceData()?.price || "$0.00"}
-                      </p>
-                      <div className="mt-4 flex items-center space-x-2">
-                        {(() => {
-                          const logoUrl = getTickerLogo(ticker);
-                          return logoUrl ? (
-                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
-                              <Image
-                                src={logoUrl}
-                                alt={`${ticker} logo`}
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                                unoptimized
-                              />
+                      <div className="p-4 py-8 flex ">
+                        <div className="w-1/2 border-r border-grayLight dark:border-grayLight ">
+                          <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                            If {ticker} BELOW {" "}
+                            {getSelectedPriceData()?.price || "$0.00"}
+                          </p>
+                          <div className="mt-4 flex items-center space-x-2">
+                            {(() => {
+                              const logoUrl = getTickerLogo(ticker);
+                              return logoUrl ? (
+                                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                                  <Image
+                                    src={logoUrl}
+                                    alt={`${ticker} logo`}
+                                    width={24}
+                                    height={24}
+                                    className="object-contain"
+                                    unoptimized
+                                  />
+                                </div>
+                              ) : (
+                                <div
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                                  style={{
+                                    backgroundColor: "#3b82f6",
+                                  }}
+                                >
+                                  {ticker.charAt(0)}
+                                </div>
+                              );
+                            })()}
+                            <div className="text-lg font-medium dark:text-green-500 text-green-600">
+                              Get 0 {ticker} back
                             </div>
-                          ) : (
-                            <div
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                              style={{
-                                backgroundColor: "#3b82f6",
-                              }}
-                            >
-                              {ticker.charAt(0)}
+                          </div>
+                        </div>
+                        <div className="w-1/2 flex flex-col items-end justify-center">
+                          <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                            If {ticker} ABOVE {" "}
+                            {getSelectedPriceData()?.price || "$0.00"}
+                          </p>
+                          <div className="mt-4 flex items-center space-x-2">
+                            <div className="text-lg  font-medium dark:text-green-500 text-green-600">
+                              Receive the upside above strike
                             </div>
-                          );
-                        })()}
-                        <div className="text-lg font-medium dark:text-green-500 text-green-600">
-                          Get 0 {ticker} back
+                            {(() => {
+                              const logoUrl = getTickerLogo(ticker);
+                              return logoUrl ? (
+                                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                                  <Image
+                                    src={logoUrl}
+                                    alt={`${ticker} logo`}
+                                    width={24}
+                                    height={24}
+                                    className="object-contain"
+                                    unoptimized
+                                  />
+                                </div>
+                              ) : (
+                                <div
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                                  style={{
+                                    backgroundColor: "#3b82f6",
+                                  }}
+                                >
+                                  {ticker.charAt(0)}
+                                </div>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="w-1/2 flex flex-col items-end justify-center">
-                      <p className="text-sm text-left text-grayLight dark:text-gray-400">
-                        If {ticker} ABOVE {" "}
-                        {getSelectedPriceData()?.price || "$0.00"}
-                      </p>
-                      <div className="mt-4 flex items-center space-x-2">
-                        <div className="text-lg  font-medium dark:text-green-500 text-green-600">
-                          Receive the upside above strike
-                        </div>
-                        {(() => {
-                          const logoUrl = getTickerLogo(ticker);
-                          return logoUrl ? (
-                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
-                              <Image
-                                src={logoUrl}
-                                alt={`${ticker} logo`}
-                                width={24}
-                                height={24}
-                                className="object-contain"
-                                unoptimized
-                              />
-                            </div>
-                          ) : (
-                            <div
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                              style={{
-                                backgroundColor: "#3b82f6",
-                              }}
-                            >
-                              {ticker.charAt(0)}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
 
