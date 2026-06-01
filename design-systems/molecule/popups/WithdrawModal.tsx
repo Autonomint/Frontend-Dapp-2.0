@@ -37,6 +37,7 @@ export function DcdsWithdrawModal({
 }) {
   const { address, chainId } = useAccount();
   const [step, setStep] = useState<"idle" | "withdrawing" | "gains">("idle");
+  const [isGainsCompleted, setIsGainsCompleted] = useState(false);
 
   // Fetch signed data for withdraw
   const { cdsWithdrawSignedData, isPendingCDSWithdrawSignedData, refetchCDSWithdrawSignedData } = useGetCDSWithdrawSignedData(position?.index);
@@ -67,7 +68,6 @@ export function DcdsWithdrawModal({
     resetStockCdsWithdrawGains,
   } = useStockCdsWithdrawGains();
 
-  const [isGainsCompleted, setIsGainsCompleted] = useState(false);
 
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
@@ -77,15 +77,9 @@ export function DcdsWithdrawModal({
     resetStockCdsWithdrawGains();
   }, [setIsDialogOpen, resetStockCdsWithdraw, resetStockCdsWithdrawGains]);
 
-  // Handle errors
+  // Handle errors - only reset state, toast is handled in hooks
   useEffect(() => {
     if (isWithdrawError || stockCdsWithdrawError) {
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Withdraw transaction failed, Please try again"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
       setStep("idle");
       resetStockCdsWithdraw();
     }
@@ -116,12 +110,7 @@ export function DcdsWithdrawModal({
       handleCloseDialog();
     } catch (error) {
       console.error("Withdraw gains error:", error);
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Withdraw gains transaction failed, Please try again"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
+      // Toast is handled in the hook's onError - only reset state here
       setStep("idle");
       resetStockCdsWithdrawGains();
     }
@@ -187,12 +176,7 @@ export function DcdsWithdrawModal({
       handleWithdrawGains();
     } catch (error) {
       console.error("Withdraw error:", error);
-      toast.custom((t) => (
-        <ToastNotificationError
-          title="Failed to initiate withdraw"
-          onClose={() => toast.dismiss(t)}
-        />
-      ));
+      // Toast is handled in the hook's onError - only reset state here
       setStep("idle");
     }
   };
