@@ -891,11 +891,7 @@ const CoveredCallTemplate = ({
                       </p>
                       <div className="mt-4 flex items-center space-x-2">
                         <div className="text-lg  font-medium dark:text-green-500 text-green-600">
-                          Receive{" "}
-                          {(
-                            (getSelectedPriceData()?.strike || 0) * parseFloat(inputValue || "0")
-                          ).toFixed(2)}{" "}
-                          USDT
+                          Receive the upside above strike
                         </div>
                         {(() => {
                           const logoUrl = getTickerLogo(ticker);
