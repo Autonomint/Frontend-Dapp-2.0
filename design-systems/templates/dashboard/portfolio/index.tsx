@@ -11,7 +11,6 @@ import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
 import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
 import useStockWithdraw from "@/hookes/stock-contracts/useStockWithdraw";
-import { useGetStakingPoints } from "@/hookes/api-hooks/useGetStakingPoints";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useUserGains from "@/hookes/contract-hooks/useUserGains";
@@ -62,7 +61,6 @@ function PortfolioTemplate() {
   const { totalUserDeposit } = useGetTotalUserDeposit();
   // get user point
   const { points, referralPoints, hasLiquidityLandPoints } = useGetUserPoint();
-  const { data: stakingPoints } = useGetStakingPoints(address);
 
   // get borrowed position list
   const {
