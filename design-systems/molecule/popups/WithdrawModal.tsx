@@ -538,7 +538,7 @@ export function DcdsWithdrawModal({
                   isFailure={false}
                   isSuccess={isGainsCompleted}
                   setSuccessLoading={() => {
-                    setStep("idle");
+
                   }}
                   heading="Withdrawing Gains"
                   loadingCount="2/2"
