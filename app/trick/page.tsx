@@ -4,134 +4,135 @@ import Image from "next/image";
 import Link from "next/link";
 import rightbg from "@/app/assets/rafael-as-martins-ibBxXnSndv4-unsplash.jpg";
 const TrickPage = () => {
-    return (
-        <main className="trick-page">
-            <div className="layout">
-                <div className="media">
-                    <Image
-                        src={rightbg}
-                        alt="Trick image"
-                        fill
-                        style={{ objectFit: "cover" }}
-                    />
+  return (
+    <main className="trick-page">
+      <div className="layout">
+        <div className="media">
+          <Image
+            src={rightbg}
+            alt="Trick image"
+            fill
+            sizes="50vw"
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+
+        <div className="content">
+          <Link href="/" className="back-link">
+            ← Back to home
+          </Link>
+
+          <div className="header">
+            <span className="icon">🎬</span>
+            <h1>
+              Get up to <span className="pct">100% back</span>
+            </h1>
+            <p className="tagline">
+              Post about Nondollar. Get views. We refund the premium you paid.
+            </p>
+          </div>
+
+          <div className="steps">
+            <div className="step">
+              <div className="step-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="6" width="18" height="14" rx="2" stroke="white" strokeWidth="2" />
+                  <path d="M3 10h18" stroke="white" strokeWidth="2" />
+                  <circle cx="8" cy="15" r="1" fill="white" />
+                  <path d="M11 15h6" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="step-content">
+                <div className="step-title">Buy call on Nondollar</div>
+                <div className="step-body">
+                  Make any real trade on the platform. Premium paid will be eligible for refund based on the views your post gets.
                 </div>
-
-                <div className="content">
-                    <Link href="/" className="back-link">
-                        ← Back to home
-                    </Link>
-
-                    <div className="header">
-                        <span className="icon">🎬</span>
-                        <h1>
-                            Get up to <span className="pct">100% back</span>
-                        </h1>
-                        <p className="tagline">
-                            Post about Nondollar. Get views. We refund the premium you paid.
-                        </p>
-                    </div>
-
-                    <div className="steps">
-                        <div className="step">
-                            <div className="step-icon">
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <rect x="3" y="6" width="18" height="14" rx="2" stroke="white" strokeWidth="2" />
-                                    <path d="M3 10h18" stroke="white" strokeWidth="2" />
-                                    <circle cx="8" cy="15" r="1" fill="white" />
-                                    <path d="M11 15h6" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
-                            </div>
-                            <div className="step-content">
-                                <div className="step-title">Buy call on Nondollar</div>
-                                <div className="step-body">
-                                    Make any real trade on the platform. Premium paid will be eligible for refund based on the views your post gets.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="step">
-                            <div className="step-icon">
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <path d="M18 6L8 16M8 6h10v10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                            <div className="step-content">
-                                <div className="step-title">
-                                    Post about it on X — tag <code><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar</a></code>
-                                </div>
-                                <div className="step-body">
-                                    Share your trade, your thesis, a screenshot — whatever feels real. Tag <strong><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar</a></strong> and add <strong>#nondollar</strong> so we can find it. Honest beats hyped. Unhinged is fine. Templated copy isn&apos;t.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="step">
-                            <div className="step-icon">
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 3c0 5-4 6-4 11a4 4 0 0 0 8 0c0-3-1-4-2-5 0 1-1 2-2 2 0-2 2-4 0-8z" stroke="white" strokeWidth="2" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                            <div className="step-content">
-                                <div className="step-title">Cross the view threshold</div>
-                                <div className="step-body">
-                                    Hit <strong>2,000 views</strong> for a 50% refund. Hit <strong>10,000 views</strong> for the full premium back. Views must be organic — no paid promotion, no view bots.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="step">
-                            <div className="step-icon">
-                                <svg viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 7l9 6 9-6M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                            <div className="step-content">
-                                <div className="step-title">Email us for your refund</div>
-                                <div className="step-body">
-                                    Send an email to <code>refunds@nondollar.life</code> with the link to your post, your wallet address, and the transaction hash of the trade. We&apos;ll verify within 48 hours and credit the refund as USDC to your Nondollar account.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="tiers">
-                        <div className="tier">
-                            <div className="tier-pct">50%</div>
-                            <div className="tier-label">premium back</div>
-                            <div className="tier-views">2,000 views on X</div>
-                        </div>
-                        <div className="tier gold">
-                            <div className="tier-pct">100%</div>
-                            <div className="tier-label">premium back</div>
-                            <div className="tier-views">10,000 views on X</div>
-                        </div>
-                    </div>
-
-                    <div className="example">
-                        <div className="example-label">Example</div>
-                        <div className="example-rows">
-                            <div className="example-row">
-                                <span className="l">Bought 10 NVDA $210 calls</span>
-                                <span className="v">Premium $81.80</span>
-                            </div>
-                            <div className="example-row">
-                                <span className="l">Posted on X · hit 12,400 views</span>
-                                <span className="v">100% tier</span>
-                            </div>
-                            <div className="example-row total">
-                                <span className="l">Refund credited</span>
-                                <span className="v">+$81.80 USDC</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="fineprint">
-                        <strong>One refund per trade.</strong> View count is verified from public X analytics — no paid boosts, no view-bot services, no friend-rings (we can tell). Refund is paid as USDC credit on Nondollar, not cash. We may reject low-effort copy-paste posts. This program is funded from our marketing budget — sellers always receive their full premium.
-                    </div>
-                </div>
+              </div>
             </div>
 
-            <style jsx>{`
+            <div className="step">
+              <div className="step-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L8 16M8 6h10v10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="step-content">
+                <div className="step-title">
+                  Post about it on X — tag <code><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar_life</a></code>
+                </div>
+                <div className="step-body">
+                  Share your trade, your thesis, a screenshot — whatever feels real. Tag <strong><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar_life</a></strong> and add <strong>#nondollar</strong> so we can find it. Honest beats hyped. Unhinged is fine. Templated copy isn't.
+                </div>
+              </div>
+            </div>
+
+            <div className="step">
+              <div className="step-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3c0 5-4 6-4 11a4 4 0 0 0 8 0c0-3-1-4-2-5 0 1-1 2-2 2 0-2 2-4 0-8z" stroke="white" strokeWidth="2" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="step-content">
+                <div className="step-title">Cross the view threshold</div>
+                <div className="step-body">
+                  Hit <strong>2,000 views</strong> for a 50% refund. Hit <strong>10,000 views</strong> for the full premium back. Views must be organic — no paid promotion, no view bots.
+                </div>
+              </div>
+            </div>
+
+            <div className="step">
+              <div className="step-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M3 7l9 6 9-6M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="step-content">
+                <div className="step-title">Email us for your refund</div>
+                <div className="step-body">
+                  Send an email to <code>akshit@autonomint.com</code> with the link to your post, your wallet address, and the transaction hash of the trade. We'll verify within 48 hours and credit the refund as USDC to your Nondollar account.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="tiers">
+            <div className="tier">
+              <div className="tier-pct">50%</div>
+              <div className="tier-label">premium back</div>
+              <div className="tier-views">2,000 views on X</div>
+            </div>
+            <div className="tier gold">
+              <div className="tier-pct">100%</div>
+              <div className="tier-label">premium back</div>
+              <div className="tier-views">10,000 views on X</div>
+            </div>
+          </div>
+
+          <div className="example">
+            <div className="example-label">Example</div>
+            <div className="example-rows">
+              <div className="example-row">
+                <span className="l">Bought 10 NVDA $210 calls</span>
+                <span className="v">Premium $81.80</span>
+              </div>
+              <div className="example-row">
+                <span className="l">Posted on X · hit 12,400 views</span>
+                <span className="v">100% tier</span>
+              </div>
+              <div className="example-row total">
+                <span className="l">Refund credited</span>
+                <span className="v">+$81.80 USDC</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="fineprint">
+            <strong>One refund per trade.</strong> View count is verified from public X analytics — no paid boosts, no view-bot services, no friend-rings (we can tell). Refund is paid as USDC credit on Nondollar, not cash. We may reject low-effort copy-paste posts. This program is funded from our marketing budget — sellers always receive their full premium.
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
         :global(:root) {
           --bg: #ffffff;
           --bg-soft: #f7f7f5;
@@ -164,6 +165,7 @@ const TrickPage = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          min-height: 100vh;
         }
 
         .content {
@@ -416,8 +418,8 @@ const TrickPage = () => {
           }
         }
       `}</style>
-        </main>
-    );
+    </main>
+  );
 };
 
 export default TrickPage;

@@ -556,3 +556,22 @@ export function getDaysRemaining(dateStr: string): number {
   const diff = expiry - now;
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
+
+/**
+ * Calculates real-time PnL for a buy option position.
+ * If current price > strike price:
+ *   cappedPrice = min(currentPrice, strikePrice * 1.30) — max 30% upside from strike
+ *   PnL = (cappedPrice - strikePrice) * depositedAmount
+ * Else: PnL = 0
+ */
+export function calculatePnL(
+  currentPrice: number,
+  strikePrice: number,
+  depositedAmount: number
+): number {
+  if (currentPrice <= strikePrice) return 0;
+  
+  const maxCappedPrice = strikePrice * 1.30;
+  const effectivePrice = Math.min(currentPrice, maxCappedPrice);
+  return (effectivePrice - strikePrice) * depositedAmount;
+}

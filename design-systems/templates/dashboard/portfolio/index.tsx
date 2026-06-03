@@ -18,6 +18,7 @@ import { dcdsDepositDetails, PositionData } from "@/utils/interface";
 import { BACKEND_API_URL } from "@/utils/urls";
 import { RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useGetSpotPrices from "@/hookes/api-hooks/useGetSpotPrices";
 import { toast } from "sonner";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
@@ -77,6 +78,20 @@ function PortfolioTemplate() {
     setPageSize,
     setCurrentPage,
   } = useGetPositionList();
+
+  // Extract unique collateral types from position list for fetching spot prices
+  const uniqueAssets = useMemo(() => {
+    const assets = new Set<string>();
+    (positionList || [])?.forEach((position) => {
+      if (position.collateralType) {
+        assets.add(position.collateralType);
+      }
+    });
+    return Array.from(assets);
+  }, [positionList]);
+
+  // Fetch spot prices for each unique asset using proper react-query pattern
+  const { priceMap: spotPriceMap, loadingMap: spotPriceLoadingMap } = useGetSpotPrices(uniqueAssets);
 
   // get cds position list
   const {
@@ -390,6 +405,8 @@ function PortfolioTemplate() {
 
       {tabPosition == "Borrowed" ? (
         <DepositTable
+          spotPriceMap={spotPriceMap}
+          spotPriceLoadingMap={spotPriceLoadingMap}
           isSticky={isSticky}
           positionListLoading={positionListLoading}
           setIsRebalanceDialogOpen={setIsRebalanceDialogOpen}

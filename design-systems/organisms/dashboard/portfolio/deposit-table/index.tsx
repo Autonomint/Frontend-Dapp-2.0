@@ -8,7 +8,7 @@ import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import { calculateRemainingDays } from "@/utils/helpers";
+import { calculatePnL } from "@/utils/helpers";
 
 function DepositTable({
   tabPosition,
@@ -33,6 +33,8 @@ function DepositTable({
   setStakePopUpOpen,
   onClosePosition,
   isClosingPosition,
+  spotPriceMap,
+  spotPriceLoadingMap,
 }: {
   pageSize: number;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
@@ -56,6 +58,8 @@ function DepositTable({
   setStakePopUpOpen: (isOpen: boolean) => void;
   onClosePosition?: (position: PositionData) => void;
   isClosingPosition?: boolean;
+  spotPriceMap: Record<string, number>;
+  spotPriceLoadingMap: Record<string, boolean>;
 }) {
   const [sortBy, setSortBy] = useState<string>("Default");
   const [sortAsc, setSortAsc] = useState<boolean>(false);
@@ -134,13 +138,20 @@ function DepositTable({
         const bOrder = statusOrder.indexOf(b.status as keyof typeof BorrowStatus);
         return sortAsc ? bOrder - aOrder : aOrder - bOrder;
       } else if (sortBy === "profit") {
-        const aProfit = Number(a.profit || 0);
-        const bProfit = Number(b.profit || 0);
-        return sortAsc ? bProfit - aProfit : aProfit - bProfit;
+        // Use real-time PnL for sorting for positions where spot price is available
+        const aStrike = Number(a.strikePrice);
+        const bStrike = Number(b.strikePrice);
+        const aSpotPrice = spotPriceMap[a.collateralType] || 0;
+        const bSpotPrice = spotPriceMap[b.collateralType] || 0;
+        
+        const aPnL = calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount));
+        const bPnL = calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount));
+        
+        return sortAsc ? bPnL - aPnL : aPnL - bPnL;
       }
       return 0;
     });
-  }, [positionList, sortBy, sortAsc]);
+  }, [positionList, sortBy, sortAsc, spotPriceMap]);
 
   return (
     <>
@@ -234,7 +245,7 @@ function DepositTable({
                 className="pl-5 whitespace-nowrap cursor-pointer font-normal"
               >
                 <div className="flex gap-2 items-center">
-                  <span>Stock Price</span>
+                  <span>Current Price</span>
                   <span>
                     {sortAsc && sortBy === "stockPrice" ? (
                       <ChevronDown
@@ -359,14 +370,16 @@ function DepositTable({
                   idx={key + 1 + (currentPage - 1) * pageSize}
                   position={position}
                   setSelectedPosition={setSelectedPosition}
+                  onClosePosition={onClosePosition}
+                  isClosingPosition={isClosingPosition}
+                  spotPrice={spotPriceMap[position.collateralType]}
+                  isSpotPriceLoading={spotPriceLoadingMap[position.collateralType]}
                   highlight={
                     key + 1 === positionList.length &&
                     isScroll &&
                     totalPages == currentPage &&
                     isHightlightTab
                   }
-                  onClosePosition={onClosePosition}
-                  isClosingPosition={isClosingPosition}
                 />
               );
             })}

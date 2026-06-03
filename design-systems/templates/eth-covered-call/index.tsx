@@ -7,7 +7,7 @@ import cryptoEth from "@/app/assets/eth.png";
 import usdcIcon from "@/app/assets/usdc.svg";
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowLeft } from "lucide-react";
 import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
 import useGetExpiries from "@/hookes/api-hooks/useGetExpiries";
 import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
@@ -34,6 +34,7 @@ import { tickerToStockAssetName } from "@/utils/constants";
 import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
+import { useRouter } from "next/navigation";
 
 interface PriceOption {
   price: string;
@@ -92,8 +93,9 @@ const CoveredCallTemplate = ({
   const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
   const [isActionDropdownOpen, setIsActionDropdownOpen] = useState(false);
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const router = useRouter();
 
-  const tickers = ["NVDA", "UETH", "BTC"];
+  const tickers = ["NVDA"];
   const actions = isBuyMode
     ? ["Buy Call"]
     : ["Cash secured put", "Covered Call"];
@@ -388,6 +390,13 @@ const CoveredCallTemplate = ({
           <div className="flex justify-between items-center h-16">
             {/* Left Section - Dropdowns */}
             <div className="flex items-center space-x-6">
+              {/* Back Arrow */}
+              <button
+                onClick={() => router.back()}
+                className="flex items-center cursor-pointer px-2 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20 transition-colors"
+              >
+                <ArrowLeft className="w-6 h-6 text-textBlack dark:text-white" />
+              </button>
               {/* UETH Dropdown */}
               <div className="relative">
                 <button
@@ -569,7 +578,7 @@ const CoveredCallTemplate = ({
 
             {/* Price List - Buy mode */}
             {isBuyMode && (
-              <div className="flex justify-center items-center space-x-8 flex-wrap">
+              <div className="flex justify-center items-center space-8 flex-wrap">
                 {bidsLoading ? (
                   <div className="flex flex-col items-center justify-center py-12">
                     <Spinner size={32} color="blue" />
@@ -585,14 +594,7 @@ const CoveredCallTemplate = ({
                   </div>
                 ) : (
                   displayPriceOptions.map((item) => (
-                    <div key={item.strike} className="relative group mb-8">
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 whitespace-nowrap">
-                        <div
-                          className={`bg-gradient-to-r ${item.color} text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 backdrop-blur-sm`}
-                        >
-                          APR {item.apr}
-                        </div>
-                      </div>
+                    <div key={item.strike} className="relative group ">
                       <button
                         onClick={() => handlePriceSelection(item)}
                         className={`relative px-6 py-2 rounded-xl border-2 transition-all duration-300 group hover:scale-105 backdrop-blur-sm ${selectedPrice?.price === item.price
