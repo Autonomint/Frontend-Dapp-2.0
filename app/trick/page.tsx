@@ -61,7 +61,7 @@ const TrickPage = () => {
                   Post about it on X — tag <code><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar_life</a></code>
                 </div>
                 <div className="step-body">
-                  Share your trade, your thesis, a screenshot — whatever feels real. Tag <strong><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar_life</a></strong> and add <strong>#nondollar</strong> so we can find it. Honest beats hyped. Unhinged is fine. Templated copy isn't.
+                  Share your trade, your thesis, a screenshot — whatever feels real. Tag <strong><a href="https://x.com/nondollar_life" target="_blank" rel="noopener noreferrer">@nondollar_life</a></strong> and add <strong>#nondollar</strong> so we can find it. Honest beats hyped. Unhinged is fine. Templated copy isn&apos;t.
                 </div>
               </div>
             </div>
@@ -89,7 +89,7 @@ const TrickPage = () => {
               <div className="step-content">
                 <div className="step-title">Email us for your refund</div>
                 <div className="step-body">
-                  Send an email to <code>akshit@autonomint.com</code> with the link to your post, your wallet address, and the transaction hash of the trade. We'll verify within 48 hours and credit the refund as USDC to your Nondollar account.
+                  Send an email to <code>akshit@autonomint.com</code> with the link to your post, your wallet address, and the transaction hash of the trade. We&apos;ll verify within 48 hours and credit the refund as USDC to your Nondollar account.
                 </div>
               </div>
             </div>
