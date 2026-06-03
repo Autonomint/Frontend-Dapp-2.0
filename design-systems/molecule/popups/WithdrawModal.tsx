@@ -10,9 +10,9 @@ import { formatTimestamp, formatNumber, calculateTimeDifference, calculatePercen
 import { dcdsDepositDetails } from "@/utils/interface";
 import { Info, CornerDownRight } from "lucide-react";
 import { formatUnits } from "viem";
-import useGetCDSWithdrawSignedData from "@/hookes/stock-contracts/useGetCDSWithdrawSignedData";
-import useStockCdsWithdraw, { StockWithdrawType } from "@/hookes/stock-contracts/useStockCdsWithdraw";
-import useStockCdsWithdrawGains from "@/hookes/stock-contracts/useStockCdsWithdrawGains";
+import useGetCDSWithdrawSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCDSWithdrawSignedData";
+import useStockCdsWithdraw, { StockWithdrawType } from "@/hookes/contract-hooks/stock-contracts/useStockCdsWithdraw";
+import useStockCdsWithdrawGains from "@/hookes/contract-hooks/stock-contracts/useStockCdsWithdrawGains";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";

@@ -10,7 +10,7 @@ import useGetPositionList from "@/hookes/api-hooks/useGetPositionList";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import useGetOgAddresses from "@/hookes/api-hooks/useGetOgAddresses";
 import useGetBorrowWithdrawSignedData from "@/hookes/api-hooks/useGetBorrowWithdrawSignedData";
-import useStockWithdraw from "@/hookes/stock-contracts/useStockWithdraw";
+import useStockWithdraw from "@/hookes/contract-hooks/stock-contracts/useStockWithdraw";
 import useGetTotalUserDeposit from "@/hookes/api-hooks/useGetTotalUserDeposit";
 import useGetUserPoint from "@/hookes/api-hooks/useGetUserPoint";
 import useUserGains from "@/hookes/contract-hooks/useUserGains";

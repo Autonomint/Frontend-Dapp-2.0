@@ -19,11 +19,11 @@ import { parseUnits } from "viem";
 import { toast } from "sonner";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
-import useStockApproveUsdc from "@/hookes/stock-contracts/useStockApproveUsdc";
-import useStockDepositTokens from "@/hookes/stock-contracts/useStockDepositTokens";
-import useStockCdsDeposit from "@/hookes/stock-contracts/useStockCdsDeposit";
-import useGetStockSignedData from "@/hookes/stock-contracts/useGetStockSignedData";
-import useGetCDSWithdrawSignedData from "@/hookes/stock-contracts/useGetCDSWithdrawSignedData";
+import useStockApproveUsdc from "@/hookes/contract-hooks/stock-contracts/useStockApproveUsdc";
+import useStockDepositTokens from "@/hookes/contract-hooks/stock-contracts/useStockDepositTokens";
+import useStockCdsDeposit from "@/hookes/contract-hooks/stock-contracts/useStockCdsDeposit";
+import useGetStockSignedData from "@/hookes/contract-hooks/stock-contracts/useGetStockSignedData";
+import useGetCDSWithdrawSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCDSWithdrawSignedData";
 import {
   stockBorrowDepositAddress,
   stockCdsAddress,
