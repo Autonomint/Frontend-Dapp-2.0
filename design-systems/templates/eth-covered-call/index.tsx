@@ -974,7 +974,8 @@ const CoveredCallTemplate = ({
                   disabled={
                     isDepositing ||
                     isPendingStockUsdcApprove ||
-                    stockDepositIsPending
+                    stockDepositIsPending ||
+                    stockCdsDepositIsPending
                   }
                   className={`
                 bg-black dark:bg-custom-gradient-to-top py-6
@@ -982,7 +983,8 @@ const CoveredCallTemplate = ({
                 >
                   {isDepositing ||
                     isPendingStockUsdcApprove ||
-                    stockDepositIsPending
+                    stockDepositIsPending ||
+                    stockCdsDepositIsPending
                     ? "Processing..."
                     : isBuyMode
                       ? "Buy Contract"

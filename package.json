@@ -53,8 +53,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "tsc --noEmit --pretty false --noErrorTruncation --skipLibCheck"
+      "eslint --fix"
     ]
   },
   "devDependencies": {

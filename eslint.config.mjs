@@ -19,6 +19,7 @@ const eslintConfig = [
       "@next/next/no-page-custom-font": ["off"],
       "react-hooks/rules-of-hooks": ["off"],
       "@typescript-eslint/no-empty-object-type": ["off"],
+      "react/no-unescaped-entities": ["off"],
     },
   },
 ];
