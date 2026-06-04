@@ -142,19 +142,6 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     openInterestValue: "$203K",
     openInterestContracts: "982 contracts"
   },
-  {
-    ticker: "SOL",
-    name: "Solana blockchain",
-    type: "covered call",
-    maxApr: 89.3,
-    minApr: 4.2,
-    multipliers: ["+2x DeFi", "+1x Pyth"],
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/solana.svg", // Real Solana logo
-    spotPrice: "142.67",
-    priceChange: "+3.21%",
-    openInterestValue: "$156K",
-    openInterestContracts: "445 contracts"
-  }
 ];
 /**
  * React hook to retrieve and manage token configuration for a given token name.
