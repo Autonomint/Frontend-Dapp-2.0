@@ -331,17 +331,19 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        let hedgeValidity = BigInt(7776000);
-        if (selectedDate) {
-          const expiryTimestamp = Math.floor(
-            new Date(selectedDate).getTime() / 1000,
-          );
-          const nowTimestamp = Math.floor(Date.now() / 1000);
-          const diff = expiryTimestamp - nowTimestamp;
-          if (diff > 0) {
-            hedgeValidity = BigInt(diff);
-          }
-        }
+        // let hedgeValidity = BigInt(7776000);
+        // if (selectedDate) {
+        //   const expiryTimestamp = Math.floor(
+        //     new Date(selectedDate).getTime() / 1000,
+        //   );
+        //   const nowTimestamp = Math.floor(Date.now() / 1000);
+        //   const diff = expiryTimestamp - nowTimestamp;
+        //   if (diff > 0) {
+        //     hedgeValidity = BigInt(diff);
+        //   }
+        // }
+        // 10-minute expiry for testing
+        const hedgeValidity = BigInt(600);
 
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
