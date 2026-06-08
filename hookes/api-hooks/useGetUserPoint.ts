@@ -17,7 +17,7 @@ const useGetUserPoint = () => {
         `${BACKEND_API_URL}/points/userPoints/${NetworkId.BaseSepolia}/${address}`
       ).then((res) => res.json()),
     staleTime: 5000,
-    enabled: !!chainId && !!address,
+    enabled: false,
     retry: 1,
   });
 
@@ -32,7 +32,7 @@ const useGetUserPoint = () => {
         `${BACKEND_API_URL}/points/userPoints/${NetworkId.Optimism}/${address}`
       ).then((res) => res.json()),
     staleTime: 5000,
-    enabled: !!chainId && !!address,
+    enabled: false,
     retry: 1,
   });
 
@@ -43,7 +43,7 @@ const useGetUserPoint = () => {
         method: "GET",
       }).then((res) => res.text()),
     staleTime: Infinity,
-    enabled: !!address,
+    enabled: false,
     retry: 1,
   });
 

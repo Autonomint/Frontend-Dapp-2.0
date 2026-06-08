@@ -32,11 +32,9 @@ const useGetOgAddresses = () => {
     } = useQuery<string[], Error>({
         queryKey: ['ogAddresses'],
         queryFn: () => fetchOgAddresses(),
+        enabled: false, // Disable automatic fetching on mount
     });
 
-    useEffect(() => {
-        refetch();
-    }, []);
 
     return {
         ogAddresses: data || [],

@@ -34,7 +34,7 @@ const useGetTotalUserDeposit = () => {
       ),
     retry: 1,
     staleTime: 5000,
-    enabled: !!address,
+    enabled: false, // Disable automatic fetching on mount
   });
 
   const {
@@ -51,7 +51,7 @@ const useGetTotalUserDeposit = () => {
       ),
     staleTime: 5000,
     retry: 1,
-    enabled: !!address,
+    enabled: false, // Disable automatic fetching on mount
   });
   const {
     data: opSepoliaCDSData,
@@ -67,7 +67,7 @@ const useGetTotalUserDeposit = () => {
       ),
     staleTime: 5000,
     retry: 1,
-    enabled: !!address,
+    enabled: false, // Disable automatic fetching on mount
   });
 
 
