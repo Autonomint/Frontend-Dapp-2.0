@@ -366,7 +366,7 @@ export const BASE_BORROW_LIQ_CORE_ADDRESS = "0x4c195Ff346e5451FcF55709C21fc0c67c
 
 // Addresses for the stock options USDC token
 export const stockUsdcAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x7293ec00aF71Ba1fDFff81b79BD5bF01C2a0e051",
+  [NetworkId.BaseSepolia]: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -375,7 +375,7 @@ export const stockUsdcAddress: ChainAddresses = {
 
 // Addresses for the stock options USDA token
 export const stockUsdaAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x528DF5A715876A61EACF9ebcCD7f1e9ca8C08C4F",
+  [NetworkId.BaseSepolia]: "0x4e44fB5c61a89CF44a9080AB987335889FCaA6bd",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -384,7 +384,7 @@ export const stockUsdaAddress: ChainAddresses = {
 
 // Addresses for the stock options multi-sign contract
 export const stockMultiSignAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x3D588908A1b1AB7733b2c80cEe069D007d2D0594",
+  [NetworkId.BaseSepolia]: "0xF36aCE363BA7db3C7633326196cF4eB2899AFE27",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -393,7 +393,7 @@ export const stockMultiSignAddress: ChainAddresses = {
 
 // Addresses for the stock options MPO contract
 export const stockMpoAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0xEe281B5B66A42aF951A8588CAaD511ae123eBdc3",
+  [NetworkId.BaseSepolia]: "0xbaEBA2E8d1C8Cb71099666BC68b2643e050dc17F",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -402,7 +402,7 @@ export const stockMpoAddress: ChainAddresses = {
 
 // Addresses for the stock options CDS contract
 export const stockCdsAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x065E7Cc6864Ef89834C27b0075C499035E53BDBb",
+  [NetworkId.BaseSepolia]: "0x72277A105a742fcbbd7D4EFeEd080673747770bF",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -411,7 +411,7 @@ export const stockCdsAddress: ChainAddresses = {
 
 // Addresses for the stock options CDS deposit contract
 export const stockCdsDepositAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x7D070e3B77DeE77dfF7F2A4163946a8C2360Cf51",
+  [NetworkId.BaseSepolia]: "0x25B19C7389Ebb8e2c2e51b3b7bA74131BF918895",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -420,7 +420,7 @@ export const stockCdsDepositAddress: ChainAddresses = {
 
 // Addresses for the stock options CDS withdraw contract
 export const stockCdsWithdrawAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0xe5a3C22A39697001460116309F70Da868d681FE7",
+  [NetworkId.BaseSepolia]: "0xdE7e77df0651e2bAD3f9c257434Ad6d160d5186A",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -429,7 +429,7 @@ export const stockCdsWithdrawAddress: ChainAddresses = {
 
 // Addresses for the stock options global contract
 export const stockGlobalAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0xBF524552357d69Dec68f359d1e916991d36f8af1",
+  [NetworkId.BaseSepolia]: "0x730B897490eea9AA8629D6f4a4F0f4cf0aAA91BD",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -438,7 +438,7 @@ export const stockGlobalAddress: ChainAddresses = {
 
 // Addresses for the stock options borrowing contract
 export const stockBorrowingAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x53Ee88835ca6FcaC81659EBf9d0c2659B8b892D2",
+  [NetworkId.BaseSepolia]: "0xf8628C3755C803aD344332014dd67bE87b3F6AB7",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -447,7 +447,7 @@ export const stockBorrowingAddress: ChainAddresses = {
 
 // Addresses for the stock options borrow deposit contract
 export const stockBorrowDepositAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x240a423ECfc909C05b24a40f42C08dbeC983bd46",
+  [NetworkId.BaseSepolia]: "0xE34174Ea6053234F6A1658B199BC398a37C873Ac",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -456,7 +456,7 @@ export const stockBorrowDepositAddress: ChainAddresses = {
 
 // Addresses for the stock options borrow withdraw contract
 export const stockBorrowWithdrawAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0xdd019e11409565883Aae538684F8A0160De6D4be",
+  [NetworkId.BaseSepolia]: "0x8cc6bbB9F7B98FC73249A6DE200E56F2c6289c97",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -474,7 +474,7 @@ export const stockTreasuryLibAddress: ChainAddresses = {
 
 // Addresses for the stock options treasury contract
 export const stockTreasuryAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0xb62BEAE926e5d94b4ee6aa7D223b96725a6d0063",
+  [NetworkId.BaseSepolia]: "0xd360a38Ec7E3F60a8D9908c178EC51Ee51E6A34f",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
@@ -483,7 +483,7 @@ export const stockTreasuryAddress: ChainAddresses = {
 
 // Addresses for the stock options option contract
 export const stockOptionAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: "0x03628D8dBD3759652E14929456c0522a50e2BeC3",
+  [NetworkId.BaseSepolia]: "0x30f10b7a7ABDE331A4bD7fdd14FB41b7264E9870",
   [NetworkId.Optimism]: zeroAddress,
   [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
   [NetworkId.Rise]: ZeroAddress as `0x${string}`,
