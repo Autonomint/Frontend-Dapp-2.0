@@ -2,7 +2,7 @@ import { projectId } from "@/utils/constants";
 import { AUTONOMINT_DAPP_URL, BRAND_ICON_URL } from "@/utils/urls";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
-  baseSepolia,
+  base,
   modeTestnet,
   optimismSepolia,
   sepolia,
@@ -64,7 +64,7 @@ export const hyperliquidMainnet = defineChain({
 });
 
 const chainList: AppKitNetwork[] = [
-  baseSepolia,
+  base,
   // optimism,
   // mainnet,
   // mode,
@@ -124,8 +124,8 @@ export const config = wagmiAdapter.wagmiConfig;
 const modal = createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [baseSepolia],
-  defaultNetwork: baseSepolia,
+  networks: [base],
+  defaultNetwork: base,
   metadata: metadata,
   features: {
     email: false,
