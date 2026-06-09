@@ -99,8 +99,8 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
 
   return (
     <div className="min-h-[86vh] xl:h-auto">
-      <div className="p-8 py-12 flex ">
-        <div className="text-[62px]  font-medium w-[40%] leading-[72px]">
+      <div className="px-4 sm:px-6 md:px-8 py-6 md:py-12 flex flex-col md:flex-row md:items-center">
+        <div className="text-[44px] sm:text-[52px] md:text-[48px] lg:text-[56px] xl:text-[62px] font-medium w-full md:w-[55%] lg:w-[48%] xl:w-[42%] leading-[1.1] md:leading-[72px] mb-4 md:mb-0">
           {action === "buy" ? (
             <>
               Buy options{" "}
@@ -113,8 +113,8 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
             </>
           )}
         </div>
-        <div className="flex flex-1 justify-end items-end">
-          <div className="text-sm uppercase text-right w-[30%] leading-md">
+        <div className="flex flex-1 justify-start md:justify-end items-start md:items-end">
+          <div className="text-xs sm:text-sm uppercase text-left md:text-right w-full md:w-[45%] lg:w-[35%] leading-relaxed">
             Markets open · <span className="text-grayLight">NYSE</span> 7{" "}
             <span className="text-grayLight">live tickers</span> · $200K{" "}
             <span className="text-grayLight">OPEN</span> Option chain pricing
@@ -124,7 +124,7 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
       </div>
       <CoveredCallsNavbar activeBack={false} action={action} />
       <div className="md:relative">
-        <motion.div className="flex flex-col ">
+        <motion.div className="flex flex-col">
           {formattedaBorrowAssetList.map((item, index) => (
             <SingleListItem key={index} item={item} action={action} />
           ))}

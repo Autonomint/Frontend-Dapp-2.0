@@ -388,39 +388,39 @@ const CoveredCallTemplate = ({
     <div className="min-h-screen  dark:bg-[#0a0a0a] flex flex-col">
       {/* App Bar */}
       <div className="w-full bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4] dark:bg-custom-gradient-to-top border-b border-grayLight">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center min-h-[3.5rem] sm:h-16">
             {/* Left Section - Dropdowns */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-4 lg:space-x-6 overflow-visible flex-1">
               {/* Back Arrow */}
               <button
                 onClick={() => router.back()}
-                className="flex items-center cursor-pointer px-2 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20 transition-colors"
+                className="flex items-center cursor-pointer px-1.5 sm:px-2 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20 transition-colors flex-shrink-0"
               >
-                <ArrowLeft className="w-6 h-6 text-textBlack dark:text-white" />
+                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-textBlack dark:text-white" />
               </button>
-              {/* UETH Dropdown */}
-              <div className="relative">
+              {/* Ticker Dropdown */}
+              <div className="relative flex-shrink-0">
                 <button
                   onClick={() => setIsTickerDropdownOpen(!isTickerDropdownOpen)}
-                  className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded-[8px]  dark:hover:bg-black/20"
+                  className="flex items-center gap-1 sm:space-x-2 cursor-pointer px-2 sm:px-3 py-2 rounded-[8px] dark:hover:bg-black/20"
                 >
                   {(() => {
                     const logoUrl = getTickerLogo(selectedTicker);
                     return logoUrl ? (
-                      <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 p-0.5 sm:p-1 flex items-center justify-center">
                         <Image
                           src={logoUrl}
                           alt={`${selectedTicker} logo`}
-                          width={24}
-                          height={24}
+                          width={20}
+                          height={20}
                           className="object-contain"
                           unoptimized
                         />
                       </div>
                     ) : (
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-sm bg-blue-500"
                         style={{
                           backgroundColor: "#3b82f6",
                         }}
@@ -429,16 +429,16 @@ const CoveredCallTemplate = ({
                       </div>
                     );
                   })()}
-                  <span className="text-lg text-textBlack dark:text-white font-medium font-plex-grotesk">
+                  <span className="text-sm sm:text-base lg:text-lg text-textBlack dark:text-white font-medium font-plex-grotesk whitespace-nowrap">
                     {selectedTicker}
                   </span>
                   <ChevronDown
-                    className={`w-6 h-6 text-grayLight transition-transform ${isTickerDropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 text-grayLight transition-transform flex-shrink-0 ${isTickerDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
                 {isTickerDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                  <div className="absolute top-full left-0 mt-2 w-44 sm:w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
                     {tickers.map((t) => {
                       const logoUrl = getTickerLogo(t);
                       return (
@@ -448,22 +448,22 @@ const CoveredCallTemplate = ({
                             setSelectedTicker(t);
                             setIsTickerDropdownOpen(false);
                           }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center space-x-3"
+                          className="w-full px-3 sm:px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center space-x-2 sm:space-x-3"
                         >
                           {logoUrl ? (
-                            <div className="w-6 h-6 rounded-full overflow-hidden bg-gray-100 p-0.5 flex items-center justify-center">
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden bg-gray-100 p-0.5 flex items-center justify-center">
                               <Image
                                 src={logoUrl}
                                 alt={`${t} logo`}
-                                width={18}
-                                height={18}
+                                width={16}
+                                height={16}
                                 className="object-contain"
                                 unoptimized
                               />
                             </div>
                           ) : (
                             <div
-                              className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs bg-blue-500"
+                              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-xs bg-blue-500"
                               style={{
                                 backgroundColor: "#3b82f6",
                               }}
@@ -471,7 +471,7 @@ const CoveredCallTemplate = ({
                               {t.charAt(0)}
                             </div>
                           )}
-                          <span>{t}</span>
+                          <span className="text-sm sm:text-base">{t}</span>
                         </button>
                       );
                     })}
@@ -479,22 +479,22 @@ const CoveredCallTemplate = ({
                 )}
               </div>
 
-              {/* Sell Calls Dropdown */}
-              <div className="relative border-l border-grayLight pl-2">
+              {/* Action Dropdown */}
+              <div className="relative border-l border-grayLight pl-1 sm:pl-2 flex-shrink-0">
                 <button
                   onClick={() => setIsActionDropdownOpen(!isActionDropdownOpen)}
-                  className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
+                  className="flex items-center gap-1 sm:space-x-2 cursor-pointer pl-2 sm:pl-4 lg:pl-6 px-1.5 sm:px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
                 >
-                  <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
+                  <span className="text-sm sm:text-base lg:text-lg text-textBlack dark:text-white font-plex-grotesk whitespace-nowrap">
                     {selectedAction}
                   </span>
                   <ChevronDown
-                    className={`w-6 h-6 text-grayLight transition-transform ${isActionDropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 text-grayLight transition-transform flex-shrink-0 ${isActionDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
                 {isActionDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                  <div className="absolute top-full left-0 mt-2 w-40 sm:w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
                     {actions.map((a) => (
                       <button
                         key={a}
@@ -502,7 +502,7 @@ const CoveredCallTemplate = ({
                           setSelectedAction(a);
                           setIsActionDropdownOpen(false);
                         }}
-                        className={`w-full px-4 py-2 text-left transition-colors ${selectedAction === a
+                        className={`w-full px-3 sm:px-4 py-2 text-left text-sm sm:text-base transition-colors ${selectedAction === a
                           ? "bg-black text-white dark:bg-white dark:text-black"
                           : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                           }`}
@@ -516,21 +516,21 @@ const CoveredCallTemplate = ({
 
               {/* Date Dropdown */}
               {isBuyMode && (
-                <div className="relative border-l border-grayLight pl-2">
+                <div className="relative border-l border-grayLight pl-1 sm:pl-2 flex-shrink-0">
                   <button
                     onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                    className="flex items-center space-x-2 cursor-pointer  pl-6 px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
+                    className="flex items-center gap-1 sm:space-x-2 cursor-pointer pl-2 sm:pl-4 lg:pl-6 px-1.5 sm:px-3 py-2 rounded-[8px] hover:bg-white/20 dark:hover:bg-black/20"
                   >
-                    <span className="text-lg text-textBlack dark:text-white font-plex-grotesk">
+                    <span className="text-sm sm:text-base lg:text-lg text-textBlack dark:text-white font-plex-grotesk whitespace-nowrap">
                       {selectedDate ? formatDateShort(selectedDate) : "Select date"}
                     </span>
                     <ChevronDown
-                      className={`w-6 h-6 text-grayLight transition-transform ${isDateDropdownOpen ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 sm:w-5 sm:h-5 text-grayLight transition-transform flex-shrink-0 ${isDateDropdownOpen ? "rotate-180" : ""}`}
                     />
                   </button>
 
                   {isDateDropdownOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
+                    <div className="absolute top-full left-0 mt-2 w-40 sm:w-48 bg-white dark:bg-black border border-grayLight rounded-lg shadow-lg z-50">
                       {dates.map((d) => (
                         <button
                           key={d}
@@ -538,7 +538,7 @@ const CoveredCallTemplate = ({
                             setSelectedDate(d);
                             setIsDateDropdownOpen(false);
                           }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          className="w-full px-3 sm:px-4 py-2 text-left text-sm sm:text-base hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                           {formatDateShort(d)}
                         </button>
@@ -549,13 +549,13 @@ const CoveredCallTemplate = ({
               )}
             </div>
 
-            {/* Right Section - Price and Cap */}
-            <div className="flex items-center space-x-6 border-l border-r border-grayLight px-6">
-              <div className="flex items-center space-x-2">
+            {/* Right Section - Price */}
+            <div className="flex items-center border-l border-grayLight px-2 sm:px-4 lg:px-6 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2">
                 {priceLoading ? (
-                  <Spinner size={20} color="gray" />
+                  <Spinner size={16} color="gray" />
                 ) : (
-                  <span className="text-xl text-textBlack dark:text-white font-bold font-plex-grotesk">
+                  <span className="text-sm sm:text-base lg:text-xl text-textBlack dark:text-white font-bold font-plex-grotesk whitespace-nowrap">
                     {spotPrice ? `$${spotPrice.toFixed(2)}` : "$2,356.76"}
                   </span>
                 )}
@@ -580,7 +580,7 @@ const CoveredCallTemplate = ({
 
             {/* Price List - Buy mode */}
             {isBuyMode && (
-              <div className="flex justify-center items-center space-8 flex-wrap">
+              <div className="flex justify-center items-center gap-4 md:gap-6 lg:gap-8 flex-wrap">
                 {bidsLoading ? (
                   <div className="flex flex-col items-center justify-center py-12">
                     <Spinner size={32} color="blue" />
@@ -856,75 +856,65 @@ const CoveredCallTemplate = ({
                   </div>
                   {isBuyMode && (
                     <>
-                      <div className="text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-4 ">
+                      <div className="text-sm sm:text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-3 sm:p-4">
                         On {selectedDate ? formatDate(selectedDate) : "Loading..."}
                       </div>
 
-                      <div className="p-4 py-8 flex ">
-                        <div className="w-1/2 border-r border-grayLight dark:border-grayLight ">
-                          <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                      <div className="p-3 sm:p-4 py-6 sm:py-8 flex flex-col sm:flex-row">
+                        <div className="w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-grayLight dark:border-grayLight pb-4 sm:pb-0 sm:pr-4">
+                          <p className="text-xs sm:text-sm text-left text-grayLight dark:text-gray-400">
                             If {ticker} BELOW {" "}
                             {getSelectedPriceData()?.price || "$0.00"}
                           </p>
-                          <div className="mt-4 flex items-center space-x-2">
+                          <div className="mt-3 sm:mt-4 flex items-center gap-1 sm:gap-2 flex-wrap">
                             {(() => {
                               const logoUrl = getTickerLogo(ticker);
                               return logoUrl ? (
-                                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 p-0.5 sm:p-1 flex items-center justify-center flex-shrink-0">
                                   <Image
                                     src={logoUrl}
                                     alt={`${ticker} logo`}
-                                    width={24}
-                                    height={24}
+                                    width={20}
+                                    height={20}
                                     className="object-contain"
                                     unoptimized
                                   />
                                 </div>
                               ) : (
-                                <div
-                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                                  style={{
-                                    backgroundColor: "#3b82f6",
-                                  }}
-                                >
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-sm bg-blue-500 flex-shrink-0">
                                   {ticker.charAt(0)}
                                 </div>
                               );
                             })()}
-                            <div className="text-lg font-medium dark:text-green-500 text-green-600">
+                            <div className="text-sm sm:text-lg font-medium dark:text-green-500 text-green-600">
                               Get 0 {ticker} back
                             </div>
                           </div>
                         </div>
-                        <div className="w-1/2 flex flex-col items-end justify-center">
-                          <p className="text-sm text-left text-grayLight dark:text-gray-400">
+                        <div className="w-full sm:w-1/2 flex flex-col items-start sm:items-end justify-center pt-4 sm:pt-0 sm:pl-4">
+                          <p className="text-xs sm:text-sm text-left text-grayLight dark:text-gray-400">
                             If {ticker} ABOVE {" "}
                             {getSelectedPriceData()?.price || "$0.00"}
                           </p>
-                          <div className="mt-4 flex items-center space-x-2">
-                            <div className="text-lg  font-medium dark:text-green-500 text-green-600">
+                          <div className="mt-3 sm:mt-4 flex items-center gap-1 sm:gap-2 flex-wrap">
+                            <div className="text-sm sm:text-lg font-medium dark:text-green-500 text-green-600">
                               Receive the upside above strike
                             </div>
                             {(() => {
                               const logoUrl = getTickerLogo(ticker);
                               return logoUrl ? (
-                                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 p-0.5 sm:p-1 flex items-center justify-center flex-shrink-0">
                                   <Image
                                     src={logoUrl}
                                     alt={`${ticker} logo`}
-                                    width={24}
-                                    height={24}
+                                    width={20}
+                                    height={20}
                                     className="object-contain"
                                     unoptimized
                                   />
                                 </div>
                               ) : (
-                                <div
-                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-blue-500"
-                                  style={{
-                                    backgroundColor: "#3b82f6",
-                                  }}
-                                >
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-sm bg-blue-500 flex-shrink-0">
                                   {ticker.charAt(0)}
                                 </div>
                               );
@@ -974,8 +964,7 @@ const CoveredCallTemplate = ({
                 </div>
               )}
 
-              <div className="m-8 flex justify-center">
-
+              <div className="m-4 sm:m-8 flex justify-center">
                 <Button
                   type="submit"
                   onClick={handleDeposit}
@@ -986,8 +975,9 @@ const CoveredCallTemplate = ({
                     stockCdsDepositIsPending
                   }
                   className={`
-                bg-black dark:bg-custom-gradient-to-top py-6
-                text-white  font-semibold text-[24px] w-1/2 h-full rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed`}
+                    bg-black dark:bg-custom-gradient-to-top py-4 sm:py-6
+                    text-white font-semibold text-lg sm:text-[24px] w-full sm:w-1/2 h-full rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed
+                  `}
                 >
                   {isDepositing ||
                     isPendingStockUsdcApprove ||

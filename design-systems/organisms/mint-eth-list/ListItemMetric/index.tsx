@@ -7,8 +7,8 @@ import {
 //@ts-ignore
 function ListItemMetric({ label, value, color, tooltipText }: Metric) {
   return (
-    <div className="flex md:flex-col md:mt-3 lg:mt-0 justify-between w-full h-full   text-left md:text-center items-start lg:items-start mt-4 gap-4">
-      <div className="text-grayLight font-normal text-lg w-[220px] md:w-auto ">
+    <div className="flex md:flex-col justify-between items-center w-full h-full text-left md:text-left mt-0 gap-1 md:gap-2 py-1">
+      <div className="text-grayLight font-normal text-xs sm:text-sm lg:text-base w-full min-w-0">
         <Tooltip>
           <TooltipTrigger asChild>
             <div>{label}</div>
@@ -21,7 +21,7 @@ function ListItemMetric({ label, value, color, tooltipText }: Metric) {
         </Tooltip>
       </div>
       <div
-        className="text-textBlack font-medium md:text-2xl text-sm dark:text-white text-left"
+        className="text-textBlack font-medium text-sm sm:text-base md:text-xl lg:text-2xl dark:text-white text-left w-full"
         style={{ color }}
       >
         {value}

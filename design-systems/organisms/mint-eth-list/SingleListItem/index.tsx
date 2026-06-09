@@ -118,34 +118,32 @@ function SingleListItem({
   ];
 
   return (
-    <div className="flex  lg:h-auto flex-col lg:flex-row w-full items-start border-b border-solid border-grayLight gap-6 relative">
+    <div className="w-full border-b border-solid border-grayLight">
       <motion.div
-        className="p-8 w-full pb-2 lg:pb-10"
+        className="p-4 sm:p-6 lg:p-8 w-full"
         initial="hidden"
         animate="visible"
         variants={listItemVariants}
       >
-        <div className="flex lg:w-[95%] 2xl:w-[85%]   flex-col lg:flex-row w-full px-4 lg:px-6">
-          <div className="flex flex-grow flex-col md:flex-row w-full 2xl:max-w-full max-w-screen-2xl h-auto lg:h-28">
+        <div className="flex flex-col md:flex-row md:items-center w-full lg:w-[95%] 2xl:w-[85%] gap-4 md:gap-6">
+          <div className="flex flex-1 flex-col md:flex-row md:items-center w-full md:gap-x-4 lg:gap-x-6">
             {metrics.map((metric, index) => (
-              <div key={index} className="md:flex-1 px-2">
+              <div key={index} className="flex-1 min-w-0">
                 <ListItemMetric {...metric} />
               </div>
             ))}
           </div>
-        </div>
-        <div className="lg:block">
-          <div className="absolute rounded-none md:right-0  md:top-0 bottom-0 flex flex-col justify-center items-center gap-1 p-2 w-32">
+          <div className="flex-shrink-0 w-full md:w-auto">
             <Link
               prefetch={true}
               href={`/earn?ticker=${item.ticker}&action=${action}`}
-              className=""
             >
               <Button
                 disabled={!item.isActive}
                 className={`
-                                bg-black dark:bg-custom-gradient-to-top py-6 px-6
-                                text-white  font-semibold text-[16px] rounded-md `}
+                  bg-black dark:bg-custom-gradient-to-top py-3 md:py-4 lg:py-5 px-6 lg:px-8
+                  text-white font-semibold text-sm md:text-[15px] rounded-md w-full md:w-auto
+                `}
               >
                 {action === "buy" ? "Buy Call" : "Sell Call"}
               </Button>
