@@ -17,7 +17,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
-interface SwitchChainPopupProps {}
+interface SwitchChainPopupProps { }
 
 /**
  * SwitchChainPopup is a component that allows the user to switch the chain.
@@ -26,7 +26,7 @@ interface SwitchChainPopupProps {}
  *
  *
  */
-const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
+const SwitchChainPopup = ({ }: SwitchChainPopupProps) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(true);
   const { switchChain, isPending } = useSwitchChain();
   const { chainId, isConnected, address } = useAccount();
@@ -49,10 +49,10 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
       !["/bridge"].includes(pathname) &&
       ![
         NetworkId.BaseSepolia,
-        NetworkId.Optimism,
-        NetworkId.Ethereum,
-        NetworkId.Rise,
-        NetworkId.Hyperliquid,
+        // NetworkId.Optimism,
+        // NetworkId.Ethereum,
+        // NetworkId.Rise,
+        // NetworkId.Hyperliquid,
       ].includes(chainId || 0) &&
       isConnected &&
       (chainId || 0) &&
@@ -74,10 +74,10 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
           !["/bridge"].includes(pathname) &&
           ![
             NetworkId.BaseSepolia,
-            NetworkId.Optimism,
-            NetworkId.Ethereum,
-            NetworkId.Rise,
-            NetworkId.Hyperliquid,
+            // NetworkId.Optimism,
+            // NetworkId.Ethereum,
+            // NetworkId.Rise,
+            // NetworkId.Hyperliquid,
           ].includes(chainId || 0) &&
           isConnected && (
             <div>
@@ -88,7 +88,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                 <div className="text-[18px]  text-center ">Select Chain</div>
 
                 <div className="flex gap-4 justify-center mt-4">
-                  <Button
+                  {/* <Button
                     disabled={isPending}
                     onClick={() => {
                       switchChain({
@@ -114,7 +114,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                     ) : (
                       <div className="text-[16px]">OP</div>
                     )}
-                  </Button>
+                  </Button> */}
                   <Button
                     disabled={isPending}
                     onClick={() => {
@@ -138,7 +138,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                         <Spinner />
                       </div>
                     ) : (
-                      <div className="text-[16px]">Base Sepolia</div>
+                      <div className="text-[16px]">Base</div>
                     )}
                   </Button>
                   {/* <Button
@@ -168,7 +168,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                     )}
                   </Button> */}
 
-                  <Button
+                  {/* <Button
                     disabled={isPending}
                     onClick={() => {
                       switchChain({
@@ -192,7 +192,7 @@ const SwitchChainPopup = ({}: SwitchChainPopupProps) => {
                     ) : (
                       <div className="text-[16px]">Hyperliquid</div>
                     )}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
