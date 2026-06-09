@@ -19,6 +19,7 @@ import { useAccountEffect } from "wagmi";
 import NotificationPopup from "../../molecule/popups/NotificationPopUp";
 import WalletPopup from "../../molecule/popups/WalletPopUp";
 import { meetUrl } from "@/utils/urls";
+import TotalVolumeBadge from "@/design-systems/atoms/TotalVolumeBadge";
 
 function Navbar() {
   const { systemTheme, theme, setTheme } = useTheme();
@@ -280,6 +281,7 @@ function Navbar() {
       {/* Desktop Navigation Menu */}
       {!isPolicyPage && isClient && (
         <nav className="hidden lg:flex items-center gap-6 ml-auto mr-4">
+          <TotalVolumeBadge />
           <Link
             href="/trick"
             className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#97f0bc] text-[#051911] no-underline text-[14px] font-semibold tracking-tight shadow-[0_6px_18px_-6px_rgba(95,184,138,0.45)]"

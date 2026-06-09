@@ -61,8 +61,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/nvidia.svg", // Real NVIDIA logo
     spotPrice: "904.12",
     priceChange: "+2.45%",
-    openInterestValue: "$184K",
-    openInterestContracts: "216 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "TSLA",
@@ -74,8 +74,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/tesla.svg", // Real Tesla logo
     spotPrice: "174.60",
     priceChange: "-1.12%",
-    openInterestValue: "$142K",
-    openInterestContracts: "498 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "SMR",
@@ -87,8 +87,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://s3-symbol-logo.tradingview.com/nuscale-power--600.png", // Official NuScale Power logo
     spotPrice: "5.42",
     priceChange: "+5.67%",
-    openInterestValue: "$96K",
-    openInterestContracts: "1,987 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "PLTR",
@@ -100,8 +100,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/palantir.svg", // Real Palantir logo
     spotPrice: "23.15",
     priceChange: "+0.85%",
-    openInterestValue: "$71K",
-    openInterestContracts: "437 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "COIN",
@@ -113,8 +113,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/coinbase.svg", // Real Coinbase logo
     spotPrice: "245.30",
     priceChange: "+1.78%",
-    openInterestValue: "$58K",
-    openInterestContracts: "234 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "MSTR",
@@ -126,8 +126,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/microstrategy.svg", // Real MicroStrategy logo
     spotPrice: "1,520.10",
     priceChange: "+3.21%",
-    openInterestValue: "$92K",
-    openInterestContracts: "58 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
   {
     ticker: "AAPL",
@@ -139,8 +139,8 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@v11/icons/apple.svg", // Real Apple logo
     spotPrice: "183.05",
     priceChange: "-0.45%",
-    openInterestValue: "$203K",
-    openInterestContracts: "982 contracts"
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts"
   },
 ];
 /**

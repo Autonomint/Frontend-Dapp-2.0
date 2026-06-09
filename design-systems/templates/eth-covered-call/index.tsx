@@ -84,7 +84,7 @@ const CoveredCallTemplate = ({
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
   const [selectedAction, setSelectedAction] = useState(
-    isBuyMode ? "Buy Call" : "Covered Call",
+    isBuyMode ? "Buy Call" : "Sell Calls",
   );
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
@@ -98,11 +98,11 @@ const CoveredCallTemplate = ({
   const tickers = ["NVDA"];
   const actions = isBuyMode
     ? ["Buy Call"]
-    : ["Cash secured put", "Covered Call"];
+    : ["Buy Call", "Sell Calls"];
 
   useEffect(() => {
     setSelectedTicker(ticker);
-    setSelectedAction(isBuyMode ? "Buy Call" : "Covered Call");
+    setSelectedAction(isBuyMode ? "Buy Call" : "Sell Calls");
   }, [ticker, isBuyMode]);
 
   // Helper function to get logo URL for ticker
@@ -479,7 +479,7 @@ const CoveredCallTemplate = ({
                 )}
               </div>
 
-              {/* Covered Call Dropdown */}
+              {/* Sell Calls Dropdown */}
               <div className="relative border-l border-grayLight pl-2">
                 <button
                   onClick={() => setIsActionDropdownOpen(!isActionDropdownOpen)}
@@ -625,7 +625,7 @@ const CoveredCallTemplate = ({
             {!isBuyMode && (
               <div className="mb-8 text-left">
                 <div className="text-xs uppercase tracking-[0.22em] text-[#5fb88a] font-plex-grotesk mb-2 inline-flex items-center gap-2 before:content-[''] before:w-4 before:h-px before:bg-[#5fb88a]">
-                  Pool · Covered Calls
+                  Pool · Sell Calls
                 </div>
                 <h1 className="text-[32px] sm:text-[38px] font-serif font-normal leading-[1.1] tracking-[-0.025em] text-textBlack dark:text-white max-w-[24ch]">
                   Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from calls written against the pool
@@ -795,17 +795,23 @@ const CoveredCallTemplate = ({
 
                   <div className="p-4 py-8">
                     {isBuyMode ? (
-                      <div className="text-left">
-                        <div className="text-4xl font-bold text-black dark:text-white">
-                          ${(selectedPrice?.premium)?.toFixed(2)}{" "}
-                          <span className="text-base text-grayLight dark:text-gray-400 font-normal">
-                            upfront Premium
-                          </span>
+                      <>
+                        <div className="text-left">
+                          <div className="text-4xl font-bold text-black dark:text-white">
+                            ${(selectedPrice?.premium)?.toFixed(2)}{" "}
+                            <span className="text-base text-grayLight dark:text-gray-400 font-normal">
+                              upfront Premium
+                            </span>
+                          </div>
+                          <div className="text-sm text-grayLight dark:text-gray-400 mt-2 font-plex-grotesk">
+                            Total Premium: ${((selectedPrice?.premium || 0) * (parseInt(inputValue || "0") || 0)).toFixed(2)} ({(selectedPrice?.premium || 0).toFixed(2)} × {parseInt(inputValue || "0") || 0} contracts)
+                          </div>
                         </div>
-                        <div className="text-sm text-grayLight dark:text-gray-400 mt-2 font-plex-grotesk">
-                          Total Premium: ${((selectedPrice?.premium || 0) * (parseInt(inputValue || "0") || 0)).toFixed(2)} ({(selectedPrice?.premium || 0).toFixed(2)} × {parseInt(inputValue || "0") || 0} contracts)
+                        {/* Explain box - Buy mode */}
+                        <div className="bg-[#f0f4f3] dark:bg-[#161616] border border-grayLight dark:border-grayLight rounded-[10px] p-[14px_16px] mt-4 font-['JetBrains_Mono',monospace] text-[11.5px] leading-[1.6] text-grayLight dark:text-gray-400">
+                          Your ITM payout is capped at 10% above the strike price. This cap is what makes the discounted premium possible and reflects the collateral committed by call sellers. The cap is however flexible and can be updated to 30% max as per the collateral committed by call sellers
                         </div>
-                      </div>
+                      </>
                     ) : (
                       <>
                         {/* Premium hero section */}

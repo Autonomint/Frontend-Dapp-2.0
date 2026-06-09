@@ -84,9 +84,8 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
               <button
                 key={nameA}
                 onClick={() => !isComingSoon && setActiveTab(index)}
-                className={`px-5  py-[8px] md:py-[13px] cursor-pointer text-lg sm:text-xl font-medium border-r border-grayLight whitespace-nowrap ${
-                  activeTab === index ? "bg-[#ABFFDE] dark:text-black" : ""
-                } ${isComingSoon ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`px-5  py-[8px] md:py-[13px] cursor-pointer text-lg sm:text-xl font-medium border-r border-grayLight whitespace-nowrap ${activeTab === index ? "bg-[#ABFFDE] dark:text-black" : ""
+                  } ${isComingSoon ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <span className="flex items-center gap-2">
                   {nameA}
@@ -99,7 +98,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
                   {hasLiveChip && (
                     <span className="relative inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-emerald-50 to-green-100 dark:from-emerald-900 dark:to-green-800 text-emerald-800 dark:text-green-200 shadow-sm border border-emerald-200 dark:border-green-700">
                       <span className="w-1 h-1 bg-emerald-400 dark:bg-green-500 rounded-full mr-1 animate-pulse"></span>
-                      10 LIVE
+                      7 LIVE
                     </span>
                   )}
                 </span>
