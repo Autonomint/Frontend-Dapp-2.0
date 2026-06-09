@@ -321,7 +321,9 @@ function Navbar() {
               <Headset />
             </Button>
           </a>
-          <WalletPopup />
+          <div className="hidden lg:block">
+            <WalletPopup />
+          </div>
           <Button
             variant={"shadowOutline"}
             className="border-[#041A50] hidden lg:block h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
@@ -387,47 +389,27 @@ function Navbar() {
 
       {/* Menu Links */}
       <div
-        className={`w-[100%] h-[calc(100vh-95px)] lg:hidden border-grayLight border-[1px] border-x border-y fixed lg:static flex flex-col items-center bg-white dark:bg-black z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+        className={`w-[100%] h-[calc(100vh-95px)] lg:hidden border-grayLight border-[1px] border-x border-y fixed lg:static flex flex-col bg-white dark:bg-black z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
         style={{ top: 94, left: 0 }}
       >
-        <ul className="  flex w-full overflow-y-scroll no-scrollbar    min-h-[calc(100%-73px)] justify-start   items-start flex-col  ">
+        <ul className="flex w-full flex-1 overflow-y-auto no-scrollbar flex-col items-start justify-start">
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/mintusdalist">
+            <Link onClick={closeMenu} href="/deposit?action=buy">
               <Typography
                 className="text-[32px] font-medium "
                 variant="regular"
               >
-                Mint USDa
+                Buy Options
               </Typography>
             </Link>
           </li>
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/dcds">
+            <Link onClick={closeMenu} href="/deposit?action=sell">
               <Typography
                 className="text-[32px] font-medium "
                 variant="regular"
               >
-                dCDS
-              </Typography>
-            </Link>
-          </li>
-          <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/bridge">
-              <Typography
-                className="text-[32px] font-medium "
-                variant="regular"
-              >
-                Bridge
-              </Typography>
-            </Link>
-          </li>
-          <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/farmyourluck">
-              <Typography
-                className="text-[32px] font-medium "
-                variant="regular"
-              >
-                Farm You Luck
+                Sell Calls
               </Typography>
             </Link>
           </li>
@@ -442,32 +424,39 @@ function Navbar() {
             </Link>
           </li>
           <li className="py-5 px-6 border-b border-[1px] border-grayLight w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/redeem">
+            <Link onClick={closeMenu} href="/trick">
               <Typography
                 className="text-[32px] font-medium "
                 variant="regular"
               >
-                Redeem ABOND
+                Trick
               </Typography>
             </Link>
           </li>
-          <li className="py-5 px-6 border-b border-[1px] border-grayLight  w-full border-y-0 border-r-0 border-l-0">
-            <Link onClick={closeMenu} href="/buy">
-              <Typography
-                className="text-[32px] font-medium "
-                variant="regular"
-              >
-                Buy
-              </Typography>
-            </Link>
+          <li className="py-5 px-6 w-full">
+            <WalletPopup />
           </li>
         </ul>
 
-        <div className=" gap-6 p-3 w-full border-t flex-row flex justify-center items-center border-grayLight border-[1px]">
+        <div className="gap-2 p-3 w-full border-t flex-row flex-wrap flex justify-center items-center border-grayLight border-[1px]">
+          <TotalVolumeBadge />
+          <a
+            href={meetUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button
+              variant={"shadowOutline"}
+              className="h-fit text-[18px] font-normal p-[8px]"
+            >
+              Call
+              <Headset />
+            </Button>
+          </a>
           {isClient && (
             <Button
               variant={"shadowOutline"}
-              className="border-[#041A50]  lg:hidden h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
+              className="border-[#041A50] lg:hidden h-fit p-[10px] dark:hover:bg-custom-gradient-to-top hover:bg-gradient-to-b from-[#E5F3FF] to-[#FFFDE4]"
               onClick={() =>
                 theme == "dark" ? setTheme("light") : setTheme("dark")
               }
@@ -479,40 +468,7 @@ function Navbar() {
               )}
             </Button>
           )}
-
-          {/* <Button
-            onClick={() =>
-              shareOnTwitter(
-                "Just tried @autonomint.  I can deposit any ETH or LRT to mint USDA+ stablecoin and always remain hedged, it doesn't matter how much the ETH price drops...curious how it works! Also, highest stablecoin yields on their CDS"
-              )
-            }
-            variant={"shadowOutline"}
-            className=" h-fit text-[18px]  font-normal flex lg:hidden  w-fit p-[8px] "
-          >
-            <svg
-              className="stroke-black dark:stroke-white"
-              width="14"
-              height="14"
-              viewBox="0 0 20 21"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1 19.5L8.5484 11.9516M8.5484 11.9516L1 1.5H6L11.4516 9.0484M8.5484 11.9516L14 19.5H19L11.4516 9.0484M19 1.5L11.4516 9.0484"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>{" "}
-            Share
-          </Button> */}
-          {/* <Button
-            onClick={() => shareOnTwitter("")}
-            variant={"shadowOutline"}
-            className="border-[#041A50]  h-fit text-[18px] font-normal  w-full p-[8px] dark:bg-custom-gradient-to-bottom"
-          >
-            <Image width={24} height={24} alt="twitter" src={twitter} /> Share
-          </Button> */}
+          {/* <NotificationPopup wrapperClassName={""} /> */}
         </div>
       </div>
     </div>
