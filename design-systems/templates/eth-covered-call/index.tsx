@@ -24,6 +24,7 @@ import useStockDepositTokens from "@/hookes/contract-hooks/stock-contracts/useSt
 import useStockCdsDeposit from "@/hookes/contract-hooks/stock-contracts/useStockCdsDeposit";
 import useGetStockSignedData from "@/hookes/contract-hooks/stock-contracts/useGetStockSignedData";
 import useGetCDSWithdrawSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCDSWithdrawSignedData";
+import useGetCdsDepositSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCdsDepositSignedData";
 import {
   stockBorrowDepositAddress,
   stockCdsAddress,
@@ -189,10 +190,10 @@ const CoveredCallTemplate = ({
     useGetStockSignedData();
 
   const {
-    cdsWithdrawSignedData,
-    isPendingCDSWithdrawSignedData,
-    refetchCDSWithdrawSignedData,
-  } = useGetCDSWithdrawSignedData();
+    cdsDepositSignedData,
+    isPendingCdsDepositSignedData,
+    refetchCdsDepositSignedData,
+  } = useGetCdsDepositSignedData();
 
   const { stockCdsDepositIsPending, handleStockCdsDeposit } =
     useStockCdsDeposit();
@@ -276,7 +277,7 @@ const CoveredCallTemplate = ({
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
         if (stockAssetName !== undefined) {
-          const signedData = await refetchCDSWithdrawSignedData({
+          const signedData = await refetchCdsDepositSignedData({
             collateralType: selectedTicker,
             strikePrice: 0,
             optionFees: "0",

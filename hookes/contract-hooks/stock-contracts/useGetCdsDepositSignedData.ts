@@ -3,15 +3,16 @@ import { useMutation } from "@tanstack/react-query";
 import { parseUnits } from "ethers";
 import { useAccount } from "wagmi";
 
-export interface CDSWithdrawGainsSignedDataReturn {
+export interface CdsDepositSignedDataReturn {
     excessProfitCumulativeValue: bigint;
     ethPrice: bigint;
     odosAssembledData: `0x${string}`;
+    expiredUSDAmount: bigint;
     deadline: bigint;
     signature: `0x${string}`;
 }
 
-export interface CDSWithdrawGainsDto {
+export interface CdsDepositDto {
     address: string;
     chainId: number;
     index: number;
@@ -21,17 +22,17 @@ export interface CDSWithdrawGainsDto {
 }
 
 /**
- * Function to fetch the CDS withdraw gains signed data
+ * Function to fetch the CDS deposit signed data
  */
-async function signedDataForCdsWithdrawGains(
+async function signedDataForCdsDeposit(
     address: `0x${string}` | undefined,
     chainId: number,
     index: number,
     collateralType: string,
     strikePrice: number,
     optionFees: string
-): Promise<CDSWithdrawGainsSignedDataReturn> {
-    return fetch(`${BACKEND_API_URL}/stock-options/cds/signedDataForCDSWithdraw`, {
+): Promise<CdsDepositSignedDataReturn> {
+    return fetch(`${BACKEND_API_URL}/stock-options/cds/signedDataForCDSDeposit`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -48,22 +49,22 @@ async function signedDataForCdsWithdrawGains(
 }
 
 /**
- * Custom hook to fetch signed data for CDS withdraw gains
+ * Custom hook to fetch signed data for CDS deposit
  */
-const useGetCDSDepositSignedData = (index?: number) => {
+const useGetCdsDepositSignedData = (index?: number) => {
     const { address, chainId } = useAccount();
 
     const {
-        data: cdsWithdrawGainsSignedData,
-        isPending: isPendingCDSWithdrawGainsSignedData,
-        mutateAsync: refetchCDSWithdrawGainsSignedData,
+        data: cdsDepositSignedData,
+        isPending: isPendingCdsDepositSignedData,
+        mutateAsync: refetchCdsDepositSignedData,
     } = useMutation({
         mutationFn: (variables: {
             collateralType: string;
             strikePrice: number;
             optionFees: string;
         }) =>
-            signedDataForCdsWithdrawGains(
+            signedDataForCdsDeposit(
                 address ? address : undefined,
                 chainId as number,
                 index || 0,
@@ -74,10 +75,10 @@ const useGetCDSDepositSignedData = (index?: number) => {
     });
 
     return {
-        cdsWithdrawGainsSignedData,
-        isPendingCDSWithdrawGainsSignedData,
-        refetchCDSWithdrawGainsSignedData,
+        cdsDepositSignedData,
+        isPendingCdsDepositSignedData,
+        refetchCdsDepositSignedData,
     };
 };
 
-export default useGetCDSDepositSignedData;
+export default useGetCdsDepositSignedData;

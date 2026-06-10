@@ -24,7 +24,7 @@ export interface CDSWithdrawDto {
 /**
  * Function to fetch the CDS withdraw signed data
  */
-async function signedDataForCDSDeposit(
+async function signedDataForCdsWithdraw(
     address: `0x${string}` | undefined,
     chainId: number,
     index: number,
@@ -32,7 +32,7 @@ async function signedDataForCDSDeposit(
     strikePrice: number,
     optionFees: string
 ): Promise<CDSWithdrawSignedDataReturn> {
-    return fetch(`${BACKEND_API_URL}/stock-options/cds/signedDataForCDSDeposit`, {
+    return fetch(`${BACKEND_API_URL}/stock-options/cds/signedDataForCDSWithdraw`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -64,7 +64,7 @@ const useGetCDSWithdrawSignedData = (index?: number) => {
             strikePrice: number;
             optionFees: string;
         }) =>
-            signedDataForCDSDeposit(
+            signedDataForCdsWithdraw(
                 address ? address : undefined,
                 chainId as number,
                 index || 0,
