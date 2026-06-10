@@ -1,4 +1,4 @@
-export const cdsStockOptionsABI = [
+export const cdsStockOptionsABI =  [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
@@ -656,24 +656,9 @@ export const cdsStockOptionsABI = [
           "type": "uint64"
         },
         {
-          "internalType": "uint128",
-          "name": "ethPrice",
-          "type": "uint128"
-        },
-        {
           "internalType": "int256",
           "name": "excessProfitCumulativeValue",
           "type": "int256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "expiredETHAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "int128",
-          "name": "plFromExpired",
-          "type": "int128"
         }
       ],
       "name": "calculateLiquidatedETHTogiveToUser",
@@ -747,6 +732,11 @@ export const cdsStockOptionsABI = [
                   "internalType": "bytes",
                   "name": "odosAssembledData",
                   "type": "bytes"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "expiredUSDAmount",
+                  "type": "uint128"
                 },
                 {
                   "internalType": "uint256",
@@ -1114,6 +1104,11 @@ export const cdsStockOptionsABI = [
                   "type": "bytes"
                 },
                 {
+                  "internalType": "uint128",
+                  "name": "expiredUSDAmount",
+                  "type": "uint128"
+                },
+                {
                   "internalType": "uint256",
                   "name": "deadline",
                   "type": "uint256"
@@ -1215,6 +1210,11 @@ export const cdsStockOptionsABI = [
               "internalType": "bytes",
               "name": "odosAssembledData",
               "type": "bytes"
+            },
+            {
+              "internalType": "uint128",
+              "name": "expiredUSDAmount",
+              "type": "uint128"
             },
             {
               "internalType": "uint256",
@@ -1337,9 +1337,9 @@ export const cdsStockOptionsABI = [
     {
       "inputs": [
         {
-          "internalType": "enum IBorrowing.AssetName",
+          "internalType": "enum IBorrowing.AssetName[]",
           "name": "assetName",
-          "type": "uint8"
+          "type": "uint8[]"
         },
         {
           "internalType": "address",
@@ -1741,6 +1741,11 @@ export const cdsStockOptionsABI = [
                   "internalType": "bytes",
                   "name": "odosAssembledData",
                   "type": "bytes"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "expiredUSDAmount",
+                  "type": "uint128"
                 },
                 {
                   "internalType": "uint256",

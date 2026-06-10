@@ -7,6 +7,7 @@ export interface CDSWithdrawSignedDataReturn {
     excessProfitCumulativeValue: bigint;
     ethPrice: bigint;
     odosAssembledData: `0x${string}`;
+    expiredUSDAmount: bigint;
     deadline: bigint;
     signature: `0x${string}`;
 }

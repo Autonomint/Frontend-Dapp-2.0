@@ -1,4 +1,4 @@
-export const globalStockOptionsABI = [
+export const globalStockOptionsABI =[
     {
       "inputs": [],
       "stateMutability": "nonpayable",

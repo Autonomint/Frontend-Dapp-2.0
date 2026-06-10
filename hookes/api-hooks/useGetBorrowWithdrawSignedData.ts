@@ -14,6 +14,7 @@ export interface SignedDataReturn {
   ethPrice: number;
   strikePrice: number;
   optionFees: string;
+  expiredUSDAmount: number;
   user: string;
   index: number;
   deadline: number;

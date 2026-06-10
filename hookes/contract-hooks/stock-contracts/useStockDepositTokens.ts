@@ -15,6 +15,7 @@ interface StockEIP712VerifyParams {
   ethPrice: bigint;
   strikePrice: bigint;
   optionFees: bigint;
+  expiredUSDAmount: bigint;
   deadline: bigint;
   signature: `0x${string}`;
 }

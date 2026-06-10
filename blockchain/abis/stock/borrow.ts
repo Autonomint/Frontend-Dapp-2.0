@@ -461,6 +461,19 @@ export const borrowStockOptionsABI = [
       "anonymous": false,
       "inputs": [
         {
+          "indexed": false,
+          "internalType": "enum IBorrowing.AssetName",
+          "name": "assetName",
+          "type": "uint8"
+        }
+      ],
+      "name": "UpdatedRatio",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
           "indexed": true,
           "internalType": "address",
           "name": "implementation",
@@ -573,6 +586,11 @@ export const borrowStockOptionsABI = [
           "internalType": "uint128",
           "name": "currentEthPrice",
           "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "expiredUSDAmount",
+          "type": "uint128"
         }
       ],
       "name": "calculateRatio",
@@ -625,6 +643,11 @@ export const borrowStockOptionsABI = [
                 {
                   "internalType": "uint128",
                   "name": "optionFees",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "expiredUSDAmount",
                   "type": "uint128"
                 },
                 {
@@ -693,6 +716,16 @@ export const borrowStockOptionsABI = [
             {
               "internalType": "uint64",
               "name": "minInterval",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "optionsFeesShareDeposit",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "optionsFeesShareRepay",
               "type": "uint64"
             }
           ],
@@ -1001,6 +1034,16 @@ export const borrowStockOptionsABI = [
               "internalType": "uint64",
               "name": "minInterval",
               "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "optionsFeesShareDeposit",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint64",
+              "name": "optionsFeesShareRepay",
+              "type": "uint64"
             }
           ],
           "internalType": "struct IBorrowing.AssetDetails[]",
@@ -1155,6 +1198,11 @@ export const borrowStockOptionsABI = [
           "internalType": "uint128",
           "name": "strikePrice",
           "type": "uint128"
+        },
+        {
+          "internalType": "uint128",
+          "name": "expiredUSDAmount",
+          "type": "uint128"
         }
       ],
       "name": "viewCurrentRatio",
@@ -1197,6 +1245,11 @@ export const borrowStockOptionsABI = [
                 {
                   "internalType": "uint128",
                   "name": "optionFees",
+                  "type": "uint128"
+                },
+                {
+                  "internalType": "uint128",
+                  "name": "expiredUSDAmount",
                   "type": "uint128"
                 },
                 {

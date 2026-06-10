@@ -13,6 +13,7 @@ interface StockCdsEIP712VerifyParams {
   excessProfitCumulativeValue: bigint;
   ethPrice: bigint;
   odosAssembledData: `0x${string}`;
+  expiredUSDAmount: bigint;
   deadline: bigint;
   signature: `0x${string}`;
 }

@@ -1,4 +1,4 @@
-export const cdsDepositStockOptionsABI = [
+export const cdsDepositStockOptionsABI =[
     {
       "inputs": [],
       "stateMutability": "nonpayable",

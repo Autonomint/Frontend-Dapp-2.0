@@ -7,6 +7,7 @@ export interface StockSignedDataReturn {
   ethPrice: number;
   strikePrice: number;
   optionFees: number;
+  expiredUSDAmount: number;
   deadline: number;
   signature: `0x${string}`;
 }

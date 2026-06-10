@@ -154,6 +154,7 @@ export function DcdsWithdrawModal({
           excessProfitCumulativeValue: BigInt(signedData.excessProfitCumulativeValue),
           ethPrice: BigInt(signedData.ethPrice),
           odosAssembledData: signedData.odosAssembledData,
+          expiredUSDAmount: BigInt(signedData.expiredUSDAmount),
           deadline: BigInt(signedData.deadline),
           signature: signedData.signature,
         },
