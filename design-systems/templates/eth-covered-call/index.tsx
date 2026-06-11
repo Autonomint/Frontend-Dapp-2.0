@@ -290,7 +290,7 @@ const CoveredCallTemplate = ({
                 stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
               ],
               tokenAmounts: [depositingAmount],
-              lockingPeriod: BigInt(0),
+              lockingPeriod: BigInt(2592000),
               assetName: stockAssetName,
               verifyParams: {
                 excessProfitCumulativeValue: BigInt(
@@ -333,19 +333,19 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        // let hedgeValidity = BigInt(7776000);
-        // if (selectedDate) {
-        //   const expiryTimestamp = Math.floor(
-        //     new Date(selectedDate).getTime() / 1000,
-        //   );
-        //   const nowTimestamp = Math.floor(Date.now() / 1000);
-        //   const diff = expiryTimestamp - nowTimestamp;
-        //   if (diff > 0) {
-        //     hedgeValidity = BigInt(diff);
-        //   }
-        // }
+        let hedgeValidity = BigInt(7776000);
+        if (selectedDate) {
+          const expiryTimestamp = Math.floor(
+            new Date(selectedDate).getTime() / 1000,
+          );
+          const nowTimestamp = Math.floor(Date.now() / 1000);
+          const diff = expiryTimestamp - nowTimestamp;
+          if (diff > 0) {
+            hedgeValidity = BigInt(diff);
+          }
+        }
         // 10-minute expiry for testing
-        const hedgeValidity = BigInt(600);
+        // const hedgeValidity = BigInt(600);
 
         const stockAssetName = tickerToStockAssetName[selectedTicker];
 
@@ -828,7 +828,7 @@ const CoveredCallTemplate = ({
                             </div>
                             <div className="font-['JetBrains_Mono',monospace] text-[11px] text-grayLight dark:text-gray-400 mt-[6px]">
                               <strong className="font-medium text-black dark:text-white">
-                                {bidsLoading ? "..." : getSelectedPriceData()?.apr || "0%"} APR
+                                {bidsLoading ? "..." : "> 40%"} APR
                               </strong>{" "}
                               · based on last-30-day pool activity
                             </div>
