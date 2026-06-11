@@ -576,7 +576,7 @@ const CoveredCallTemplate = ({
             {isBuyMode && (
               <div className="mb-14 px-8 py-6">
                 <p className="text-xl text-grayLight dark:text-gray-400 font-plex-grotesk  mx-auto">
-                  Choose the price at which you are happy to sell {ticker} on {selectedDate ? formatDate(selectedDate) : "..."} ({selectedDate ? getDaysRemaining(selectedDate) : "..."} days)
+                  Choose the price at which you are happy to buy {ticker} on {selectedDate ? formatDate(selectedDate) : "..."} ({selectedDate ? getDaysRemaining(selectedDate) : "..."} days)
                 </p>
               </div>
             )}
