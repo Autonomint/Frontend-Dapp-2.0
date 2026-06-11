@@ -195,16 +195,16 @@ export function DcdsWithdrawModal({
     apy == undefined
       ? 0
       : position?.status !== "DEPOSITED"
-        ? calculatePercentage(position?.apys?.amountAccured || 0, 60)
-        : calculatePercentage(apy[1] || 0, 60),
+        ? position?.apys?.amountAccured || 0
+        : apy[1] || 0,
   ).toFixed(4);
 
   const fixedYields = `${Number(
     apy == undefined
       ? 0
       : position?.status !== "DEPOSITED"
-        ? calculatePercentage(position?.apys?.currentTimeAPYTillNow || 0, 60) || 0
-        : calculatePercentage(apy[5] || 0, 60) || 0,
+        ? position?.apys?.currentTimeAPYTillNow || 0
+        : apy[5] || 0,
   ).toFixed(2)}%`;
 
   const priceGains = hideYieldsAddressAndIndex.some(
@@ -221,10 +221,10 @@ export function DcdsWithdrawModal({
           : position?.status !== "DEPOSITED"
             ? Number(position?.apys?.priceChangePL) < 0
               ? position?.apys?.priceChangePL
-              : calculatePercentage(position?.apys?.priceChangePL || 0, 60) || 0
+              : position?.apys?.priceChangePL || 0
             : apy[2] < 0
               ? apy[2]
-              : calculatePercentage(apy[2], 60) || 0,
+              : apy[2] || 0,
       ).toFixed(4),
     );
 
@@ -256,9 +256,7 @@ export function DcdsWithdrawModal({
 
   const variableYieldsCheck = isNaN(Number(variableYields))
     ? 0.0
-    : Number(variableYields) < 0
-      ? Number(variableYields)
-      : calculatePercentage(Number(variableYields), 60);
+    : Number(variableYields);
 
   if (!position) return null;
 
