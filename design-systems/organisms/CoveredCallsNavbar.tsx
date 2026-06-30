@@ -41,7 +41,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
 
   const navList = useMemo<TabOption[]>(() => {
     const primaryTab: TabOption = {
-      nameA: isBuyMode ? "Buy Calls" : "Covered Calls",
+      nameA: isBuyMode ? "Buy Calls" : "Sell Calls",
       index: 0,
       isFeatureActive: true,
       InActiveHeading: "",
@@ -93,7 +93,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
         liveCount: "7",
       },
       {
-        nameA: "Cash-Secured Puts",
+        nameA: "Sell Puts",
         index: 2,
         isFeatureActive: true,
         InActiveHeading: "",

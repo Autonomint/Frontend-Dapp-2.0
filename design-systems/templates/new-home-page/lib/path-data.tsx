@@ -22,7 +22,7 @@ export const pathOptions: PathOption[] = [
     id: "sell",
     title: (
       <>
-        Sell calls, <em>earn premium</em>
+        Sell calls, puts, <em>earn premium</em>
       </>
     ),
     tag: { label: "Permissionless", variant: "open" },

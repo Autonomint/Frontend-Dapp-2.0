@@ -170,12 +170,13 @@ const CoveredCallTemplate = ({
     return displayPriceOptions.length > 0 ? displayPriceOptions[0] : null;
   };
 
-  // Lock end date: 30 days from today
+  // Lock end date: 60 days for puts, 30 days for calls
+  const lockDays = isPutOption ? 60 : 30;
   const lockEndDate = useMemo(() => {
     const date = new Date();
-    date.setDate(date.getDate() + 30);
+    date.setDate(date.getDate() + lockDays);
     return formatDate(date.toISOString());
-  }, []);
+  }, [lockDays]);
 
   const { address, isConnected, chainId } = useAccount();
 
@@ -292,7 +293,7 @@ const CoveredCallTemplate = ({
                 stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
               ],
               tokenAmounts: [depositingAmount],
-              lockingPeriod: BigInt(2592000),
+              lockingPeriod: BigInt(isPutOption ? 5184000 : 2592000),
               assetName: stockAssetName,
               verifyParams: {
                 excessProfitCumulativeValue: BigInt(
@@ -578,7 +579,7 @@ const CoveredCallTemplate = ({
             {isBuyMode && (
               <div className="mb-14 px-8 py-6">
                 <p className="text-xl text-grayLight dark:text-gray-400 font-plex-grotesk  mx-auto">
-                  Choose the price at which you are happy to buy {ticker} on {selectedDate ? formatDate(selectedDate) : "..."} ({selectedDate ? getDaysRemaining(selectedDate) : "..."} days)
+                  Choose the price at which you are happy to {isPutOption ? "Sell" : "buy"} {ticker} on {selectedDate ? formatDate(selectedDate) : "..."} ({selectedDate ? getDaysRemaining(selectedDate) : "..."} days)
                 </p>
               </div>
             )}
@@ -669,7 +670,7 @@ const CoveredCallTemplate = ({
                   </div>
                   <div className="flex items-center justify-between gap-2.5">
                     <span className="text-lg font-medium text-textBlack dark:text-white">
-                      30 days
+                      {lockDays} days
                     </span>
                     <span className="text-grayLight dark:text-gray-400 text-[10px]">▼</span>
                   </div>
@@ -832,13 +833,15 @@ const CoveredCallTemplate = ({
                               <strong className="font-medium text-black dark:text-white">
                                 {bidsLoading ? "..." : "> 40%"} APR
                               </strong>{" "}
-                              · based on last-30-day pool activity
+                              · {isPutOption ? "premium per 1 contract sold" : "based on last-30-day pool activity"}
                             </div>
                           </div>
                           <div className="flex flex-col gap-[6px] items-end">
-                            <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
-                              Your share <span className="font-medium text-black dark:text-white">12.4%</span>
-                            </div>
+                            {!isPutOption && (
+                              <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
+                                Your share <span className="font-medium text-black dark:text-white">12.4%</span>
+                              </div>
+                            )}
                             <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
                               Lock until <span className="font-medium text-black dark:text-white">{lockEndDate}</span>
                             </div>

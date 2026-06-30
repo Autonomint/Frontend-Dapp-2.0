@@ -382,7 +382,7 @@ function PortfolioTemplate() {
             }`
           }
         >
-          Sell Call Positions
+          Sell Option Positions
         </div>
         <div
           onClick={handleRefresh}
