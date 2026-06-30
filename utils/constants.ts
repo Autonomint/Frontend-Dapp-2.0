@@ -67,7 +67,8 @@ export enum StockAssetName {
   STOCK_PLTR,
   STOCK_COIN,
   STOCK_MSTR,
-  STOCK_AAPL
+  STOCK_AAPL,
+  STOCK_LAB,
 }
 
 // Mapping from ticker symbol to StockAssetName enum
@@ -79,6 +80,7 @@ export const tickerToStockAssetName: Record<string, StockAssetName> = {
   COIN: StockAssetName.STOCK_COIN,
   MSTR: StockAssetName.STOCK_MSTR,
   AAPL: StockAssetName.STOCK_AAPL,
+  LAB: StockAssetName.STOCK_LAB,
 };
 
 export const BorrowAssetsEnum = {

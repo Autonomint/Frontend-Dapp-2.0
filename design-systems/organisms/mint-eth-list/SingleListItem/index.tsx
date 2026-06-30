@@ -72,7 +72,14 @@ function SingleListItem({
               </div>
             ))}
           <div className="flex flex-col">
-            <span className="font-bold text-2xl">{item.ticker}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-2xl">{item.ticker}</span>
+              {item.chipLabel && (
+                <span className="font-['JetBrains_Mono',monospace] text-[10px] leading-none tracking-[0.12em] uppercase rounded-full bg-gradient-to-r from-emerald-50 to-green-100 dark:from-emerald-900/40 dark:to-green-800/30 border border-emerald-200 dark:border-emerald-700 shadow-sm text-emerald-700 dark:text-emerald-300 font-semibold inline-flex items-center" style={{ padding: "5px 7px" }}>
+                  {item.chipLabel}
+                </span>
+              )}
+            </div>
             <span className="text-md text-gray-600 dark:text-gray-400">
               {item.name}
             </span>
@@ -89,11 +96,10 @@ function SingleListItem({
             ${item.spotPrice || "2,550.00"}
           </span>
           <span
-            className={`text-base font-medium ${
-              item.priceChange?.startsWith("+")
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-rose-600 dark:text-rose-400"
-            }`}
+            className={`text-base font-medium ${item.priceChange?.startsWith("+")
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-rose-600 dark:text-rose-400"
+              }`}
           >
             {item.priceChange || "0.00%"}
           </span>
@@ -136,7 +142,7 @@ function SingleListItem({
           <div className="flex-shrink-0 w-full md:w-auto">
             <Link
               prefetch={true}
-              href={`/earn?ticker=${item.ticker}&action=${action}`}
+              href={`/earn?ticker=${item.ticker}&action=${action}&option=${item.ticker === "LAB" ? "put" : "call"}`}
             >
               <Button
                 disabled={!item.isActive}
@@ -145,7 +151,7 @@ function SingleListItem({
                   text-white font-semibold text-sm md:text-[15px] rounded-md w-full md:w-auto
                 `}
               >
-                {action === "buy" ? "Buy Call" : "Sell Call"}
+                {action === "buy" ? (item.ticker === "LAB" ? "Buy Put" : "Buy Call") : (item.ticker === "LAB" ? "Sell Put" : "Sell Call")}
               </Button>
             </Link>
           </div>

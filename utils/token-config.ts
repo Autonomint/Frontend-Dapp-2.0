@@ -48,9 +48,24 @@ export interface CoveredCallAsset {
   priceChange?: string;
   openInterestValue?: string;
   openInterestContracts?: string;
+  chipLabel?: string;
 }
 
 export const coveredCallAssets: CoveredCallAsset[] = [
+  {
+    ticker: "LAB",
+    name: "Token unlock catalyst",
+    type: "covered call",
+    maxApr: 150,
+    minApr: 10,
+    multipliers: ["+1x Pyth", "+1x Base"],
+    logo: "https://s3.coinmarketcap.com/static-gravity/image/92fb96b0f0ac4efc85d76156053e7096.png",
+    spotPrice: "10.00",
+    priceChange: "+0.00%",
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts",
+    chipLabel: "Crypto"
+  },
   {
     ticker: "NVDA",
     name: "Nvidia AI",

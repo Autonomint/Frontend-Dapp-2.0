@@ -75,6 +75,7 @@ const CoveredCallTemplate = ({
   const searchParams = useSearchParams();
   const ticker = searchParams.get("ticker") || "NVDA";
   const actionParam = searchParams.get("action");
+  const option = searchParams.get("option") || "call";
   const action =
     actionParam === "buy" || actionParam === "call"
       ? "buy"
@@ -82,10 +83,11 @@ const CoveredCallTemplate = ({
         ? "sell"
         : "sell";
   const isBuyMode = action === "buy";
+  const isPutOption = option === "put";
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
   const [selectedAction, setSelectedAction] = useState(
-    isBuyMode ? "Buy Call" : "Sell Calls",
+    isBuyMode ? (isPutOption ? "Buy Put" : "Buy Call") : (isPutOption ? "Sell Puts" : "Sell Calls"),
   );
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedPrice, setSelectedPrice] = useState<PriceOption | null>(null);
@@ -98,13 +100,13 @@ const CoveredCallTemplate = ({
 
   const tickers = ["NVDA"];
   const actions = isBuyMode
-    ? ["Buy Call"]
-    : ["Buy Call", "Sell Calls"];
+    ? [isPutOption ? "Buy Put" : "Buy Call"]
+    : [isPutOption ? "Sell Puts" : "Sell Calls"];
 
   useEffect(() => {
     setSelectedTicker(ticker);
-    setSelectedAction(isBuyMode ? "Buy Call" : "Sell Calls");
-  }, [ticker, isBuyMode]);
+    setSelectedAction(isBuyMode ? (isPutOption ? "Buy Put" : "Buy Call") : (isPutOption ? "Sell Puts" : "Sell Calls"));
+  }, [ticker, isBuyMode, isPutOption]);
 
   // Helper function to get logo URL for ticker
   const getTickerLogo = (ticker: string) => {
@@ -628,10 +630,10 @@ const CoveredCallTemplate = ({
             {!isBuyMode && (
               <div className="mb-8 text-left">
                 <div className="text-xs uppercase tracking-[0.22em] text-[#5fb88a] font-plex-grotesk mb-2 inline-flex items-center gap-2 before:content-[''] before:w-4 before:h-px before:bg-[#5fb88a]">
-                  Pool · Sell Calls
+                  Pool · {isPutOption ? "Sell Puts" : "Sell Calls"}
                 </div>
                 <h1 className="text-[32px] sm:text-[38px] font-serif font-normal leading-[1.1] tracking-[-0.025em] text-textBlack dark:text-white max-w-[24ch]">
-                  Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from calls written against the pool
+                  Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from {isPutOption ? "puts" : "calls"} written against the pool
                 </h1>
 
               </div>
@@ -643,7 +645,7 @@ const CoveredCallTemplate = ({
                 {/* Field 1: Asset to write calls on */}
                 <div className="bg-white dark:bg-[#161616] border border-[#e5e5e3] dark:border-[#1c2e2a] rounded-[14px] p-4 focus-within:border-[#5fb88a] transition-colors">
                   <div className="font-plex-grotesk text-[9.5px] uppercase tracking-[0.18em] text-grayLight dark:text-gray-400 mb-2.5">
-                    Asset to write calls on
+                    {isPutOption ? "Asset to write puts on" : "Asset to write calls on"}
                   </div>
                   <div className="flex items-center justify-between gap-2.5">
                     <span className="flex items-center gap-2.5 text-lg font-medium text-textBlack dark:text-white">
@@ -655,7 +657,7 @@ const CoveredCallTemplate = ({
                     <span className="text-grayLight dark:text-gray-400 text-[10px]">▼</span>
                   </div>
                   <div className="font-plex-grotesk text-[10.5px] text-grayLight dark:text-gray-400 mt-2.5 leading-relaxed">
-                    Premium from all {selectedTicker} call buyers flows to this pool.
+                    Premium from all {selectedTicker} {isPutOption ? "put" : "call"} buyers flows to this pool.
                   </div>
                 </div>
 
@@ -672,7 +674,7 @@ const CoveredCallTemplate = ({
                     <span className="text-grayLight dark:text-gray-400 text-[10px]">▼</span>
                   </div>
                   <div className="font-plex-grotesk text-[10.5px] text-grayLight dark:text-gray-400 mt-2.5 leading-relaxed">
-                    Your deposit is locked until <strong className="text-[#5fb88a] font-medium">{lockEndDate}</strong>. Every call sold in this window earns you a share.
+                    Your deposit is locked until <strong className="text-[#5fb88a] font-medium">{lockEndDate}</strong>. Every {isPutOption ? "put" : "call"} sold in this window earns you a share.
                   </div>
                 </div>
               </div>
@@ -847,11 +849,21 @@ const CoveredCallTemplate = ({
                         </div>
                         {/* Explain box */}
                         <div className="bg-[#f0f4f3] dark:bg-[#161616] border border-grayLight dark:border-grayLight rounded-[10px] p-[14px_16px] font-['JetBrains_Mono',monospace] text-[11.5px] leading-[1.6] text-grayLight dark:text-gray-400">
-
-                          Premium is paid by everyone buying {ticker} calls written against this pool, split{" "}
-                          <span className="font-medium text-[#5fb88a]">proportionally</span> by each depositor's share.{" "}
-                          <strong className="font-medium text-black dark:text-white">The more calls bought during your 30 days, the higher your premium.</strong>{" "}
-                          Numbers above are estimates from past activity; actuals depend on real buy flow.
+                          {isPutOption ? (
+                            <>
+                              Premium comes from everyone buying {ticker} puts written against this pool, split{" "}
+                              <span className="font-medium text-[#5fb88a]">proportionally</span> by each depositor's share.{" "}
+                              <strong className="font-medium text-black dark:text-white">The more puts bought during your deposit period, the higher your payout.</strong>{" "}
+                              The estimates above are based on past activity — actuals depend on real buy flow.
+                            </>
+                          ) : (
+                            <>
+                              Premium is paid by everyone buying {ticker} calls written against this pool, split{" "}
+                              <span className="font-medium text-[#5fb88a]">proportionally</span> by each depositor's share.{" "}
+                              <strong className="font-medium text-black dark:text-white">The more calls bought during your 30 days, the higher your premium.</strong>{" "}
+                              Numbers above are estimates from past activity; actuals depend on real buy flow.
+                            </>
+                          )}
                         </div>
                       </>
                     )}
@@ -890,7 +902,7 @@ const CoveredCallTemplate = ({
                               );
                             })()}
                             <div className="text-sm sm:text-lg font-medium dark:text-green-500 text-green-600">
-                              Get 0 {ticker} back
+                              {isPutOption ? "Received the downside below strike" : `Get 0 ${ticker} back`}
                             </div>
                           </div>
                         </div>
@@ -901,9 +913,20 @@ const CoveredCallTemplate = ({
                           </p>
                           <div className="mt-3 sm:mt-4 flex items-center gap-1 sm:gap-2 flex-wrap">
                             <div className="text-sm sm:text-lg font-medium dark:text-green-500 text-green-600">
-                              Receive the upside above strike
+                              {isPutOption ? "Get 0 USDC back" : "Receive the upside above strike"}
                             </div>
-                            {(() => {
+                            {isPutOption ? (
+                              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 p-0.5 sm:p-1 flex items-center justify-center flex-shrink-0">
+                                <Image
+                                  src={usdcIcon}
+                                  alt="USDC"
+                                  width={20}
+                                  height={20}
+                                  className="object-contain"
+                                  unoptimized
+                                />
+                              </div>
+                            ) : (() => {
                               const logoUrl = getTickerLogo(ticker);
                               return logoUrl ? (
                                 <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 p-0.5 sm:p-1 flex items-center justify-center flex-shrink-0">
@@ -943,7 +966,11 @@ const CoveredCallTemplate = ({
                     </span>
                   </div>
                   <div className="font-['Inter_Tight',sans-serif] text-[14px] leading-[1.65] text-black dark:text-white mb-[18px]">
-                    If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the USDC you deposited.
+                    {isPutOption ? (
+                      <>If a put sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes below the strike), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is capped at the USDC you deposited.</>
+                    ) : (
+                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the USDC you deposited.</>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-[12px] pt-[16px] border-t border-dashed border-[#e5e5e3] dark:border-[#1c2e2a]">
 

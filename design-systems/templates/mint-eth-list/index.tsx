@@ -5,10 +5,11 @@ import CoveredCallsNavbar from "@/design-systems/organisms/CoveredCallsNavbar";
 import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
 import { motion } from "framer-motion";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { coveredCallAssets } from "@/utils/token-config";
 
 function MintEthListTemplate({ action = "sell" }: { action?: string }) {
+  const [activeTab, setActiveTab] = useState(0);
   // Custom hooks to fetch real-time spot prices for covered call assets
   const { price: spotPriceNVDA, isLoading: isLoadingNVDA } =
     useGetSpotPrice("NVDA");
@@ -24,6 +25,8 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     useGetSpotPrice("MSTR");
   const { price: spotPriceAAPL, isLoading: isLoadingAAPL } =
     useGetSpotPrice("AAPL");
+  const { price: spotPriceLAB, isLoading: isLoadingLAB } =
+    useGetSpotPrice("LAB");
 
   // List of covered call assets
   const list = coveredCallAssets.map((asset) => ({
@@ -66,6 +69,10 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
           realTimePrice = spotPriceAAPL;
           isLoading = isLoadingAAPL;
           break;
+        case "LAB":
+          realTimePrice = spotPriceLAB;
+          isLoading = isLoadingLAB;
+          break;
         default:
           break;
       }
@@ -88,6 +95,7 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     spotPriceCOIN,
     spotPriceMSTR,
     spotPriceAAPL,
+    spotPriceLAB,
     isLoadingNVDA,
     isLoadingTSLA,
     isLoadingSMR,
@@ -95,6 +103,7 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     isLoadingCOIN,
     isLoadingMSTR,
     isLoadingAAPL,
+    isLoadingLAB,
   ]);
 
   return (
@@ -115,17 +124,26 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
         </div>
         <div className="flex flex-1 justify-start md:justify-end items-start md:items-end">
           <div className="text-xs sm:text-sm uppercase text-left md:text-right w-full md:w-[45%] lg:w-[35%] leading-relaxed">
-            Markets open · <span className="text-grayLight">NYSE</span> 7{" "}
+            Markets open · <span className="text-grayLight">NYSE</span> 8{" "}
             <span className="text-grayLight">live tickers</span> · $200K{" "}
             <span className="text-grayLight">OPEN</span> Option chain pricing
             via Pyth & CBOE through Alpaca APIs
           </div>
         </div>
       </div>
-      <CoveredCallsNavbar activeBack={false} action={action} />
+      <CoveredCallsNavbar activeBack={false} action={action} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="md:relative">
         <motion.div className="flex flex-col">
-          {formattedaBorrowAssetList.map((item, index) => (
+          {formattedaBorrowAssetList
+            .filter((item) => {
+              if (activeTab === 0) return true; // All
+              // Tab 1 = Buy Calls / Covered Calls (stocks, no LAB)
+              if (activeTab === 1) return item.ticker !== "LAB";
+              // Tab 2 = Buy Puts / Cash-Secured Puts (only LAB)
+              if (activeTab === 2) return item.ticker === "LAB";
+              return true;
+            })
+            .map((item, index) => (
             <SingleListItem key={index} item={item} action={action} />
           ))}
         </motion.div>

@@ -9,6 +9,8 @@ import { useTheme } from "next-themes";
 interface CoveredCallsNavbarProps {
   activeBack?: boolean;
   action?: string;
+  activeTab?: number;
+  onTabChange?: (index: number) => void;
 }
 
 interface TabOption {
@@ -18,13 +20,21 @@ interface TabOption {
   InActiveHeading?: string;
   isComingSoon?: boolean;
   hasLiveChip?: boolean;
+  liveCount?: string;
 }
 
 const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
   activeBack = true,
   action = "sell",
+  activeTab: controlledTab,
+  onTabChange,
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [internalTab, setInternalTab] = useState(0);
+  const activeTab = controlledTab !== undefined ? controlledTab : internalTab;
+  const setActiveTab = (index: number) => {
+    setInternalTab(index);
+    onTabChange?.(index);
+  };
   const router = useRouter();
   const { theme } = useTheme();
   const isBuyMode = action === "buy";
@@ -40,17 +50,56 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
     };
 
     if (isBuyMode) {
-      return [primaryTab];
+      return [
+        {
+          nameA: "All",
+          index: 0,
+          isFeatureActive: true,
+          InActiveHeading: "",
+          isComingSoon: false,
+          hasLiveChip: true,
+          liveCount: "8",
+        },
+        {
+          ...primaryTab,
+          index: 1,
+          liveCount: "7",
+        },
+        {
+          nameA: "Buy Puts",
+          index: 2,
+          isFeatureActive: true,
+          InActiveHeading: "",
+          isComingSoon: false,
+          hasLiveChip: true,
+          liveCount: "1",
+        },
+      ];
     }
 
     return [
-      primaryTab,
+      {
+        nameA: "All",
+        index: 0,
+        isFeatureActive: true,
+        InActiveHeading: "",
+        isComingSoon: false,
+        hasLiveChip: true,
+        liveCount: "8",
+      },
+      {
+        ...primaryTab,
+        index: 1,
+        liveCount: "7",
+      },
       {
         nameA: "Cash-Secured Puts",
-        index: 1,
-        isFeatureActive: false,
-        InActiveHeading: "Coming Soon",
-        isComingSoon: true,
+        index: 2,
+        isFeatureActive: true,
+        InActiveHeading: "",
+        isComingSoon: false,
+        hasLiveChip: true,
+        liveCount: "1",
       },
     ];
   }, [isBuyMode]);
@@ -80,6 +129,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
               InActiveHeading,
               isComingSoon,
               hasLiveChip,
+              liveCount,
             }) => (
               <button
                 key={nameA}
@@ -98,7 +148,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
                   {hasLiveChip && (
                     <span className="relative inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] xl:text-xs font-semibold bg-gradient-to-r from-emerald-50 to-green-100 dark:from-emerald-900 dark:to-green-800 text-emerald-800 dark:text-green-200 shadow-sm border border-emerald-200 dark:border-green-700">
                       <span className="w-1 h-1 bg-emerald-400 dark:bg-green-500 rounded-full mr-1 animate-pulse"></span>
-                      7 LIVE
+                      {liveCount || "7"} LIVE
                     </span>
                   )}
                 </span>
