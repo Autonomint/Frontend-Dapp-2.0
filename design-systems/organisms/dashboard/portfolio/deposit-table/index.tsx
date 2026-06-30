@@ -8,7 +8,7 @@ import { Button } from "@/design-systems/atoms/button";
 import { PositionData } from "@/utils/interface";
 import { useAccount } from "wagmi";
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import { calculatePnL } from "@/utils/helpers";
+import { calculatePnL, calculatePutPnL } from "@/utils/helpers";
 
 function DepositTable({
   tabPosition,
@@ -144,8 +144,15 @@ function DepositTable({
         const aSpotPrice = spotPriceMap[a.collateralType] || 0;
         const bSpotPrice = spotPriceMap[b.collateralType] || 0;
         
-        const aPnL = calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount));
-        const bPnL = calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount));
+        const aIsLabPut = a.collateralType === "LAB";
+        const bIsLabPut = b.collateralType === "LAB";
+        
+        const aPnL = aIsLabPut
+          ? calculatePutPnL(aSpotPrice, aStrike, Number(a.depositedAmount))
+          : calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount));
+        const bPnL = bIsLabPut
+          ? calculatePutPnL(bSpotPrice, bStrike, Number(b.depositedAmount))
+          : calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount));
         
         return sortAsc ? bPnL - aPnL : aPnL - bPnL;
       }

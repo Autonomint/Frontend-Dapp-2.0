@@ -5,7 +5,7 @@ import Spinner from "@/design-systems/atoms/Spinner";
 import { formatUnits } from "viem";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/design-systems/atoms/tooltip";
 import { Info } from "lucide-react";
-import { calculatePnL } from "@/utils/helpers";
+import { calculatePnL, calculatePutPnL } from "@/utils/helpers";
 
 const DepositTableRow = ({
   position,
@@ -36,11 +36,16 @@ const DepositTableRow = ({
   const remainingDays = calculateRemainingDays(Number(position.validTill));
   const isExpired = remainingDays <= 0 || position.isExpired;
 
+  // Determine if this is a LAB put position
+  const isLabPut = position.collateralType === "LAB";
+  
   // Calculate real-time PnL
   const currentPrice = spotPrice || 0;
   const strikePriceNum = Number(position.strikePrice);
   const depositedAmount = Number(position.depositedAmount);
-  const realTimePnL = calculatePnL(currentPrice, strikePriceNum, depositedAmount);
+  const realTimePnL = isLabPut
+    ? calculatePutPnL(currentPrice, strikePriceNum, depositedAmount)
+    : calculatePnL(currentPrice, strikePriceNum, depositedAmount);
   const hasRealTimePrice = spotPrice !== undefined && spotPrice !== null && spotPrice > 0;
 
   return (
