@@ -318,7 +318,7 @@ const CoveredCallTemplate = ({
           user: address,
         });
         const depositingAmount = parseUnits(
-          (selectedPriceData.premium * parsedAmount).toFixed(6),
+          ((selectedPriceData.premium * parsedAmount) + 2 ).toFixed(6),
           6,
         );
 
