@@ -570,7 +570,7 @@ export function calculatePnL(
   depositedAmount: number
 ): number {
   if (currentPrice <= strikePrice) return 0;
-  
+
   const maxCappedPrice = strikePrice * 1.30;
   const effectivePrice = Math.min(currentPrice, maxCappedPrice);
   return (effectivePrice - strikePrice) * depositedAmount;
@@ -578,8 +578,9 @@ export function calculatePnL(
 
 /**
  * Calculates real-time PnL for a put option position.
- * If strike price > current price:
- *   PnL = (strikePrice - currentPrice) * depositedAmount
+ * Only shows PnL when current price is below $1.
+ * Strike price is stored as scaled integer (e.g., 50 = $0.50), so divide by 100.
+ * PnL = (strikeInDollars - currentPrice) * depositedAmount
  * Else: PnL = 0
  */
 export function calculatePutPnL(
@@ -587,6 +588,14 @@ export function calculatePutPnL(
   strikePrice: number,
   depositedAmount: number
 ): number {
-  if (currentPrice >= strikePrice) return 0;
-  return (strikePrice - currentPrice) * depositedAmount;
+  // Strike is stored as scaled integer (e.g., 50 means $0.50)
+  const strikeInDollars = strikePrice / 100;
+  
+  console.log('calculatePutPnL', { currentPrice, strikePrice, strikeInDollars, depositedAmount });
+  
+  // Only show PnL if current price is below $1
+  if (currentPrice >= 1) return 0;
+  
+  if (currentPrice >= strikeInDollars) return 0;
+  return (strikeInDollars - currentPrice) * depositedAmount;
 }
