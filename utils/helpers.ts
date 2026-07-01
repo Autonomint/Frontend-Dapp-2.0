@@ -591,11 +591,6 @@ export function calculatePutPnL(
   // Strike is stored as scaled integer (e.g., 50 means $0.50)
   const strikeInDollars = strikePrice / 100;
   
-  console.log('calculatePutPnL', { currentPrice, strikePrice, strikeInDollars, depositedAmount });
-  
-  // Only show PnL if current price is below $1
-  if (currentPrice >= 1) return 0;
-  
   if (currentPrice >= strikeInDollars) return 0;
   return (strikeInDollars - currentPrice) * depositedAmount;
 }
