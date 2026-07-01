@@ -43,7 +43,7 @@ const TrickPage = () => {
                 </svg>
               </div>
               <div className="step-content">
-                <div className="step-title">Buy call on Nondollar</div>
+                <div className="step-title">Buy calls and puts on Nondollar</div>
                 <div className="step-body">
                   Make any real trade on the platform. Premium paid will be eligible for refund based on the views your post gets.
                 </div>
