@@ -997,8 +997,8 @@ const CoveredCallTemplate = ({
                 </div>
               )}
 
-              <div>
-                <button
+              <div className="m-4 sm:m-8 flex justify-center">
+                <Button
                   type="submit"
                   onClick={handleDeposit}
                   disabled={
@@ -1008,9 +1008,8 @@ const CoveredCallTemplate = ({
                     stockCdsDepositIsPending
                   }
                   className={`
-                    bg-[#141414] border-[0.5px] border-[#262626] py-[18px]
-                    text-white font-medium text-[16px] w-full rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed
-                    hover:bg-[#1a1a1a] transition-colors
+                    bg-black dark:bg-custom-gradient-to-top py-4 sm:py-6
+                    text-white font-semibold text-lg sm:text-[24px] w-full sm:w-1/2 h-full rounded-[12px] disabled:opacity-50 disabled:cursor-not-allowed
                   `}
                 >
                   {isDepositing ||
@@ -1021,7 +1020,7 @@ const CoveredCallTemplate = ({
                     : isBuyMode
                       ? "Buy Contract"
                       : "Earn upfront premium now"}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
