@@ -1218,7 +1218,7 @@ const CoveredCallTemplate = ({
                 </div>
                 <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
               </div>
-              <div className="text-[13px] text-[#7fecbe]">Completed</div>
+              <div className="text-[13px] text-white">Completed</div>
             </a>
           </div>
         </div>
