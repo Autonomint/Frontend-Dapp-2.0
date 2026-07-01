@@ -1,5 +1,6 @@
 import { BACKEND_API_URL } from "@/utils/urls";
 import { useMutation } from "@tanstack/react-query";
+import { parseUnits } from "ethers";
 import { useAccount } from "wagmi";
 
 export interface StockSignedDataReturn {
@@ -11,24 +12,25 @@ export interface StockSignedDataReturn {
   signature: `0x${string}`;
 }
 
-export type StockGetDepositBorrowDto = {
+export interface StockGetDepositBorrowDto {
   address: string;
   chainId: number;
   index: number;
   collateralType?: string;
   strikePrice?: number;
-  expiry?: string;
-  optionType?: string;
-};
+  optionFees?: string;
+}
 
+/**
+ * Function to fetch the stock options borrow signed data
+ */
 async function signedDataForStockDeposit(
   address: `0x${string}` | undefined,
   chainId: number,
   index: number,
   collateralType: string,
   strikePrice: number,
-  expiry: string,
-  optionType: string
+  optionFees: string
 ): Promise<StockSignedDataReturn> {
   return fetch(`${BACKEND_API_URL}/stock-options/borrows/signedDataForBorrowDeposit`, {
     method: "POST",
@@ -40,13 +42,15 @@ async function signedDataForStockDeposit(
       chainId: chainId,
       index: index,
       collateralType: collateralType,
-      strikePrice: strikePrice,
-      expiry: expiry,
-      optionType: optionType,
+      strikePrice: parseUnits((strikePrice).toString(), 2).toString(),
+      optionFees: optionFees,
     }),
   }).then((response) => response.json());
 }
 
+/**
+ * Custom hook to fetch signed data for stock options deposit
+ */
 const useGetStockSignedData = (index?: number) => {
   const { address, chainId } = useAccount();
 
@@ -58,8 +62,7 @@ const useGetStockSignedData = (index?: number) => {
     mutationFn: (variables: {
       collateralType: string;
       strikePrice: number;
-      expiry: string;
-      optionType: string;
+      optionFees: string;
     }) =>
       signedDataForStockDeposit(
         address ? address : undefined,
@@ -67,8 +70,7 @@ const useGetStockSignedData = (index?: number) => {
         index || 0,
         variables.collateralType,
         variables.strikePrice,
-        variables.expiry,
-        variables.optionType,
+        variables.optionFees,
       ),
   });
 
