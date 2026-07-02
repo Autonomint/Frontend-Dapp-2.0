@@ -356,7 +356,8 @@ const CoveredCallTemplate = ({
           const signedData = await refetchStockSignedData({
             collateralType: ticker,
             strikePrice: selectedPriceData.strike,
-            optionFees: depositingAmount.toString(),
+            expiry: selectedDate,
+            optionType: option,
           });
 
           if (signedData) {
