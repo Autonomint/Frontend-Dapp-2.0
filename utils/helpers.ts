@@ -624,9 +624,9 @@ export function calculatePutPnL(
 
   // Uncapped PnL
   const uncappedPnL = (strikeInDollars - currentPrice) * depositedAmount;
-  
-  // Max PnL is 10% of deposited amount
-  const maxPnL = depositedAmount * 0.10;
 
+  // Max PnL is 10% of deposited amount
+  const maxPnL = uncappedPnL * 0.10;
+  console.log(`Uncapped PnL: ${uncappedPnL}, Max PnL: ${maxPnL}`);
   return Math.min(uncappedPnL, maxPnL);
 }
