@@ -7,7 +7,8 @@ import cryptoEth from "@/app/assets/eth.png";
 import usdcIcon from "@/app/assets/usdc.svg";
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronDown, ArrowLeft, ExternalLink } from "lucide-react";
+import { ChevronDown, ArrowLeft, ExternalLink, HelpCircle } from "lucide-react";
+import HowItWorksPopup from "@/design-systems/molecule/popups/HowItWorksPopup";
 import useGetSpotPrice from "@/hookes/api-hooks/useGetSpotPrice";
 import useGetExpiries from "@/hookes/api-hooks/useGetExpiries";
 import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
@@ -96,6 +97,7 @@ const CoveredCallTemplate = ({
   const [isTickerDropdownOpen, setIsTickerDropdownOpen] = useState(false);
   const [isActionDropdownOpen, setIsActionDropdownOpen] = useState(false);
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const router = useRouter();
 
   const tickers = ["NVDA"];
@@ -177,6 +179,8 @@ const CoveredCallTemplate = ({
     date.setDate(date.getDate() + lockDays);
     return formatDate(date.toISOString());
   }, [lockDays]);
+
+  const popupTicker = selectedTicker === "LAB" ? "Token" : selectedTicker;
 
   const { address, isConnected, chainId } = useAccount();
 
@@ -630,14 +634,23 @@ const CoveredCallTemplate = ({
 
             {/* Sell Mode Heading - Pool Covered Calls */}
             {!isBuyMode && (
-              <div className="mb-8 text-left">
-                <div className="text-xs uppercase tracking-[0.22em] text-[#5fb88a] font-plex-grotesk mb-2 inline-flex items-center gap-2 before:content-[''] before:w-4 before:h-px before:bg-[#5fb88a]">
-                  Pool · {isPutOption ? "Sell Puts" : "Sell Calls"}
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-start justify-between gap-6 mb-10 text-left">
+                <div className="flex-1">
+                  <div className="text-xs uppercase tracking-[0.22em] text-[#5fb88a] font-plex-grotesk mb-2 inline-flex items-center gap-2 before:content-[''] before:w-4 before:h-px before:bg-[#5fb88a]">
+                    Pool · {isPutOption ? "Sell Puts" : "Sell Calls"}
+                  </div>
+                  <h1 className="text-[32px] sm:text-[38px] font-serif font-normal leading-[1.1] tracking-[-0.025em] text-textBlack dark:text-white max-w-[24ch]">
+                    Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from {isPutOption ? "puts" : "calls"} written against the pool
+                  </h1>
                 </div>
-                <h1 className="text-[32px] sm:text-[38px] font-serif font-normal leading-[1.1] tracking-[-0.025em] text-textBlack dark:text-white max-w-[24ch]">
-                  Deposit crypto, <em className="italic text-[#5fb88a] not-italic">earn premium</em> from {isPutOption ? "puts" : "calls"} written against the pool
-                </h1>
 
+                <button
+                  onClick={() => setIsHowItWorksOpen(true)}
+                  className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-[8px] border-[0.5px] border-[#7fecbe]/30 bg-[#7fecbe]/5 text-[#7fecbe] hover:bg-[#7fecbe]/10 hover:border-[#7fecbe]/50 text-[13px] font-medium cursor-pointer transition-all duration-150 shrink-0 mt-0 sm:mt-6 self-start font-plex-sans"
+                >
+                  <HelpCircle className="w-[16px] h-[16px]" />
+                  How it works?
+                </button>
               </div>
             )}
 
@@ -1272,6 +1285,15 @@ const CoveredCallTemplate = ({
         </div>
       </>
       )}
+
+      <HowItWorksPopup
+        isOpen={isHowItWorksOpen}
+        onOpenChange={setIsHowItWorksOpen}
+        isPutOption={isPutOption}
+        lockDays={lockDays}
+        lockEndDate={lockEndDate}
+        selectedTicker={selectedTicker}
+      />
     </div>
   );
 };
