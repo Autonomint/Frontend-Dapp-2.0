@@ -29,3 +29,9 @@
 - UI: shadcn/ui (Radix primitives), framer-motion, lucide-react, sonner (toasts)
 - State: TanStack React Query 5, Formik + Yup
 - Styling: tailwind-merge + clsx via `cn()` utility in `@/utils/helpers`
+
+# Code Quality & Documentation
+- Write clean, maintainable, and modular code.
+- Add clear JSDoc comments to functions and inline comments explaining complex, non-obvious logic.
+- Preserve existing comments and docstrings unless explicitly asked to modify them.
+
