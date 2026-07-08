@@ -829,7 +829,7 @@ const CoveredCallTemplate = ({
                         </div>
                         {/* Explain box - Buy mode */}
                         <div className="bg-[#f0f4f3] dark:bg-[#161616] border border-grayLight dark:border-grayLight rounded-[10px] p-[14px_16px] mt-4 font-['JetBrains_Mono',monospace] text-[11.5px] leading-[1.6] text-grayLight dark:text-gray-400">
-                          Your ITM payout is capped at 10% above the strike price. This cap is what makes the discounted premium possible and reflects the collateral committed by call sellers. The cap is however flexible and can be updated to 30% max as per the collateral committed by call sellers
+                          Your ITM payout is capped at 10% below the strike price. This cap is what makes the discounted premium possible and reflects the collateral committed by put sellers. The cap is however flexible and can be updated to 30% max as per the collateral committed by put sellers
                         </div>
                       </>
                     ) : (
