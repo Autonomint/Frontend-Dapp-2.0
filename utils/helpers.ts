@@ -606,10 +606,11 @@ export function calculatePnL(
 }
 
 /**
- * Calculates real-time PnL for a put option position.
+ * Calculates real-time PnL for a put option position (LAB).
  * Strike price is stored as scaled integer (e.g., 50 = $0.50), so divide by 100.
- * Max PnL capped at 10% of deposited amount.
- * PnL = min((strikeInDollars - currentPrice) * depositedAmount, depositedAmount * 0.10)
+ * Profit when current < strike, capped at 10% below strike.
+ * PnL = (strikeInDollars - effectivePrice) * depositedAmount
+ * where effectivePrice = max(currentPrice, strikeInDollars * 0.90)
  * Else: PnL = 0
  */
 export function calculatePutPnL(
@@ -622,11 +623,11 @@ export function calculatePutPnL(
 
   if (currentPrice >= strikeInDollars) return 0;
 
-  // Uncapped PnL
-  const uncappedPnL = (strikeInDollars - currentPrice) * depositedAmount;
+  // Floor price is 90% of strike — max 10% profit below strike
+  const floorPrice = strikeInDollars * 0.90;
+  const effectivePrice = Math.max(currentPrice, floorPrice);
 
-  // Max PnL is 10% of deposited amount
-  const maxPnL = uncappedPnL * 0.10;
-  console.log(`Uncapped PnL: ${uncappedPnL}, Max PnL: ${maxPnL}`);
-  return Math.min(uncappedPnL, maxPnL);
+  const pnl = (strikeInDollars - effectivePrice) * depositedAmount;
+  console.log(`LAB PnL: current=${currentPrice}, strike=${strikeInDollars}, floor=${floorPrice}, effective=${effectivePrice}, pnl=${pnl}`);
+  return pnl;
 }
