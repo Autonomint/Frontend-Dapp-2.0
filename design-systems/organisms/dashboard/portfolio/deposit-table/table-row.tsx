@@ -1,5 +1,5 @@
 import { BorrowStatus } from "@/utils/constants";
-import { calculateRemainingDays } from "@/utils/helpers";
+import { calculateRemainingDays, formatDateTime } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { formatUnits } from "viem";
@@ -81,7 +81,7 @@ const DepositTableRow = ({
         )}
       </td>
       <td className="px-5 py-4 2xl:py-6">
-        {isExpired ? "Expired" : `${remainingDays} days`}
+        {formatDateTime(position.validTill)}
       </td>
       <td className="px-5 py-4 2xl:py-6">
         {position.status === BorrowStatus.LIQUIDATED

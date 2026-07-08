@@ -541,6 +541,35 @@ export function formatDate(dateStr: string): string {
   return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
 }
 
+export function formatDateTime(timestamp: number | string): string {
+  if (!timestamp) return "";
+  const num = Number(timestamp);
+  let date: Date;
+  if (!isNaN(num)) {
+    if (num < 10000000000) {
+      date = new Date(num * 1000);
+    } else {
+      date = new Date(num);
+    }
+  } else {
+    date = new Date(timestamp);
+  }
+
+  if (isNaN(date.getTime())) return "";
+
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds}`;
+}
+
+
+
 export function formatDateShort(dateStr: string): string {
   if (!dateStr) return "";
   const date = new Date(dateStr);
