@@ -334,3 +334,30 @@ export const hideYieldsAddressAndIndex = [
     chainId: NetworkId.BaseSepolia
   },
 ]
+
+/**
+ * Maps a collateral-type string (as stored in PositionData.collateralType) to
+ * its profit-cap multiplier for the PnL calculation.
+ *
+ * Call options — value is the CEILING multiplier on strike price:
+ *   cappedPrice = strikePrice * PROFIT_CAP_MAP[collateralType]
+ *   e.g. 1.05 → profit capped at 5 % above strike
+ *
+ * Put options — value is the FLOOR multiplier on strike price:
+ *   floorPrice = strikeInDollars * PROFIT_CAP_MAP[collateralType]
+ *   e.g. 0.95 → profit capped at 5 % below strike
+ *
+ * Any collateral type not listed falls back to the defaults inside
+ * calculatePnL (1.30) and calculatePutPnL (0.90).
+ */
+export const PROFIT_CAP_MAP: Record<string, number> = {
+  // --- Call options (ceiling multiplier > 1) ---
+  ETH_CALL: 1.05,     // 5 % upside cap
+  BTC_CALL: 1.05,     // 5 % upside cap
+  LIGHTER_CALL: 1.10, // 10 % upside cap (LIT)
+
+  // --- Put options (floor multiplier < 1) ---
+  ETH_PUT: 0.95, // 5 % downside cap
+  BTC_PUT: 0.95, // 5 % downside cap
+  LAB: 0.90,     // 10 % downside cap (existing behaviour, now explicit)
+};

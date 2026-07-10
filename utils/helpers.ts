@@ -587,47 +587,67 @@ export function getDaysRemaining(dateStr: string): number {
 }
 
 /**
- * Calculates real-time PnL for a buy option position (call).
- * If current price > strike price:
- *   cappedPrice = min(currentPrice, strikePrice * 1.30) — max 30% upside from strike
+ * Calculates real-time PnL for a call option position.
+ *
+ * If currentPrice > strikePrice:
+ *   cappedPrice = min(currentPrice, strikePrice * profitCapMultiplier)
  *   PnL = (cappedPrice - strikePrice) * depositedAmount
  * Else: PnL = 0
+ *
+ * @param currentPrice        - Live spot price of the underlying asset
+ * @param strikePrice         - Strike price of the option
+ * @param depositedAmount     - Number of contracts (size)
+ * @param profitCapMultiplier - Max upside as a multiplier on strike (default 1.30 = 30 %).
+ *                              Use PROFIT_CAP_MAP[collateralType] to get the per-asset cap.
  */
 export function calculatePnL(
   currentPrice: number,
   strikePrice: number,
-  depositedAmount: number
+  depositedAmount: number,
+  profitCapMultiplier: number = 1.30
 ): number {
   if (currentPrice <= strikePrice) return 0;
 
-  const maxCappedPrice = strikePrice * 1.30;
+  const maxCappedPrice = strikePrice * profitCapMultiplier;
   const effectivePrice = Math.min(currentPrice, maxCappedPrice);
   return (effectivePrice - strikePrice) * depositedAmount;
 }
 
+
 /**
- * Calculates real-time PnL for a put option position (LAB).
- * Strike price is stored as scaled integer (e.g., 50 = $0.50), so divide by 100.
- * Profit when current < strike, capped at 10% below strike.
- * PnL = (strikeInDollars - effectivePrice) * depositedAmount
- * where effectivePrice = max(currentPrice, strikeInDollars * 0.90)
+ * Calculates real-time PnL for a put option position.
+ *
+ * Strike price is stored as a scaled integer (e.g. 50 → $0.50), so it is
+ * divided by 100 before use.
+ *
+ * Profit when currentPrice < strikeInDollars, capped at the floor:
+ *   floorPrice  = strikeInDollars * profitFloorMultiplier
+ *   effectivePrice = max(currentPrice, floorPrice)
+ *   PnL = (strikeInDollars - effectivePrice) * depositedAmount
  * Else: PnL = 0
+ *
+ * @param currentPrice          - Live spot price of the underlying asset
+ * @param strikePrice           - Strike price as a scaled integer (divide by 100 for $)
+ * @param depositedAmount       - Number of contracts (size)
+ * @param profitFloorMultiplier - Floor as a multiplier on strike (default 0.90 = 10 % downside cap).
+ *                                Use PROFIT_CAP_MAP[collateralType] to get the per-asset floor.
  */
 export function calculatePutPnL(
   currentPrice: number,
   strikePrice: number,
-  depositedAmount: number
+  depositedAmount: number,
+  profitFloorMultiplier: number = 0.90
 ): number {
   // Strike is stored as scaled integer (e.g., 50 means $0.50)
   const strikeInDollars = strikePrice / 100;
 
   if (currentPrice >= strikeInDollars) return 0;
 
-  // Floor price is 90% of strike — max 10% profit below strike
-  const floorPrice = strikeInDollars * 0.90;
+  // Floor price limits the max profit below strike
+  const floorPrice = strikeInDollars * profitFloorMultiplier;
   const effectivePrice = Math.max(currentPrice, floorPrice);
 
   const pnl = (strikeInDollars - effectivePrice) * depositedAmount;
-  console.log(`LAB PnL: current=${currentPrice}, strike=${strikeInDollars}, floor=${floorPrice}, effective=${effectivePrice}, pnl=${pnl}`);
+  console.log(`Put PnL: current=${currentPrice}, strike=${strikeInDollars}, floor=${floorPrice}, effective=${effectivePrice}, pnl=${pnl}`);
   return pnl;
 }

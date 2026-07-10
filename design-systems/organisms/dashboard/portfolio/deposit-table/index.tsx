@@ -1,4 +1,4 @@
-import { BorrowStatus } from "@/utils/constants";
+import { BorrowStatus, PROFIT_CAP_MAP } from "@/utils/constants";
 import { RingLoadingIcon } from "@/design-systems/atoms/SvgIcons";
 import { Typography } from "@/design-systems/atoms/Typography";
 import { useScroll } from "@/contexts/scroll";
@@ -138,22 +138,26 @@ function DepositTable({
         const bOrder = statusOrder.indexOf(b.status as keyof typeof BorrowStatus);
         return sortAsc ? bOrder - aOrder : aOrder - bOrder;
       } else if (sortBy === "profit") {
-        // Use real-time PnL for sorting for positions where spot price is available
+        // Use real-time PnL for sorting; apply per-asset profit cap from PROFIT_CAP_MAP
         const aStrike = Number(a.strikePrice);
         const bStrike = Number(b.strikePrice);
         const aSpotPrice = spotPriceMap[a.collateralType] || 0;
         const bSpotPrice = spotPriceMap[b.collateralType] || 0;
-        
+
         const aIsLabPut = a.collateralType === "LAB";
         const bIsLabPut = b.collateralType === "LAB";
-        
+
+        // Look up per-asset profit cap; undefined falls back to the 30 % default
+        const aProfitCap = PROFIT_CAP_MAP[a.collateralType];
+        const bProfitCap = PROFIT_CAP_MAP[b.collateralType];
+
         const aPnL = aIsLabPut
-          ? calculatePutPnL(aSpotPrice, aStrike, Number(a.depositedAmount))
-          : calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount));
+          ? calculatePutPnL(aSpotPrice, aStrike, Number(a.depositedAmount), aProfitCap)
+          : calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount), aProfitCap);
         const bPnL = bIsLabPut
-          ? calculatePutPnL(bSpotPrice, bStrike, Number(b.depositedAmount))
-          : calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount));
-        
+          ? calculatePutPnL(bSpotPrice, bStrike, Number(b.depositedAmount), bProfitCap)
+          : calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount), bProfitCap);
+
         return sortAsc ? bPnL - aPnL : aPnL - bPnL;
       }
       return 0;

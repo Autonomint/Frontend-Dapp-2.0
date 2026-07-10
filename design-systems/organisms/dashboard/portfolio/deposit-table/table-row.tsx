@@ -1,4 +1,4 @@
-import { BorrowStatus } from "@/utils/constants";
+import { BorrowStatus, PROFIT_CAP_MAP } from "@/utils/constants";
 import { calculateRemainingDays, formatDateTime } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import Spinner from "@/design-systems/atoms/Spinner";
@@ -38,14 +38,16 @@ const DepositTableRow = ({
 
   // Determine if this is a LAB put position
   const isLabPut = position.collateralType === "LAB";
-  
+
   // Calculate real-time PnL
   const currentPrice = spotPrice || 0;
   const strikePriceNum = Number(position.strikePrice);
   const depositedAmount = Number(position.depositedAmount);
+  // Look up per-asset profit cap; undefined falls back to the 30 % default
+  const profitCap = PROFIT_CAP_MAP[position.collateralType];
   const realTimePnL = isLabPut
-    ? calculatePutPnL(currentPrice, strikePriceNum, depositedAmount)
-    : calculatePnL(currentPrice, strikePriceNum, depositedAmount);
+    ? calculatePutPnL(currentPrice, strikePriceNum, depositedAmount, profitCap)
+    : calculatePnL(currentPrice, strikePriceNum, depositedAmount, profitCap);
   const hasRealTimePrice = spotPrice !== undefined && spotPrice !== null && spotPrice > 0;
 
   return (
