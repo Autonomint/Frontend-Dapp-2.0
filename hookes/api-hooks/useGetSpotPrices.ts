@@ -1,4 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
+import { getApiAssetName } from "@/utils/constants";
 import { useQueries } from "@tanstack/react-query";
 
 /**
@@ -10,8 +11,10 @@ const useGetSpotPrices = (symbols: string[]) => {
     queries: (symbols || []).map((symbol) => ({
       queryKey: ["spotPrice", symbol],
       queryFn: async (): Promise<number> => {
+        // Translate display ticker to the API's StockAssetName enum key
+        const apiAssetName = getApiAssetName(symbol);
         const response = await fetch(
-          `${BACKEND_API_URL}/stock-options/spot-price?symbol=${symbol}`
+          `${BACKEND_API_URL}/stock-options/spot-price?symbol=${apiAssetName}`
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch ${symbol} price`);

@@ -62,7 +62,7 @@ export enum StockAssetName {
   DUMMY,
   USDC,
   NVDA,
-  TSTLA,
+  TSLA,
   SMR,
   PLTR,
   COIN,
@@ -76,10 +76,65 @@ export enum StockAssetName {
   LIGHTER_CALL,
 }
 
+/**
+ * Maps frontend display ticker symbols to the StockAssetName enum **key** strings
+ * expected by the backend API (spot-price, expiries, option-bids endpoints).
+ *
+ * Only entries that differ from the raw display ticker are listed here.
+ * Everything else falls back to the ticker string itself via getApiAssetName.
+ *
+ * All tickers pass through unchanged (ticker === API name).
+ */
+export const tickerToApiAssetName: Record<string, string> = {
+  NVDA: "NVDA",
+  TSLA: "TSLA",
+  SMR: "SMR",
+  PLTR: "PLTR",
+  COIN: "COIN",
+  MSTR: "MSTR",
+  AAPL: "AAPL",
+  LAB: "LAB",
+  // Crypto option enum keys — pass-through so portfolio collateralType values round-trip correctly
+  ETH_CALL: "ETH_CALL",
+  ETH_PUT: "ETH_PUT",
+  BTC_CALL: "BTC_CALL",
+  BTC_PUT: "BTC_PUT",
+  LIGHTER_CALL: "LIGHTER_CALL",
+};
+
+/**
+ * Maps crypto tickers to their API asset name based on option type (call/put).
+ * Used when the ticker alone isn't enough — we need the option side to pick the right enum key.
+ */
+const cryptoTickerOptionMap: Record<string, Partial<Record<"call" | "put", string>>> = {
+  ETH: { call: "ETH_CALL", put: "ETH_PUT" },
+  BTC: { call: "BTC_CALL", put: "BTC_PUT" },
+  LIT: { call: "LIGHTER_CALL" },
+};
+
+/**
+ * Returns the API asset name for a given display ticker.
+ *
+ * @param ticker     - The display ticker (e.g. "ETH", "TSLA", "LIT")
+ * @param optionType - Optional option side ("call" | "put"). Required for crypto tickers
+ *                     (ETH, BTC, LIT) to resolve to the correct enum key.
+ * @returns The asset name the backend expects (e.g. "ETH_CALL", "TSLA", "NVDA")
+ */
+export const getApiAssetName = (
+  ticker: string,
+  optionType?: "call" | "put",
+): string => {
+  // For crypto tickers with option variants, use the option type to pick the enum key
+  if (optionType && cryptoTickerOptionMap[ticker]) {
+    return cryptoTickerOptionMap[ticker][optionType] ?? tickerToApiAssetName[ticker] ?? ticker;
+  }
+  return tickerToApiAssetName[ticker] ?? ticker;
+};
+
 // Mapping from ticker symbol to StockAssetName enum
 export const tickerToStockAssetName: Record<string, StockAssetName> = {
   NVDA: StockAssetName.NVDA,
-  TSLA: StockAssetName.TSTLA,
+  TSLA: StockAssetName.TSLA,
   SMR: StockAssetName.SMR,
   PLTR: StockAssetName.PLTR,
   COIN: StockAssetName.COIN,
@@ -100,7 +155,7 @@ export interface StockOptionMapping {
 
 export const tickerToOptionStockAssetName: Record<string, StockOptionMapping> = {
   NVDA: { call: StockAssetName.NVDA },
-  TSLA: { call: StockAssetName.TSTLA },
+  TSLA: { call: StockAssetName.TSLA },
   SMR: { call: StockAssetName.SMR },
   PLTR: { call: StockAssetName.PLTR },
   COIN: { call: StockAssetName.COIN },

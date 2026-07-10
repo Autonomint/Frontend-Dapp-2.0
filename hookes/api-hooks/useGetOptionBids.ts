@@ -1,4 +1,5 @@
 import { BACKEND_API_URL } from "@/utils/urls";
+import { getApiAssetName } from "@/utils/constants";
 import { useQuery } from "@tanstack/react-query";
 
 export interface OptionBid {
@@ -17,8 +18,10 @@ export interface OptionBid {
  * Fetches the option bids from the TWAP API for a given underlying and expiry
  * API returns an array of option bid data
  */
-const fetchOptionBids = async (underlying: string, expiry: string): Promise<OptionBid[]> => {
-  const response = await fetch(`${BACKEND_API_URL}/stock-options/option-bids/?underlying=${underlying}&expiry=${expiry}`);
+const fetchOptionBids = async (underlying: string, expiry: string, optionType?: "call" | "put"): Promise<OptionBid[]> => {
+  // Translate display ticker to the API's StockAssetName enum key, using optionType for crypto assets
+  const apiAssetName = getApiAssetName(underlying, optionType);
+  const response = await fetch(`${BACKEND_API_URL}/stock-options/option-bids/?underlying=${apiAssetName}&expiry=${expiry}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch option bids for ${underlying} ${expiry}`);
   }
@@ -37,7 +40,7 @@ const fetchOptionBids = async (underlying: string, expiry: string): Promise<Opti
  * - isError: Boolean indicating if an error occurred
  * - refetch: Function to manually refetch the data
  */
-const useGetOptionBids = (underlying: string, expiry: string, enabled: boolean = true) => {
+const useGetOptionBids = (underlying: string, expiry: string, enabled: boolean = true, optionType?: "call" | "put") => {
   const {
     data,
     isLoading,
@@ -45,8 +48,8 @@ const useGetOptionBids = (underlying: string, expiry: string, enabled: boolean =
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["optionBids", underlying, expiry],
-    queryFn: () => fetchOptionBids(underlying, expiry),
+    queryKey: ["optionBids", underlying, expiry, optionType],
+    queryFn: () => fetchOptionBids(underlying, expiry, optionType),
     enabled: Boolean(enabled && underlying && expiry),
   });
 

@@ -116,14 +116,17 @@ const CoveredCallTemplate = ({
     return asset?.logo || null;
   };
 
+  const optionType = (option === "put" ? "put" : "call") as "call" | "put";
+
   const { price: spotPrice, isLoading: priceLoading } =
-    useGetSpotPrice(selectedTicker);
+    useGetSpotPrice(selectedTicker, true, optionType);
   const { expiries, isLoading: expiriesLoading } =
-    useGetExpiries(selectedTicker);
+    useGetExpiries(selectedTicker, true, optionType);
   const { bids, isLoading: bidsLoading } = useGetOptionBids(
     selectedTicker,
     selectedDate,
     expiries.length > 0,
+    optionType,
   );
 
   const dates = expiries;

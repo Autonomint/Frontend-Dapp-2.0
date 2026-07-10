@@ -1,12 +1,16 @@
 import { BACKEND_API_URL } from "@/utils/urls";
+import { getApiAssetName } from "@/utils/constants";
 import { useQuery } from "@tanstack/react-query";
+
 
 /**
  * Fetches the current spot price from the TWAP API for any symbol
  * API returns only the price as a number
  */
-const fetchSpotPrice = async (symbol: string): Promise<number> => {
-  const response = await fetch(`${BACKEND_API_URL}/stock-options/spot-price?symbol=${symbol}`);
+const fetchSpotPrice = async (symbol: string, optionType?: "call" | "put"): Promise<number> => {
+  // Translate display ticker to the API's StockAssetName enum key, using optionType for crypto assets
+  const apiAssetName = getApiAssetName(symbol, optionType);
+  const response = await fetch(`${BACKEND_API_URL}/stock-options/spot-price?symbol=${apiAssetName}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch ${symbol} price`);
   }
@@ -24,7 +28,7 @@ const fetchSpotPrice = async (symbol: string): Promise<number> => {
  * - isError: Boolean indicating if an error occurred
  * - refetch: Function to manually refetch the data
  */
-const useGetSpotPrice = (symbol: string, enabled: boolean = true) => {
+const useGetSpotPrice = (symbol: string, enabled: boolean = true, optionType?: "call" | "put") => {
   const {
     data,
     isLoading,
@@ -32,8 +36,8 @@ const useGetSpotPrice = (symbol: string, enabled: boolean = true) => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["spotPrice", symbol],
-    queryFn: () => fetchSpotPrice(symbol),
+    queryKey: ["spotPrice", symbol, optionType],
+    queryFn: () => fetchSpotPrice(symbol, optionType),
     enabled: Boolean(enabled && symbol),
     refetchInterval: 30000, // Refetch every 30 seconds for real-time pricing
   });
