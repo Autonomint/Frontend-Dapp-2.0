@@ -27,6 +27,13 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     useGetSpotPrice("AAPL");
   const { price: spotPriceLAB, isLoading: isLoadingLAB } =
     useGetSpotPrice("LAB");
+  // Custom hooks to fetch real-time spot prices for newly added assets (ETH, BTC, LIT)
+  const { price: spotPriceETH, isLoading: isLoadingETH } =
+    useGetSpotPrice("ETH");
+  const { price: spotPriceBTC, isLoading: isLoadingBTC } =
+    useGetSpotPrice("BTC");
+  const { price: spotPriceLIT, isLoading: isLoadingLIT } =
+    useGetSpotPrice("LIT");
 
   // List of covered call assets
   const list = coveredCallAssets.map((asset) => ({
@@ -73,6 +80,18 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
           realTimePrice = spotPriceLAB;
           isLoading = isLoadingLAB;
           break;
+        case "ETH":
+          realTimePrice = spotPriceETH;
+          isLoading = isLoadingETH;
+          break;
+        case "BTC":
+          realTimePrice = spotPriceBTC;
+          isLoading = isLoadingBTC;
+          break;
+        case "LIT":
+          realTimePrice = spotPriceLIT;
+          isLoading = isLoadingLIT;
+          break;
         default:
           break;
       }
@@ -96,6 +115,9 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     spotPriceMSTR,
     spotPriceAAPL,
     spotPriceLAB,
+    spotPriceETH,
+    spotPriceBTC,
+    spotPriceLIT,
     isLoadingNVDA,
     isLoadingTSLA,
     isLoadingSMR,
@@ -104,7 +126,20 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     isLoadingMSTR,
     isLoadingAAPL,
     isLoadingLAB,
+    isLoadingETH,
+    isLoadingBTC,
+    isLoadingLIT,
   ]);
+
+  // Dynamically filter the rendered list items based on active tab and asset capabilities (hasCall/hasPut)
+  const itemsToRender = useMemo(() => {
+    return formattedaBorrowAssetList.filter((asset) => {
+      if (activeTab === 0) return true; // All
+      if (activeTab === 1) return asset.hasCall; // Calls
+      if (activeTab === 2) return asset.hasPut; // Puts
+      return true;
+    });
+  }, [formattedaBorrowAssetList, activeTab]);
 
   return (
     <div className="min-h-[86vh] xl:h-auto">
@@ -124,7 +159,7 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
         </div>
         <div className="flex flex-1 justify-start md:justify-end items-start md:items-end">
           <div className="text-xs sm:text-sm uppercase text-left md:text-right w-full md:w-[45%] lg:w-[35%] leading-relaxed">
-            Markets open · <span className="text-grayLight">NYSE</span> 8{" "}
+            Markets open · <span className="text-grayLight">NYSE</span> 11{" "}
             <span className="text-grayLight">live tickers</span> · $200K{" "}
             <span className="text-grayLight">OPEN</span> Option chain pricing
             via Pyth & CBOE through Alpaca APIs
@@ -134,17 +169,8 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
       <CoveredCallsNavbar activeBack={false} action={action} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="md:relative">
         <motion.div className="flex flex-col">
-          {formattedaBorrowAssetList
-            .filter((item) => {
-              if (activeTab === 0) return true; // All
-              // Tab 1 = Buy Calls / Covered Calls (stocks, no LAB)
-              if (activeTab === 1) return item.ticker !== "LAB";
-              // Tab 2 = Buy Puts / Cash-Secured Puts (only LAB)
-              if (activeTab === 2) return item.ticker === "LAB";
-              return true;
-            })
-            .map((item, index) => (
-            <SingleListItem key={index} item={item} action={action} />
+          {itemsToRender.map((item, index) => (
+            <SingleListItem key={`${item.ticker}-${index}`} item={item} action={action} activeTab={activeTab} />
           ))}
         </motion.div>
       </div>

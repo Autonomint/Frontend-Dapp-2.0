@@ -32,7 +32,7 @@ import {
   stockCdsDepositAddress,
   stockUsdcAddress,
 } from "@/blockchain/contracts";
-import { tickerToStockAssetName } from "@/utils/constants";
+import { tickerToOptionStockAssetName, StockAssetName } from "@/utils/constants";
 import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
@@ -281,7 +281,10 @@ const CoveredCallTemplate = ({
         //   }
         // }
 
-        const stockAssetName = tickerToStockAssetName[selectedTicker];
+        const mapping = tickerToOptionStockAssetName[selectedTicker];
+        const stockAssetName = mapping
+          ? (isPutOption && mapping.put ? mapping.put : mapping.call)
+          : undefined;
 
         if (stockAssetName !== undefined) {
           const signedData = await refetchCdsDepositSignedData({
@@ -354,7 +357,10 @@ const CoveredCallTemplate = ({
         // 10-minute expiry for testing
         // const hedgeValidity = BigInt(600);
 
-        const stockAssetName = tickerToStockAssetName[selectedTicker];
+        const mapping = tickerToOptionStockAssetName[selectedTicker];
+        const stockAssetName = mapping
+          ? (isPutOption && mapping.put ? mapping.put : mapping.call)
+          : undefined;
 
         if (stockAssetName !== undefined) {
           const signedData = await refetchStockSignedData({

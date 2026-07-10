@@ -61,26 +61,60 @@ export enum AssetName {
 export enum StockAssetName {
   DUMMY,
   USDC,
-  STOCK_NVDIA,
-  STOCK_TSTLA,
-  STOCK_SMR,
-  STOCK_PLTR,
-  STOCK_COIN,
-  STOCK_MSTR,
-  STOCK_AAPL,
-  STOCK_LAB,
+  NVDA,
+  TSTLA,
+  SMR,
+  PLTR,
+  COIN,
+  MSTR,
+  AAPL,
+  LAB,
+  ETH_CALL,
+  ETH_PUT,
+  BTC_CALL,
+  BTC_PUT,
+  LIGHTER_CALL,
 }
 
 // Mapping from ticker symbol to StockAssetName enum
 export const tickerToStockAssetName: Record<string, StockAssetName> = {
-  NVDA: StockAssetName.STOCK_NVDIA,
-  TSLA: StockAssetName.STOCK_TSTLA,
-  SMR: StockAssetName.STOCK_SMR,
-  PLTR: StockAssetName.STOCK_PLTR,
-  COIN: StockAssetName.STOCK_COIN,
-  MSTR: StockAssetName.STOCK_MSTR,
-  AAPL: StockAssetName.STOCK_AAPL,
-  LAB: StockAssetName.STOCK_LAB,
+  NVDA: StockAssetName.NVDA,
+  TSLA: StockAssetName.TSTLA,
+  SMR: StockAssetName.SMR,
+  PLTR: StockAssetName.PLTR,
+  COIN: StockAssetName.COIN,
+  MSTR: StockAssetName.MSTR,
+  AAPL: StockAssetName.AAPL,
+  LAB: StockAssetName.LAB,
+  ETH_CALL: StockAssetName.ETH_CALL,
+  ETH_PUT: StockAssetName.ETH_PUT,
+  BTC_CALL: StockAssetName.BTC_CALL,
+  BTC_PUT: StockAssetName.BTC_PUT,
+  LIGHTER_CALL: StockAssetName.LIGHTER_CALL,
+};
+
+export interface StockOptionMapping {
+  call: StockAssetName;
+  put?: StockAssetName;
+}
+
+export const tickerToOptionStockAssetName: Record<string, StockOptionMapping> = {
+  NVDA: { call: StockAssetName.NVDA },
+  TSLA: { call: StockAssetName.TSTLA },
+  SMR: { call: StockAssetName.SMR },
+  PLTR: { call: StockAssetName.PLTR },
+  COIN: { call: StockAssetName.COIN },
+  MSTR: { call: StockAssetName.MSTR },
+  AAPL: { call: StockAssetName.AAPL },
+  LAB: { call: StockAssetName.LAB },
+  ETH: { call: StockAssetName.ETH_CALL, put: StockAssetName.ETH_PUT },
+  BTC: { call: StockAssetName.BTC_CALL, put: StockAssetName.BTC_PUT },
+  LIT: { call: StockAssetName.LIGHTER_CALL },
+  ETH_CALL: { call: StockAssetName.ETH_CALL },
+  ETH_PUT: { call: StockAssetName.ETH_PUT },
+  BTC_CALL: { call: StockAssetName.BTC_CALL },
+  BTC_PUT: { call: StockAssetName.BTC_PUT },
+  LIGHTER_CALL: { call: StockAssetName.LIGHTER_CALL },
 };
 
 export const BorrowAssetsEnum = {

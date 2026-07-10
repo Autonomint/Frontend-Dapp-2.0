@@ -10,12 +10,18 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { BsTwitterX } from "react-icons/bs";
 import { PiTelegramLogo } from "react-icons/pi";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
   // Define fallback URLs in case environment variables are not set
   const twitterUrl = NEXT_PUBLIC_LINK_TWITTER || "#";
   const telegramUrl = NEXT_PUBLIC_LINK_TELEGRAM || "#";
   const { theme } = useTheme();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div className="h-[80px]  lg:h-[108px] flex items-center border-[1] border-x border-y border-grayLight">
@@ -112,7 +118,7 @@ export default function Footer() {
                 /> */}
                 <div className="w-[3rem] h-[3rem] mt-2 ">
                   <Image
-                    src={getIconMapping(theme || "dark", "usda")}
+                    src={isClient ? getIconMapping(theme || "dark", "usda") : getIconMapping("dark", "usda")}
                     alt="autonomint-dapp"
                     style={{
                       width: "100%",

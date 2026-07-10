@@ -166,7 +166,7 @@ function Navbar() {
           <div className="flex justify-start  items-center  gap-2">
             <div className="w-[3rem] h-[3rem]">
               <Image
-                src={getIconMapping(theme || "dark", "usda")}
+                src={isClient ? getIconMapping(theme || "dark", "usda") : getIconMapping("dark", "usda")}
                 alt="autonomint-dapp"
                 style={{
                   width: "100%",

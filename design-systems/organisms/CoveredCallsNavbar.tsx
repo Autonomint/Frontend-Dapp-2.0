@@ -49,7 +49,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
       hasLiveChip: true,
     };
 
-    if (isBuyMode) {
+        if (isBuyMode) {
       return [
         {
           nameA: "All",
@@ -58,12 +58,12 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
           InActiveHeading: "",
           isComingSoon: false,
           hasLiveChip: true,
-          liveCount: "8",
+          liveCount: "11",
         },
         {
           ...primaryTab,
           index: 1,
-          liveCount: "7",
+          liveCount: "10",
         },
         {
           nameA: "Buy Puts",
@@ -72,7 +72,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
           InActiveHeading: "",
           isComingSoon: false,
           hasLiveChip: true,
-          liveCount: "1",
+          liveCount: "3",
         },
       ];
     }
@@ -85,12 +85,12 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
         InActiveHeading: "",
         isComingSoon: false,
         hasLiveChip: true,
-        liveCount: "8",
+        liveCount: "11",
       },
       {
         ...primaryTab,
         index: 1,
-        liveCount: "7",
+        liveCount: "10",
       },
       {
         nameA: "Sell Puts",
@@ -99,7 +99,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
         InActiveHeading: "",
         isComingSoon: false,
         hasLiveChip: true,
-        liveCount: "1",
+        liveCount: "3",
       },
     ];
   }, [isBuyMode]);

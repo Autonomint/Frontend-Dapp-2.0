@@ -11,6 +11,7 @@ import boldIcon from "@/app/assets/bold-logo.svg";
 import wBLT from "@/app/assets/wBLT.svg";
 import KRWQ from "@/app/assets/krwq-logo.svg";
 import EURC from "@/app/assets/euro-coin-2.png";
+import LITIcon from "@/app/assets/lit.png";
 import {
   boldTokenAddress,
   nativeTokenAddress,
@@ -49,6 +50,8 @@ export interface CoveredCallAsset {
   openInterestValue?: string;
   openInterestContracts?: string;
   chipLabel?: string;
+  hasCall?: boolean; // Declares if call options are supported for this asset
+  hasPut?: boolean;  // Declares if put options are supported for this asset
 }
 
 export const coveredCallAssets: CoveredCallAsset[] = [
@@ -64,7 +67,57 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     priceChange: "+0.00%",
     openInterestValue: "< $100k",
     openInterestContracts: "< 100 contracts",
-    chipLabel: "Crypto"
+    chipLabel: "Crypto",
+    hasCall: false,
+    hasPut: true,
+  },
+  {
+    ticker: "ETH",
+    name: "Ethereum",
+    type: "covered call",
+    maxApr: 92.4,
+    minApr: 5.1,
+    multipliers: ["+1x Pyth", "+1x Base"],
+    logo: "https://assets.coingecko.com/coins/images/279/large/ethereum.png",
+    spotPrice: "3,120.00",
+    priceChange: "+1.15%",
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts",
+    chipLabel: "Crypto",
+    hasCall: true,
+    hasPut: true,
+  },
+  {
+    ticker: "BTC",
+    name: "Bitcoin",
+    type: "covered call",
+    maxApr: 82.1,
+    minApr: 4.5,
+    multipliers: ["+1x Pyth", "+1x Base"],
+    logo: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+    spotPrice: "64,250.00",
+    priceChange: "+0.85%",
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts",
+    chipLabel: "Crypto",
+    hasCall: true,
+    hasPut: true,
+  },
+  {
+    ticker: "LIT",
+    name: "Lighter",
+    type: "covered call",
+    maxApr: 115.6,
+    minApr: 7.8,
+    multipliers: ["+1x Pyth"],
+    logo: LITIcon,
+    spotPrice: "1.25",
+    priceChange: "+4.12%",
+    openInterestValue: "< $100k",
+    openInterestContracts: "< 100 contracts",
+    chipLabel: "Crypto",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "NVDA",
@@ -77,7 +130,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "904.12",
     priceChange: "+2.45%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "TSLA",
@@ -90,7 +145,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "174.60",
     priceChange: "-1.12%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "SMR",
@@ -103,7 +160,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "5.42",
     priceChange: "+5.67%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "PLTR",
@@ -116,7 +175,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "23.15",
     priceChange: "+0.85%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "COIN",
@@ -129,7 +190,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "245.30",
     priceChange: "+1.78%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "MSTR",
@@ -142,7 +205,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "1,520.10",
     priceChange: "+3.21%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
   {
     ticker: "AAPL",
@@ -155,7 +220,9 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     spotPrice: "183.05",
     priceChange: "-0.45%",
     openInterestValue: "< $100k",
-    openInterestContracts: "< 100 contracts"
+    openInterestContracts: "< 100 contracts",
+    hasCall: true,
+    hasPut: false,
   },
 ];
 /**

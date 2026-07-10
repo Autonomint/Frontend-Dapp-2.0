@@ -22,18 +22,28 @@ const listItemVariants = {
 function SingleListItem({
   item,
   action = "sell",
+  activeTab = 0,
 }: {
   item: any;
   action?: string;
+  activeTab?: number;
 }) {
+  // Determine asset capabilities (default to Call-only except for LAB which is Put-only)
+  const hasCall = item.hasCall !== undefined ? item.hasCall : (item.ticker !== "LAB");
+  const hasPut = item.hasPut !== undefined ? item.hasPut : (item.ticker === "LAB");
+
+  // Determine button visibility based on tab filters
+  const showCallButton = hasCall && (activeTab === 0 || activeTab === 1);
+  const showPutButton = hasPut && (activeTab === 0 || activeTab === 2);
+
   const metrics = [
     {
       label: "Ticker",
       value: (
         <div className="flex items-center gap-3">
           {item.logo &&
-            (item.logo.startsWith("http") ? (
-              // Real SVG logo from URL
+            (typeof item.logo === "object" || item.logo.startsWith("http") || item.logo.startsWith("/") ? (
+              // Real logo from URL, local path, or imported object
               <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 p-1 flex items-center justify-center">
                 <Image
                   src={item.logo}
@@ -41,7 +51,7 @@ function SingleListItem({
                   width={40}
                   height={40}
                   className="object-contain"
-                  unoptimized // For SVG files
+                  unoptimized={typeof item.logo === "string" && (item.logo.endsWith(".svg") || item.logo.includes(".svg"))}
                 />
               </div>
             ) : (
@@ -139,21 +149,46 @@ function SingleListItem({
               </div>
             ))}
           </div>
-          <div className="flex-shrink-0 w-full md:w-auto">
-            <Link
-              prefetch={true}
-              href={`/earn?ticker=${item.ticker}&action=${action}&option=${item.ticker === "LAB" ? "put" : "call"}`}
-            >
-              <Button
-                disabled={!item.isActive}
-                className={`
-                  bg-black dark:bg-custom-gradient-to-top py-3 md:py-4 lg:py-5 px-6 lg:px-8
-                  text-white font-semibold text-sm md:text-[15px] rounded-md w-full md:w-auto
-                `}
-              >
-                {action === "buy" ? (item.ticker === "LAB" ? "Buy Put" : "Buy Call") : (item.ticker === "LAB" ? "Sell Put" : "Sell Call")}
-              </Button>
-            </Link>
+          <div className="flex-shrink-0 w-full md:w-auto flex flex-col sm:flex-row gap-3">
+            {/* Call Option Slot */}
+            <div className="w-full md:w-[130px] lg:w-[150px] flex justify-center">
+              {showCallButton ? (
+                <Link
+                  prefetch={true}
+                  href={`/earn?ticker=${item.ticker}&action=${action}&option=call`}
+                  className="w-full"
+                >
+                  <Button
+                    disabled={!item.isActive}
+                    className="bg-black dark:bg-custom-gradient-to-top py-3 md:py-4 lg:py-5 text-white font-semibold text-sm md:text-[15px] rounded-md w-full"
+                  >
+                    {action === "buy" ? "Buy Call" : "Sell Call"}
+                  </Button>
+                </Link>
+              ) : (
+                <div className="hidden sm:block w-full" />
+              )}
+            </div>
+
+            {/* Put Option Slot */}
+            <div className="w-full md:w-[130px] lg:w-[150px] flex justify-center">
+              {showPutButton ? (
+                <Link
+                  prefetch={true}
+                  href={`/earn?ticker=${item.ticker}&action=${action}&option=put`}
+                  className="w-full"
+                >
+                  <Button
+                    disabled={!item.isActive}
+                    className="bg-black dark:bg-custom-gradient-to-top py-3 md:py-4 lg:py-5 text-white font-semibold text-sm md:text-[15px] rounded-md w-full"
+                  >
+                    {action === "buy" ? "Buy Put" : "Sell Put"}
+                  </Button>
+                </Link>
+              ) : (
+                <div className="hidden sm:block w-full" />
+              )}
+            </div>
           </div>
         </div>
       </motion.div>
