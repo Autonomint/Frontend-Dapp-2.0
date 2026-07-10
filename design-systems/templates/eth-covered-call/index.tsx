@@ -32,7 +32,7 @@ import {
   stockCdsDepositAddress,
   stockUsdcAddress,
 } from "@/blockchain/contracts";
-import { tickerToOptionStockAssetName, StockAssetName } from "@/utils/constants";
+import { tickerToOptionStockAssetName, StockAssetName, SELL_LOCK_PERIOD_OVERRIDES, BUY_FORCE_FIRST_EXPIRY } from "@/utils/constants";
 import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
@@ -175,8 +175,12 @@ const CoveredCallTemplate = ({
     return displayPriceOptions.length > 0 ? displayPriceOptions[0] : null;
   };
 
-  // Lock end date: 60 days for puts, 30 days for calls
-  const lockDays = isPutOption ? 60 : 30;
+  // Lock end date: check for sell-mode override first, then fall back to 60/30 day defaults
+  const sellLockOverride = !isBuyMode ? SELL_LOCK_PERIOD_OVERRIDES[selectedTicker] : undefined;
+  const lockDays = sellLockOverride ?? (isPutOption ? 60 : 30);
+
+  // For certain tickers in buy mode, force the first (nearest) expiry and hide the dropdown
+  const forceFirstExpiry = isBuyMode && BUY_FORCE_FIRST_EXPIRY.includes(selectedTicker);
   const lockEndDate = useMemo(() => {
     const date = new Date();
     date.setDate(date.getDate() + lockDays);
@@ -303,7 +307,10 @@ const CoveredCallTemplate = ({
                 stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
               ],
               tokenAmounts: [depositingAmount],
-              lockingPeriod: BigInt(isPutOption ? 5184000 : 2592000),
+              // Use sell lock override (e.g. 2 days for ETH/BTC = 172800s) or fall back to 60/30 day defaults
+              lockingPeriod: sellLockOverride
+                ? BigInt(sellLockOverride * 86400)
+                : BigInt(isPutOption ? 5184000 : 2592000),
               assetName: stockAssetName,
               verifyParams: {
                 excessProfitCumulativeValue: BigInt(
@@ -534,8 +541,16 @@ const CoveredCallTemplate = ({
                 )}
               </div>
 
-              {/* Date Dropdown */}
-              {isBuyMode && (
+              {/* Date Dropdown - hidden for forced-first-expiry tickers, shown as static text instead */}
+              {isBuyMode && forceFirstExpiry ? (
+                <div className="border-l border-grayLight pl-1 sm:pl-2 flex-shrink-0">
+                  <div className="flex items-center gap-1 sm:space-x-2 pl-2 sm:pl-4 lg:pl-6 px-1.5 sm:px-3 py-2">
+                    <span className="text-sm sm:text-base lg:text-lg text-textBlack dark:text-white font-plex-grotesk whitespace-nowrap">
+                      {selectedDate ? formatDateShort(selectedDate) : "1 day"}
+                    </span>
+                  </div>
+                </div>
+              ) : isBuyMode && (
                 <div className="relative border-l border-grayLight pl-1 sm:pl-2 flex-shrink-0">
                   <button
                     onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}

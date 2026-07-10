@@ -350,6 +350,28 @@ export const hideYieldsAddressAndIndex = [
  * Any collateral type not listed falls back to the defaults inside
  * calculatePnL (1.30) and calculatePutPnL (0.90).
  */
+/**
+ * Lock period configuration for covered call/put sell mode.
+ *
+ * Defines custom lock periods (in days) for specific tickers in sell mode.
+ * Tickers not listed here fall back to the default behavior:
+ *   - Put options: 60 days
+ *   - Call options: 30 days
+ *
+ * To add a new token with a custom lock period, simply add an entry here.
+ */
+/**
+ * Tickers that should force the first (nearest) expiry date in buy mode.
+ * The expiry dropdown will be hidden and the nearest expiry is auto-selected.
+ * For ETH/BTC, this represents a ~1 day expiry (the nearest available).
+ */
+export const BUY_FORCE_FIRST_EXPIRY: string[] = ["ETH", "BTC"];
+
+export const SELL_LOCK_PERIOD_OVERRIDES: Record<string, number> = {
+  ETH: 2,  // 2-day lock for ETH sell
+  BTC: 2,  // 2-day lock for BTC sell
+};
+
 export const PROFIT_CAP_MAP: Record<string, number> = {
   // --- Call options (ceiling multiplier > 1) ---
   ETH_CALL: 1.05,     // 5 % upside cap
