@@ -100,7 +100,11 @@ const CoveredCallTemplate = ({
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const router = useRouter();
 
-  const tickers = ["NVDA"];
+  const tickers = useMemo(() => {
+    return coveredCallAssets
+      .filter((asset) => (isPutOption ? asset.hasPut : asset.hasCall))
+      .map((asset) => asset.ticker);
+  }, [isPutOption]);
   const actions = isBuyMode
     ? [isPutOption ? "Buy Put" : "Buy Call"]
     : [isPutOption ? "Sell Puts" : "Sell Calls"];
@@ -905,7 +909,7 @@ const CoveredCallTemplate = ({
                             <>
                               Premium is paid by everyone buying {ticker} calls written against this pool, split{" "}
                               <span className="font-medium text-[#5fb88a]">proportionally</span> by each depositor's share.{" "}
-                              <strong className="font-medium text-black dark:text-white">The more calls bought during your 30 days, the higher your premium.</strong>{" "}
+                              <strong className="font-medium text-black dark:text-white">The more calls bought during your {lockDays} days, the higher your premium.</strong>{" "}
                               Numbers above are estimates from past activity; actuals depend on real buy flow.
                             </>
                           )}

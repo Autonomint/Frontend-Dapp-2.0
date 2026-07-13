@@ -370,6 +370,7 @@ export const BUY_FORCE_FIRST_EXPIRY: string[] = ["ETH", "BTC"];
 export const SELL_LOCK_PERIOD_OVERRIDES: Record<string, number> = {
   ETH: 2,  // 2-day lock for ETH sell
   BTC: 2,  // 2-day lock for BTC sell
+  LIT: 8,  // 8-day lock for LIT sell
 };
 
 export const PROFIT_CAP_MAP: Record<string, number> = {
