@@ -32,7 +32,7 @@ import {
   stockCdsDepositAddress,
   stockUsdcAddress,
 } from "@/blockchain/contracts";
-import { tickerToOptionStockAssetName, StockAssetName, SELL_LOCK_PERIOD_OVERRIDES, BUY_FORCE_FIRST_EXPIRY } from "@/utils/constants";
+import { tickerToOptionStockAssetName, StockAssetName, SELL_LOCK_PERIOD_OVERRIDES, BUY_FORCE_FIRST_EXPIRY, getApiAssetName } from "@/utils/constants";
 import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
@@ -105,6 +105,7 @@ const CoveredCallTemplate = ({
       .filter((asset) => (isPutOption ? asset.hasPut : asset.hasCall))
       .map((asset) => asset.ticker);
   }, [isPutOption]);
+
   const actions = isBuyMode
     ? [isPutOption ? "Buy Put" : "Buy Call"]
     : [isPutOption ? "Sell Puts" : "Sell Calls"];
@@ -299,7 +300,7 @@ const CoveredCallTemplate = ({
 
         if (stockAssetName !== undefined) {
           const signedData = await refetchCdsDepositSignedData({
-            collateralType: selectedTicker,
+            collateralType: getApiAssetName(selectedTicker, isPutOption ? "put" : "call"),
             strikePrice: 0,
             optionFees: "0",
           });
@@ -339,7 +340,7 @@ const CoveredCallTemplate = ({
           user: address,
         });
         const depositingAmount = parseUnits(
-          ((selectedPriceData.premium * parsedAmount) + 2 ).toFixed(6),
+          ((selectedPriceData.premium * parsedAmount) + 2).toFixed(6),
           6,
         );
 
@@ -378,7 +379,7 @@ const CoveredCallTemplate = ({
 
         if (stockAssetName !== undefined) {
           const signedData = await refetchStockSignedData({
-            collateralType: ticker,
+            collateralType: getApiAssetName(ticker, option as "call" | "put"),
             strikePrice: selectedPriceData.strike,
             expiry: selectedDate,
             optionType: option,
@@ -1075,247 +1076,247 @@ const CoveredCallTemplate = ({
 
       {selectedTicker === "LAB" && (
         <>
-        {/* ABOUT $LAB */}
-        <div className="max-w-[900px] mx-auto px-4 mb-12 mt-[64px]">
-          <div className="flex items-center gap-[10px] mb-[10px]">
-            <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
-            <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
-              ABOUT $LAB
-            </span>
-          </div>
-          <div className="text-[22px] font-medium text-white mb-[4px]">
-            The underlying
+          {/* ABOUT $LAB */}
+          <div className="max-w-[900px] mx-auto px-4 mb-12 mt-[64px]">
+            <div className="flex items-center gap-[10px] mb-[10px]">
+              <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
+              <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
+                ABOUT $LAB
+              </span>
+            </div>
+            <div className="text-[22px] font-medium text-white mb-[4px]">
+              The underlying
+            </div>
+
+            <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[20px_22px] mt-[24px]">
+              <div className="text-[13px] text-[#b0b0b0] leading-[1.7] mb-[16px]">
+                LAB is the native token of LabTrade, a launchpad protocol distributed through Legion presale. It trades on Binance USDT-M perp (LABUSDT) and spot. Total supply is 1B, with 31.25% currently circulating and the remainder subject to vesting per the team&apos;s schedule.
+              </div>
+              <div className="grid grid-cols-2 gap-[8px] mb-[16px]">
+                <a
+                  href="https://www.coingecko.com/en/coins/lab"
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                >
+                  <span>CoinGecko</span>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                </a>
+                <a
+                  href="https://www.binance.com/en/futures/LABUSDT"
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                >
+                  <span>Binance LABUSDT perp</span>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                </a>
+                <a
+                  href="https://twitter.com/LABtrade_"
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                >
+                  <span>@LABtrade_ on X</span>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                </a>
+                <a
+                  href="https://tokenomist.ai/lab"
+                  target="_blank"
+                  rel="noopener"
+                  className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                >
+                  <span>Tokenomist unlock page</span>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                </a>
+              </div>
+              <div className="flex justify-between items-center mb-[6px]">
+                <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
+                  LAB TOKEN CONTRACT (BSC)
+                </span>
+              </div>
+              <a
+                href="https://bscscan.com/token/0x7ec43cf65f1663f820427c62a5780b8f2e25593a"
+                target="_blank"
+                rel="noopener"
+                className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
+              >
+                0x7ec43cf65f1663f820427c62a5780b8f2e25593a
+              </a>
+            </div>
           </div>
 
-          <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[20px_22px] mt-[24px]">
-            <div className="text-[13px] text-[#b0b0b0] leading-[1.7] mb-[16px]">
-              LAB is the native token of LabTrade, a launchpad protocol distributed through Legion presale. It trades on Binance USDT-M perp (LABUSDT) and spot. Total supply is 1B, with 31.25% currently circulating and the remainder subject to vesting per the team&apos;s schedule.
+          {/* CONTRACTS & SECURITY */}
+          <div className="max-w-[900px] mx-auto px-4 mb-12">
+            <div className="flex items-center gap-[10px] mb-[10px]">
+              <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
+              <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
+                CONTRACTS &amp; SECURITY
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-[8px] mb-[16px]">
+            <div className="text-[22px] font-medium text-white mb-[4px]">
+              What&apos;s holding your USDC
+            </div>
+
+            <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[20px_22px] mt-[24px]">
+              <div className="text-[13px] text-[#b0b0b0] leading-[1.7] mb-[16px]">
+                Nondollar options are settled through smart contracts on Base. Below are the specific contracts governing this LAB put series and Nondollar&apos;s audit history.
+              </div>
+
+              <div className="flex flex-col gap-[8px] mb-[16px]">
+                <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
+                  <div className="flex justify-between items-center mb-[6px]">
+                    <span className="text-[11px] tracking-[0.05em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase font-medium">
+                      LAB PUT OPTION BUYING CONTRACT (BASE)
+                    </span>
+                  </div>
+                  <a
+                    href="https://basescan.org/address/0xf8628C3755C803aD344332014dd67bE87b3F6AB7"
+                    target="_blank"
+                    rel="noopener"
+                    className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
+                  >
+                    0xf8628C3755C803aD344332014dd67bE87b3F6AB7
+                  </a>
+                </div>
+
+                <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
+                  <div className="flex justify-between items-center mb-[6px]">
+                    <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
+                      LAB PUT OPTION SELLING CONTRACT (BASE)
+                    </span>
+                  </div>
+                  <a
+                    href="https://basescan.org/address/0x72277A105a742fcbbd7D4EFeEd080673747770bF"
+                    target="_blank"
+                    rel="noopener"
+                    className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
+                  >
+                    0x72277A105a742fcbbd7D4EFeEd080673747770bF
+                  </a>
+                </div>
+
+                <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
+                  <div className="flex justify-between items-center mb-[6px]">
+                    <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
+                      LAB PRICE FEED SOURCE FOR SETTLEMENT
+                    </span>
+                  </div>
+                  <a
+                    href="https://www.binance.com/en/futures/LABUSDT"
+                    target="_blank"
+                    rel="noopener"
+                    className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
+                  >
+                    https://www.binance.com/en/futures/LABUSDT
+                  </a>
+                </div>
+              </div>
+
+              <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[16px] mt-[12px]">
+                <div className="text-[12px] text-[#888888] mb-[12px] font-medium font-['JetBrains_Mono',monospace] uppercase tracking-[0.05em]">
+                  Protocol track record
+                </div>
+                <div className="grid grid-cols-3 gap-[12px] mb-[14px]">
+                  <div>
+                    <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">$4M+</div>
+                    <div className="text-[11px] text-[#666666] mt-[4px]">Cumulative TVL (dCDS)</div>
+                  </div>
+                  <div>
+                    <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">12 mo</div>
+                    <div className="text-[11px] text-[#666666] mt-[4px]">Zero settlement failures</div>
+                  </div>
+                  <div>
+                    <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">350+</div>
+                    <div className="text-[11px] text-[#666666] mt-[4px]">Sherlock auditors</div>
+                  </div>
+                </div>
+                <div className="text-[13px] text-[#b0b0b0] leading-[1.6]">
+                  Nondollar is built by the team behind dCDS, a Sherlock-audited hedging protocol that ran 12 months on Base and Optimism with zero settlement failures.
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-[12px] mt-[12px]">
               <a
-                href="https://www.coingecko.com/en/coins/lab"
+                href="https://drive.google.com/file/d/1EldSDBjBAtWJjcQI70RxPYVyiQOSTaId/view"
                 target="_blank"
                 rel="noopener"
-                className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_18px] hover:border-[#888888] transition-colors block"
               >
-                <span>CoinGecko</span>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                <div className="flex items-center justify-between mb-[6px]">
+                  <div className="font-['JetBrains_Mono',monospace] text-[11px] tracking-[0.05em] uppercase text-[#7fecbe]">
+                    SHERLOCK AUDIT
+                  </div>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
+                </div>
+                <div className="text-[13px] text-white">Predecessor dCDS report</div>
               </a>
               <a
-                href="https://www.binance.com/en/futures/LABUSDT"
+                href="[REPLACE: new audit URL or 'coming soon' page]"
                 target="_blank"
                 rel="noopener"
-                className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_18px] hover:border-[#888888] transition-colors block"
               >
-                <span>Binance LABUSDT perp</span>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                <div className="flex items-center justify-between mb-[6px]">
+                  <div className="font-['JetBrains_Mono',monospace] text-[11px] tracking-[0.05em] uppercase text-[#ffb84d]">
+                    V1 AUDIT STATUS
+                  </div>
+                  <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
+                </div>
+                <div className="text-[13px] text-white">Completed</div>
               </a>
+            </div>
+          </div>
+
+          {/* SOURCES */}
+          <div className="max-w-[900px] mx-auto px-4 mb-12">
+            <div className="flex items-center gap-[10px] mb-[10px]">
+              <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
+              <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
+                SOURCES
+              </span>
+            </div>
+            <div className="text-[22px] font-medium text-white mb-[4px]">
+              Do your own research
+            </div>
+            <div className="text-[14px] text-[#888888] mb-[24px]">
+              Every claim on this page traces back to a public source. Verify them.
+            </div>
+
+            <div className="flex flex-col gap-[8px] mb-[24px]">
               <a
-                href="https://twitter.com/LABtrade_"
+                href="https://alva.ai/u/aks-v/playbooks/lab-unlock-put-war-room"
                 target="_blank"
                 rel="noopener"
-                className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] flex items-center justify-between hover:border-[#888888] transition-colors"
               >
-                <span>@LABtrade_ on X</span>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                <div>
+                  <div className="text-[14px] text-white mb-[3px]">Alva LAB Short War Room</div>
+                  <div className="text-[11px] text-[#666666]">Live funding, OI, PnL calculator, KOL feed</div>
+                </div>
+                <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
               </a>
               <a
                 href="https://tokenomist.ai/lab"
                 target="_blank"
                 rel="noopener"
-                className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
+                className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] flex items-center justify-between hover:border-[#888888] transition-colors"
               >
-                <span>Tokenomist unlock page</span>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
+                <div>
+                  <div className="text-[14px] text-white mb-[3px]">Tokenomist LAB unlock page</div>
+                  <div className="text-[11px] text-[#666666]">Supply, allocation mix, event log</div>
+                </div>
+                <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
               </a>
-            </div>
-            <div className="flex justify-between items-center mb-[6px]">
-              <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
-                LAB TOKEN CONTRACT (BSC)
-              </span>
-            </div>
-            <a
-              href="https://bscscan.com/token/0x7ec43cf65f1663f820427c62a5780b8f2e25593a"
-              target="_blank"
-              rel="noopener"
-              className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
-            >
-              0x7ec43cf65f1663f820427c62a5780b8f2e25593a
-            </a>
-          </div>
-        </div>
 
-        {/* CONTRACTS & SECURITY */}
-        <div className="max-w-[900px] mx-auto px-4 mb-12">
-          <div className="flex items-center gap-[10px] mb-[10px]">
-            <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
-            <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
-              CONTRACTS &amp; SECURITY
-            </span>
-          </div>
-          <div className="text-[22px] font-medium text-white mb-[4px]">
-            What&apos;s holding your USDC
-          </div>
-
-          <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[20px_22px] mt-[24px]">
-            <div className="text-[13px] text-[#b0b0b0] leading-[1.7] mb-[16px]">
-              Nondollar options are settled through smart contracts on Base. Below are the specific contracts governing this LAB put series and Nondollar&apos;s audit history.
             </div>
 
-            <div className="flex flex-col gap-[8px] mb-[16px]">
-              <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
-                <div className="flex justify-between items-center mb-[6px]">
-                  <span className="text-[11px] tracking-[0.05em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase font-medium">
-                    LAB PUT OPTION BUYING CONTRACT (BASE)
-                  </span>
-                </div>
-                <a
-                  href="https://basescan.org/address/0xf8628C3755C803aD344332014dd67bE87b3F6AB7"
-                  target="_blank"
-                  rel="noopener"
-                  className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
-                >
-                  0xf8628C3755C803aD344332014dd67bE87b3F6AB7
-                </a>
-              </div>
-
-              <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
-                <div className="flex justify-between items-center mb-[6px]">
-                  <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
-                    LAB PUT OPTION SELLING CONTRACT (BASE)
-                  </span>
-                </div>
-                <a
-                  href="https://basescan.org/address/0x72277A105a742fcbbd7D4EFeEd080673747770bF"
-                  target="_blank"
-                  rel="noopener"
-                  className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
-                >
-                  0x72277A105a742fcbbd7D4EFeEd080673747770bF
-                </a>
-              </div>
-
-              <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[14px_16px]">
-                <div className="flex justify-between items-center mb-[6px]">
-                  <span className="text-[11px] tracking-[0.05em] text-[#888888] font-['JetBrains_Mono',monospace] uppercase">
-                    LAB PRICE FEED SOURCE FOR SETTLEMENT
-                  </span>
-                </div>
-                <a
-                  href="https://www.binance.com/en/futures/LABUSDT"
-                  target="_blank"
-                  rel="noopener"
-                  className="font-['JetBrains_Mono',monospace] text-[12px] text-[#ffb84d] break-all hover:underline"
-                >
-                  https://www.binance.com/en/futures/LABUSDT
-                </a>
-              </div>
-            </div>
-
-            <div className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[16px] mt-[12px]">
-              <div className="text-[12px] text-[#888888] mb-[12px] font-medium font-['JetBrains_Mono',monospace] uppercase tracking-[0.05em]">
-                Protocol track record
-              </div>
-              <div className="grid grid-cols-3 gap-[12px] mb-[14px]">
-                <div>
-                  <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">$4M+</div>
-                  <div className="text-[11px] text-[#666666] mt-[4px]">Cumulative TVL (dCDS)</div>
-                </div>
-                <div>
-                  <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">12 mo</div>
-                  <div className="text-[11px] text-[#666666] mt-[4px]">Zero settlement failures</div>
-                </div>
-                <div>
-                  <div className="font-['JetBrains_Mono',monospace] text-[18px] text-[#7fecbe] font-medium">350+</div>
-                  <div className="text-[11px] text-[#666666] mt-[4px]">Sherlock auditors</div>
-                </div>
-              </div>
-              <div className="text-[13px] text-[#b0b0b0] leading-[1.6]">
-                Nondollar is built by the team behind dCDS, a Sherlock-audited hedging protocol that ran 12 months on Base and Optimism with zero settlement failures.
-              </div>
+            <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] font-['JetBrains_Mono',monospace] text-[11px] text-[#666666] leading-[1.8] mb-[32px]">
+              This is not financial advice. Options carry risk of total premium loss. The Aug 14 unlock window is community-reported and not confirmed by Tokenomist or @LABtrade_ in a dated calendar. Do your own research. Nondollar makes no representation about the outcome of any catalyst event.
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-[12px] mt-[12px]">
-            <a
-              href="https://drive.google.com/file/d/1EldSDBjBAtWJjcQI70RxPYVyiQOSTaId/view"
-              target="_blank"
-              rel="noopener"
-              className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_18px] hover:border-[#888888] transition-colors block"
-            >
-              <div className="flex items-center justify-between mb-[6px]">
-                <div className="font-['JetBrains_Mono',monospace] text-[11px] tracking-[0.05em] uppercase text-[#7fecbe]">
-                  SHERLOCK AUDIT
-                </div>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
-              </div>
-              <div className="text-[13px] text-white">Predecessor dCDS report</div>
-            </a>
-            <a
-              href="[REPLACE: new audit URL or 'coming soon' page]"
-              target="_blank"
-              rel="noopener"
-              className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_18px] hover:border-[#888888] transition-colors block"
-            >
-              <div className="flex items-center justify-between mb-[6px]">
-                <div className="font-['JetBrains_Mono',monospace] text-[11px] tracking-[0.05em] uppercase text-[#ffb84d]">
-                  V1 AUDIT STATUS
-                </div>
-                <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
-              </div>
-              <div className="text-[13px] text-white">Completed</div>
-            </a>
-          </div>
-        </div>
-
-        {/* SOURCES */}
-        <div className="max-w-[900px] mx-auto px-4 mb-12">
-          <div className="flex items-center gap-[10px] mb-[10px]">
-            <div className="w-[4px] h-[16px] bg-[#7fecbe] rounded-[2px]" />
-            <span className="text-[11px] tracking-[0.15em] text-[#7fecbe] font-['JetBrains_Mono',monospace] uppercase">
-              SOURCES
-            </span>
-          </div>
-          <div className="text-[22px] font-medium text-white mb-[4px]">
-            Do your own research
-          </div>
-          <div className="text-[14px] text-[#888888] mb-[24px]">
-            Every claim on this page traces back to a public source. Verify them.
-          </div>
-
-          <div className="flex flex-col gap-[8px] mb-[24px]">
-            <a
-              href="https://alva.ai/u/aks-v/playbooks/lab-unlock-put-war-room"
-              target="_blank"
-              rel="noopener"
-              className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] flex items-center justify-between hover:border-[#888888] transition-colors"
-            >
-              <div>
-                <div className="text-[14px] text-white mb-[3px]">Alva LAB Short War Room</div>
-                <div className="text-[11px] text-[#666666]">Live funding, OI, PnL calculator, KOL feed</div>
-              </div>
-              <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
-            </a>
-            <a
-              href="https://tokenomist.ai/lab"
-              target="_blank"
-              rel="noopener"
-              className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] flex items-center justify-between hover:border-[#888888] transition-colors"
-            >
-              <div>
-                <div className="text-[14px] text-white mb-[3px]">Tokenomist LAB unlock page</div>
-                <div className="text-[11px] text-[#666666]">Supply, allocation mix, event log</div>
-              </div>
-              <ExternalLink className="w-[14px] h-[14px] text-[#666666] flex-shrink-0" />
-            </a>
-
-          </div>
-
-          <div className="bg-[#141414] border-[0.5px] border-[#262626] rounded-[12px] p-[16px_20px] font-['JetBrains_Mono',monospace] text-[11px] text-[#666666] leading-[1.8] mb-[32px]">
-            This is not financial advice. Options carry risk of total premium loss. The Aug 14 unlock window is community-reported and not confirmed by Tokenomist or @LABtrade_ in a dated calendar. Do your own research. Nondollar makes no representation about the outcome of any catalyst event.
-          </div>
-        </div>
-      </>
+        </>
       )}
 
       <HowItWorksPopup

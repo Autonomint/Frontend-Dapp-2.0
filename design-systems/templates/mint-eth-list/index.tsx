@@ -29,11 +29,11 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
     useGetSpotPrice("LAB");
   // Custom hooks to fetch real-time spot prices for newly added assets (ETH, BTC, LIT)
   const { price: spotPriceETH, isLoading: isLoadingETH } =
-    useGetSpotPrice("ETH");
+    useGetSpotPrice("ETH", true, activeTab === 2 ? "put" : "call");
   const { price: spotPriceBTC, isLoading: isLoadingBTC } =
-    useGetSpotPrice("BTC");
+    useGetSpotPrice("BTC", true, activeTab === 2 ? "put" : "call");
   const { price: spotPriceLIT, isLoading: isLoadingLIT } =
-    useGetSpotPrice("LIT");
+    useGetSpotPrice("LIT", true, "call");
 
   // List of covered call assets
   const list = coveredCallAssets.map((asset) => ({
