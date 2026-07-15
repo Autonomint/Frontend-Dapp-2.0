@@ -124,7 +124,12 @@ const CoveredCallTemplate = ({
   // Helper function to get remaining time for expiry
   const getExpiryTimeLeft = (dateStr: string) => {
     if (!dateStr) return "";
-    const time = calculateRemainingTimeDate(dateStr);
+    
+    // Force the option expiry time to be 08:00 UTC
+    const expiryDate = new Date(dateStr);
+    expiryDate.setUTCHours(8, 0, 0, 0);
+    
+    const time = calculateRemainingTimeDate(expiryDate.toISOString());
     const parts = [];
     if (time.hours > 0) {
       parts.push(`${time.hours} hour${time.hours > 1 ? "s" : ""}`);
