@@ -152,6 +152,9 @@ const CoveredCallTemplate = ({
     
     const time = calculateRemainingTimeDate(expiryDate.toISOString());
     const parts = [];
+    if (time.days > 0) {
+      parts.push(`${time.days} day${time.days > 1 ? "s" : ""}`);
+    }
     if (time.hours > 0) {
       parts.push(`${time.hours} hour${time.hours > 1 ? "s" : ""}`);
     }
