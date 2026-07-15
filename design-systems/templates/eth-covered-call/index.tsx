@@ -33,7 +33,7 @@ import {
   stockUsdcAddress,
 } from "@/blockchain/contracts";
 import { tickerToOptionStockAssetName, StockAssetName, SELL_LOCK_PERIOD_OVERRIDES, BUY_FORCE_FIRST_EXPIRY, getApiAssetName } from "@/utils/constants";
-import { formatDate, formatDateShort, getDaysRemaining } from "@/utils/helpers";
+import { formatDate, formatDateShort, getDaysRemaining, calculateRemainingTimeDate } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { useRouter } from "next/navigation";
@@ -119,6 +119,28 @@ const CoveredCallTemplate = ({
   const getTickerLogo = (ticker: string) => {
     const asset = coveredCallAssets.find((asset) => asset.ticker === ticker);
     return asset?.logo || null;
+  };
+
+  // Helper function to get remaining time for expiry
+  const getExpiryTimeLeft = (dateStr: string) => {
+    if (!dateStr) return "";
+    const time = calculateRemainingTimeDate(dateStr);
+    const parts = [];
+    if (time.hours > 0) {
+      parts.push(`${time.hours} hour${time.hours > 1 ? "s" : ""}`);
+    }
+    if (time.minutes > 0) {
+      parts.push(`${time.minutes} min${time.minutes > 1 ? "s" : ""}`);
+    }
+    if (time.seconds > 0) {
+      parts.push(`${time.seconds} sec${time.seconds > 1 ? "s" : ""}`);
+    }
+
+    if (parts.length === 0) {
+      return "0 seconds";
+    }
+
+    return parts.join(", ");
   };
 
   const optionType = (option === "put" ? "put" : "call") as "call" | "put";
@@ -922,7 +944,12 @@ const CoveredCallTemplate = ({
                   {isBuyMode && (
                     <>
                       <div className="text-sm sm:text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-3 sm:p-4">
-                        On {selectedDate ? formatDate(selectedDate) : "Loading..."}
+                        On {selectedDate ? formatDate(selectedDate) : "Loading..."}{" "}
+                        {selectedDate && (
+                          <span className="text-grayLight dark:text-gray-400 font-normal ml-2">
+                            {getExpiryTimeLeft(selectedDate)}
+                          </span>
+                        )}
                       </div>
 
                       <div className="p-3 sm:p-4 py-6 sm:py-8 flex flex-col sm:flex-row">
