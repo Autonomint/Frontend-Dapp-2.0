@@ -106,6 +106,10 @@ const CoveredCallTemplate = ({
       .map((asset) => asset.ticker);
   }, [isPutOption]);
 
+  const isCrypto = useMemo(() => {
+    return coveredCallAssets.find((asset) => asset.ticker === selectedTicker)?.chipLabel === "Crypto";
+  }, [selectedTicker]);
+
   const actions = isBuyMode
     ? [isPutOption ? "Buy Put" : "Buy Call"]
     : [isPutOption ? "Sell Puts" : "Sell Calls"];
@@ -950,7 +954,7 @@ const CoveredCallTemplate = ({
                     <>
                       <div className="text-sm sm:text-lg text-black border border-grayLight dark:border-grayLight dark:text-white font-medium text-center p-3 sm:p-4">
                         On {selectedDate ? formatDate(selectedDate) : "Loading..."}{" "}
-                        {selectedDate && (
+                        {selectedDate && isCrypto && (
                           <span className="text-grayLight dark:text-gray-400 font-normal ml-2">
                             {getExpiryTimeLeft(selectedDate)}
                           </span>
