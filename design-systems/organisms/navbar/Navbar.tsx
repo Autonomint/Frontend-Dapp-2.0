@@ -9,7 +9,7 @@ import useCheckWalletConnection from "@/hookes/useCheckWalletConnection";
 import { getIconMapping } from "@/utils/token-config";
 import { useDisconnect } from "@reown/appkit/react";
 import { watchAccount } from "@wagmi/core";
-import { Headset, Moon, Sun } from "lucide-react";
+import { FileText, Headset, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import Link from "next/link";
@@ -282,11 +282,20 @@ function Navbar() {
       {!isPolicyPage && isClient && (
         <nav className="hidden lg:flex items-center gap-6 ml-auto mr-4">
           <TotalVolumeBadge />
+          <a
+            href="https://docs.nondollar.life/autonomint"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#97f0bc] text-[#051911] no-underline text-[14px] font-semibold tracking-tight shadow-[0_6px_18px_-6px_rgba(95,184,138,0.45)] hover:opacity-90 transition-opacity"
+          >
+            <span>Docs</span>
+            <FileText className="w-4 h-4" />
+          </a>
           <Link
             href="/trick"
             className="inline-flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#97f0bc] text-[#051911] no-underline text-[14px] font-semibold tracking-tight shadow-[0_6px_18px_-6px_rgba(95,184,138,0.45)]"
           >
-            <span>Pay $0 in premium. Here's the trick</span>
+            <span>Pay $0 in premium</span>
             <span style={{ fontFamily: "JetBrains Mono", fontSize: 13 }}>→</span>
           </Link>
           <Link href="/dashboard/portfolio">
@@ -440,6 +449,15 @@ function Navbar() {
 
         <div className="gap-2 p-3 w-full border-t flex-row flex-wrap flex justify-center items-center border-grayLight border-[1px]">
           <TotalVolumeBadge />
+          <a
+            href="https://docs.nondollar.life/autonomint"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#97f0bc] text-[#051911] no-underline text-[14px] font-semibold tracking-tight shadow-[0_6px_18px_-6px_rgba(95,184,138,0.45)] hover:opacity-90 transition-opacity"
+          >
+            <span>Docs</span>
+            <FileText className="w-4 h-4" />
+          </a>
           <a
             href={meetUrl}
             target="_blank"
