@@ -15,7 +15,7 @@ import useGetOptionBids from "@/hookes/api-hooks/useGetOptionBids";
 import { coveredCallAssets } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { Label } from "@/design-systems/atoms/label";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { parseUnits } from "viem";
 import { toast } from "sonner";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
@@ -27,6 +27,7 @@ import useGetStockSignedData from "@/hookes/contract-hooks/stock-contracts/useGe
 import useGetCDSWithdrawSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCDSWithdrawSignedData";
 import useGetCdsDepositSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCdsDepositSignedData";
 import {
+  ethAddress,
   stockBorrowDepositAddress,
   stockCdsAddress,
   stockCdsDepositAddress,
@@ -85,6 +86,9 @@ const CoveredCallTemplate = ({
         : "sell";
   const isBuyMode = action === "buy";
   const isPutOption = option === "put";
+  // Flag to identify if current route is selling ETH covered call (/earn?ticker=ETH&action=sell&option=call)
+  // For this route, ETH is used as deposit asset instead of USDC.
+  const isEthSellCallRoute = ticker === "ETH" && !isBuyMode && !isPutOption;
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
   const [selectedAction, setSelectedAction] = useState(
@@ -247,6 +251,14 @@ const CoveredCallTemplate = ({
 
   const { address, isConnected, chainId } = useAccount();
 
+  // Fetch wallet balance for deposit asset: native ETH for ETH sell call route, USDC for all other routes
+  const { data: userBalanceData } = useBalance({
+    address: address,
+    token: isEthSellCallRoute
+      ? undefined
+      : (stockUsdcAddress[chainId as keyof typeof stockUsdcAddress] as `0x${string}`),
+  });
+
   const {
     isPendingStockUsdcApprove,
     handleStockUsdcApprove,
@@ -318,19 +330,42 @@ const CoveredCallTemplate = ({
           user: address,
         });
 
-        const depositingAmount = parseUnits(parsedAmount.toFixed(6), 6);
+        // Prepare token addresses and amounts for CDS deposit.
+        // For ETH sell call route: 0th index is USDC address, 1st index is native ETH address.
+        // For all other routes: 0th index is USDC address.
+        const usdcTokenAddress =
+          stockUsdcAddress[chainId as keyof typeof stockUsdcAddress];
+        const nativeEthAddress =
+          ethAddress[chainId as keyof typeof ethAddress];
 
-        const spenderAddress =
-          stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
+        const tokenAddresses: `0x${string}`[] = isEthSellCallRoute
+          ? [usdcTokenAddress as `0x${string}`, nativeEthAddress as `0x${string}`]
+          : [usdcTokenAddress as `0x${string}`];
 
-        const approveHash = await stockUsdcApproveAsync([
-          spenderAddress,
-          depositingAmount,
-        ]);
+        // Format depositing amount: ETH uses 18 decimals, USDC uses 6 decimals
+        const depositingAmount = isEthSellCallRoute
+          ? parseUnits(parsedAmount.toFixed(18), 18)
+          : parseUnits(parsedAmount.toFixed(6), 6);
 
-        await waitForTransactionReceipt(config, {
-          hash: approveHash,
-        });
+        // For ETH sell call route: 0th index (USDC) amount is 0n, 1st index (ETH) is depositingAmount
+        const tokenAmounts: bigint[] = isEthSellCallRoute
+          ? [0n, depositingAmount]
+          : [depositingAmount];
+
+        // Approve USDC for non-ETH routes. Native ETH deposits bypass ERC20 approval.
+        if (!isEthSellCallRoute) {
+          const spenderAddress =
+            stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
+
+          const approveHash = await stockUsdcApproveAsync([
+            spenderAddress,
+            depositingAmount,
+          ]);
+
+          await waitForTransactionReceipt(config, {
+            hash: approveHash,
+          });
+        }
 
         // let hedgeValidity = BigInt(7776000);
         // if (selectedDate) {
@@ -357,28 +392,30 @@ const CoveredCallTemplate = ({
           });
 
           if (signedData) {
-            handleStockCdsDeposit({
-              user: address,
-              tokenAddresses: [
-                stockUsdcAddress[chainId as keyof typeof stockUsdcAddress],
-              ],
-              tokenAmounts: [depositingAmount],
-              // Use sell lock override (e.g. 2 days for ETH/BTC = 172800s) or fall back to 60/30 day defaults
-              lockingPeriod: sellLockOverride
-                ? BigInt(sellLockOverride * 86400)
-                : BigInt(isPutOption ? 5184000 : 2592000),
-              assetName: stockAssetName,
-              verifyParams: {
-                excessProfitCumulativeValue: BigInt(
-                  signedData.excessProfitCumulativeValue,
-                ),
-                ethPrice: BigInt(signedData.ethPrice),
-                odosAssembledData: signedData.odosAssembledData,
-                expiredUSDAmount: BigInt(signedData.expiredUSDAmount),
-                deadline: BigInt(signedData.deadline),
-                signature: signedData.signature,
+            // Execute CDS deposit on contract. For ETH sell call route, passes depositingAmount as msg.value
+            handleStockCdsDeposit(
+              {
+                user: address,
+                tokenAddresses,
+                tokenAmounts,
+                // Use sell lock override (e.g. 2 days for ETH/BTC = 172800s) or fall back to 60/30 day defaults
+                lockingPeriod: sellLockOverride
+                  ? BigInt(sellLockOverride * 86400)
+                  : BigInt(isPutOption ? 5184000 : 2592000),
+                assetName: stockAssetName,
+                verifyParams: {
+                  excessProfitCumulativeValue: BigInt(
+                    signedData.excessProfitCumulativeValue,
+                  ),
+                  ethPrice: BigInt(signedData.ethPrice),
+                  odosAssembledData: signedData.odosAssembledData,
+                  expiredUSDAmount: BigInt(signedData.expiredUSDAmount),
+                  deadline: BigInt(signedData.deadline),
+                  signature: signedData.signature,
+                },
               },
-            });
+              isEthSellCallRoute ? depositingAmount : undefined,
+            );
           }
         }
       } else {
@@ -786,7 +823,15 @@ const CoveredCallTemplate = ({
                 {/* Left Side Controls */}
                 <div className="flex items-center h-full space-x-1">
                   {!isBuyMode && (
-                    <button className="h-12 px-3 text-xs font-medium text-textBlack dark:text-white border-r border-grayLight hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (userBalanceData?.formatted) {
+                          setInputValue(userBalanceData.formatted);
+                        }
+                      }}
+                      className="h-12 px-3 text-xs font-medium text-textBlack dark:text-white border-r border-grayLight hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
                       MAX
                     </button>
                   )}
@@ -867,15 +912,15 @@ const CoveredCallTemplate = ({
                   {!isBuyMode && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
                       <Image
-                        src={usdcIcon}
-                        alt="USDC"
+                        src={isEthSellCallRoute ? cryptoEth : usdcIcon}
+                        alt={isEthSellCallRoute ? "ETH" : "USDC"}
                         width={24}
                         height={24}
                         className="object-contain"
                         unoptimized
                       />
                       <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                        USDC
+                        {isEthSellCallRoute ? "ETH" : "USDC"}
                       </span>
                     </div>
                   )}
@@ -883,7 +928,12 @@ const CoveredCallTemplate = ({
               </div>
               {!isBuyMode && (
                 <div className="text-xs text-grayLight dark:text-gray-400 text-left mt-2">
-                  Available: 1,000 USDC
+                  Available:{" "}
+                  {userBalanceData
+                    ? `${Number(userBalanceData.formatted).toLocaleString(undefined, {
+                        maximumFractionDigits: isEthSellCallRoute ? 4 : 2,
+                      })} ${isEthSellCallRoute ? "ETH" : "USDC"}`
+                    : `0 ${isEthSellCallRoute ? "ETH" : "USDC"}`}
                 </div>
               )}
 
@@ -944,7 +994,7 @@ const CoveredCallTemplate = ({
                               Lock until <span className="font-medium text-black dark:text-white">{lockEndDate}</span>
                             </div>
                             <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
-                              Paid in <span className="font-medium text-black dark:text-white">USDC</span>
+                              Paid in <span className="font-medium text-black dark:text-white">{isEthSellCallRoute ? "ETH" : "USDC"}</span>
                             </div>
                           </div>
                         </div>
@@ -1075,7 +1125,7 @@ const CoveredCallTemplate = ({
                     {isPutOption ? (
                       <>If a put sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes below the strike), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is capped at the USDC you deposited.</>
                     ) : (
-                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the USDC you deposited.</>
+                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the {isEthSellCallRoute ? "ETH" : "USDC"} you deposited.</>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-[12px] pt-[16px] border-t border-dashed border-[#e5e5e3] dark:border-[#1c2e2a]">
@@ -1085,7 +1135,7 @@ const CoveredCallTemplate = ({
                         Your max exposure
                       </div>
                       <div className="font-['JetBrains_Mono',monospace] text-[13px] text-black dark:text-white font-medium text-[#d4a060]">
-                        Up to {inputValue || "0"} USDC
+                        Up to {inputValue || "0"} {isEthSellCallRoute ? "ETH" : "USDC"}
                       </div>
                     </div>
                     <div>
