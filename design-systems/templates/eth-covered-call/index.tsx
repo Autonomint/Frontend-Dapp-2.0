@@ -16,7 +16,7 @@ import { coveredCallAssets } from "@/utils/token-config";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { Label } from "@/design-systems/atoms/label";
 import { useAccount, useBalance } from "wagmi";
-import { parseUnits } from "viem";
+import { parseUnits, zeroAddress } from "viem";
 import { toast } from "sonner";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
@@ -331,16 +331,16 @@ const CoveredCallTemplate = ({
         });
 
         // Prepare token addresses and amounts for CDS deposit.
-        // For ETH sell call route: 0th index is USDC address, 1st index is native ETH address.
-        // For all other routes: 0th index is USDC address.
+        // For ETH sell call route: 0th index is zeroAddress, 1st index is native ETH address.
+        // For other routes: 0th index is USDC address, 1st index is zeroAddress.
         const usdcTokenAddress =
           stockUsdcAddress[chainId as keyof typeof stockUsdcAddress];
         const nativeEthAddress =
           ethAddress[chainId as keyof typeof ethAddress];
 
         const tokenAddresses: `0x${string}`[] = isEthSellCallRoute
-          ? [usdcTokenAddress as `0x${string}`, nativeEthAddress as `0x${string}`]
-          : [usdcTokenAddress as `0x${string}`];
+          ? [zeroAddress, nativeEthAddress as `0x${string}`]
+          : [usdcTokenAddress as `0x${string}`, zeroAddress];
 
         // Format depositing amount: ETH uses 18 decimals, USDC uses 6 decimals
         const depositingAmount = isEthSellCallRoute
@@ -348,9 +348,10 @@ const CoveredCallTemplate = ({
           : parseUnits(parsedAmount.toFixed(6), 6);
 
         // For ETH sell call route: 0th index (USDC) amount is 0n, 1st index (ETH) is depositingAmount
+        // For other routes: 0th index (USDC) amount is depositingAmount, 1st index (ETH) is 0n
         const tokenAmounts: bigint[] = isEthSellCallRoute
           ? [0n, depositingAmount]
-          : [depositingAmount];
+          : [depositingAmount, 0n];
 
         // Approve USDC for non-ETH routes. Native ETH deposits bypass ERC20 approval.
         if (!isEthSellCallRoute) {
