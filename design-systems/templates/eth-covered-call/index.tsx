@@ -475,11 +475,11 @@ const CoveredCallTemplate = ({
               user: address,
               assetName: stockAssetName,
               depositingAmount: BigInt(parsedAmount),
-              hedgeValidity: signedData.hedgeValidity,
               verifyParams: {
                 ethPrice: BigInt(signedData.ethPrice),
                 strikePrice: BigInt(signedData.strikePrice),
                 optionFees: BigInt(signedData.optionFees),
+                hedgeValidity: signedData.hedgeValidity,
                 expiredUSDAmount: BigInt(signedData.expiredUSDAmount),
                 deadline: BigInt(signedData.deadline),
                 signature: signedData.signature,

@@ -19,6 +19,7 @@ export interface SignedDataReturn {
   index: number;
   deadline: number;
   signature: string;
+  hedgeValidity: bigint
 }
 
 /**

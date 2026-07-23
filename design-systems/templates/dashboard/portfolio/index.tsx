@@ -329,6 +329,7 @@ function PortfolioTemplate() {
           ethPrice: BigInt(signedData.ethPrice),
           strikePrice: BigInt(signedData.strikePrice),
           optionFees: BigInt(signedData.optionFees),
+          hedgeValidity: BigInt(signedData.hedgeValidity),
           expiredUSDAmount: BigInt(signedData.expiredUSDAmount),
           deadline: BigInt(signedData.deadline),
           signature: signedData.signature as `0x${string}`,

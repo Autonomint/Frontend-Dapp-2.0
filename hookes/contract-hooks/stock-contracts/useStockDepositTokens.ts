@@ -18,13 +18,13 @@ interface StockEIP712VerifyParams {
   expiredUSDAmount: bigint;
   deadline: bigint;
   signature: `0x${string}`;
+  hedgeValidity: bigint;
 }
 
 interface StockBorrowDepositParams {
   user: `0x${string}`;
   assetName: StockAssetName;
   depositingAmount: bigint;
-  hedgeValidity: bigint;
   verifyParams: StockEIP712VerifyParams;
 }
 
