@@ -135,13 +135,8 @@ const CoveredCallTemplate = ({
 
     const expiryDate = new Date(dateStr);
 
-    if (isCrypto) {
-      // Force the option expiry time to be 08:00 UTC for crypto
-      expiryDate.setUTCHours(0, 0, 0, 0);
-    } else {
-      // Force the option expiry time to be 20:00 UTC (8:00 PM UTC) for stocks
-      expiryDate.setUTCHours(8, 0, 0, 0);
-    }
+    // Force the option expiry time to be 08:00 UTC for both crypto and stocks
+    expiryDate.setUTCHours(8, 0, 0, 0);
 
 
     const time = calculateRemainingTimeDate(expiryDate.toISOString());
