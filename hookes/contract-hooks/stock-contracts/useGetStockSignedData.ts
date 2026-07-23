@@ -10,6 +10,7 @@ export interface StockSignedDataReturn {
   expiredUSDAmount: number;
   deadline: number;
   signature: `0x${string}`;
+  hedgeValidity: bigint;
 }
 
 export type StockGetDepositBorrowDto = {
@@ -41,7 +42,7 @@ async function signedDataForStockDeposit(
       chainId: chainId,
       index: index,
       collateralType: collateralType,
-        strikePrice: parseUnits((strikePrice).toString(), 2).toString(),
+      strikePrice: parseUnits((strikePrice).toString(), 2).toString(),
       expiry: expiry,
       optionType: optionType,
     }),

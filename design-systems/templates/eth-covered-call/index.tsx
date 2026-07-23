@@ -132,28 +132,18 @@ const CoveredCallTemplate = ({
   // Helper function to get remaining time for expiry
   const getExpiryTimeLeft = (dateStr: string) => {
     if (!dateStr) return "";
-    
+
     const expiryDate = new Date(dateStr);
-    
+
     if (isCrypto) {
       // Force the option expiry time to be 08:00 UTC for crypto
-      expiryDate.setUTCHours(8, 0, 0, 0);
+      expiryDate.setUTCHours(0, 0, 0, 0);
     } else {
-      // Force the option expiry time to be 4:00 PM ET for stocks
-      // 1. Construct date at UTC 16:00 on target date
-      const dateUTC = new Date(`${dateStr}T16:00:00Z`);
-      // 2. Get local hour in America/New_York
-      const tzString = dateUTC.toLocaleString("en-US", {
-        timeZone: "America/New_York",
-        hour: "numeric",
-        hour12: false,
-      });
-      const localHour = parseInt(tzString, 10);
-      // 3. Compute offset and set target UTC hour
-      const offsetHours = 16 - localHour;
-      expiryDate.setUTCHours(16 + offsetHours, 0, 0, 0);
+      // Force the option expiry time to be 20:00 UTC (8:00 PM UTC) for stocks
+      expiryDate.setUTCHours(8, 0, 0, 0);
     }
-    
+
+
     const time = calculateRemainingTimeDate(expiryDate.toISOString());
     const parts = [];
     if (time.days > 0) {
@@ -316,6 +306,17 @@ const CoveredCallTemplate = ({
       return;
     }
 
+    // Check if expiry date is selected
+    if (!selectedDate) {
+      toast.custom((t) => (
+        <ToastNotificationError
+          title="Please select an expiry date first"
+          onClose={() => toast.dismiss(t)}
+        />
+      ));
+      return;
+    }
+
     setIsDepositing(true);
     debugger;
     try {
@@ -370,14 +371,14 @@ const CoveredCallTemplate = ({
 
         // let hedgeValidity = BigInt(7776000);
         // if (selectedDate) {
-        //   const expiryTimestamp = Math.floor(
-        //     new Date(selectedDate).getTime() / 1000,
-        //   );
-        //   const nowTimestamp = Math.floor(Date.now() / 1000);
-        //   const diff = expiryTimestamp - nowTimestamp;
-        //   if (diff > 0) {
-        //     hedgeValidity = BigInt(diff);
+        //   const expiryDate = new Date(selectedDate);
+        //   if (isCrypto) {
+        //     expiryDate.setUTCHours(8, 0, 0, 0);
+        //   } else {
+        //     expiryDate.setUTCHours(20, 0, 0, 0);
         //   }
+        //   const expiryTimestamp = Math.floor(expiryDate.getTime() / 1000);
+        //   hedgeValidity = BigInt(expiryTimestamp);
         // }
 
         const mapping = tickerToOptionStockAssetName[selectedTicker];
@@ -447,17 +448,17 @@ const CoveredCallTemplate = ({
           hash: approveHash,
         });
 
-        let hedgeValidity = BigInt(7776000);
-        if (selectedDate) {
-          const expiryTimestamp = Math.floor(
-            new Date(selectedDate).getTime() / 1000,
-          );
-          const nowTimestamp = Math.floor(Date.now() / 1000);
-          const diff = expiryTimestamp - nowTimestamp;
-          if (diff > 0) {
-            hedgeValidity = BigInt(diff);
-          }
-        }
+        // let hedgeValidity = BigInt(7776000);
+        // if (selectedDate) {
+        //   const expiryTimestamp = Math.floor(
+        //     new Date(selectedDate).getTime() / 1000,
+        //   );
+        //   const nowTimestamp = Math.floor(Date.now() / 1000);
+        //   const diff = expiryTimestamp - nowTimestamp;
+        //   if (diff > 0) {
+        //     hedgeValidity = BigInt(diff);
+        //   }
+        // }
         // 10-minute expiry for testing
         // const hedgeValidity = BigInt(600);
 
@@ -479,7 +480,7 @@ const CoveredCallTemplate = ({
               user: address,
               assetName: stockAssetName,
               depositingAmount: BigInt(parsedAmount),
-              hedgeValidity,
+              hedgeValidity: signedData.hedgeValidity,
               verifyParams: {
                 ethPrice: BigInt(signedData.ethPrice),
                 strikePrice: BigInt(signedData.strikePrice),
@@ -932,8 +933,8 @@ const CoveredCallTemplate = ({
                   Available:{" "}
                   {userBalanceData
                     ? `${Number(userBalanceData.formatted).toLocaleString(undefined, {
-                        maximumFractionDigits: isEthSellCallRoute ? 4 : 2,
-                      })} ${isEthSellCallRoute ? "ETH" : "USDC"}`
+                      maximumFractionDigits: isEthSellCallRoute ? 4 : 2,
+                    })} ${isEthSellCallRoute ? "ETH" : "USDC"}`
                     : `0 ${isEthSellCallRoute ? "ETH" : "USDC"}`}
                 </div>
               )}
