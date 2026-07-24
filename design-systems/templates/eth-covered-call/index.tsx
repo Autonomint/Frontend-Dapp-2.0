@@ -34,7 +34,7 @@ import {
   stockUsdcAddress,
 } from "@/blockchain/contracts";
 import { tickerToOptionStockAssetName, StockAssetName, SELL_LOCK_PERIOD_OVERRIDES, BUY_FORCE_FIRST_EXPIRY, getApiAssetName } from "@/utils/constants";
-import { formatDate, formatDateShort, getDaysRemaining, calculateRemainingTimeDate } from "@/utils/helpers";
+import { formatDate, formatDateShort, getDaysRemaining, getExpiryTimeLeft } from "@/utils/helpers";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { config } from "@/blockchain/WalletConfigs/iindex";
 import { useRouter } from "next/navigation";
@@ -129,37 +129,7 @@ const CoveredCallTemplate = ({
     return asset?.logo || null;
   };
 
-  // Helper function to get remaining time for expiry
-  const getExpiryTimeLeft = (dateStr: string) => {
-    if (!dateStr) return "";
 
-    const expiryDate = new Date(dateStr);
-
-    // Force the option expiry time to be 08:00 UTC for both crypto and stocks
-    expiryDate.setUTCHours(8, 0, 0, 0);
-
-
-    const time = calculateRemainingTimeDate(expiryDate.toISOString());
-    const parts = [];
-    if (time.days > 0) {
-      parts.push(`${time.days} day${time.days > 1 ? "s" : ""}`);
-    }
-    if (time.hours > 0) {
-      parts.push(`${time.hours} hour${time.hours > 1 ? "s" : ""}`);
-    }
-    if (time.minutes > 0) {
-      parts.push(`${time.minutes} min${time.minutes > 1 ? "s" : ""}`);
-    }
-    if (time.seconds > 0) {
-      parts.push(`${time.seconds} sec${time.seconds > 1 ? "s" : ""}`);
-    }
-
-    if (parts.length === 0) {
-      return "0 seconds";
-    }
-
-    return parts.join(", ");
-  };
 
   const optionType = (option === "put" ? "put" : "call") as "call" | "put";
 

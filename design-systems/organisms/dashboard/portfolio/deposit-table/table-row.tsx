@@ -1,5 +1,5 @@
 import { BorrowStatus, PROFIT_CAP_MAP } from "@/utils/constants";
-import { calculateRemainingDays, formatDateTime } from "@/utils/helpers";
+import { calculateRemainingDays, formatDate, getExpiryTimeLeft } from "@/utils/helpers";
 import { PositionData } from "@/utils/interface";
 import Spinner from "@/design-systems/atoms/Spinner";
 import { formatUnits } from "viem";
@@ -83,7 +83,20 @@ const DepositTableRow = ({
         )}
       </td>
       <td className="px-5 py-4 2xl:py-6">
-        {formatDateTime(position.validTill)}
+        <div className="flex flex-col">
+          <span className="font-medium text-black dark:text-white">
+            {formatDate(position.validTill)}
+          </span>
+          {!isExpired ? (
+            <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {getExpiryTimeLeft(position.validTill)} left
+            </span>
+          ) : (
+            <span className="text-sm text-red-500 dark:text-red-400 mt-1">
+              Expired
+            </span>
+          )}
+        </div>
       </td>
       <td className="px-5 py-4 2xl:py-6">
         {position.status === BorrowStatus.LIQUIDATED

@@ -532,13 +532,68 @@ export function getOrdinalSuffix(day: number): string {
   }
 }
 
-export function formatDate(dateStr: string): string {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
+export function formatDate(dateVal: number | string): string {
+  if (!dateVal) return "";
+  const num = Number(dateVal);
+  let date: Date;
+  if (!isNaN(num)) {
+    if (num < 10000000000) {
+      date = new Date(num * 1000);
+    } else {
+      date = new Date(num);
+    }
+  } else {
+    date = new Date(dateVal);
+  }
+
+  if (isNaN(date.getTime())) return "";
+
   const day = date.getDate();
   const month = date.toLocaleString("en-US", { month: "short" });
   const year = date.getFullYear();
   return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+}
+
+export function getExpiryTimeLeft(dateVal: number | string): string {
+  if (!dateVal) return "";
+
+  const num = Number(dateVal);
+  let expiryDate: Date;
+  if (!isNaN(num)) {
+    if (num < 10000000000) {
+      expiryDate = new Date(num * 1000);
+    } else {
+      expiryDate = new Date(num);
+    }
+  } else {
+    expiryDate = new Date(dateVal);
+  }
+
+  if (isNaN(expiryDate.getTime())) return "";
+
+  // Force the option expiry time to be 08:00 UTC for both crypto and stocks
+  expiryDate.setUTCHours(8, 0, 0, 0);
+
+  const time = calculateRemainingTimeDate(expiryDate.toISOString());
+  const parts = [];
+  if (time.days > 0) {
+    parts.push(`${time.days} day${time.days > 1 ? "s" : ""}`);
+  }
+  if (time.hours > 0) {
+    parts.push(`${time.hours} hour${time.hours > 1 ? "s" : ""}`);
+  }
+  if (time.minutes > 0) {
+    parts.push(`${time.minutes} min${time.minutes > 1 ? "s" : ""}`);
+  }
+  if (time.seconds > 0) {
+    parts.push(`${time.seconds} sec${time.seconds > 1 ? "s" : ""}`);
+  }
+
+  if (parts.length === 0) {
+    return "0 seconds";
+  }
+
+  return parts.join(", ");
 }
 
 export function formatDateTime(timestamp: number | string): string {
