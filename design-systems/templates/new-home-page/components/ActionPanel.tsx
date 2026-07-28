@@ -7,7 +7,7 @@ import type { PathId } from "../lib/types";
 
 const tagClasses = {
   gated: "bg-ink-2 dark:bg-[#2a2a2a] text-[#d4c094]",
-  open: "bg-[#ecf2ee] dark:bg-[#1a3a2a] text-green-deep",
+  open: "bg-[#ecf2ee] dark:bg-[#1a3a2a] text-green-deep dark:text-[#4ade80]",
 } as const;
 
 export function ActionPanel() {
@@ -44,20 +44,7 @@ export function ActionPanel() {
           "0 1px 0 rgba(0,0,0,0.02), 0 30px 60px -40px rgba(0,0,0,0.18)",
       }}
     >
-      {/* Close button */}
-      <button
-        aria-label="close"
-        className="absolute top-[22px] right-[22px] w-7 h-7 rounded-full border-none bg-transparent cursor-pointer text-gray-600 dark:text-gray-400 flex items-center justify-center transition-colors hover:bg-[#f4f4f3] dark:hover:bg-gray-700 hover:text-ink dark:hover:text-white"
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path
-            d="M1 1L13 13M13 1L1 13"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
+
 
       <h1 className="font-serif font-normal text-[38px] leading-[1.02] tracking-[-0.03em] mb-2 mr-[30px] text-ink dark:text-white [&_em]:italic [&_em]:font-normal">
         Pick your <em>side</em> of the trade.
