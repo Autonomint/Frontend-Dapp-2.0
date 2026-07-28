@@ -8,7 +8,7 @@ export const pathOptions: PathOption[] = [
         Buy options <em>at a discount</em>
       </>
     ),
-    tag: { label: "Institutional", variant: "gated" },
+    tag: { label: "Permissionless", variant: "gated" },
     description:
       "For TradFi MMs, hedge funds, and brokerage-account holders. Buy NVDA / TSLA / SMR calls 20–30% below listed premium. Pay USDC. Post zero collateral.",
     meta: [
@@ -29,7 +29,7 @@ export const pathOptions: PathOption[] = [
     description:
       "Deposit ETH, BTC, SOL, AERO, USDC, USDT or tokenized equity as collateral. Sell calls on the stocks you'd be happy to be assigned at. Earn USDC premium upfront.",
     meta: [
-      { value: "8–24%", label: "apy range" },
+      { value: "8–40%", label: "apy range" },
       { value: "USDC", label: "premium paid" },
       { value: "Any", label: "crypto collateral" },
     ],
