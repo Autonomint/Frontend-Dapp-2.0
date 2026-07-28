@@ -111,11 +111,10 @@ const DepositTableRow = ({
         {isExpired ? (
           // For expired positions: use backend profit, show 0 if negative
           <span
-            className={`font-medium ${
-              Number(position.profit || 0) >= 0
+            className={`font-medium ${Number(position.profit || 0) >= 0
                 ? "text-green-600 dark:text-green-500"
                 : "text-green-600 dark:text-green-500"
-            }`}
+              }`}
           >
             +${Math.round(Math.max(0, Number(position.profit || 0)))}
           </span>
@@ -123,11 +122,10 @@ const DepositTableRow = ({
           <Spinner size={16} />
         ) : hasRealTimePrice ? (
           <span
-            className={`font-medium flex items-center gap-1 ${
-              realTimePnL >= 0
+            className={`font-medium flex items-center gap-1 ${realTimePnL >= 0
                 ? "text-green-600 dark:text-green-500"
                 : "text-red-600 dark:text-red-500"
-            }`}
+              }`}
           >
             {realTimePnL >= 0 ? "+" : ""}${Math.round(realTimePnL)}
             {hasRealTimePrice && (
@@ -139,11 +137,10 @@ const DepositTableRow = ({
           </span>
         ) : (
           <span
-            className={`font-medium ${
-              Number(position.profit || 0) >= 0
+            className={`font-medium ${Number(position.profit || 0) >= 0
                 ? "text-green-600 dark:text-green-500"
                 : "text-red-600 dark:text-red-500"
-            }`}
+              }`}
           >
             {position.profit !== null && position.profit !== undefined
               ? `${Number(position.profit) >= 0 ? "+" : ""}$${Math.round(Number(position.profit))}`
@@ -179,7 +176,7 @@ const DepositTableRow = ({
                   <Info width={14} height={14} className="cursor-pointer" />
                 </TooltipTrigger>
                 <TooltipContent className="bg-white dark:bg-black max-w-[280px] text-sm">
-                  <p>After expiry, you will have 2 days to close the position. If the position is not closed within 2 days then the gains (if any) will be reverted and given back to 'Call Sellers'</p>
+                  <p>After expiry, you will have 2 Hrs to close the position. If the position is not closed within 2 days then the gains (if any) will be reverted and given back to 'Call Sellers'</p>
                 </TooltipContent>
               </Tooltip>
             </div>
