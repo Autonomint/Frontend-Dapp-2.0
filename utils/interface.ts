@@ -7,6 +7,7 @@ export interface dcdsDepositDetails {
   chainId: number;
   index: number;
   depositedAmounts: {
+    eth: string;
     usdc: string;
   };
   totalDepositedAmount: string;

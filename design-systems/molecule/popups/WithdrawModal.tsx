@@ -228,6 +228,8 @@ export function DcdsWithdrawModal({
       ).toFixed(4),
     );
 
+  const divideValue = position?.collateralType == "ETH_CALL" ? Number(position?.depositedAmounts?.eth) : Number(position?.totalDepositedAmount)
+
   const variableYields = toPositiveDecimalString(
     Number(
       apy == undefined
@@ -239,16 +241,16 @@ export function DcdsWithdrawModal({
               : position?.apys?.priceChangePL || 0,
           ) /
             Number(
-              isNaN(Number(position?.totalDepositedAmount))
+              isNaN(Number(divideValue))
                 ? 0
-                : position?.totalDepositedAmount,
+                : divideValue,
             )) *
           100
           : (Number(isNaN(apy[2]) ? 0 : apy[2]) /
             Number(
-              isNaN(Number(position?.totalDepositedAmount))
+              isNaN(Number(divideValue))
                 ? 0
-                : position?.totalDepositedAmount,
+                : divideValue,
             )) *
           100,
     ).toFixed(2),
@@ -414,7 +416,7 @@ export function DcdsWithdrawModal({
                 <div className="flex flex-col w-full items-start justify-between">
                   <div className="flex items-center justify-between gap-3">
                     <Label className="text-[22px] font-bold md:text-[26px] text-green-600 dark:text-green-500">
-                      ${optionFee}
+                      {position.collateralType == "ETH_CALL" ? "" : "$"}{optionFee}{position.collateralType == "ETH_CALL" ? " ETH" : ""}
                     </Label>
                   </div>
                   <div className="flex gap-1">
@@ -452,7 +454,7 @@ export function DcdsWithdrawModal({
               <div className="flex-1 w-full flex flex-col justify-center items-start gap-1 py-2 px-4 font-medium">
                 <div className="flex flex-col w-full items-start justify-between">
                   <Label className="text-[22px] md:text-[26px] font-medium dark:text-white">
-                    ${priceGains}
+                    {position.collateralType == "ETH_CALL" ? "" : "$"}{priceGains} {position.collateralType == "ETH_CALL" ? " ETH" : ""}
                   </Label>
                   <div className="flex">
                     <Label className="text-[14px] font-normal text-[#777777]">
