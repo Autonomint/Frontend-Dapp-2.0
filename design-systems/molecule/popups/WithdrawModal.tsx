@@ -416,7 +416,7 @@ export function DcdsWithdrawModal({
                 <div className="flex flex-col w-full items-start justify-between">
                   <div className="flex items-center justify-between gap-3">
                     <Label className="text-[22px] font-bold md:text-[26px] text-green-600 dark:text-green-500">
-                      {position.collateralType == "ETH_CALL" ? "" : "$"}{optionFee}{position.collateralType == "ETH_CALL" ? " ETH" : ""}
+                      ${optionFee}
                     </Label>
                   </div>
                   <div className="flex gap-1">
