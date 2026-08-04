@@ -36,8 +36,10 @@ const DepositTableRow = ({
   const remainingDays = calculateRemainingDays(Number(position.validTill));
   const isExpired = remainingDays <= 0 || position.isExpired;
 
-  // Determine if this is a LAB put position
-  const isLabPut = position.collateralType === "LAB";
+  // Determine if this is a put position (LAB or any _PUT collateral type)
+  const isPut =
+    position.collateralType === "LAB" ||
+    position.collateralType.endsWith("_PUT");
 
   // Calculate real-time PnL
   const currentPrice = spotPrice || 0;
@@ -45,7 +47,7 @@ const DepositTableRow = ({
   const depositedAmount = Number(position.depositedAmount);
   // Look up per-asset profit cap; undefined falls back to the 30 % default
   const profitCap = PROFIT_CAP_MAP[position.collateralType];
-  const realTimePnL = isLabPut
+  const realTimePnL = isPut
     ? calculatePutPnL(currentPrice, strikePriceNum, depositedAmount, profitCap)
     : calculatePnL(currentPrice, strikePriceNum, depositedAmount, profitCap);
   const hasRealTimePrice = spotPrice !== undefined && spotPrice !== null && spotPrice > 0;

@@ -144,17 +144,17 @@ function DepositTable({
         const aSpotPrice = spotPriceMap[a.collateralType] || 0;
         const bSpotPrice = spotPriceMap[b.collateralType] || 0;
 
-        const aIsLabPut = a.collateralType === "LAB";
-        const bIsLabPut = b.collateralType === "LAB";
+        const aIsPut = a.collateralType === "LAB" || a.collateralType.endsWith("_PUT");
+        const bIsPut = b.collateralType === "LAB" || b.collateralType.endsWith("_PUT");
 
         // Look up per-asset profit cap; undefined falls back to the 30 % default
         const aProfitCap = PROFIT_CAP_MAP[a.collateralType];
         const bProfitCap = PROFIT_CAP_MAP[b.collateralType];
 
-        const aPnL = aIsLabPut
+        const aPnL = aIsPut
           ? calculatePutPnL(aSpotPrice, aStrike, Number(a.depositedAmount), aProfitCap)
           : calculatePnL(aSpotPrice, aStrike, Number(a.depositedAmount), aProfitCap);
-        const bPnL = bIsLabPut
+        const bPnL = bIsPut
           ? calculatePutPnL(bSpotPrice, bStrike, Number(b.depositedAmount), bProfitCap)
           : calculatePnL(bSpotPrice, bStrike, Number(b.depositedAmount), bProfitCap);
 

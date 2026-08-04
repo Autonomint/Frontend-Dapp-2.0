@@ -644,16 +644,20 @@ export function getDaysRemaining(dateStr: string): number {
 /**
  * Calculates real-time PnL for a call option position.
  *
- * If currentPrice > strikePrice:
- *   cappedPrice = min(currentPrice, strikePrice * profitCapMultiplier)
- *   PnL = (cappedPrice - strikePrice) * depositedAmount
+ * Strike price is stored as a scaled integer (e.g. 250000 → $2500.00), so it
+ * is divided by 100 before use.
+ *
+ * Profit when currentPrice > strikeInDollars, capped at the ceiling:
+ *   cappedPrice    = strikeInDollars * profitCapMultiplier
+ *   effectivePrice = min(currentPrice, cappedPrice)
+ *   PnL = (effectivePrice - strikeInDollars) * depositedAmount
  * Else: PnL = 0
  *
- * @param currentPrice        - Live spot price of the underlying asset
- * @param strikePrice         - Strike price of the option
- * @param depositedAmount     - Number of contracts (size)
- * @param profitCapMultiplier - Max upside as a multiplier on strike (default 1.30 = 30 %).
- *                              Use PROFIT_CAP_MAP[collateralType] to get the per-asset cap.
+ * @param currentPrice          - Live spot price of the underlying asset (in dollars)
+ * @param strikePrice           - Strike price as a scaled integer (divide by 100 for $)
+ * @param depositedAmount       - Number of contracts (size)
+ * @param profitCapMultiplier   - Max upside as a multiplier on strike (default 1.30 = 30 %).
+ *                                Use PROFIT_CAP_MAP[collateralType] to get the per-asset cap.
  */
 export function calculatePnL(
   currentPrice: number,
@@ -661,11 +665,14 @@ export function calculatePnL(
   depositedAmount: number,
   profitCapMultiplier: number = 1.30
 ): number {
-  if (currentPrice <= strikePrice) return 0;
+  // Strike is stored as scaled integer (e.g., 250000 means $2500.00)
+  const strikeInDollars = strikePrice / 100;
 
-  const maxCappedPrice = strikePrice * profitCapMultiplier;
+  if (currentPrice <= strikeInDollars) return 0;
+
+  const maxCappedPrice = strikeInDollars * profitCapMultiplier;
   const effectivePrice = Math.min(currentPrice, maxCappedPrice);
-  return (effectivePrice - strikePrice) * depositedAmount;
+  return (effectivePrice - strikeInDollars) * depositedAmount;
 }
 
 
