@@ -52,6 +52,18 @@ const DepositTableRow = ({
     : calculatePnL(currentPrice, strikePriceNum, depositedAmount, profitCap);
   const hasRealTimePrice = spotPrice !== undefined && spotPrice !== null && spotPrice > 0;
 
+  /**
+   * Formats a dollar value for display.
+   * Sub-dollar values show 2–4 decimal places; larger values are rounded.
+   */
+  const formatPrice = (value: number): string => {
+    const abs = Math.abs(value);
+    if (abs === 0) return "0";
+    if (abs < 0.01) return value.toFixed(2);
+    if (abs < 1) return value.toFixed(2);
+    return Math.round(value).toString();
+  };
+
   return (
     <tr
       className={`border ${highlight
@@ -72,7 +84,7 @@ const DepositTableRow = ({
       <td className="px-5 py-4 2xl:py-6">
         {hasRealTimePrice && !isSpotPriceLoading ? (
           <span className="flex items-center gap-1">
-            ${Math.round(currentPrice)}
+            ${formatPrice(currentPrice)}
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -118,7 +130,7 @@ const DepositTableRow = ({
               : "text-green-600 dark:text-green-500"
               }`}
           >
-            +${Math.round(Math.max(0, Number(position.profit || 0)))}
+            +${formatPrice(Math.max(0, Number(position.profit || 0)))}
           </span>
         ) : isSpotPriceLoading ? (
           <Spinner size={16} />
@@ -129,7 +141,7 @@ const DepositTableRow = ({
               : "text-red-600 dark:text-red-500"
               }`}
           >
-            {realTimePnL >= 0 ? "+" : ""}${Math.round(realTimePnL)}
+            {realTimePnL >= 0 ? "+" : ""}${formatPrice(realTimePnL)}
             {hasRealTimePrice && (
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -145,7 +157,7 @@ const DepositTableRow = ({
               }`}
           >
             {position.profit !== null && position.profit !== undefined
-              ? `${Number(position.profit) >= 0 ? "+" : ""}$${Math.round(Number(position.profit))}`
+              ? `${Number(position.profit) >= 0 ? "+" : ""}$${formatPrice(Number(position.profit))}`
               : "-"}
           </span>
         )}
