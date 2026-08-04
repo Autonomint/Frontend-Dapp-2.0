@@ -106,7 +106,7 @@ const CoveredCallTemplate = ({
 
   const tickers = useMemo(() => {
     return coveredCallAssets
-      .filter((asset) => (isPutOption ? asset.hasPut : asset.hasCall))
+      .filter((asset) => asset.ticker !== "LIT" && (isPutOption ? asset.hasPut : asset.hasCall))
       .map((asset) => asset.ticker);
   }, [isPutOption]);
 
