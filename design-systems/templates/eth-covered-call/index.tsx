@@ -195,8 +195,8 @@ const CoveredCallTemplate = ({
   const sellLockOverride = !isBuyMode ? SELL_LOCK_PERIOD_OVERRIDES[selectedTicker] : undefined;
   const lockDays = sellLockOverride ?? (isPutOption ? 60 : 30);
 
-  // For certain tickers in buy mode, force the first (nearest) expiry and hide the dropdown
-  const forceFirstExpiry = isBuyMode && BUY_FORCE_FIRST_EXPIRY.includes(selectedTicker);
+  // In buy mode, force the first (nearest) expiry for all assets and hide the dropdown
+  const forceFirstExpiry = isBuyMode;
   const lockEndDate = useMemo(() => {
     const date = new Date();
     date.setDate(date.getDate() + lockDays);
