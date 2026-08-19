@@ -1187,12 +1187,12 @@ const CoveredCallTemplate = ({
                   <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
                 </a>
                 <a
-                  href="https://twitter.com/LABtrade_"
+                  href="https://x.com/nondollar_life"
                   target="_blank"
                   rel="noopener"
                   className="bg-[#0a0a0a] border-[0.5px] border-[#1f1f1f] rounded-[8px] p-[12px_14px] flex items-center justify-between text-[13px] text-white hover:border-[#262626] transition-colors"
                 >
-                  <span>@LABtrade_ on X</span>
+                  <span>@nondollar_life on X</span>
                   <ExternalLink className="w-[14px] h-[14px] text-[#666666]" />
                 </a>
                 <a
