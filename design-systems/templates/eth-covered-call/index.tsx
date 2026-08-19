@@ -176,7 +176,8 @@ const CoveredCallTemplate = ({
   });
 
   const MAX_STRIKE_PRICE_OPTIONS = 6;
-  const filteredPriceOptions = selectedTicker === "ETH" && !isPutOption ? priceOptions.slice(1) : priceOptions;
+  const filteredPriceOptions =
+    selectedTicker === "ETH" && !isPutOption ? priceOptions : priceOptions.slice(1);
   const displayPriceOptions = filteredPriceOptions.slice(0, MAX_STRIKE_PRICE_OPTIONS);
 
   const handlePriceSelection = (priceOption: PriceOption) => {
