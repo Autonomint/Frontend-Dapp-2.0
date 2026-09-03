@@ -144,6 +144,7 @@ function InputForm({ currency }: { currency: string }) {
     currency.toLocaleLowerCase() === "krwq",
     currency.toLocaleLowerCase() === "eurc" ||
       currency.toLocaleLowerCase() === "hype",
+    currency.toLocaleLowerCase() === "nvda",
   );
 
   // Selected asset price
@@ -163,9 +164,12 @@ function InputForm({ currency }: { currency: string }) {
       currency.toLocaleLowerCase() !== "eth" &&
       currency.toLocaleLowerCase() !== "hype"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-            chainId
+            chainId || NetworkId.BaseSepolia
           ]
         : undefined,
+    query: {
+      enabled: Boolean(address),
+    },
   });
 
   console.log(
@@ -203,6 +207,7 @@ function InputForm({ currency }: { currency: string }) {
     omniChainDataKrwq,
     omniChainDataEURC,
     omniChainDataHype,
+    omniChainDataNVDA,
   } = useGetOmniChainData();
 
   const omniChainDataMap = {
@@ -214,7 +219,7 @@ function InputForm({ currency }: { currency: string }) {
     KRWQ: omniChainDataKrwq,
     EURC: omniChainDataEURC,
     Hype: omniChainDataHype,
-    NVDA: omniChainDataEURC,
+    NVDA: omniChainDataNVDA,
   };
 
   const maxMintAmount =
@@ -275,7 +280,12 @@ function InputForm({ currency }: { currency: string }) {
     reset();
 
     // parse the amount to be minted
-    const approveAmount = parseEther(formik.values.collateralAmount.toString());
+    const approveAmount =
+      currency === "cbBTC" || currency === "NVDA"
+        ? parseUnits(formik.values.collateralAmount.toString(), 8)
+        : currency === "EURC" || currency === "HYPE"
+          ? parseUnits(formik.values.collateralAmount.toString(), 6)
+          : parseEther(formik.values.collateralAmount.toString());
 
     if (
       ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ", "EURC", "NVDA"].includes(
@@ -288,7 +298,7 @@ function InputForm({ currency }: { currency: string }) {
 
       await approveWrapETHDynamic(
         contract[chainId as keyof typeof contract] as `0x${string}`,
-        currency === "cbBTC"
+        currency === "cbBTC" || currency === "NVDA"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
           : currency === "EURC" || currency === "HYPE"
             ? parseUnits(formik.values.collateralAmount.toString(), 6)
@@ -486,7 +496,7 @@ function InputForm({ currency }: { currency: string }) {
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     String(formik.values.collateralAmount),
-    (currency === "KRWQ"
+    (currency === "KRWQ" || currency === "NVDA"
       ? parseUnits(String(assetPrice), 8)
       : currency === "EURC" || currency === "HYPE"
         ? parseUnits(String(assetPrice), 6)
@@ -500,7 +510,9 @@ function InputForm({ currency }: { currency: string }) {
           ? "EURC"
           : currency === "HYPE"
             ? "HYPE"
-            : "ETH",
+            : currency === "NVDA"
+              ? "NVDA"
+              : "ETH",
     Number(formik.values.hedgeDuration),
   );
   console.log(assetPrice, "assetPrice");
@@ -599,7 +611,7 @@ function InputForm({ currency }: { currency: string }) {
       // calling the mint usda function in the contract
       mintUSDa?.({
         depositingAmount:
-          currency === "cbBTC"
+          currency === "cbBTC" || currency === "NVDA"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : currency === "EURC"
               ? parseUnits(formik.values.collateralAmount.toString(), 6)
@@ -632,7 +644,7 @@ function InputForm({ currency }: { currency: string }) {
       // calling the mint usda function in the contract
       mintStakeUSDa?.({
         depositingAmount:
-          currency === "cbBTC"
+          currency === "cbBTC" || currency === "NVDA"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
@@ -672,7 +684,10 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv?.LTV || 0)) /
-        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+        (currency === "KRWQ" ||
+        currency === "EURC" ||
+        currency === "HYPE" ||
+        currency === "NVDA"
           ? 100
           : 10000);
       // display the usda to be minted with 2 decimal places
@@ -685,7 +700,10 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
-        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+        (currency === "KRWQ" ||
+        currency === "EURC" ||
+        currency === "HYPE" ||
+        currency === "NVDA"
           ? 100
           : 10000);
 
@@ -699,7 +717,10 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           formik.values.strikePricePercent) /
-        (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+        (currency === "KRWQ" ||
+        currency === "EURC" ||
+        currency === "HYPE" ||
+        currency === "NVDA"
           ? 100
           : 10000);
       setUpsideCollateral(upsideCollateral);
@@ -873,7 +894,7 @@ function InputForm({ currency }: { currency: string }) {
   const LiquidationPrice = useMemo(() => {
     return (
       ((Number(selectedAssetPrice) /
-        (currency === "EURC" || currency === "HYPE" ? 1 : 100)) *
+        (currency === "EURC" || currency === "HYPE" || currency === "NVDA" ? 1 : 100)) *
         80) /
       100
     ).toFixed(currency === "KRWQ" ? 8 : 2);
@@ -1108,7 +1129,10 @@ function InputForm({ currency }: { currency: string }) {
         <InputMetics
           deposit={(
             (Number(selectedAssetPrice || 0) /
-              (currency === "KRWQ" || currency === "EURC" || currency === "HYPE"
+              (currency === "KRWQ" ||
+              currency === "EURC" ||
+              currency === "HYPE" ||
+              currency === "NVDA"
                 ? 1
                 : 100)) *
             Number(formik.values.collateralAmount)
