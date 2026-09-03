@@ -74,6 +74,8 @@ export enum StockAssetName {
   BTC_CALL,
   BTC_PUT,
   LIGHTER_CALL,
+  NVDA_NVDA,
+  AAPL_AAPL
 }
 
 /**
