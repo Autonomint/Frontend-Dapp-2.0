@@ -328,7 +328,7 @@ const CoveredCallTemplate = ({
         const depositingAmount = isEthSellCallRoute
           ? parseUnits(parsedAmount.toFixed(18), 18)
           : isNvdaSellCallRoute
-            ? parseUnits(parsedAmount.toFixed(18), 18)
+            ? parseUnits(parsedAmount.toFixed(8), 8)
             : parseUnits(parsedAmount.toFixed(6), 6);
 
         // For ETH sell call route: 0th index (USDC) amount is 0n, 1st index (ETH) is depositingAmount
@@ -411,7 +411,7 @@ const CoveredCallTemplate = ({
                   signature: signedData.signature,
                 },
               },
-              (isEthSellCallRoute || isNvdaSellCallRoute) ? depositingAmount : undefined,
+              isEthSellCallRoute ? depositingAmount : undefined,
             );
           }
         }
