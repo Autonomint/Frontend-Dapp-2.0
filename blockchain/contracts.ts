@@ -400,6 +400,15 @@ export const stockMpoAddress: ChainAddresses = {
   [NetworkId.Hyperliquid]: zeroAddress
 } as const;
 
+// Addresses for NVDA contract
+export const nvdaAddress: ChainAddresses = {
+  [NetworkId.BaseSepolia]: "0xb20000000000000000000078ee7ce2fE4908108C",
+  [NetworkId.Optimism]: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
+  [NetworkId.Rise]: ZeroAddress as `0x${string}`,
+  [NetworkId.Hyperliquid]: zeroAddress
+} as const;
+
 // Addresses for the stock options CDS contract
 export const stockCdsAddress: ChainAddresses = {
   [NetworkId.BaseSepolia]: "0x72277A105a742fcbbd7D4EFeEd080673747770bF",

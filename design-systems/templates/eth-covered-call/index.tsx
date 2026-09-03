@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import ToastNotification from "@/design-systems/molecule/toasts/ToastNotification";
 import ToastNotificationError from "@/design-systems/molecule/toasts/ToastNotificationError";
 import useStockApproveUsdc from "@/hookes/contract-hooks/stock-contracts/useStockApproveUsdc";
+import useStockApproveNvda from "@/hookes/contract-hooks/stock-contracts/useStockApproveNvda";
 import useStockDepositTokens from "@/hookes/contract-hooks/stock-contracts/useStockDepositTokens";
 import useStockCdsDeposit from "@/hookes/contract-hooks/stock-contracts/useStockCdsDeposit";
 import useGetStockSignedData from "@/hookes/contract-hooks/stock-contracts/useGetStockSignedData";
@@ -28,6 +29,7 @@ import useGetCDSWithdrawSignedData from "@/hookes/contract-hooks/stock-contracts
 import useGetCdsDepositSignedData from "@/hookes/contract-hooks/stock-contracts/useGetCdsDepositSignedData";
 import {
   ethAddress,
+  nvdaAddress,
   stockBorrowDepositAddress,
   stockCdsAddress,
   stockCdsDepositAddress,
@@ -89,6 +91,7 @@ const CoveredCallTemplate = ({
   // Flag to identify if current route is selling ETH covered call (/earn?ticker=ETH&action=sell&option=call)
   // For this route, ETH is used as deposit asset instead of USDC.
   const isEthSellCallRoute = ticker === "ETH" && !isBuyMode && !isPutOption;
+  const isNvdaSellCallRoute = ticker === "NVDA" && !isBuyMode && !isPutOption;
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
   const [selectedAction, setSelectedAction] = useState(
@@ -213,7 +216,9 @@ const CoveredCallTemplate = ({
     address: address,
     token: isEthSellCallRoute
       ? undefined
-      : (stockUsdcAddress[chainId as keyof typeof stockUsdcAddress] as `0x${string}`),
+      : isNvdaSellCallRoute
+        ? (nvdaAddress[chainId as keyof typeof nvdaAddress] as `0x${string}`)
+        : (stockUsdcAddress[chainId as keyof typeof stockUsdcAddress] as `0x${string}`),
   });
 
   const {
@@ -221,6 +226,11 @@ const CoveredCallTemplate = ({
     handleStockUsdcApprove,
     stockUsdcApproveAsync,
   } = useStockApproveUsdc();
+
+  const {
+    isPendingStockNvdaApprove,
+    stockNvdaApproveAsync,
+  } = useStockApproveNvda();
 
   const { stockDepositIsPending, handleStockDepositTokens } =
     useStockDepositTokens();
@@ -305,28 +315,46 @@ const CoveredCallTemplate = ({
           stockUsdcAddress[chainId as keyof typeof stockUsdcAddress];
         const nativeEthAddress =
           ethAddress[chainId as keyof typeof ethAddress];
+        const nvdaTokenAddress =
+          nvdaAddress[chainId as keyof typeof nvdaAddress];
 
         const tokenAddresses: `0x${string}`[] = isEthSellCallRoute
           ? [zeroAddress, nativeEthAddress as `0x${string}`]
-          : [usdcTokenAddress as `0x${string}`, zeroAddress];
+          : isNvdaSellCallRoute
+            ? [zeroAddress, nvdaTokenAddress as `0x${string}`]
+            : [usdcTokenAddress as `0x${string}`, zeroAddress];
 
         // Format depositing amount: ETH uses 18 decimals, USDC uses 6 decimals
         const depositingAmount = isEthSellCallRoute
           ? parseUnits(parsedAmount.toFixed(18), 18)
-          : parseUnits(parsedAmount.toFixed(6), 6);
+          : isNvdaSellCallRoute
+            ? parseUnits(parsedAmount.toFixed(18), 18)
+            : parseUnits(parsedAmount.toFixed(6), 6);
 
         // For ETH sell call route: 0th index (USDC) amount is 0n, 1st index (ETH) is depositingAmount
         // For other routes: 0th index (USDC) amount is depositingAmount, 1st index (ETH) is 0n
-        const tokenAmounts: bigint[] = isEthSellCallRoute
+        const tokenAmounts: bigint[] = (isEthSellCallRoute || isNvdaSellCallRoute)
           ? [0n, depositingAmount]
           : [depositingAmount, 0n];
 
         // Approve USDC for non-ETH routes. Native ETH deposits bypass ERC20 approval.
-        if (!isEthSellCallRoute) {
+        if (!isEthSellCallRoute && !isNvdaSellCallRoute) {
           const spenderAddress =
             stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
 
           const approveHash = await stockUsdcApproveAsync([
+            spenderAddress,
+            depositingAmount,
+          ]);
+
+          await waitForTransactionReceipt(config, {
+            hash: approveHash,
+          });
+        } else if (isNvdaSellCallRoute) {
+          const spenderAddress =
+            stockCdsDepositAddress[chainId as keyof typeof stockCdsAddress];
+
+          const approveHash = await stockNvdaApproveAsync([
             spenderAddress,
             depositingAmount,
           ]);
@@ -383,7 +411,7 @@ const CoveredCallTemplate = ({
                   signature: signedData.signature,
                 },
               },
-              isEthSellCallRoute ? depositingAmount : undefined,
+              (isEthSellCallRoute || isNvdaSellCallRoute) ? depositingAmount : undefined,
             );
           }
         }
@@ -881,15 +909,15 @@ const CoveredCallTemplate = ({
                   {!isBuyMode && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
                       <Image
-                        src={isEthSellCallRoute ? cryptoEth : usdcIcon}
-                        alt={isEthSellCallRoute ? "ETH" : "USDC"}
+                        src={isEthSellCallRoute ? cryptoEth : isNvdaSellCallRoute ? getTickerLogo("NVDA")! : usdcIcon}
+                        alt={isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
                         width={24}
                         height={24}
                         className="object-contain"
                         unoptimized
                       />
                       <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                        {isEthSellCallRoute ? "ETH" : "USDC"}
+                        {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
                       </span>
                     </div>
                   )}
@@ -900,9 +928,9 @@ const CoveredCallTemplate = ({
                   Available:{" "}
                   {userBalanceData
                     ? `${Number(userBalanceData.formatted).toLocaleString(undefined, {
-                      maximumFractionDigits: isEthSellCallRoute ? 4 : 2,
-                    })} ${isEthSellCallRoute ? "ETH" : "USDC"}`
-                    : `0 ${isEthSellCallRoute ? "ETH" : "USDC"}`}
+                      maximumFractionDigits: isEthSellCallRoute || isNvdaSellCallRoute ? 4 : 2,
+                    })} ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}`
+                    : `0 ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}`}
                 </div>
               )}
 
@@ -963,7 +991,7 @@ const CoveredCallTemplate = ({
                               Lock until <span className="font-medium text-black dark:text-white">{lockEndDate}</span>
                             </div>
                             <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
-                              Paid in <span className="font-medium text-black dark:text-white">{isEthSellCallRoute ? "ETH" : "USDC"}</span>
+                              Paid in <span className="font-medium text-black dark:text-white">{isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}</span>
                             </div>
                           </div>
                         </div>
@@ -1094,7 +1122,7 @@ const CoveredCallTemplate = ({
                     {isPutOption ? (
                       <>If a put sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes below the strike), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is capped at the USDC you deposited.</>
                     ) : (
-                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the {isEthSellCallRoute ? "ETH" : "USDC"} you deposited.</>
+                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"} you deposited.</>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-[12px] pt-[16px] border-t border-dashed border-[#e5e5e3] dark:border-[#1c2e2a]">
@@ -1104,7 +1132,7 @@ const CoveredCallTemplate = ({
                         Your max exposure
                       </div>
                       <div className="font-['JetBrains_Mono',monospace] text-[13px] text-black dark:text-white font-medium text-[#d4a060]">
-                        Up to {inputValue || "0"} {isEthSellCallRoute ? "ETH" : "USDC"}
+                        Up to {inputValue || "0"} {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
                       </div>
                     </div>
                     <div>
@@ -1126,6 +1154,7 @@ const CoveredCallTemplate = ({
                   disabled={
                     isDepositing ||
                     isPendingStockUsdcApprove ||
+                    isPendingStockNvdaApprove ||
                     stockDepositIsPending ||
                     stockCdsDepositIsPending
                   }
