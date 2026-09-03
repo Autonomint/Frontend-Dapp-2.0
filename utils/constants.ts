@@ -88,13 +88,13 @@ export enum StockAssetName {
  * All tickers pass through unchanged (ticker === API name).
  */
 export const tickerToApiAssetName: Record<string, string> = {
-  NVDA: "NVDA",
+  NVDA: "NVDA_NVDA",
   TSLA: "TSLA",
   SMR: "SMR",
   PLTR: "PLTR",
   COIN: "COIN",
   MSTR: "MSTR",
-  AAPL: "AAPL",
+  AAPL: "AAPL_AAPL",
   LAB: "LAB",
   // Crypto option enum keys — pass-through so portfolio collateralType values round-trip correctly
   ETH_CALL: "ETH_CALL",
@@ -135,13 +135,13 @@ export const getApiAssetName = (
 
 // Mapping from ticker symbol to StockAssetName enum
 export const tickerToStockAssetName: Record<string, StockAssetName> = {
-  NVDA: StockAssetName.NVDA,
+  NVDA: StockAssetName.NVDA_NVDA,
   TSLA: StockAssetName.TSLA,
   SMR: StockAssetName.SMR,
   PLTR: StockAssetName.PLTR,
   COIN: StockAssetName.COIN,
   MSTR: StockAssetName.MSTR,
-  AAPL: StockAssetName.AAPL,
+  AAPL: StockAssetName.AAPL_AAPL,
   LAB: StockAssetName.LAB,
   ETH_CALL: StockAssetName.ETH_CALL,
   ETH_PUT: StockAssetName.ETH_PUT,
@@ -156,13 +156,13 @@ export interface StockOptionMapping {
 }
 
 export const tickerToOptionStockAssetName: Record<string, StockOptionMapping> = {
-  NVDA: { call: StockAssetName.NVDA },
+  NVDA: { call: StockAssetName.NVDA_NVDA },
   TSLA: { call: StockAssetName.TSLA },
   SMR: { call: StockAssetName.SMR },
   PLTR: { call: StockAssetName.PLTR },
   COIN: { call: StockAssetName.COIN },
   MSTR: { call: StockAssetName.MSTR },
-  AAPL: { call: StockAssetName.AAPL },
+  AAPL: { call: StockAssetName.AAPL_AAPL },
   LAB: { call: StockAssetName.LAB },
   ETH: { call: StockAssetName.ETH_CALL, put: StockAssetName.ETH_PUT },
   BTC: { call: StockAssetName.BTC_CALL, put: StockAssetName.BTC_PUT },
