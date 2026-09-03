@@ -54,7 +54,8 @@ export enum AssetName {
   cbBTC,
   KRWQ,
   EURC,
-  HYPE
+  HYPE,
+  NVDA,
 }
 
 export const BorrowAssetsEnum = {
@@ -69,6 +70,8 @@ export const BorrowAssetsEnum = {
   EURC: AssetName.EURC,
   eurc: AssetName.EURC,
   HYPE: AssetName.ETH,
+  NVDA: AssetName.NVDA,
+  nvda: AssetName.NVDA,
 };
 
 export const RedeemAssets = {
@@ -147,6 +150,7 @@ export const assetNameForRewardDataBorrow = {
   weETH: "WeETH",
   wsuperOETHb: "WSuperOethB",
   HYPE: "HYPE",
+  NVDA: "NVDA",
 };
 
 // enum for borrow contract data 
@@ -181,6 +185,8 @@ export const tokenFormatDecimal = {
   wsuperOETHb: 4,
   cbBTC: 6,
   HYPE: 4,
+  NVDA: 4,
+  nvda: 4,
 }
 export enum WithdrawType {
   FULL_WITHDRAW, WITHDRAW_YIELDS
