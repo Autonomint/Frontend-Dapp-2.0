@@ -88,7 +88,7 @@ export enum StockAssetName {
  * All tickers pass through unchanged (ticker === API name).
  */
 export const tickerToApiAssetName: Record<string, string> = {
-  NVDA: "NVDA_NVDA",
+  NVDAc: "NVDA_NVDA",
   TSLA: "TSLA",
   SMR: "SMR",
   PLTR: "PLTR",
@@ -135,7 +135,7 @@ export const getApiAssetName = (
 
 // Mapping from ticker symbol to StockAssetName enum
 export const tickerToStockAssetName: Record<string, StockAssetName> = {
-  NVDA: StockAssetName.NVDA_NVDA,
+  NVDAc: StockAssetName.NVDA_NVDA,
   TSLA: StockAssetName.TSLA,
   SMR: StockAssetName.SMR,
   PLTR: StockAssetName.PLTR,
@@ -156,7 +156,7 @@ export interface StockOptionMapping {
 }
 
 export const tickerToOptionStockAssetName: Record<string, StockOptionMapping> = {
-  NVDA: { call: StockAssetName.NVDA_NVDA },
+  NVDAc: { call: StockAssetName.NVDA_NVDA },
   TSLA: { call: StockAssetName.TSLA },
   SMR: { call: StockAssetName.SMR },
   PLTR: { call: StockAssetName.PLTR },

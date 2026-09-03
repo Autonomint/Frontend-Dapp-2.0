@@ -120,7 +120,7 @@ export const coveredCallAssets: CoveredCallAsset[] = [
     hasPut: false,
   },
   {
-    ticker: "NVDA",
+    ticker: "NVDAc",
     name: "Nvidia AI",
     type: "covered call",
     maxApr: 142.6,

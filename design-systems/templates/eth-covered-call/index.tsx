@@ -77,7 +77,7 @@ const CoveredCallTemplate = ({
   usdtoAmount = 1275,
 }: CoveredCallProps) => {
   const searchParams = useSearchParams();
-  const ticker = searchParams.get("ticker") || "NVDA";
+  const ticker = searchParams.get("ticker") || "NVDAc";
   const actionParam = searchParams.get("action");
   const option = searchParams.get("option") || "call";
   const action =
@@ -91,7 +91,7 @@ const CoveredCallTemplate = ({
   // Flag to identify if current route is selling ETH covered call (/earn?ticker=ETH&action=sell&option=call)
   // For this route, ETH is used as deposit asset instead of USDC.
   const isEthSellCallRoute = ticker === "ETH" && !isBuyMode && !isPutOption;
-  const isNvdaSellCallRoute = ticker === "NVDA" && !isBuyMode && !isPutOption;
+  const isNvdaSellCallRoute = ticker === "NVDAc" && !isBuyMode && !isPutOption;
 
   const [selectedTicker, setSelectedTicker] = useState(ticker);
   const [selectedAction, setSelectedAction] = useState(
@@ -909,15 +909,15 @@ const CoveredCallTemplate = ({
                   {!isBuyMode && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
                       <Image
-                        src={isEthSellCallRoute ? cryptoEth : isNvdaSellCallRoute ? getTickerLogo("NVDA")! : usdcIcon}
-                        alt={isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
+                        src={isEthSellCallRoute ? cryptoEth : isNvdaSellCallRoute ? getTickerLogo("NVDAc")! : usdcIcon}
+                        alt={isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}
                         width={24}
                         height={24}
                         className="object-contain"
                         unoptimized
                       />
                       <span className="text-sm font-medium text-textBlack dark:text-white font-plex-grotesk">
-                        {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
+                        {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}
                       </span>
                     </div>
                   )}
@@ -929,8 +929,8 @@ const CoveredCallTemplate = ({
                   {userBalanceData
                     ? `${Number(userBalanceData.formatted).toLocaleString(undefined, {
                       maximumFractionDigits: isEthSellCallRoute || isNvdaSellCallRoute ? 4 : 2,
-                    })} ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}`
-                    : `0 ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}`}
+                    })} ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}`
+                    : `0 ${isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}`}
                 </div>
               )}
 
@@ -991,7 +991,7 @@ const CoveredCallTemplate = ({
                               Lock until <span className="font-medium text-black dark:text-white">{lockEndDate}</span>
                             </div>
                             <div className="font-['JetBrains_Mono',monospace] text-[10px] tracking-[0.12em] uppercase text-grayLight dark:text-gray-400">
-                              Paid in <span className="font-medium text-black dark:text-white">{isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}</span>
+                              Paid in <span className="font-medium text-black dark:text-white">{isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}</span>
                             </div>
                           </div>
                         </div>
@@ -1122,7 +1122,7 @@ const CoveredCallTemplate = ({
                     {isPutOption ? (
                       <>If a put sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes below the strike), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is capped at the USDC you deposited.</>
                     ) : (
-                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"} you deposited.</>
+                      <>If any call sold by the pool expires <strong className="font-semibold text-black dark:text-white">in-the-money</strong> ({ticker} closes above the strike that was sold), the payout owed to the buyer is taken <em className="not-italic text-[#d4a060] font-medium">proportionally</em> from every depositor's collateral. Your downside is limited to the {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"} you deposited.</>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-[12px] pt-[16px] border-t border-dashed border-[#e5e5e3] dark:border-[#1c2e2a]">
@@ -1132,7 +1132,7 @@ const CoveredCallTemplate = ({
                         Your max exposure
                       </div>
                       <div className="font-['JetBrains_Mono',monospace] text-[13px] text-black dark:text-white font-medium text-[#d4a060]">
-                        Up to {inputValue || "0"} {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDA" : "USDC"}
+                        Up to {inputValue || "0"} {isEthSellCallRoute ? "ETH" : isNvdaSellCallRoute ? "NVDAc" : "USDC"}
                       </div>
                     </div>
                     <div>
