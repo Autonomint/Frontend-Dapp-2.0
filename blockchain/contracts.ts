@@ -214,15 +214,6 @@ export const HYPEAddress: ChainAddresses = {
   [NetworkId.Hyperliquid]: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 } as const;
 
-// Addresses for the NVDA contract
-export const NVDAAddress: ChainAddresses = {
-  [NetworkId.BaseSepolia]: zeroAddress,
-  [NetworkId.Optimism]: zeroAddress,
-  [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
-  [NetworkId.Rise]: ZeroAddress as `0x${string}`,
-  [NetworkId.Hyperliquid]: zeroAddress,
-} as const;
-
 // Addresses for the borrow assets
 export const borrowAssetsAddress = {
   ETH: ethAddress,
@@ -237,8 +228,6 @@ export const borrowAssetsAddress = {
   eurc: EURCAddress,
   hype: HYPEAddress,
   HYPE: HYPEAddress,
-  NVDA: NVDAAddress,
-  nvda: NVDAAddress,
 } as const;
 
 // Addresses for the global contract

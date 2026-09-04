@@ -179,10 +179,7 @@ function InputForm({ currency }: { currency: string }) {
   );
 
   const contract =
-    currency === "cbBTC" ||
-    currency === "KRWQ" ||
-    currency === "EURC" ||
-    currency === "NVDA"
+    currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
       ? borrowDepositCoreAddress
       : borrowingDepositContractAddress;
 
@@ -214,7 +211,6 @@ function InputForm({ currency }: { currency: string }) {
     KRWQ: omniChainDataKrwq,
     EURC: omniChainDataEURC,
     Hype: omniChainDataHype,
-    NVDA: omniChainDataEURC,
   };
 
   const maxMintAmount =
@@ -278,7 +274,7 @@ function InputForm({ currency }: { currency: string }) {
     const approveAmount = parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ", "EURC", "NVDA"].includes(
+      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ", "EURC"].includes(
         currency,
       ) &&
       BigInt(allowance || 0) < approveAmount
@@ -606,10 +602,7 @@ function InputForm({ currency }: { currency: string }) {
               : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" ||
-          currency === "KRWQ" ||
-          currency === "EURC" ||
-          currency === "NVDA"
+          currency === "cbBTC" || currency === "KRWQ" || currency === "EURC"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
@@ -640,8 +633,7 @@ function InputForm({ currency }: { currency: string }) {
           currency === "cbBTC" ||
           currency === "KRWQ" ||
           currency === "EURC" ||
-          currency === "HYPE" ||
-          currency === "NVDA"
+          currency === "HYPE"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())

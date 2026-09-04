@@ -49,7 +49,7 @@ function MintUSDa({ currency }: { currency: string }) {
             </div>
             <ol className="list-decimal list-outside pl-4 mt-3 text-grayLight">
               <li className="mb-2 text-lg">
-                Deposit {currency === "cbBTC" ? "cbBTC" : currency === "HYPE" ? "HYPE" : currency === "NVDA" ? "NVDA" : "ETH"}/LRTs as
+                Deposit {currency === "cbBTC" ? "cbBTC" : currency === "HYPE" ? "HYPE" : "ETH"}/LRTs as
                 collateral and mint USDA+ (up to 80% of collateral value).
               </li>
               <li className="mb-2 text-lg">

@@ -11,9 +11,7 @@ function SingleListItemImage({
     <div className="flex flex-col items-start justify-center gap-2 lg:gap-14 min-w-[197px]">
       <Image
         src={src}
-        className={`w-[40px] h-[40px] lg:w-[58px] lg:h-[58px] ${
-          stakedToken === "NVDA" ? "rounded-full object-cover" : ""
-        }`}
+        className="w-[40px] h-[40px] lg:w-[58px] lg:h-[58px]"
         alt={stakedToken}
       />
       <div className="text-textBlack font-medium text-[28px] lg:text-[32px] dark:text-white">

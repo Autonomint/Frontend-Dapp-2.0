@@ -14,7 +14,6 @@ import WrsETH from "@/app/assets/WrsETH-icon.png";
 import WsuperOETH from "@/app/assets/Wrapped_Super_OETH.webp";
 import EURC from "@/app/assets/euro-coin-2.png";
 import HYPELogo from "@/app/assets/hyperliquid-logo.png";
-import NVDAIcon from "@/app/assets/nvda-logo.svg";
 import WithPrivateRoute from "@/design-systems/molecule/PrivateRouteWrapper";
 import { useAccount, useReadContract } from "wagmi";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
@@ -65,7 +64,6 @@ function MintEthListTemplate() {
   const { tvlValue: ltvKRWQ } = useGetTvl(AssetName.KRWQ);
   const { tvlValue: ltvEURC } = useGetTvl(AssetName.EURC);
   const { tvlValue: ltvHYPE } = useGetTvl(AssetName.HYPE);
-  const { tvlValue: ltvNVDA } = useGetTvl(AssetName.NVDA);
 
   // Calculate the downside protection amount
   const downsideProtectionEth = ltvETH?.LTV
@@ -91,9 +89,6 @@ function MintEthListTemplate() {
     : 0;
   const downsideProtectionHYPE = ltvHYPE?.LTV
     ? 100 - Number(ltvHYPE?.LTV || 0)
-    : 0;
-  const downsideProtectionNVDA = ltvNVDA?.LTV
-    ? 100 - Number(ltvNVDA?.LTV || 0)
     : 0;
 
   // getting current APR value
@@ -398,40 +393,6 @@ function MintEthListTemplate() {
             : 0,
         ),
     });
-    list.push({
-      token: "NVDA",
-      tokenImage: NVDAIcon,
-      BorrowRate: `${Number(ltvNVDA?.APR || 0) / 10}%`,
-      DownsideProtectionGiven: `${downsideProtectionNVDA}%`,
-      ltv: `${ltvNVDA?.LTV || 0}%`,
-      isActive: !isFunctionPausedBorrow_Deposit,
-      InActiveHeading: "NVDA borrow is paused now",
-      pointsToBeGiven:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["NVDA"]?.pointsToBeGiven) ||
-        0,
-      minAmount:
-        (tokenRewardDetailList && tokenRewardDetailList?.["NVDA"]?.minAmount) ||
-        0,
-      link: STRATEGY_LINK,
-      boaster:
-        (tokenRewardDetailList &&
-          tokenRewardDetailList?.["NVDA"]?.assetBooster + luckBoaster) ||
-        0,
-      boasterTime:
-        tokenRewardDetailList &&
-        Math.max(
-          tokenRewardDetailList?.["NVDA"]?.assetBoosterValidity || 0,
-          farmLuckDetails?.deadLine5xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine5xTimestamp).getTime() / 1000
-            : 0,
-          farmLuckDetails?.deadLine10xTimestamp
-            ? // convert date to timestamp
-              new Date(farmLuckDetails.deadLine10xTimestamp).getTime() / 1000
-            : 0,
-        ),
-    });
   }
 
   if (chainId === NetworkId.Hyperliquid) {
@@ -481,7 +442,7 @@ function MintEthListTemplate() {
     if (list[2]) formattedList.push(list[2]);
     if (list[4]) formattedList.push(list[4]);
     if (list[6]) formattedList.push(list[6]);
-    if (list[7]) formattedList.push(list[7]); // NVDA asset (on BaseSepolia) or HYPE asset (on Hyperliquid)
+    if (list[7]) formattedList.push(list[7]); // HYPE asset
     return formattedList;
   }, [list]);
 

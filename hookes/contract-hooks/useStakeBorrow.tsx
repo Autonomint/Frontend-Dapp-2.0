@@ -155,19 +155,13 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     verifyParams,
   }: BorrowStakeInputs) => {
     const contractAddress =
-      assetName === 12 ||
-      assetName === 13 ||
-      assetName === 14 ||
-      assetName === 16
+      assetName === 12 || assetName === 13 || assetName === 14
         ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
         : borrowingContractAddress[
             chainId as keyof typeof borrowingContractAddress
           ];
     const abi =
-      assetName === 12 ||
-      assetName === 13 ||
-      assetName === 14 ||
-      assetName === 16
+      assetName === 12 || assetName === 13 || assetName === 14
         ? borowCoreABI
         : borrowingContractAbi;
     writeContract?.({
@@ -195,14 +189,14 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     assetName,
   }: StakeInputs) => {
     const contractAddress =
-      assetName === 12 || assetName === 13 || assetName === 16
+      assetName === 12 || assetName === 13
         ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
         : borrowingContractAddress[
             chainId as keyof typeof borrowingContractAddress
           ];
 
     const abi =
-      assetName === 12 || assetName === 13 || assetName === 16
+      assetName === 12 || assetName === 13
         ? borowCoreABI
         : borrowingContractAbi;
 
@@ -221,14 +215,14 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     assetName,
   }: UnstakeInputs) => {
     const contractAddress =
-      assetName === 12 || assetName === 13 || assetName === 16
+      assetName === 12 || assetName === 13
         ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
         : borrowingContractAddress[
             chainId as keyof typeof borrowingContractAddress
           ];
 
     const abi =
-      assetName === 12 || assetName === 13 || assetName === 16
+      assetName === 12 || assetName === 13
         ? borowCoreABI
         : borrowingContractAbi;
 
