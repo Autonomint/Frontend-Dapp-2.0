@@ -228,7 +228,9 @@ export function DcdsWithdrawModal({
       ).toFixed(4),
     );
 
-  const divideValue = position?.collateralType == "ETH_CALL" ? Number(position?.depositedAmounts?.eth) : Number(position?.totalDepositedAmount)
+
+  const divideValue = position?.collateralType == "ETH_CALL" ? Number(position?.depositedAmounts?.tokenizedAsset) : Number(position?.totalDepositedAmount)
+
 
   const variableYields = toPositiveDecimalString(
     Number(
@@ -256,6 +258,7 @@ export function DcdsWithdrawModal({
     ).toFixed(2),
   );
 
+
   const variableYieldsCheck = isNaN(Number(variableYields))
     ? 0.0
     : Number(variableYields);
@@ -277,6 +280,17 @@ export function DcdsWithdrawModal({
         ? `${formatNumber(Number(position.depositedAmounts.usdc))} ($${(
           Number(position.depositedAmounts.usdc) *
           Number(position.usdcPriceAtDeposit || 1)
+        ).toFixed(2)})`
+        : "-",
+      tooltip: false,
+      tooltipText: "",
+    },
+    {
+      headline: "NVDAc Deposited",
+      value: position.depositedAmounts?.tokenizedAsset
+        ? `${formatNumber(Number(position.depositedAmounts.tokenizedAsset))} ($${(
+          Number(position.depositedAmounts.tokenizedAsset) *
+          (Number(position.stockPriceAtDeposit || 1) / 100)
         ).toFixed(2)})`
         : "-",
       tooltip: false,
@@ -375,10 +389,10 @@ export function DcdsWithdrawModal({
               {interfaceBasedDetails
                 .filter((item) => {
                   if (
-                    ["Total Deposited Amount", "USDC Deposited"].includes(
+                    ["Total Deposited Amount", "USDC Deposited", "NVDAc Deposited"].includes(
                       item.headline,
                     ) &&
-                    (item.value === "$0" || item.value === "0" || item.value === "-")
+                    (item.value === "$0" || item.value === "0" || item.value === "-" || item.value === "0.00 ($0.00)")
                   ) {
                     return false;
                   }
