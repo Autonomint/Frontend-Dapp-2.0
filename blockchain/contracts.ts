@@ -176,6 +176,14 @@ export const EURCAddress: ChainAddresses = {
   [NetworkId.Rise]: ZeroAddress as `0x${string}`
 } as const;
 
+// Addresses for the NVDA contract
+export const NVDAAddress: ChainAddresses = {
+  84532: zeroAddress,
+  11155420: zeroAddress,
+  [NetworkId.Ethereum]: ZeroAddress as `0x${string}`,
+  [NetworkId.Rise]: ZeroAddress as `0x${string}`,
+} as const;
+
 // Addresses for the borrow assets
 export const borrowAssetsAddress = {
   ETH: ethAddress,
@@ -186,6 +194,8 @@ export const borrowAssetsAddress = {
   cbBTC: cbBTCAddress,
   KRWQ: KRWQAddress,
   krwq: KRWQAddress,
+  NVDA: NVDAAddress,
+  nvda: NVDAAddress,
 } as const;
 
 // Addresses for the global contract

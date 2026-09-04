@@ -49,7 +49,8 @@ export enum AssetName {
   sUSD,
   WSUPER_OETH,
   cbBTC,
-  KRWQ
+  KRWQ,
+  NVDA,
 }
 
 export const BorrowAssetsEnum = {
@@ -61,6 +62,8 @@ export const BorrowAssetsEnum = {
   cbBTC: AssetName.cbBTC,
   KRWQ: AssetName.KRWQ,
   krwq: AssetName.KRWQ,
+  NVDA: AssetName.NVDA,
+  nvda: AssetName.NVDA,
 };
 
 export const RedeemAssets = {
@@ -133,6 +136,7 @@ export const assetNameForRewardDataBorrow = {
   wrsETH: "WrsETH",
   weETH: "WeETH",
   wsuperOETHb: "WSuperOethB",
+  NVDA: "NVDA",
 };
 
 // enum for borrow contract data 

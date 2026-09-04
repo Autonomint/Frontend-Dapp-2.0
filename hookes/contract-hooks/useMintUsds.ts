@@ -39,8 +39,17 @@ const useDepositTokens = (mutation: any) => {
     ethPrice,
     verifyParams
   }: BorrowInputs) => {
-    const contractAddress = assetName === 12 || assetName === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
-    const abi = assetName === 12 || assetName === 13 ? borowCoreABI : borrowingContractAbi
+    const isBorrowCore =
+      assetName === AssetName.WSUPER_OETH ||
+      assetName === AssetName.cbBTC ||
+      assetName === AssetName.KRWQ ||
+      assetName === AssetName.NVDA;
+    const contractAddress = isBorrowCore
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
+    const abi = isBorrowCore ? borowCoreABI : borrowingContractAbi;
     writeContract?.({
       abi: abi,
       address: contractAddress as `0x${string}`,
@@ -51,8 +60,8 @@ const useDepositTokens = (mutation: any) => {
           assetName,
           depositingAmount,
           hedgeValidity: hedgeDuration,
-          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
-          verifyParams
+          ethPrice: isBorrowCore ? ethPrice : undefined,
+          verifyParams,
         },
       ],
       value,

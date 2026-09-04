@@ -1,7 +1,7 @@
 import { borrowCoreAddress, borrowingContractAddress } from "@/blockchain/contracts";
 import { borrowingContractAbi } from "@/blockchain/abis/borrowing-sc-abi";
 import { useAccount, useReadContract } from "wagmi";
-import { BorrowData } from "@/utils/constants";
+import { AssetName, BorrowData } from "@/utils/constants";
 
 /**
  * Custom hook to fetch the LTV (Loan-to-Value) value 
@@ -11,7 +11,15 @@ import { BorrowData } from "@/utils/constants";
  */
 const useGetLtv = (tokenEnum: number) => {
   const { address, chainId } = useAccount();
-  const contract = (tokenEnum) === 12 || (tokenEnum) === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+  const contract =
+    tokenEnum === AssetName.WSUPER_OETH ||
+    tokenEnum === AssetName.cbBTC ||
+    tokenEnum === AssetName.KRWQ ||
+    tokenEnum === AssetName.NVDA
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
   const { isPending: isTvlPending, data: tvlValue, error } = useReadContract({
     abi: borrowingContractAbi,
     address: contract as `0x${string}`,
@@ -28,7 +36,15 @@ const useGetLtv = (tokenEnum: number) => {
 
 const useGetLtvALL = (tokenEnum: number) => {
   const { address, chainId } = useAccount();
-  const contract = (tokenEnum) === 12 || (tokenEnum) === 13 ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress] : borrowingContractAddress[chainId as keyof typeof borrowingContractAddress]
+  const contract =
+    tokenEnum === AssetName.WSUPER_OETH ||
+    tokenEnum === AssetName.cbBTC ||
+    tokenEnum === AssetName.KRWQ ||
+    tokenEnum === AssetName.NVDA
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
 
   const { isPending: isTvlPending, data: tvlValue } = useReadContract({
     abi: borrowingContractAbi,

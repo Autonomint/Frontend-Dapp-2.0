@@ -38,6 +38,8 @@ function TradingViewWidget({ currency }: { currency: string }) {
         return ["CRYPTO:CBBTCCUSD|1D"];
       case "KRWQ":
         return ["FX_IDC:KRWUSD|1D"];
+      case "NVDA":
+        return ["NASDAQ:NVDA|1D"];
       default:
         return ["BINANCE:ETHUSD|1D"];
     }
@@ -153,8 +155,12 @@ function ChartComponent({ currency }: { currency: string }) {
   // Loading state for adding token to wallet
   const [isAddingToken, setIsAddingToken] = useState<boolean>(false);
 
-  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
-    useGetOmniChainData();
+  const {
+    omniChainDataEth,
+    omniChainDataCbbtc,
+    omniChainDataKrwq,
+    omniChainDataNVDA,
+  } = useGetOmniChainData();
 
   const omniChainDataMap = {
     ETH: omniChainDataEth,
@@ -163,6 +169,7 @@ function ChartComponent({ currency }: { currency: string }) {
     wsuperOETHb: omniChainDataEth,
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
+    NVDA: omniChainDataNVDA,
   };
 
   const total =
@@ -219,6 +226,8 @@ function ChartComponent({ currency }: { currency: string }) {
         return cbBTC;
       case "KRWQ":
         return getIconMapping("dark", "KRWQ");
+      case "NVDA":
+        return getIconMapping("dark", "NVDA");
       default:
         return cryptoEth;
     }

@@ -9,7 +9,9 @@ import cbBTC from "@/app/assets/cbbtc.webp";
 import wBLT from "@/app/assets/wBLT.svg";
 import KRWQ from "@/app/assets/krwq-logo.svg";
 import EURC from "@/app/assets/euro-coin-2.png";
+import NVDAIcon from "@/app/assets/nvda-logo.svg";
 import {
+  NVDAAddress,
   boldTokenAddress,
   nativeTokenAddress,
   rsETHAddress,
@@ -147,6 +149,15 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
             // image: "https://yourdomain.com/token-image.png",
           },
         };
+      case "nvda":
+        return {
+          type: "ERC20",
+          options: {
+            address: NVDAAddress[chainId as keyof typeof NVDAAddress],
+            symbol: "NVDA",
+            decimals: 8,
+          },
+        };
       default:
         return {
           type: "ERC20",
@@ -179,6 +190,8 @@ export const getIconMapping = (theme: string, token: string) => {
     krwq: KRWQ,
     EURC: EURC,
     eurc: EURC,
+    NVDA: NVDAIcon,
+    nvda: NVDAIcon,
   };
   return mapping[token as keyof typeof mapping];
 };

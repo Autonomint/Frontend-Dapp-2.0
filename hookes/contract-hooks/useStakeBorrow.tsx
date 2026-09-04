@@ -154,16 +154,17 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     ethPrice,
     verifyParams,
   }: BorrowStakeInputs) => {
-    const contractAddress =
-      assetName === 12 || assetName === 13
-        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
-        : borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ];
-    const abi =
-      assetName === 12 || assetName === 13
-        ? borowCoreABI
-        : borrowingContractAbi;
+    const isBorrowCore =
+      assetName === AssetName.WSUPER_OETH ||
+      assetName === AssetName.cbBTC ||
+      assetName === AssetName.KRWQ ||
+      assetName === AssetName.NVDA;
+    const contractAddress = isBorrowCore
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
+    const abi = isBorrowCore ? borowCoreABI : borrowingContractAbi;
     writeContract?.({
       abi: abi,
       address: contractAddress as `0x${string}`,
@@ -174,7 +175,7 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
           assetName,
           depositingAmount,
           hedgeValidity: hedgeDuration,
-          ethPrice: assetName === 12 || assetName === 13 ? ethPrice : undefined,
+          ethPrice: isBorrowCore ? ethPrice : undefined,
           verifyParams,
         },
       ],
@@ -189,17 +190,18 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     verifyParams,
     assetName,
   }: StakeInputs) => {
-    const contractAddress =
-      assetName === 12 || assetName === 13
-        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
-        : borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ];
+    const isBorrowCore =
+      assetName === AssetName.WSUPER_OETH ||
+      assetName === AssetName.cbBTC ||
+      assetName === AssetName.KRWQ ||
+      assetName === AssetName.NVDA;
+    const contractAddress = isBorrowCore
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
 
-    const abi =
-      assetName === 12 || assetName === 13
-        ? borowCoreABI
-        : borrowingContractAbi;
+    const abi = isBorrowCore ? borowCoreABI : borrowingContractAbi;
 
     return withdrawStakeWriteContract({
       abi,
@@ -215,17 +217,18 @@ const useDepositStakeTokens = (mutation: any, resetterFn?: any) => {
     verifyParams,
     assetName,
   }: UnstakeInputs) => {
-    const contractAddress =
-      assetName === 12 || assetName === 13
-        ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
-        : borrowingContractAddress[
-            chainId as keyof typeof borrowingContractAddress
-          ];
+    const isBorrowCore =
+      assetName === AssetName.WSUPER_OETH ||
+      assetName === AssetName.cbBTC ||
+      assetName === AssetName.KRWQ ||
+      assetName === AssetName.NVDA;
+    const contractAddress = isBorrowCore
+      ? borrowCoreAddress[chainId as keyof typeof borrowCoreAddress]
+      : borrowingContractAddress[
+          chainId as keyof typeof borrowingContractAddress
+        ];
 
-    const abi =
-      assetName === 12 || assetName === 13
-        ? borowCoreABI
-        : borrowingContractAbi;
+    const abi = isBorrowCore ? borowCoreABI : borrowingContractAbi;
 
     return withdrawUnStakeWriteContract({
       abi,

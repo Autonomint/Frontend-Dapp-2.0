@@ -138,6 +138,8 @@ function InputForm({ currency }: { currency: string }) {
         : (currency as keyof typeof borrowAssetsAddress)
     ],
     currency.toLocaleLowerCase() === "krwq",
+    false,
+    currency.toLocaleLowerCase() === "nvda",
   );
 
   // Selected asset price
@@ -157,9 +159,12 @@ function InputForm({ currency }: { currency: string }) {
     token:
       currency.toLocaleLowerCase() !== "eth"
         ? borrowAssetsAddress[currency as keyof typeof borrowAssetsAddress][
-            chainId
+            chainId || NetworkId.BaseSepolia
           ]
         : undefined,
+    query: {
+      enabled: Boolean(address),
+    },
   });
 
   // getting current currentDebtCeilingMintLimit value
@@ -181,7 +186,7 @@ function InputForm({ currency }: { currency: string }) {
   const formattedBalance = Number(ethBalance.data?.formatted || 0).toFixed(4);
 
   const contract =
-    currency === "cbBTC" || currency === "KRWQ"
+    currency === "cbBTC" || currency === "KRWQ" || currency === "NVDA"
       ? borrowDepositCoreAddress
       : borrowingDepositContractAddress;
 
@@ -196,8 +201,12 @@ function InputForm({ currency }: { currency: string }) {
     args: [address, contract[chainId as keyof typeof contract]],
   }) as { data: number | undefined };
 
-  const { omniChainDataEth, omniChainDataCbbtc, omniChainDataKrwq } =
-    useGetOmniChainData();
+  const {
+    omniChainDataEth,
+    omniChainDataCbbtc,
+    omniChainDataKrwq,
+    omniChainDataNVDA,
+  } = useGetOmniChainData();
 
   const omniChainDataMap = {
     ETH: omniChainDataEth,
@@ -206,6 +215,7 @@ function InputForm({ currency }: { currency: string }) {
     wsuperOETHb: omniChainDataEth,
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
+    NVDA: omniChainDataNVDA,
   };
 
   const maxMintAmount =
@@ -262,10 +272,15 @@ function InputForm({ currency }: { currency: string }) {
     reset();
 
     // parse the amount to be minted
-    const approveAmount = parseEther(formik.values.collateralAmount.toString());
+    const approveAmount =
+      currency === "cbBTC" || currency === "NVDA"
+        ? parseUnits(formik.values.collateralAmount.toString(), 8)
+        : parseEther(formik.values.collateralAmount.toString());
 
     if (
-      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ"].includes(currency) &&
+      ["wrsETH", "weETH", "wsuperOETHb", "cbBTC", "KRWQ", "NVDA"].includes(
+        currency,
+      ) &&
       BigInt(allowance || 0) < approveAmount
     ) {
       // check if allowance is less than approve amount
@@ -273,7 +288,7 @@ function InputForm({ currency }: { currency: string }) {
 
       await approveWrapETHDynamic(
         contract[chainId as keyof typeof contract] as `0x${string}`,
-        currency === "cbBTC"
+        currency === "cbBTC" || currency === "NVDA"
           ? parseUnits(formik.values.collateralAmount.toString(), 8)
           : parseEther(formik.values.collateralAmount.toString()),
       );
@@ -456,11 +471,17 @@ function InputForm({ currency }: { currency: string }) {
   //getting option fees for selected amount
   const { optionFees, refetchOptionFee, Fees } = useFetchOptionFees(
     String(formik.values.collateralAmount),
-    (currency === "KRWQ"
+    (currency === "KRWQ" || currency === "NVDA"
       ? parseUnits(String(assetPrice), 8)
       : assetPrice || 0) as number,
     formik.values.strikePricePercent,
-    currency === "cbBTC" ? "BTC" : currency === "KRWQ" ? "krwq" : "ETH",
+    currency === "cbBTC"
+      ? "BTC"
+      : currency === "KRWQ"
+        ? "krwq"
+        : currency === "NVDA"
+          ? "NVDA"
+          : "ETH",
     Number(formik.values.hedgeDuration),
   );
   console.log(
@@ -570,12 +591,14 @@ function InputForm({ currency }: { currency: string }) {
       // calling the mint usda function in the contract
       mintUSDa?.({
         depositingAmount:
-          currency === "cbBTC"
+          currency === "cbBTC" || currency === "NVDA"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" || currency === "KRWQ"
+          currency === "cbBTC" ||
+          currency === "KRWQ" ||
+          currency === "NVDA"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
@@ -599,12 +622,14 @@ function InputForm({ currency }: { currency: string }) {
       // calling the mint usda function in the contract
       mintStakeUSDa?.({
         depositingAmount:
-          currency === "cbBTC"
+          currency === "cbBTC" || currency === "NVDA"
             ? parseUnits(formik.values.collateralAmount.toString(), 8)
             : parseEther(formik.values.collateralAmount.toString()),
         assetName: BorrowAssetsEnum[currency as keyof typeof BorrowAssetsEnum],
         value:
-          currency === "cbBTC" || currency === "KRWQ"
+          currency === "cbBTC" ||
+          currency === "KRWQ" ||
+          currency === "NVDA"
             ? undefined
             : chainId === NetworkId.Ethereum
               ? parseEther(formik.values.collateralAmount.toString())
@@ -634,7 +659,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           Number(ltv?.LTV || 0)) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "NVDA" ? 100 : 10000);
       // display the usda to be minted with 2 decimal places
       const udsa2Decimal = displayNumberWithPrecision(usdaToMint.toString());
       // set the usda to be minted
@@ -645,7 +670,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           (100 - (ltv?.LTV ? Number(ltv?.LTV) : 0))) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "NVDA" ? 100 : 10000);
 
       // display the downside protection amount with 2 decimal places
       const downsideProtection2Decimal = displayNumberWithPrecision(
@@ -657,7 +682,7 @@ function InputForm({ currency }: { currency: string }) {
         (Number(formik.values.collateralAmount || 0) *
           Number(selectedAssetPrice || 0) *
           formik.values.strikePricePercent) /
-        (currency === "KRWQ" ? 100 : 10000);
+        (currency === "KRWQ" || currency === "NVDA" ? 100 : 10000);
       setUpsideCollateral(upsideCollateral);
       setDownsideProtectionAmnt(downsideProtection2Decimal);
     } catch (error) {
@@ -905,9 +930,10 @@ function InputForm({ currency }: { currency: string }) {
 
   //  Liquidation price
   const LiquidationPrice = useMemo(() => {
-    return (((Number(selectedAssetPrice) / 100) * 80) / 100).toFixed(
-      currency === "KRWQ" ? 8 : 2,
-    );
+    return (
+      ((Number(selectedAssetPrice) / (currency === "NVDA" ? 1 : 100)) * 80) /
+      100
+    ).toFixed(currency === "KRWQ" ? 8 : 2);
   }, [selectedAssetPrice, currency]);
 
   const hedgeDurationOption = [
@@ -1133,7 +1159,7 @@ function InputForm({ currency }: { currency: string }) {
         <InputMetics
           deposit={(
             (Number(selectedAssetPrice || 0) /
-              (currency === "KRWQ" ? 1 : 100)) *
+              (currency === "KRWQ" || currency === "NVDA" ? 1 : 100)) *
             Number(formik.values.collateralAmount)
           ).toFixed(2)}
           optionFees={Number(optionFees).toFixed(2)}
