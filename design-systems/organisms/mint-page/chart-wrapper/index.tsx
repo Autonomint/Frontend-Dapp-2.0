@@ -166,7 +166,6 @@ function ChartComponent({ currency }: { currency: string }) {
     omniChainDataCbbtc,
     omniChainDataKrwq,
     omniChainDataEURC,
-    omniChainDataNVDA,
   } = useGetOmniChainData();
 
   const omniChainDataMap = {
@@ -177,7 +176,7 @@ function ChartComponent({ currency }: { currency: string }) {
     cbBTC: omniChainDataCbbtc,
     KRWQ: omniChainDataKrwq,
     EURC: omniChainDataEURC,
-    NVDA: omniChainDataNVDA,
+    NVDA: omniChainDataEURC,
   };
 
   const total =

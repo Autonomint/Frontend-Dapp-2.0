@@ -71,18 +71,7 @@ const useGetOmniChainData = () => {
     scopeKey: "getOmniChainData",
   });
 
-  const {
-    data: omniChainDataNVDA,
-    isPending: isOmniChainDataPendingNVDA,
-    error: omniChainDataErrorNVDA,
-  } = useReadContract({
-    abi: globalAbi,
-    address: globalAddress[chainId as keyof typeof globalAddress],
-    functionName: "getOmniChainData",
-    query: { staleTime: 10 * 1000 },
-    args: [AssetName.NVDA],
-    scopeKey: "getOmniChainData",
-  });
+
 
   return {
     omniChainDataEth: omniChainDataEth as Record<string, bigint>,
@@ -100,9 +89,6 @@ const useGetOmniChainData = () => {
     omniChainDataHype: omniChainDataHype as Record<string, bigint>,
     isOmniChainDataPendingHype,
     omniChainDataErrorHype,
-    omniChainDataNVDA: omniChainDataNVDA as Record<string, bigint>,
-    isOmniChainDataPendingNVDA,
-    omniChainDataErrorNVDA,
   };
 };
 

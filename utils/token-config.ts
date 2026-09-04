@@ -155,7 +155,7 @@ export const useTokenConfig = (tokenName: string): TokenConfig => {
           options: {
             address: NVDAAddress[chainId as keyof typeof NVDAAddress],
             symbol: "NVDA",
-            decimals: 8,
+            decimals: 18,
           },
         };
       default:
