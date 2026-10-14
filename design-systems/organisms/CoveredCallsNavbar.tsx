@@ -85,7 +85,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
         InActiveHeading: "",
         isComingSoon: false,
         hasLiveChip: true,
-        liveCount: "11",
+        liveCount: "10",
       },
       {
         ...primaryTab,
@@ -99,7 +99,7 @@ const CoveredCallsNavbar: React.FC<CoveredCallsNavbarProps> = ({
         InActiveHeading: "",
         isComingSoon: false,
         hasLiveChip: true,
-        liveCount: "3",
+        liveCount: "2",
       },
     ];
   }, [isBuyMode]);

@@ -109,9 +109,14 @@ const CoveredCallTemplate = ({
 
   const tickers = useMemo(() => {
     return coveredCallAssets
-      .filter((asset) => asset.ticker !== "LIT" && (isPutOption ? asset.hasPut : asset.hasCall))
+      .filter(
+        (asset) =>
+          asset.ticker !== "LIT" &&
+          (!isBuyMode ? asset.ticker !== "LAB" : true) &&
+          (isPutOption ? asset.hasPut : asset.hasCall)
+      )
       .map((asset) => asset.ticker);
-  }, [isPutOption]);
+  }, [isPutOption, isBuyMode]);
 
   const isCrypto = useMemo(() => {
     return coveredCallAssets.find((asset) => asset.ticker === selectedTicker)?.chipLabel === "Crypto";

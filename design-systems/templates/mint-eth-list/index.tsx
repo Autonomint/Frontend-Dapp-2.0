@@ -35,13 +35,20 @@ function MintEthListTemplate({ action = "sell" }: { action?: string }) {
   const { price: spotPriceLIT, isLoading: isLoadingLIT } =
     useGetSpotPrice("LIT", true, "call");
 
-  // List of covered call assets (hiding LIT token for now)
-  const list = coveredCallAssets
-    .filter((asset) => asset.ticker !== "LIT")
-    .map((asset) => ({
-      ...asset,
-      isActive: true,
-    }));
+  // List of covered call assets (hiding LIT token for now, and LAB token when action is sell)
+  const isSellAction = (action || "").toLowerCase() === "sell";
+  const list = useMemo(() => {
+    return coveredCallAssets
+      .filter((asset) => {
+        if (asset.ticker === "LIT") return false;
+        if (isSellAction && asset.ticker === "LAB") return false;
+        return true;
+      })
+      .map((asset) => ({
+        ...asset,
+        isActive: true,
+      }));
+  }, [isSellAction]);
 
   const formattedaBorrowAssetList = useMemo(() => {
     return list.map((asset: any) => {
